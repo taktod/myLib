@@ -1,5 +1,7 @@
-package com.ttProject.media.mp4;
+package com.ttProject.media.mp4.atom;
 
+import com.ttProject.media.mp4.Atom;
+import com.ttProject.media.mp4.IAtomAnalyzer;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 public class Hdlr extends Atom {

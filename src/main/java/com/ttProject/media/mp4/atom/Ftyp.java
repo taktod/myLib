@@ -1,9 +1,11 @@
-package com.ttProject.media.mp4;
+package com.ttProject.media.mp4.atom;
 
 import java.nio.ByteBuffer;
 
 import com.ttProject.library.BufferUtil;
 import com.ttProject.library.IntUtil;
+import com.ttProject.media.mp4.Atom;
+import com.ttProject.media.mp4.IAtomAnalyzer;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 public class Ftyp extends Atom {

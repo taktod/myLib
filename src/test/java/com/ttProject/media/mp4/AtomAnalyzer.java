@@ -3,6 +3,7 @@ package com.ttProject.media.mp4;
 import java.lang.reflect.Constructor;
 import java.nio.ByteBuffer;
 
+import com.ttProject.library.BufferUtil;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 public class AtomAnalyzer implements IAtomAnalyzer {
@@ -14,8 +15,7 @@ public class AtomAnalyzer implements IAtomAnalyzer {
 		}
 		int position = ch.position();
 		ByteBuffer buffer = ByteBuffer.allocate(8);
-		ch.read(buffer);
-		buffer.flip();
+		buffer = BufferUtil.safeRead(ch, 8);
 		int size = buffer.getInt();
 		byte[] name = new byte[4];
 		buffer.get(name);
@@ -39,6 +39,6 @@ public class AtomAnalyzer implements IAtomAnalyzer {
 		}
 	}
 	public String getClassName(String tag) {
-		return "com.ttProject.media.mp4." + tag.substring(0, 1).toUpperCase() + tag.substring(1).toLowerCase();
+		return "com.ttProject.media.mp4.atom." + tag.substring(0, 1).toUpperCase() + tag.substring(1).toLowerCase();
 	}
 }
