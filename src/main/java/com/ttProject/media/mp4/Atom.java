@@ -1,5 +1,8 @@
 package com.ttProject.media.mp4;
 
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
+
 import com.ttProject.nio.channels.IFileReadChannel;
 
 public abstract class Atom {
@@ -13,12 +16,31 @@ public abstract class Atom {
 		this.position = position;
 		this.analized = false;
 	}
-	// 開始の読み込み位置については、先頭になるように外部で調整しておく必要あり。(と定めるURLConnectionの件もあるため。)
 	public abstract void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception;
 	public void analyze(IFileReadChannel ch) throws Exception {
 		analyze(ch, null);
 	}
-
+	// そのままコピーする動作も必要
+	public void copy(IFileReadChannel ch, WritableByteChannel target) throws Exception {
+		// コピーするデータ量をなんとかしなければいけないと思う。
+		// 開始位置をいれておく
+		ch.position(getPosition());
+		// ここからsize分読み込んで記入していく。
+		ByteBuffer buffer = null;
+		int targetSize = getSize();
+		while(targetSize > 0) {
+			// 結構な速度で動作可能っぽいです。(光回線だからですかね)
+			int size = (167772160 > targetSize) ? targetSize : 167772160;
+			buffer = ByteBuffer.allocate(size);
+			ch.read(buffer);
+			buffer.flip();
+			if(buffer.remaining() == 0) {
+				break;
+			}
+			targetSize -= buffer.remaining();
+			target.write(buffer);
+		}
+	}
 	public int getSize() {
 		return size;
 	}
