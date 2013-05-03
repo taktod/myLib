@@ -70,7 +70,10 @@ public class Tkhd extends Atom {
 	public String toString() {
 		StringBuilder data = new StringBuilder();
 		data.append(super.toString("    "));
-		data.append("[width:").append(width).append(" height:").append(height).append("]");
+		data.append("[width:").append(width)
+		.append(" height:").append(height)
+		.append(" volume:").append(volume)
+		.append("]");
 		return data.toString();
 	}
 	public byte getVersion() {
