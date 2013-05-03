@@ -65,6 +65,7 @@ public class Tkhd extends Atom {
 		}
 		width = ((buffer.getInt() >> 16) & 0xFFFF);
 		height = ((buffer.getInt() >> 16) & 0xFFFF);
+		analyzed();
 	}
 	@Override
 	public String toString() {
