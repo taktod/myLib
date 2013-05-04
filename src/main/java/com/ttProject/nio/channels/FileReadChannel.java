@@ -47,4 +47,12 @@ public class FileReadChannel implements IFileReadChannel {
 	public int size() throws Exception {
 		return (int)channel.size();
 	}
+	public static IFileReadChannel openFileReadChannel(String uri) throws Exception {
+		if(uri.startsWith("http")) {
+			return new URLFileReadChannel(uri);
+		}
+		else {
+			return new FileReadChannel(uri);
+		}
+	}
 }
