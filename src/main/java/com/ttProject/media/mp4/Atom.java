@@ -1,6 +1,5 @@
 package com.ttProject.media.mp4;
 
-import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
 import com.ttProject.library.BufferUtil;
