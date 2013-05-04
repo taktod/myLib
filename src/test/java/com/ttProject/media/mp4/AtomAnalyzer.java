@@ -14,8 +14,7 @@ public class AtomAnalyzer implements IAtomAnalyzer {
 			return null;
 		}
 		int position = ch.position();
-		ByteBuffer buffer = ByteBuffer.allocate(8);
-		buffer = BufferUtil.safeRead(ch, 8);
+		ByteBuffer buffer = BufferUtil.safeRead(ch, 8);
 		int size = buffer.getInt();
 		byte[] name = new byte[4];
 		buffer.get(name);
