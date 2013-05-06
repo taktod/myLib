@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.library.BufferUtil;
 import com.ttProject.media.mp4.IAtomAnalyzer;
+import com.ttProject.media.mp4.atom.stsd.data.Avcc;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 public abstract class VideoRecord extends Record {
@@ -60,9 +61,14 @@ public abstract class VideoRecord extends Record {
 			int size = buffer.getInt();
 			buffer.get(name);
 			String tag = (new String(name)).toLowerCase();
-			System.out.println(tag);
+			if("avcc".equals(tag)) {
+				Avcc avcc = new Avcc(size, position);
+				avcc.analyze(ch);
+			}
+//			System.out.println(tag);
 			// tagがavccなら読み込んでおきたいところ。
 			// avccだったら中身すべてがmediaSequenceHeaderなので保持しておく必要あり(flvにするため)
+			// とりあえずavccだけ解析するふりをしておく。(解析もなにも中身すべてが対象のデータ)
 //			System.out.println("position:" + Integer.toHexString(position) + " size:" + Integer.toHexString(size) + " tag:" + tag);
 			ch.position(position + size);
 		}

@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.library.BufferUtil;
 import com.ttProject.media.mp4.IAtomAnalyzer;
+import com.ttProject.media.mp4.atom.stsd.data.Esds;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 public abstract class AudioRecord extends Record {
@@ -44,7 +45,12 @@ public abstract class AudioRecord extends Record {
 			int size = buffer.getInt();
 			buffer.get(name);
 			String tag = (new String(name)).toLowerCase();
-			System.out.println(tag);
+//			System.out.println(tag);
+			if("esds".equals(tag)) {
+				//esdsのタグ
+				Esds esds = new Esds(size, position);
+				esds.analyze(ch);
+			}
 			// tagがesdsなら読み込んでおきたいところ。
 //			System.out.println("position:" + Integer.toHexString(position) + " size:" + Integer.toHexString(size) + " tag:" + tag);
 			ch.position(position + size);

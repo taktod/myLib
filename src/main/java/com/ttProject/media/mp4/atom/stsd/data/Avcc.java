@@ -6,7 +6,7 @@ import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
  * h.264のmediaSequenceHeaderを保持しているデータ
- * 動画用
+ * 動画用(中身全部がそのままmediaSequenceHeaderになる)
  * @author taktod
  */
 public class Avcc extends Atom {
