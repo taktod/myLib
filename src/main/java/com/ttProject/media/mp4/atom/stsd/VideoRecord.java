@@ -60,6 +60,7 @@ public abstract class VideoRecord extends Record {
 			int size = buffer.getInt();
 			buffer.get(name);
 			String tag = (new String(name)).toLowerCase();
+			System.out.println(tag);
 			// tagがavccなら読み込んでおきたいところ。
 			// avccだったら中身すべてがmediaSequenceHeaderなので保持しておく必要あり(flvにするため)
 //			System.out.println("position:" + Integer.toHexString(position) + " size:" + Integer.toHexString(size) + " tag:" + tag);

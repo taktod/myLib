@@ -44,6 +44,7 @@ public abstract class AudioRecord extends Record {
 			int size = buffer.getInt();
 			buffer.get(name);
 			String tag = (new String(name)).toLowerCase();
+			System.out.println(tag);
 			// tagがesdsなら読み込んでおきたいところ。
 //			System.out.println("position:" + Integer.toHexString(position) + " size:" + Integer.toHexString(size) + " tag:" + tag);
 			ch.position(position + size);
