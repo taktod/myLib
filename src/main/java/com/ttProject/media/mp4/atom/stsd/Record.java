@@ -1,12 +1,12 @@
-package com.ttProject.media.mp4.atom.item;
+package com.ttProject.media.mp4.atom.stsd;
 
 import com.ttProject.media.mp4.Atom;
 
-public abstract class StsdRecord extends Atom {
-	public StsdRecord(String name, int size, int position) {
+public abstract class Record extends Atom {
+	public Record(String name, int size, int position) {
 		super(name, size, position);
 	}
-	public static StsdRecord getRecord(String name, int size, int position) throws Exception {
+	public static Record getRecord(String name, int size, int position) throws Exception {
 		if(".mp3".equals(name)) {
 			return new Mp3Record(name, size, position);
 		}

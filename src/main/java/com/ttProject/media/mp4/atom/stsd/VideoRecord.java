@@ -1,4 +1,4 @@
-package com.ttProject.media.mp4.atom.item;
+package com.ttProject.media.mp4.atom.stsd;
 
 import java.nio.ByteBuffer;
 
@@ -6,7 +6,7 @@ import com.ttProject.library.BufferUtil;
 import com.ttProject.media.mp4.IAtomAnalyzer;
 import com.ttProject.nio.channels.IFileReadChannel;
 
-public abstract class VideoRecord extends StsdRecord {
+public abstract class VideoRecord extends Record {
 	private byte[] unknown1 = new byte[6];
 	private short dataReferenceIndex;
 	private short unknown2;
@@ -31,7 +31,7 @@ public abstract class VideoRecord extends StsdRecord {
 	@Override
 	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer)
 			throws Exception {
-		// ぶっちゃげここのデータはどうでもいい、ほしいのは、
+		// ぶっちゃげここのデータはどうでもいい、ほしいのは、mediaSequenceHeader
 		ByteBuffer buffer = BufferUtil.safeRead(ch, 78);
 		buffer.get(unknown1);
 		dataReferenceIndex = buffer.getShort();
@@ -52,5 +52,18 @@ public abstract class VideoRecord extends StsdRecord {
 		unknown8 = buffer.getShort();
 		// 以下サブタグ(size:4byte tag:4byte data:xbyte)
 		// サブタグのavcCがmediaSequenceHeaderになります。(自身がh.264の場合)
+		// この部分の読み込みは別プログラムにした方がいいと思う。
+		while(ch.position() < (getSize() + getPosition())) {
+			int position = ch.position();
+			buffer = BufferUtil.safeRead(ch, 8);
+			byte[] name = new byte[4];
+			int size = buffer.getInt();
+			buffer.get(name);
+			String tag = (new String(name)).toLowerCase();
+			// tagがavccなら読み込んでおきたいところ。
+			// avccだったら中身すべてがmediaSequenceHeaderなので保持しておく必要あり(flvにするため)
+//			System.out.println("position:" + Integer.toHexString(position) + " size:" + Integer.toHexString(size) + " tag:" + tag);
+			ch.position(position + size);
+		}
 	}
 }
