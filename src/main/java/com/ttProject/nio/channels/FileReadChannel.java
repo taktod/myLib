@@ -8,20 +8,23 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 public class FileReadChannel implements IFileReadChannel {
-	private final File file;
 	private FileChannel channel;
 	/**
 	 * コンストラクタ
 	 * @param target
 	 */
 	public FileReadChannel(String fileString) throws Exception {
-		file = new File(fileString);
+		File file = new File(fileString);
 		channel = new FileInputStream(file).getChannel();
 	}
-	public FileReadChannel(URL url) throws Exception {
+	public FileReadChannel(File file) throws Exception {
+//		this.file = file;
+		channel = new FileInputStream(file).getChannel();
+	}
+/*	public FileReadChannel(URL url) throws Exception {
 		file = new File(url.toURI());
 		channel = new FileInputStream(file).getChannel();
-	}
+	}*/
 	public void close() throws IOException {
 		channel.close();
 	}
@@ -53,6 +56,16 @@ public class FileReadChannel implements IFileReadChannel {
 		}
 		else {
 			return new FileReadChannel(uri);
+		}
+	}
+	public static IFileReadChannel openFileReadChannel(URL url) throws Exception {
+		try {
+			File file = new File(url.toURI());
+			return new FileReadChannel(file);
+		}
+		catch(IllegalArgumentException e) {
+			// urlの場合
+			return new URLFileReadChannel(url.toString());
 		}
 	}
 }
