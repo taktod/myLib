@@ -16,6 +16,6 @@ public abstract class Record extends Atom {
 		else if("h264".equals(name) || "avc1".equals(name)) {
 			return new H264Record(name, size, position);
 		}
-		throw new Exception("unknown stsdRecord");
+		throw new Exception("unknown stsdRecord:" + name);
 	}
 }

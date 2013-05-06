@@ -18,7 +18,7 @@ public abstract class ParentAtom extends Atom {
 		}
 		ch.position(getPosition() + 8);
 		Atom atom = null;
-		while((atom = analyzer.analize(ch)) != null) {
+		while((atom = analyzer.analyze(ch)) != null) {
 			atoms.add(atom);
 			if(ch.position() >= getPosition() + getSize()) {
 				break;

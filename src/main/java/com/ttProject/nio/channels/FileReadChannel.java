@@ -18,13 +18,8 @@ public class FileReadChannel implements IFileReadChannel {
 		channel = new FileInputStream(file).getChannel();
 	}
 	public FileReadChannel(File file) throws Exception {
-//		this.file = file;
 		channel = new FileInputStream(file).getChannel();
 	}
-/*	public FileReadChannel(URL url) throws Exception {
-		file = new File(url.toURI());
-		channel = new FileInputStream(file).getChannel();
-	}*/
 	public void close() throws IOException {
 		channel.close();
 	}

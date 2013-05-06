@@ -7,5 +7,5 @@ import com.ttProject.nio.channels.IFileReadChannel;
  * @author taktod
  */
 public interface IAtomAnalyzer {
-	public Atom analize(IFileReadChannel ch) throws Exception;
+	public Atom analyze(IFileReadChannel ch) throws Exception;
 }
