@@ -82,7 +82,7 @@ public class URLFileReadChannel implements IFileReadChannel {
 		long skipSize = newPosition - startPos - readSize;
 		// 先に進む場合は、10k以内ならそのまままった方がよさそう。(dl終了遅延より・・・という意味)
 		if(skipSize == 0) {
-			; // 飛ばす量がない場合はなにもしない。
+			return this;
 		}
 		if(skipSize > 0 && conn.getInputStream().available() > skipSize) {
 			readSize += skipSize;
