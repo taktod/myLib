@@ -11,7 +11,7 @@ public class Mp4Test {
 		IFileReadChannel fc = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.mp4");
 		IAtomAnalyzer analyzer = new AtomAnalyzer();
 		Atom atom = null;
-		while((atom = analyzer.analize(fc)) != null) {
+		while((atom = analyzer.analyze(fc)) != null) {
 			System.out.println(atom);
 		}
 		fc.close();
