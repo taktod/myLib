@@ -43,7 +43,7 @@ public class BufferUtil {
 		int count = 0;
 		while(true) {
 			ch.read(buffer);
-			if(buffer.limit() == length) {
+			if(buffer.position() == length) {
 				buffer.flip();
 				return buffer;
 			}
