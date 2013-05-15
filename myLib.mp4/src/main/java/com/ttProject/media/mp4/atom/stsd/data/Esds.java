@@ -31,18 +31,21 @@ public class Esds extends Atom {
 		System.out.println("esdsの解析を実施します。");
 		ch.position(getPosition() + 8);
 		ByteBuffer buffer = BufferUtil.safeRead(ch, getSize() - 8);
+		System.out.println("調査対象量:" + Integer.toHexString(buffer.remaining()));
 		unknown = buffer.getInt();
 		while(buffer.remaining() > 0) {
 			analyzeTag(buffer);
 		}
 	}
 	private void analyzeTag(ByteBuffer buffer) throws Exception {
+		System.out.println("pos:" + buffer.remaining());
 		if(buffer.remaining() == 0) {
 			System.out.println("解析おわり。");
 			return;
 		}
 		// tagを調べる。
 		byte tag = buffer.get();
+		System.out.println(tag);
 		int size = getSize(buffer);
 		byte flags;
 		switch(tag) {
@@ -154,6 +157,8 @@ public class Esds extends Atom {
 		case SL_CONFIG:
 			System.out.print("SL_CONFIG:");
 			System.out.println(size);
+			byte[] conf = new byte[size];
+			buffer.get(conf);
 			break;
 		}
 	}
