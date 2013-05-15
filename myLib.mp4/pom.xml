@@ -3,19 +3,19 @@
   <parent>
     <groupId>com.ttProject</groupId>
     <artifactId>myLib</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
   </parent>
   <artifactId>myLib.mp4</artifactId>
   <dependencies>
   	<dependency>
   		<groupId>com.ttProject</groupId>
   		<artifactId>myLib.channels</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
+  		<version>0.0.1</version>
   	</dependency>
   	<dependency>
   		<groupId>com.ttProject</groupId>
   		<artifactId>myLib.util</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
+  		<version>0.0.1</version>
   	</dependency>
   	<dependency>
   		<groupId>junit</groupId>
