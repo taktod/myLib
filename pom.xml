@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.ttProject</groupId>
   <artifactId>myLib</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
   	<module>myLib.mp4</module>
@@ -14,7 +14,6 @@
 	<connection>scm:git:git@github.com:taktod/myLib.git</connection>
 	<url>scm:git:git@github.com:taktod/myLib.git</url>
 	<developerConnection>scm:git:git@github.com:taktod/myLib.git</developerConnection>
-    <tag>HEAD</tag>
   </scm>
   <build>
   	<plugins>
