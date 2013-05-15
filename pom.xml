@@ -23,4 +23,9 @@
   		</plugin>
   	</plugins>
   </build>
+  <scm>
+  	<url>scm:git:git@github.com:taktod/myLib.git</url>
+  	<connection>scm:git:git@github.com:taktod/myLib.git</connection>
+  	<developerConnection>scm:git:git@github.com:taktod/myLib.git</developerConnection>
+  </scm>
 </project>
