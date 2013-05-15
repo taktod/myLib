@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.ttProject</groupId>
   <artifactId>myLib</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
   	<module>myLib.mp4</module>
@@ -16,6 +16,13 @@
 	<developerConnection>scm:git:git@github.com:taktod/myLib.git</developerConnection>
 	<tag>v0.0.1</tag>
   </scm>
+<distributionManagement>
+    <repository>
+        <id>internal.repo</id>
+        <name>Temporary Staging Repository</name>
+        <url>file://${project.build.directory}/mvn-repo</url>
+    </repository>
+</distributionManagement>
   <build>
   	<plugins>
   		<plugin>
