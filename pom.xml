@@ -9,6 +9,10 @@
   	<module>myLib.channels</module>
   	<module>myLib.util</module>
   	<module>myLib.flv</module>
+  	<module>myLib.packet</module>
+  	<module>myLib.packet.flv</module>
+  	<module>myLib.packet.mpegts</module>
+  	<module>myLib.packet.mp3</module>
   </modules>
   <build>
   	<plugins>
@@ -35,4 +39,12 @@
         <url>file://${project.basedir}/../mvn-repo</url>
     </repository>
   </distributionManagement>
+  <dependencies>
+  	<dependency>
+  		<groupId>junit</groupId>
+  		<artifactId>junit</artifactId>
+  		<version>4.11</version>
+  		<scope>test</scope>
+  	</dependency>
+  </dependencies>
 </project>
