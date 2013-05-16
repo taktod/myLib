@@ -2,12 +2,13 @@ package com.ttProject.nio.channels;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
 
 /**
  * ファイル読み込み
  * @author taktod
  */
-public interface IFileReadChannel {
+public interface IFileReadChannel extends ReadableByteChannel {
 	/**
 	 * 開いているか確認
 	 * @return true:アクセス可能 false:アクセス不能
