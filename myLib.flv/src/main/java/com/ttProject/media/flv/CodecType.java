@@ -5,7 +5,7 @@ package com.ttProject.media.flv;
  * @author taktod
  */
 public enum CodecType {
-	None,
+	NONE,
 	// 映像用コーデック
 	JPEG,H263,SCREEN,ON2VP6,ON2VP6_ALPHA,SCREEN_V2,AVC,
 	// 音声用コーデック
