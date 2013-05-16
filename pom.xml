@@ -13,6 +13,9 @@
   	<module>myLib.packet.flv</module>
   	<module>myLib.packet.mpegts</module>
   	<module>myLib.packet.mp3</module>
+  	<module>myLib.xuggle.in.flv</module>
+  	<module>myLib.xuggle</module>
+  	<module>myLib.xuggle.out.mpegts</module>
   </modules>
   <build>
   	<plugins>
