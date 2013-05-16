@@ -1,5 +1,11 @@
 /.project
+/*/.project
 /.settings
+/*/.settings
+/.classpath
+/*/.classpath
 /src
 /target
+/*/target
 /mvn-repo
+/*/mvn-repo
