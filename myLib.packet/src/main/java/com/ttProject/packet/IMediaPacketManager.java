@@ -29,4 +29,9 @@ public interface IMediaPacketManager {
 	 * @return
 	 */
 	public String getHeaderExt();
+	/**
+	 * 目標packet長取得
+	 * @return
+	 */
+	public float getDuration();
 }

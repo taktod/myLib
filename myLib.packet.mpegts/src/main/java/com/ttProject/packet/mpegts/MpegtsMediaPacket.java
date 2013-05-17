@@ -2,8 +2,6 @@ package com.ttProject.packet.mpegts;
 
 import java.nio.ByteBuffer;
 
-import com.ttProject.packet.Setting;
-
 public class MpegtsMediaPacket extends MpegtsPacket {
 	/** 開始tic保持 */
 	private long startTic;
@@ -118,7 +116,7 @@ public class MpegtsMediaPacket extends MpegtsPacket {
 						// 経過時間を取得
 						float passedTime = (getManager().getPassedTic() - startTic) / 90000f;
 						// この分割する部分だけ、なんとかしておく必要あり。
-						if(passedTime >= Setting.getInstance().getDuration()) {
+						if(passedTime >= getManager().getDuration()) {
 							// 経過時間が分割秒数を超えている場合は、次のパケットにすすむ
 							getManager().addPassedTime(getDuration());
 							buffer.position(position);

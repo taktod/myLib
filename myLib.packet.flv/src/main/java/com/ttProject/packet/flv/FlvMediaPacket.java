@@ -6,7 +6,6 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
 import com.ttProject.media.flv.CodecType;
-import com.ttProject.packet.Setting;
 import com.ttProject.util.HexUtils;
 
 public class FlvMediaPacket extends FlvPacket {
@@ -104,7 +103,7 @@ public class FlvMediaPacket extends FlvPacket {
 		// キーフレームだった場合はパケットの境目と判定しなければいけない。
 		if(headerPacket.getVideoCodec() == CodecType.NONE && !isSequenceHeader) {
 			float passedTime = (getManager().getCurrentPos() - startPos) / 1000;
-			if(passedTime >= Setting.getInstance().getDuration()) {
+			if(passedTime >= getManager().getDuration()) {
 				// バッファサイズがたまっている場合は、終端がきたことになるので、分割する。
 				setDuration(passedTime);
 				// 記録済み時間について記録しておく。
@@ -172,7 +171,7 @@ public class FlvMediaPacket extends FlvPacket {
 		// キーフレームだった場合はパケットの境目と判定しなければいけない。
 		if(/*(body[0] & 0x10) == 0x10 && */!isSequenceHeader) {
 			float passedTime = (getManager().getCurrentPos() - startPos) / 1000f;
-			if(passedTime >= Setting.getInstance().getDuration()) {
+			if(passedTime >= getManager().getDuration()) {
 				// バッファサイズがたまっている場合は、終端がきたことになるので、分割する。
 				setDuration(passedTime);
 				// 記録済み時間について記録しておく。

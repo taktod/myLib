@@ -3,7 +3,6 @@ package com.ttProject.packet.mp3;
 import java.nio.ByteBuffer;
 
 import com.ttProject.packet.MediaPacket;
-import com.ttProject.packet.Setting;
 
 /**
  * mp3の実体処理
@@ -155,7 +154,7 @@ public abstract class Mp3Packet extends MediaPacket {
 					int passedTime = getPassedTime() / 1000;
 					// この方法だと、分割につかう秒数がだめな感じになってしまう。(端数がちょっとずつずれていく。)
 					// TODO 分割に利用するdurationのデータ取得だけ、なんとかしておかないとだめ。
-					if(passedTime >= Setting.getInstance().getDuration()) { // 経過時間が5秒すぎている場合は、次のパケットにすすむ(分割を実行する。)
+					if(passedTime >= manager.getDuration()) { // 経過時間が5秒すぎている場合は、次のパケットにすすむ(分割を実行する。)
 						// 現在時刻から、manager上の経過時刻をひいてdurationを求める
 						manager.addPassedTime(getDuration());
 						buffer.position(position);

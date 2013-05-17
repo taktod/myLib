@@ -15,6 +15,15 @@ public abstract class MediaPacketManager implements IMediaPacketManager {
 	private IMediaPacket currentPacket = null;
 	/** 処理済み書き込み経過時刻 */
 	private float passedTime = 0;
+	/** 各パケットの目標の長さ */
+	private float duration = 2;
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public float getDuration() {
+		return duration;
+	}
 	/**
 	 * パケットの解析処理
 	 */
