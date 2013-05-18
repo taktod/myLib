@@ -123,8 +123,11 @@ public class URLFileReadChannel implements IFileReadChannel {
 	 * {@inheritDoc}
 	 */
 	public URLFileReadChannel position(int newPosition) throws IOException {
+		if(newPosition == size) {
+			readSize = newPosition - startPos;
+		}
 		if(!open) {
-			throw new IOException("stream is closed.");
+			return this;
 		}
 		// 現在のinputStreamからの読み込み位置をしっておく必要あり。
 		long skipSize = newPosition - startPos - readSize;
