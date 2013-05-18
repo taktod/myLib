@@ -68,4 +68,11 @@
         <scope>test</scope>
     </dependency>
   </dependencies>
+  <distributionManagement>
+    <repository>
+        <id>mvn-repo</id>
+        <name>mvn-repo用のローカルgitリポジトリ</name>
+        <url>file://${project.basedir}/../mvn-repo</url>
+    </repository>
+  </distributionManagement>
 </project>
