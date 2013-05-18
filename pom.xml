@@ -1,35 +1,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.ttProject</groupId>
   <artifactId>myLib</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
+  <parent>
+    <groupId>com.ttProject</groupId>
+    <artifactId>myLib.m2eHelper</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
   <modules>
-  	<module>myLib.mp4</module>
-  	<module>myLib.channels</module>
-  	<module>myLib.util</module>
-  	<module>myLib.flv</module>
-  	<module>myLib.packet</module>
-  	<module>myLib.packet.flv</module>
-  	<module>myLib.packet.mpegts</module>
-  	<module>myLib.packet.mp3</module>
-  	<module>myLib.xuggle.in.flv</module>
-  	<module>myLib.xuggle</module>
-  	<module>myLib.xuggle.out.mpegts</module>
+    <module>myLib.mp4</module>
+    <module>myLib.channels</module>
+    <module>myLib.util</module>
+    <module>myLib.flv</module>
+    <module>myLib.packet</module>
+    <module>myLib.packet.flv</module>
+    <module>myLib.packet.mpegts</module>
+    <module>myLib.packet.mp3</module>
+    <module>myLib.xuggle.in.flv</module>
+    <module>myLib.xuggle</module>
+    <module>myLib.xuggle.out.mpegts</module>
+    <module>myLib.segment</module>
   </modules>
-  <build>
-  	<plugins>
-  		<plugin>
-  			<groupId>org.apache.maven.plugins</groupId>
-  			<artifactId>maven-compiler-plugin</artifactId>
-  			<version>3.1</version>
-  			<configuration>
-  			    <source>1.6</source>
-  			    <target>1.6</target>
-  			</configuration>
-  		</plugin>
-  	</plugins>
-  </build>
   <scm>
   	<url>scm:git:git@github.com:taktod/myLib.git</url>
   	<connection>scm:git:git@github.com:taktod/myLib.git</connection>
@@ -42,12 +33,4 @@
         <url>file://${project.basedir}/../mvn-repo</url>
     </repository>
   </distributionManagement>
-  <dependencies>
-  	<dependency>
-  		<groupId>junit</groupId>
-  		<artifactId>junit</artifactId>
-  		<version>4.11</version>
-  		<scope>test</scope>
-  	</dependency>
-  </dependencies>
 </project>

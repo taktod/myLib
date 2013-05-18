@@ -7,10 +7,10 @@
   </parent>
   <artifactId>myLib.xuggle.out.mpegts</artifactId>
   <dependencies>
-  	<dependency>
-  		<groupId>com.ttProject</groupId>
-  		<artifactId>myLib.xuggle</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  	</dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.xuggle</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 </project>

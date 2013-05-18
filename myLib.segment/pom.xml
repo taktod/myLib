@@ -5,12 +5,5 @@
     <artifactId>myLib</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>myLib.xuggle.in.flv</artifactId>
-  <dependencies>
-    <dependency>
-      <groupId>com.ttProject</groupId>
-      <artifactId>myLib.xuggle</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
+  <artifactId>myLib.segment</artifactId>
 </project>
