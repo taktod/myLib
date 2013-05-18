@@ -25,7 +25,7 @@ public class M3u8Manager implements ISegmentManager {
 	public M3u8Manager(String m3u8File, float duration, Integer limit) {
 		header         = "#EXTM3U";
 		allowCache     = "#EXT-X-ALLOW-CACHE:NO";
-		targetDuration = "#EXT-X-TARGETDURATION:" + duration;
+		targetDuration = "#EXT-X-TARGETDURATION:" + (int)duration;
 		this.m3u8File  = m3u8File;
 		this.limit = limit;
 		if(limit != null) {
