@@ -24,6 +24,9 @@ public abstract class MediaPacketManager implements IMediaPacketManager {
 	public float getDuration() {
 		return duration;
 	}
+	public void setDuration(float duration) {
+		this.duration = duration;
+	}
 	/**
 	 * パケットの解析処理
 	 */
