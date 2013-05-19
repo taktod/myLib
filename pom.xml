@@ -22,9 +22,6 @@
     <module>myLib.segment</module>
     <module>myLib.m2eHelper</module>
     <module>myLib.productHelper</module>
-    <module>myLib.convert.ffmpeg</module>
-    <module>myLib.convert.xuggle</module>
-    <module>myLib.convert</module>
   </modules>
   <scm>
   	<url>scm:git:git@github.com:taktod/myLib.git</url>
@@ -38,11 +35,4 @@
         <url>file://${project.basedir}/../mvn-repo</url>
     </repository>
   </distributionManagement>
-  <dependencies>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>log4j-over-slf4j</artifactId>
-      <version>1.7.5</version>
-    </dependency>
-  </dependencies>
 </project>
