@@ -9,3 +9,5 @@
 /*/target
 /mvn-repo
 /*/mvn-repo
+*release*
+*/lib/*
