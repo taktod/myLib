@@ -2,6 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>myLib</artifactId>
   <packaging>pom</packaging>
+  <version>0.0.2-SNAPSHOT</version>
   <parent>
     <groupId>com.ttProject</groupId>
     <artifactId>myLib.m2eHelper</artifactId>
@@ -20,7 +21,6 @@
     <module>myLib.xuggle</module>
     <module>myLib.xuggle.out.mpegts</module>
     <module>myLib.segment</module>
-    
     <module>myLib.productHelper</module>
   </modules>
   <scm>
@@ -35,5 +35,4 @@
         <url>file://${project.basedir}/../mvn-repo</url>
     </repository>
   </distributionManagement>
-  <version>0.0.2-SNAPSHOT</version>
 </project>
