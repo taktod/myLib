@@ -3,14 +3,14 @@
   <parent>
     <groupId>com.ttProject</groupId>
     <artifactId>myLib</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2-SNAPSHOT</version>
   </parent>
   <artifactId>myLib.xuggle.out.mpegts</artifactId>
   <dependencies>
     <dependency>
       <groupId>com.ttProject</groupId>
       <artifactId>myLib.xuggle</artifactId>
-      <version>0.0.1</version>
+      <version>0.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
