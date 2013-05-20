@@ -3,14 +3,14 @@
   <parent>
     <groupId>com.ttProject</groupId>
     <artifactId>myLib</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
   </parent>
   <artifactId>myLib.packet.mpegts</artifactId>
   <dependencies>
     <dependency>
       <groupId>com.ttProject</groupId>
       <artifactId>myLib.packet</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.1</version>
     </dependency>
   </dependencies>
 </project>
