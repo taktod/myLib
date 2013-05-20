@@ -20,7 +20,6 @@
     <module>myLib.xuggle</module>
     <module>myLib.xuggle.out.mpegts</module>
     <module>myLib.segment</module>
-    <module>myLib.m2eHelper</module>
     <module>myLib.productHelper</module>
     <module>myLib.convert.ffmpeg</module>
     <module>myLib.convert.xuggle</module>
