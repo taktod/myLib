@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.ttProject</groupId>
     <artifactId>myLib</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>myLib.packet.mp3</artifactId>
   <dependencies>
