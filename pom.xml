@@ -35,5 +35,4 @@
     <artifactId>myLib.m2eHelper</artifactId>
     <version>0.0.1</version>
   </parent>
-  <groupId>com.ttProject</groupId>
 </project>
