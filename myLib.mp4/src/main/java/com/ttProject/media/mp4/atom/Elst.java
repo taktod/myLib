@@ -10,7 +10,7 @@ public class Elst extends Atom {
 	}
 	@Override
 	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
-
+		// この中身を解析する必要がある、解析しなかったら先頭のデータの同期がうまくとれなくなる。
 	}
 	@Override
 	public String toString() {
