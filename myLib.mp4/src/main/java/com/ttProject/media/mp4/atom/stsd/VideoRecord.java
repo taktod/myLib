@@ -25,9 +25,13 @@ public abstract class VideoRecord extends Record {
 	private byte[] name = new byte[31];
 	private short depth;
 	private short unknown8;
+	private Avcc avcc = null;
 //	private * boxes;
 	public VideoRecord(String name, int size, int position) {
 		super(name, size, position);
+	}
+	public Avcc getAvcc() {
+		return avcc;
 	}
 	@Override
 	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer)
@@ -62,7 +66,7 @@ public abstract class VideoRecord extends Record {
 			buffer.get(name);
 			String tag = (new String(name)).toLowerCase();
 			if("avcc".equals(tag)) {
-				Avcc avcc = new Avcc(size, position);
+				avcc = new Avcc(size, position);
 				avcc.analyze(ch);
 			}
 //			System.out.println(tag);

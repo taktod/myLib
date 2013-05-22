@@ -22,6 +22,10 @@ public class Esds extends Atom {
 	private final int DECODER_CONFIG = 0x04;
 	private final int DECODER_SPECIFIC = 0x05;
 	private final int SL_CONFIG = 0x06;
+	private byte[] sequenceHeader;
+	public byte[] getSequenceHeader() {
+		return sequenceHeader;
+	}
 	public Esds(int size, int position) {
 		super(Esds.class.getSimpleName().toLowerCase(), size, position);
 	}
@@ -151,7 +155,8 @@ public class Esds extends Atom {
 			buffer.get(msh);
 			System.out.println(size);
 			// このデータがmediaSequenceHeaderのデータ(flvにするにはこれが欲しい)
-			System.out.println(HexUtils.toHex(msh, true));
+			sequenceHeader = msh;
+//			System.out.println(HexUtils.toHex(msh, true));
 			analyzeTag(buffer);
 			break;
 		case SL_CONFIG:

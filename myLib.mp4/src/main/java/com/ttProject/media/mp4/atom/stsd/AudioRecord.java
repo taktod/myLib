@@ -17,6 +17,10 @@ public abstract class AudioRecord extends Record {
 	private short unknown4;
 	private short unknown5;
 	private int sampleRate;
+	private Esds esds;
+	public Esds getEsds() {
+		return esds;
+	}
 //	private * boxes;
 	public AudioRecord(String name, int size, int position) {
 		super(name, size, position);
@@ -48,7 +52,7 @@ public abstract class AudioRecord extends Record {
 //			System.out.println(tag);
 			if("esds".equals(tag)) {
 				//esdsのタグ
-				Esds esds = new Esds(size, position);
+				esds = new Esds(size, position);
 				esds.analyze(ch);
 			}
 			// tagがesdsなら読み込んでおきたいところ。
