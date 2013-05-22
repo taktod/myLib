@@ -42,7 +42,7 @@ public class ConvertTest {
 			}
 		});
 		// 処理させる動作コマンド
-		handler.setCommand("ffmpeg -i - -acodec copy -vcodec copy -f flv -");
+		handler.setCommand("~/bin/bin/avconv -i - -acodec copy -vcodec copy -f flv -");
 		// 処理開始
 		manager.start();
 		ByteBuffer buf;
