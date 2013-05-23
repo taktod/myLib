@@ -27,7 +27,9 @@ public class Stco extends Atom {
 		flags = (head & 0x00FFFFFF);
 		offsetCount = buffer.getInt();
 		analyzed();
+		// この後のデータはchunkの開始indexがならんでいるだけ
 	}
+	// いま読み込んでいる位置の情報がほしいかも。
 	@Override
 	public String toString() {
 		return super.toString("          ");
