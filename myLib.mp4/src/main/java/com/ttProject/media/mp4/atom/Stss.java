@@ -28,6 +28,7 @@ public class Stss extends Atom {
 	}
 	private IFileReadChannel source;
 	private int keyFrame = -1;
+	private int currentPos;
 	public void start(IFileReadChannel src, boolean copy) throws Exception {
 		if(copy) {
 			source = FileReadChannel.openFileReadChannel(src.getUri());
@@ -36,12 +37,15 @@ public class Stss extends Atom {
 			source = src;
 		}
 		source.position(getPosition() + 16);
+		currentPos = source.position();
 	}
 	public int nextKeyFrame() throws Exception {
 		if(source.position() == getPosition() + getSize()) {
 			return -1;
 		}
+		source.position(currentPos);
 		ByteBuffer buffer = BufferUtil.safeRead(source, 4);
+		currentPos = source.position();
 		keyFrame = buffer.getInt();
 		return keyFrame;
 	}

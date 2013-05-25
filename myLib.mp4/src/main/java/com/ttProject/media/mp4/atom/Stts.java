@@ -44,6 +44,7 @@ public class Stts extends Atom {
 	private IFileReadChannel source;
 	private int cnt = 0;
 	private int delta = 0;
+	private int currentPos;
 	public void start(IFileReadChannel src, boolean copy) throws Exception {
 		if(copy) {
 			source = FileReadChannel.openFileReadChannel(src.getUri());
@@ -52,6 +53,7 @@ public class Stts extends Atom {
 			source = src;
 		}
 		source.position(getPosition() + 16);
+		currentPos = source.position();
 	}
 	public int nextDuration() throws Exception {
 		if(cnt != 0) {
@@ -63,7 +65,9 @@ public class Stts extends Atom {
 		}
 		// 読み込みデータがのこっているか確認
 		// のこっていない場合
+		source.position(currentPos);
 		ByteBuffer buffer = BufferUtil.safeRead(source, 8);
+		currentPos = source.position();
 		cnt = buffer.getInt();
 		delta = buffer.getInt();
 		cnt --;

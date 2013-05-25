@@ -48,6 +48,7 @@ public class Stsc extends Atom {
 	private int chunkNum;
 	private int sampleCount;
 	private int dataRef;
+	private int currentPos;
 	public void start(IFileReadChannel src, boolean copy) throws Exception {
 		if(copy) {
 			source = FileReadChannel.openFileReadChannel(src.getUri());
@@ -56,6 +57,7 @@ public class Stsc extends Atom {
 			source = src;
 		}
 		source.position(getPosition() + 16);
+		currentPos = source.position();
 	}
 	public int nextChunk() throws Exception {
 		chunkNum ++;
@@ -73,7 +75,9 @@ public class Stsc extends Atom {
 			// まだデータがのこっている場合はそれを応答する。
 			return -1;
 		}
+		source.position(currentPos);
 		ByteBuffer buffer = BufferUtil.safeRead(source, 12);
+		currentPos = source.position();
 		sampleCount = nextSampleCount;
 		dataRef = nextDataRef;
 		nextChunkNum = buffer.getInt();

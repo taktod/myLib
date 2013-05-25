@@ -32,6 +32,7 @@ public class Stco extends Atom {
 	}
 	private IFileReadChannel source;
 	private int chunkPos = -1;
+	private int currentPos;
 	public void start(IFileReadChannel src, boolean copy) throws Exception {
 		if(copy) {
 			source = FileReadChannel.openFileReadChannel(src.getUri());
@@ -40,12 +41,15 @@ public class Stco extends Atom {
 			source = src;
 		}
 		source.position(getPosition() + 16);
+		currentPos = source.position();
 	}
 	public int nextChunkPos() throws Exception {
 		if(source.position() == getPosition() + getSize()) {
 			return -1;
 		}
+		source.position(currentPos);
 		ByteBuffer buffer = BufferUtil.safeRead(source, 4);
+		currentPos = source.position();
 		chunkPos = buffer.getInt();
 		return chunkPos;
 	}

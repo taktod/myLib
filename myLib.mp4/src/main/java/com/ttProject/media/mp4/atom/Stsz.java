@@ -35,6 +35,7 @@ public class Stsz extends Atom {
 	}
 	private IFileReadChannel source;
 	private int sampleSize;
+	private int currentPos;
 	public void start(IFileReadChannel src, boolean copy) throws Exception {
 		if(copy) {
 			source = FileReadChannel.openFileReadChannel(src.getUri());
@@ -43,12 +44,15 @@ public class Stsz extends Atom {
 			source = src;
 		}
 		source.position(getPosition() + 20);
+		currentPos = source.position();
 	}
 	public int nextSampleSize() throws Exception {
 		if(source.position() == getPosition() + getSize()) {
 			return -1;
 		}
+		source.position(currentPos);
 		ByteBuffer buffer = BufferUtil.safeRead(source, 4);
+		currentPos = source.position();
 		sampleSize = buffer.getInt();
 		return sampleSize;
 	}
