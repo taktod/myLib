@@ -153,4 +153,11 @@ public class URLFileReadChannel implements IFileReadChannel {
 	public int size() {
 		return size;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getUri() {
+		return url.toString();
+	}
 }

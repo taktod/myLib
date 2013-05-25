@@ -15,6 +15,7 @@ import java.nio.channels.FileChannel;
 public class FileReadChannel implements IFileReadChannel {
 	/** 動作ファイルチャンネル */
 	private FileChannel channel;
+	private final String path;
 	/**
 	 * コンストラクタ
 	 * @param target
@@ -29,6 +30,7 @@ public class FileReadChannel implements IFileReadChannel {
 	 * @throws Exception
 	 */
 	public FileReadChannel(String fileString, int position) throws IOException {
+		path = fileString;
 		File file = new File(fileString);
 		channel = new FileInputStream(file).getChannel();
 		position(position);
@@ -49,6 +51,7 @@ public class FileReadChannel implements IFileReadChannel {
 	 * @throws Exception
 	 */
 	public FileReadChannel(File file, int position) throws IOException {
+		path = file.getAbsolutePath();
 		channel = new FileInputStream(file).getChannel();
 		position(position);
 	}
@@ -95,7 +98,13 @@ public class FileReadChannel implements IFileReadChannel {
 	public int size() throws IOException {
 		return (int)channel.size();
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String getUri() {
+		return path;
+	}
 	/**
 	 * オブジェクト取得
 	 * @param uri

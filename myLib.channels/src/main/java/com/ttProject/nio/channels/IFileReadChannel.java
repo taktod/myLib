@@ -45,4 +45,9 @@ public interface IFileReadChannel extends ReadableByteChannel {
 	 * @throws IOException
 	 */
 	public void close() throws IOException;
+	/**
+	 * アクセスパスの応答
+	 * @return
+	 */
+	public String getUri();
 }
