@@ -3,7 +3,6 @@ package com.ttProject.media.mp4.atom.stsd.data;
 import java.nio.ByteBuffer;
 
 import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtils;
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
 import com.ttProject.nio.channels.IFileReadChannel;
@@ -32,42 +31,34 @@ public class Esds extends Atom {
 	@Override
 	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
 		// とりあえず解析しよう。
-		System.out.println("esdsの解析を実施します。");
 		ch.position(getPosition() + 8);
 		ByteBuffer buffer = BufferUtil.safeRead(ch, getSize() - 8);
-		System.out.println("調査対象量:" + Integer.toHexString(buffer.remaining()));
 		unknown = buffer.getInt();
 		while(buffer.remaining() > 0) {
 			analyzeTag(buffer);
 		}
 	}
 	private void analyzeTag(ByteBuffer buffer) throws Exception {
-		System.out.println("pos:" + buffer.remaining());
 		if(buffer.remaining() == 0) {
-			System.out.println("解析おわり。");
 			return;
 		}
 		// tagを調べる。
 		byte tag = buffer.get();
-		System.out.println(tag);
 		int size = getSize(buffer);
 		byte flags;
 		switch(tag) {
 		case ES_TAG:
 			// 次のデータが可変長変数値
-			System.out.print("ES_TAG:");
 			// 次の2バイトはES_ID
 			short esId = buffer.getShort();
 			flags = buffer.get();
 			if(flags != 0) {
 				throw new Exception("ES_TAG flags is unknown.");
 			}
-			System.out.println(size);
 			// ここで元の場所に戻る。
 			analyzeTag(buffer);
 			break;
 		case DECODER_CONFIG:
-			System.out.print("DECODER_CONFIG:");
 			// 1バイトオブジェクトタイプ
 			byte objectType = buffer.get();
 			switch(objectType & 0xFF) {
@@ -144,24 +135,19 @@ public class Esds extends Atom {
 			int bufferSize = (data & 0x00FFFFFF);
 			int maxBitRate = buffer.getInt();
 			int avgBitRate = buffer.getInt();
-			System.out.println(size);
 			// ここで元の場所に戻る。
 			analyzeTag(buffer);
 			break;
 		case DECODER_SPECIFIC:
-			System.out.print("DECODER_SPECIFIC:");
 			// サイズを取得してそのサイズ分がMediaSequenceHeaderの情報になる。(aacの場合)
 			byte[] msh = new byte[size];
 			buffer.get(msh);
-			System.out.println(size);
 			// このデータがmediaSequenceHeaderのデータ(flvにするにはこれが欲しい)
 			sequenceHeader = msh;
 //			System.out.println(HexUtils.toHex(msh, true));
 			analyzeTag(buffer);
 			break;
 		case SL_CONFIG:
-			System.out.print("SL_CONFIG:");
-			System.out.println(size);
 			byte[] conf = new byte[size];
 			buffer.get(conf);
 			break;

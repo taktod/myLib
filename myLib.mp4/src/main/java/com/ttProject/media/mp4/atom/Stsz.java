@@ -29,7 +29,6 @@ public class Stsz extends Atom {
 		flags = (head & 0x00FFFFFF);
 		constSize = buffer.getInt();
 		sizeCount = buffer.getInt();
-		System.out.println("sample数:" + sizeCount);
 		analyzed();
 		// このあとのデータは各サンプルのサイズになります。
 		// ただしconstSizeの場合は存在しません。

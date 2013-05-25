@@ -78,7 +78,6 @@ public class Stsc extends Atom {
 		dataRef = nextDataRef;
 		nextChunkNum = buffer.getInt();
 		nextSampleCount = buffer.getInt();
-		System.out.println("nextChunkNum:" + nextChunkNum + " nextSampleCount:" + nextSampleCount);
 		nextDataRef = buffer.getInt();
 		if(chunkNum == nextChunkNum) {
 			sampleCount = nextSampleCount;
