@@ -1,6 +1,7 @@
 package com.ttProject.media.flv;
 
 import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
 
 import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.util.BufferUtil;
@@ -73,5 +74,26 @@ public class FlvHeader {
 	 */
 	public void setVideoFlg(boolean flg) {
 		videoFlg = flg;
+	}
+	/**
+	 * ファイルへの書き込み
+	 * @param target
+	 * @throws Exception
+	 */
+	public void write(WritableByteChannel target) throws Exception {
+		ByteBuffer buffer = ByteBuffer.allocate(13);
+		buffer.put(FLV_HEADER);
+		buffer.position(4);
+		byte flg = 0x00;
+		if(audioFlg) {
+			flg |= 0x01;
+		}
+		if(videoFlg) {
+			flg |= 0x04;
+		}
+		buffer.put(flg);
+		buffer.position(13);
+		buffer.flip();
+		target.write(buffer);
 	}
 }
