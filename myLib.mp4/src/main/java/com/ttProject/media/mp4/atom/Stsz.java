@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
+import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.util.BufferUtil;
 
@@ -28,9 +29,32 @@ public class Stsz extends Atom {
 		flags = (head & 0x00FFFFFF);
 		constSize = buffer.getInt();
 		sizeCount = buffer.getInt();
+		System.out.println("sample数:" + sizeCount);
 		analyzed();
 		// このあとのデータは各サンプルのサイズになります。
 		// ただしconstSizeの場合は存在しません。
+	}
+	private IFileReadChannel source;
+	private int sampleSize;
+	public void start(IFileReadChannel src, boolean copy) throws Exception {
+		if(copy) {
+			source = FileReadChannel.openFileReadChannel(src.getUri());
+		}
+		else {
+			source = src;
+		}
+		source.position(getPosition() + 20);
+	}
+	public int nextSampleSize() throws Exception {
+		if(source.position() == getPosition() + getSize()) {
+			return -1;
+		}
+		ByteBuffer buffer = BufferUtil.safeRead(source, 4);
+		sampleSize = buffer.getInt();
+		return sampleSize;
+	}
+	public int getSampleSize() {
+		return sampleSize;
 	}
 	public byte getVersion() {
 		return version;

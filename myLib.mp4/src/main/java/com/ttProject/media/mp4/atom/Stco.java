@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import com.ttProject.util.BufferUtil;
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
+import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
@@ -29,7 +30,28 @@ public class Stco extends Atom {
 		analyzed();
 		// この後のデータはchunkの開始indexがならんでいるだけ
 	}
-	// いま読み込んでいる位置の情報がほしいかも。
+	private IFileReadChannel source;
+	private int chunkPos = -1;
+	public void start(IFileReadChannel src, boolean copy) throws Exception {
+		if(copy) {
+			source = FileReadChannel.openFileReadChannel(src.getUri());
+		}
+		else {
+			source = src;
+		}
+		source.position(getPosition() + 16);
+	}
+	public int nextChunkPos() throws Exception {
+		if(source.position() == getPosition() + getSize()) {
+			return -1;
+		}
+		ByteBuffer buffer = BufferUtil.safeRead(source, 4);
+		chunkPos = buffer.getInt();
+		return chunkPos;
+	}
+	public int getChuntPos() {
+		return chunkPos;
+	}
 	@Override
 	public String toString() {
 		return super.toString("          ");
