@@ -47,7 +47,7 @@ public class Stsz extends Atom {
 		currentPos = source.position();
 	}
 	public int nextSampleSize() throws Exception {
-		if(source.position() == getPosition() + getSize()) {
+		if(currentPos == getPosition() + getSize()) {
 			return -1;
 		}
 		source.position(currentPos);

@@ -60,7 +60,7 @@ public class Stts extends Atom {
 			cnt --;
 			return delta;
 		}
-		if(source.position() == getPosition() + getSize()) {
+		if(currentPos == getPosition() + getSize()) {
 			return -1;
 		}
 		// 読み込みデータがのこっているか確認
