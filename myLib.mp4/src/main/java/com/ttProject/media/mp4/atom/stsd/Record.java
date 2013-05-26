@@ -10,6 +10,7 @@ public abstract class Record extends Atom {
 		super(name, size, position);
 	}
 	public static Record getRecord(String name, int size, int position) throws Exception {
+		// mp3なのにここがmp4aになっているデータがあった。コーデックを調べるのにはつかえなさそう
 		if(".mp3".equals(name)) {
 			return new Mp3(name, size, position);
 		}
