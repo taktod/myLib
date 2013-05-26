@@ -42,8 +42,8 @@ public class FlvHeader {
 				throw new Exception("headerがおかしいです。");
 			}
 			else {
-				audioFlg = ((tag[i] & 0x01) != 0x00);
-				videoFlg = ((tag[i] & 0x04) != 0x00);
+				audioFlg = ((tag[i] & 0x04) != 0x00);
+				videoFlg = ((tag[i] & 0x01) != 0x00);
 			}
 		}
 	}
@@ -86,10 +86,10 @@ public class FlvHeader {
 		buffer.position(4);
 		byte flg = 0x00;
 		if(audioFlg) {
-			flg |= 0x01;
+			flg |= 0x04;
 		}
 		if(videoFlg) {
-			flg |= 0x04;
+			flg |= 0x01;
 		}
 		buffer.put(flg);
 		buffer.position(13);
