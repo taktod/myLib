@@ -5,6 +5,12 @@ import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
  * medaデータ
+ * 12 size timestamp 00 00 00 02 
+ * 文字列 onMetaData 02 size(short) データ
+ * Map 08 int値
+ *   文字列 データの繰り返し
+ * 00 00 09(eof for map) 
+ * 
  * @author taktod
  */
 public class MetaTag extends Tag {
