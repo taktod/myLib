@@ -61,6 +61,7 @@ public class Esds extends Atom {
 		case DECODER_CONFIG:
 			// 1バイトオブジェクトタイプ
 			byte objectType = buffer.get();
+			System.out.println("objType:" + Integer.toHexString(objectType));
 			switch(objectType & 0xFF) {
 			case 0x01: // system v1
 				break;
