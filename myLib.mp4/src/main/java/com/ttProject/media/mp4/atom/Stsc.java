@@ -69,7 +69,6 @@ public class Stsc extends Atom {
 			dataRef = nextDataRef;
 		}
 		if(currentPos == getPosition() + getSize()) {
-			System.out.println("最後まできた。");
 			sampleCount = 1;
 			if(chunkNum == nextChunkNum) {
 				return chunkNum;
