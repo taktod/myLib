@@ -45,6 +45,9 @@ public class Mdhd extends Atom {
 	public int getTimescale() {
 		return timescale;
 	}
+	public long getDuration() {
+		return duration;
+	}
 	@Override
 	public String toString() {
 		return super.toString("      ");

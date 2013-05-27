@@ -49,15 +49,19 @@ public abstract class AudioRecord extends Record {
 			int size = buffer.getInt();
 			buffer.get(name);
 			String tag = (new String(name)).toLowerCase();
-//			System.out.println(tag);
 			if("esds".equals(tag)) {
 				//esdsのタグ
 				esds = new Esds(size, position);
 				esds.analyze(ch);
 			}
 			// tagがesdsなら読み込んでおきたいところ。
-//			System.out.println("position:" + Integer.toHexString(position) + " size:" + Integer.toHexString(size) + " tag:" + tag);
 			ch.position(position + size);
 		}
+	}
+	public int getChannelCount() {
+		return channelCount;
+	}
+	public int getSampleRate() {
+		return (sampleRate >> 16 & 0xFFFF);
 	}
 }
