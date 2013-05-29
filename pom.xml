@@ -22,6 +22,7 @@
     <module>myLib.xuggle.out.mpegts</module>
     <module>myLib.segment</module>
     <module>myLib.productHelper</module>
+    <module>myLib.flazr</module>
   </modules>
   <scm>
   	<url>scm:git:git@github.com:taktod/myLib.git</url>
