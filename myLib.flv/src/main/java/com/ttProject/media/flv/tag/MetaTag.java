@@ -1,6 +1,12 @@
 package com.ttProject.media.flv.tag;
 
+import java.nio.ByteBuffer;
+import java.nio.channels.WritableByteChannel;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import com.ttProject.media.flv.Tag;
+import com.ttProject.media.flv.amf.Amf0Value;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
@@ -14,6 +20,32 @@ import com.ttProject.nio.channels.IFileReadChannel;
  * @author taktod
  */
 public class MetaTag extends Tag {
+	/** メタデータの基本文字列 */
+	private final String title = "onMetaData";
+	/** メタデータの中身 */
+	private final Map<String, Object> data = new LinkedHashMap<String, Object>();
+	/**
+	 * データの設定
+	 * @param key
+	 * @param data
+	 */
+	public void putData(String key, Object data) {
+		this.data.put(key, data);
+	}
+	/**
+	 * データの参照
+	 * @param key
+	 * @return
+	 */
+	public Object getData(String key) {
+		return data.get(key);
+	}
+	/**
+	 * コンストラクタ
+	 */
+	public MetaTag() {
+		super();
+	}
 	/**
 	 * コンストラクタ
 	 * @param size
@@ -27,11 +59,29 @@ public class MetaTag extends Tag {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void analyze(IFileReadChannel ch) throws Exception {
-
+	public void analyze(IFileReadChannel ch, boolean atBegin) throws Exception {
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void writeTag(WritableByteChannel target) throws Exception {
+		// データ量を調べ直す必要あり。
+		ByteBuffer titleBuffer = Amf0Value.getValueBuffer(title);
+		ByteBuffer dataBuffer = Amf0Value.getValueBuffer(data);
+		// データサイズを書き換えておく
+		setSize(titleBuffer.remaining() + dataBuffer.remaining());
+		// 頭の11バイト書き込み
+		target.write(getHeaderBuffer((byte)0x12));
+		// 実データ部書き込み
+		// onMetaDataと書き込む
+		target.write(titleBuffer);
+		// 内容を書き込む
+		target.write(dataBuffer);
+		target.write(getTailBuffer());
 	}
 	@Override
 	public String toString() {
-		return "meta:" + Integer.toHexString(getTimestamp());
+		return "metaTag:" + getTimestamp();
 	}
 }
