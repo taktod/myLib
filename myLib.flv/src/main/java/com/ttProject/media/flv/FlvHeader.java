@@ -80,7 +80,7 @@ public class FlvHeader {
 	 * @param target
 	 * @throws Exception
 	 */
-	public void write(WritableByteChannel target) throws Exception {
+	public void writeTag(WritableByteChannel target) throws Exception {
 		ByteBuffer buffer = ByteBuffer.allocate(13);
 		buffer.put(FLV_HEADER);
 		buffer.position(4);
