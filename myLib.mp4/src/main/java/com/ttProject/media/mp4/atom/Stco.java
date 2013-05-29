@@ -44,7 +44,7 @@ public class Stco extends Atom {
 		currentPos = source.position();
 	}
 	public int nextChunkPos() throws Exception {
-		if(currentPos == getPosition() + getSize()) {
+		if(!hasMore()) {
 			return -1;
 		}
 		source.position(currentPos);
@@ -55,6 +55,9 @@ public class Stco extends Atom {
 	}
 	public int getChunkPos() {
 		return chunkPos;
+	}
+	public boolean hasMore() {
+		return currentPos != getPosition() + getSize();
 	}
 	@Override
 	public String toString() {
