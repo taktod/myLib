@@ -102,6 +102,13 @@ public class VideoTag extends Tag {
 		data = buffer.duplicate();
 	}
 	/**
+	 * キーフレームであるか応答する。
+	 * @return
+	 */
+	public boolean isKeyFrame() {
+		return frame == FrameType.Key;
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
