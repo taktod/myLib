@@ -113,7 +113,6 @@ public class VideoTag extends Tag {
 	 */
 	@Override
 	public void analyze(IFileReadChannel ch, boolean atBegin) throws Exception {
-		// ファイルから読み込んでなんとかしておく。
 	}
 	/**
 	 * {@inheritDoc}

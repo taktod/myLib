@@ -60,6 +60,16 @@ public class MetaTag extends Tag {
 	 */
 	@Override
 	public void analyze(IFileReadChannel ch, boolean atBegin) throws Exception {
+		// ファイルから読み込んでなんとかしておく。
+		if(atBegin) {
+			// 先頭部分のデータを読み込んでおく。
+		}
+		// データを読み込む
+		String tag = (String)Amf0Value.getValueObject(ch);
+		if(!"onMetaData".equals(tag)) {
+			throw new Exception("先頭がonMetaDataになっていませんでした。");
+		}
+		System.out.println(Amf0Value.getValueObject(ch));
 	}
 	/**
 	 * {@inheritDoc}
