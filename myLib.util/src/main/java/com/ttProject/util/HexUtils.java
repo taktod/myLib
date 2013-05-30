@@ -1,5 +1,7 @@
 package com.ttProject.util;
 
+import java.nio.ByteBuffer;
+
 /**
  * hexのデータを確認するためのライブラリ
  * とりあえずflazrにあったのが便利なんですが、他のライブラリとの競合もあるんで抜き出しておく。
@@ -41,5 +43,18 @@ public class HexUtils {
 	public static String toHex(final byte b) {
 		final char[] chars = toHexChars(b);
 		return String.valueOf(chars);
+	}
+	public static String toHex(final ByteBuffer buffer) {
+		return toHex(buffer, false);
+	}
+	public static String toHex(final ByteBuffer buffer, final boolean withSeparator) {
+		return toHex(buffer, 0, buffer.remaining(), withSeparator);
+	}
+	public static String toHex(final ByteBuffer buffer, final int offset, final int length, final boolean withSeparator) {
+		int position = buffer.position();
+		byte[] data = new byte[buffer.remaining()];
+		buffer.get(data);
+		buffer.position(position);
+		return toHex(data, offset, length, withSeparator);
 	}
 }
