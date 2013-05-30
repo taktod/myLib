@@ -24,7 +24,7 @@ public class FlvTagOrderManager {
 	public void addTag(Tag tag) throws Exception {
 		// 対象のタグをaudioTagsとvideoTagsに登録する。
 		if(tag instanceof AudioTag) {
-			System.out.println("audioTag追加");
+//			System.out.println("audioTag追加");
 			if(audioTags.size() == 0) {
 				audioTags.add(tag);
 			}
@@ -37,7 +37,7 @@ public class FlvTagOrderManager {
 			}
 		}
 		else if(tag instanceof VideoTag) {
-			System.out.println("videoTag追加");
+//			System.out.println("videoTag追加");
 			if(videoTags.size() == 0) {
 				videoTags.add(tag);
 			}
