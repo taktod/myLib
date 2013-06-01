@@ -55,4 +55,8 @@ public class AggregateTag extends Tag {
 			tag.writeTag(target);
 		}
 	}
+	@Override
+	public int getRealSize() throws Exception {
+		throw new Exception("aggregateTagはflvのサイズ応答をサポートしません");
+	}
 }

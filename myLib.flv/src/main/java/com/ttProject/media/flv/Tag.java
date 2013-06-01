@@ -63,6 +63,11 @@ public abstract class Tag {
 		analyze(ch, false);
 	}
 	/**
+	 * 実際のflvのデータサイズ
+	 * @return
+	 */
+	public abstract int getRealSize() throws Exception;
+	/**
 	 * 書き出しを実行します
 	 * @param target
 	 * @throws Exception

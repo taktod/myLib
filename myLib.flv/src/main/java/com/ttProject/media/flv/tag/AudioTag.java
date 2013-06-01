@@ -102,6 +102,18 @@ public class AudioTag extends Tag {
 		
 	}
 	/**
+	 * 実際のタグ全体の大きさを返します。
+	 * @return
+	 */
+	public int getRealSize() {
+		if(codec == CodecType.AAC) {
+			return 17 + data.remaining();
+		}
+		else {
+			return 16 + data.remaining();
+		}
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override

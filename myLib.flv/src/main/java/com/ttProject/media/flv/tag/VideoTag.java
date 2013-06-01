@@ -115,6 +115,18 @@ public class VideoTag extends Tag {
 	public void analyze(IFileReadChannel ch, boolean atBegin) throws Exception {
 	}
 	/**
+	 * 実際のタグ全体の大きさを返します。
+	 * @return
+	 */
+	public int getRealSize() {
+		if(codec == CodecType.AVC) {
+			return 17 + data.remaining();
+		}
+		else {
+			return 16 + data.remaining();
+		}
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -176,13 +188,13 @@ public class VideoTag extends Tag {
 			}
 			switch(frame) {
 			case Key:
-				tagByte |= 0x01;
+				tagByte |= 0x10;
 				break;
 			case Inner:
-				tagByte |= 0x02;
+				tagByte |= 0x20;
 				break;
 			case Disposable:
-				tagByte |= 0x03;
+				tagByte |= 0x30;
 				break;
 			default:
 				throw new Exception("定義されていないフレームです。");

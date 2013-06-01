@@ -24,12 +24,15 @@ public class MetaTag extends Tag {
 	private final String title = "onMetaData";
 	/** メタデータの中身 */
 	private final Map<String, Object> data = new LinkedHashMap<String, Object>();
+	/** メタデータの実データ */
+	private ByteBuffer rawData = null;
 	/**
 	 * データの設定
 	 * @param key
 	 * @param data
 	 */
 	public void putData(String key, Object data) {
+		rawData = null;
 		this.data.put(key, data);
 	}
 	/**
@@ -76,22 +79,31 @@ public class MetaTag extends Tag {
 	 */
 	@Override
 	public void writeTag(WritableByteChannel target) throws Exception {
-		// データ量を調べ直す必要あり。
-		ByteBuffer titleBuffer = Amf0Value.getValueBuffer(title);
-		ByteBuffer dataBuffer = Amf0Value.getValueBuffer(data);
+		if(rawData == null) {
+			getRealSize();
+		}
 		// データサイズを書き換えておく
-		setSize(titleBuffer.remaining() + dataBuffer.remaining());
+		setSize(rawData.remaining());
 		// 頭の11バイト書き込み
 		target.write(getHeaderBuffer((byte)0x12));
 		// 実データ部書き込み
-		// onMetaDataと書き込む
-		target.write(titleBuffer);
 		// 内容を書き込む
-		target.write(dataBuffer);
+		target.write(rawData);
 		target.write(getTailBuffer());
 	}
 	@Override
 	public String toString() {
 		return "metaTag:" + getTimestamp();
+	}
+	@Override
+	public int getRealSize() throws Exception {
+		// データ量を調べ直す必要あり。
+		ByteBuffer titleBuffer = Amf0Value.getValueBuffer(title);
+		ByteBuffer dataBuffer = Amf0Value.getValueBuffer(data);
+		rawData = ByteBuffer.allocate(titleBuffer.remaining() + dataBuffer.remaining());
+		rawData.put(titleBuffer);
+		rawData.put(dataBuffer);
+		rawData.flip();
+		return rawData.remaining() + 15;
 	}
 }
