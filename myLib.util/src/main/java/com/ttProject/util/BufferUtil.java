@@ -87,6 +87,27 @@ public class BufferUtil {
 		}
 	}
 	/**
+	 * 指定したサイズを速やかに捨てる
+	 * @param source
+	 * @param size
+	 * @throws Exception
+	 */
+	public static void quickDispose(IFileReadChannel source, int size) throws Exception {
+		ByteBuffer buffer = null;
+		int targetSize = size;
+		while(targetSize > 0) {
+			int bufSize = (16777216 > targetSize) ? targetSize : 16777216;
+			buffer = ByteBuffer.allocate(bufSize);
+			source.read(buffer);
+			buffer.flip();
+			if(buffer.remaining() == 0) {
+				// ここで抜ける場合は例外にしておいた方が本当はよさそう。(中途で読み込みが完全にできなくなった場合になるため。)
+				break;
+			}
+			targetSize -= buffer.remaining();
+		}
+	}
+	/**
 	 * read状態のbufferからタグ文字列を取得する
 	 * @param buffer
 	 * @return
