@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
+import com.ttProject.nio.CustomBuffer;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.util.BufferUtil;
@@ -35,8 +36,34 @@ public class Stsz extends Atom {
 	}
 	private IFileReadChannel source;
 	private int sampleSize;
-	private int currentPos;
+	
+	private CustomBuffer buffer;
+//	private int currentPos;
 	public void start(IFileReadChannel src, boolean copy) throws Exception {
+		if(copy) {
+			source = FileReadChannel.openFileReadChannel(src.getUri());
+		}
+		else {
+			source = src;
+		}
+		source.position(getPosition() + 20);
+		buffer = new CustomBuffer(source, getSize() - 20);
+//		currentPos = source.position();
+	}
+	public int nextSampleSize() throws Exception {
+		if(buffer.remaining() == 0) {
+			return -1;
+		}
+//		if(currentPos == getPosition() + getSize()) {
+//			return -1;
+//		}
+//		source.position(currentPos);
+//		ByteBuffer buffer = BufferUtil.safeRead(source, 4);
+//		currentPos = source.position();
+		sampleSize = buffer.getInt();
+		return sampleSize;
+	}//*/
+/*	public void start(IFileReadChannel src, boolean copy) throws Exception {
 		if(copy) {
 			source = FileReadChannel.openFileReadChannel(src.getUri());
 		}
@@ -55,7 +82,7 @@ public class Stsz extends Atom {
 		currentPos = source.position();
 		sampleSize = buffer.getInt();
 		return sampleSize;
-	}
+	}//*/
 	public int getSampleSize() {
 		return sampleSize;
 	}

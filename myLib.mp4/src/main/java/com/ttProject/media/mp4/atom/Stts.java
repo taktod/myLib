@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
+import com.ttProject.nio.CustomBuffer;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.util.BufferUtil;
@@ -12,6 +13,8 @@ public class Stts extends Atom {
 	private byte version;
 	private int flags;
 	private int count;
+	
+	private CustomBuffer buffer;
 	public Stts(int size, int position) {
 		super(Stts.class.getSimpleName().toLowerCase(), size, position);
 	}
@@ -44,8 +47,37 @@ public class Stts extends Atom {
 	private IFileReadChannel source;
 	private int cnt = 0;
 	private int delta = 0;
-	private int currentPos;
+//	private int currentPos;
 	public void start(IFileReadChannel src, boolean copy) throws Exception {
+		if(copy) {
+			source = FileReadChannel.openFileReadChannel(src.getUri());
+		}
+		else {
+			source = src;
+		}
+		source.position(getPosition() + 16);
+		buffer = new CustomBuffer(source, getSize() - 16);
+//		currentPos = source.position();
+	}
+	public int nextDuration() throws Exception {
+		if(cnt != 0) {
+			cnt --;
+			return delta;
+		}
+		if(buffer.remaining() == 0) {
+			return -1;
+		}
+		// 読み込みデータがのこっているか確認
+		// のこっていない場合
+//		source.position(currentPos);
+//		ByteBuffer buffer = BufferUtil.safeRead(source, 8);
+//		currentPos = source.position();
+		cnt = buffer.getInt();
+		delta = buffer.getInt();
+		cnt --;
+		return delta;
+	}// */
+/*	public void start(IFileReadChannel src, boolean copy) throws Exception {
 		if(copy) {
 			source = FileReadChannel.openFileReadChannel(src.getUri());
 		}
@@ -72,7 +104,7 @@ public class Stts extends Atom {
 		delta = buffer.getInt();
 		cnt --;
 		return delta;
-	}
+	}// */
 	public int getDuration() {
 		return delta;
 	}

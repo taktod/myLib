@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import com.ttProject.util.BufferUtil;
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
+import com.ttProject.nio.CustomBuffer;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
@@ -16,6 +17,8 @@ public class Stco extends Atom {
 	private byte version;
 	private int flags;
 	private int offsetCount;
+	
+	private CustomBuffer buffer;
 	public Stco(int size, int position) {
 		super(Stco.class.getSimpleName().toLowerCase(), size, position);
 	}
@@ -32,8 +35,28 @@ public class Stco extends Atom {
 	}
 	private IFileReadChannel source;
 	private int chunkPos = -1;
-	private int currentPos;
+//	private int currentPos;
 	public void start(IFileReadChannel src, boolean copy) throws Exception {
+		if(copy) {
+			source = FileReadChannel.openFileReadChannel(src.getUri());
+		}
+		else {
+			source = src;
+		}
+		source.position(getPosition() + 16);
+		buffer = new CustomBuffer(source, getSize() - 16);
+	}
+	public int nextChunkPos() throws Exception {
+		if(buffer.remaining() == 0) {
+			return -1;
+		}
+		chunkPos = buffer.getInt();
+		return chunkPos;
+	}
+	public boolean hasMore() {
+		return buffer.remaining() != 0;
+	}// */
+/*	public void start(IFileReadChannel src, boolean copy) throws Exception {
 		if(copy) {
 			source = FileReadChannel.openFileReadChannel(src.getUri());
 		}
@@ -51,13 +74,14 @@ public class Stco extends Atom {
 		ByteBuffer buffer = BufferUtil.safeRead(source, 4);
 		currentPos = source.position();
 		chunkPos = buffer.getInt();
-		return chunkPos;
-	}
-	public int getChunkPos() {
+		System.out.println(chunkPos);
 		return chunkPos;
 	}
 	public boolean hasMore() {
 		return currentPos != getPosition() + getSize();
+	}// */
+	public int getChunkPos() {
+		return chunkPos;
 	}
 	@Override
 	public String toString() {

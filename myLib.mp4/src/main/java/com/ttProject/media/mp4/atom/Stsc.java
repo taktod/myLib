@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
+import com.ttProject.nio.CustomBuffer;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.util.BufferUtil;
@@ -48,8 +49,51 @@ public class Stsc extends Atom {
 	private int chunkNum;
 	private int sampleCount;
 	private int dataRef;
-	private int currentPos;
+	private CustomBuffer buffer;
+//	private int currentPos;
 	public void start(IFileReadChannel src, boolean copy) throws Exception {
+		if(copy) {
+			source = FileReadChannel.openFileReadChannel(src.getUri());
+		}
+		else {
+			source = src;
+		}
+		source.position(getPosition() + 16);
+		buffer = new CustomBuffer(source, getSize() - 16);
+//		currentPos = source.position();
+	}
+	public int nextChunk() throws Exception {
+		chunkNum ++;
+		if(nextChunkNum > chunkNum) {
+			return nextChunkNum;
+		}
+		else if(chunkNum == nextChunkNum) {
+			sampleCount = nextSampleCount;
+			dataRef = nextDataRef;
+		}
+		if(buffer.remaining() == 0) {
+			sampleCount = 1;
+			if(chunkNum == nextChunkNum) {
+				return chunkNum;
+			}
+			// まだデータがのこっている場合はそれを応答する。
+			return -1;
+		}
+//		source.position(currentPos);
+//		ByteBuffer buffer = BufferUtil.safeRead(source, 12);
+//		currentPos = source.position();
+		sampleCount = nextSampleCount;
+		dataRef = nextDataRef;
+		nextChunkNum = buffer.getInt();
+		nextSampleCount = buffer.getInt();
+		nextDataRef = buffer.getInt();
+		if(chunkNum == nextChunkNum) {
+			sampleCount = nextSampleCount;
+			dataRef = nextDataRef;
+		}
+		return nextChunkNum;
+	}
+/*	public void start(IFileReadChannel src, boolean copy) throws Exception {
 		if(copy) {
 			source = FileReadChannel.openFileReadChannel(src.getUri());
 		}
@@ -89,7 +133,7 @@ public class Stsc extends Atom {
 			dataRef = nextDataRef;
 		}
 		return nextChunkNum;
-	}
+	}// */
 	public int getChunkNum() {
 		return chunkNum;
 	}
