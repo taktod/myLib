@@ -17,7 +17,7 @@ import com.ttProject.nio.channels.IFileReadChannel;
  * @author taktod
  */
 public class ConvertTest {
-	@Test
+//	@Test
 	public void test() throws Exception {
 		// データ元
 		IFileReadChannel fc1 = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.mp4");
