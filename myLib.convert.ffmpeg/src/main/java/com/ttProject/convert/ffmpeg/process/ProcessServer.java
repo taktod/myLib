@@ -111,22 +111,18 @@ public class ProcessServer {
 		@Override
 		public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 				throws Exception {
-			System.out.println("応答をうけとりました。");
 			if(keySet.size() == 0) {
 				// すでに全キー接続完了か確認する
 				return;
 			}
 			Object message = e.getMessage();
-			System.out.println(message.getClass());
 			if(message instanceof ChannelBuffer) {
-				System.out.println("channelBufferなので処理します。");
 				ByteBuffer buffer = ((ChannelBuffer) message).toByteBuffer();
 				byte[] data = new byte[buffer.remaining()];
 				buffer.get(data);
 				keySet.remove(new String(data).intern());
 				if(keySet.size() == 0) {
 					logger.info("子プロセスから全接続をうけとったので、処理開始");
-					System.out.println("子プロセスから接続をうけとりました。処理するよん。");
 					synchronized(keySet) {
 						keySet.notifyAll(); // 通知を実行する
 					}

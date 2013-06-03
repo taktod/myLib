@@ -76,6 +76,7 @@ public class FfmpegConvertManager implements IConvertManager {
 			}
 		});
 		dataSendingThread.setDaemon(true);
+		dataSendingThread.setName("ffmpegDataSendingThread");
 		dataSendingThread.start();
 	}
 	/**

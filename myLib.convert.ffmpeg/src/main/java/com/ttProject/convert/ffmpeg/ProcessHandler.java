@@ -56,7 +56,7 @@ public class ProcessHandler {
 		command.append("com.ttProject.convert.ffmpeg.process.ProcessEntry").append(" ");
 		command.append(port).append(" ");
 		command.append(key).append(" ");
-		command.append("2>java.log");
+		command.append("2>/dev/null");
 		command.append(" | ");
 		command.append(processCommand);
 		System.out.println("プロセスを起動します。");
