@@ -18,13 +18,21 @@ public class FlvTagOrderManager {
 	private boolean videoEndFlg = false;
 	private boolean audioEndFlg = false;
 	/**
+	 * 全初期化する。
+	 */
+	public void reset() {
+		audioTags.clear();
+		videoTags.clear();
+		audioEndFlg = false;
+		videoEndFlg = false;
+	}
+	/**
 	 * tagを追加する。
 	 * @return
 	 */
 	public void addTag(Tag tag) throws Exception {
 		// 対象のタグをaudioTagsとvideoTagsに登録する。
 		if(tag instanceof AudioTag) {
-//			System.out.println("audioTag追加");
 			if(audioTags.size() == 0) {
 				audioTags.add(tag);
 			}
@@ -37,7 +45,6 @@ public class FlvTagOrderManager {
 			}
 		}
 		else if(tag instanceof VideoTag) {
-//			System.out.println("videoTag追加");
 			if(videoTags.size() == 0) {
 				videoTags.add(tag);
 			}
