@@ -23,6 +23,9 @@
     <module>myLib.segment</module>
     <module>myLib.productHelper</module>
     <module>myLib.flazr</module>
+    <module>myLib.convert</module>
+    <module>myLib.convert.ffmpeg</module>
+    <module>myLib.convert.xuggle</module>
   </modules>
   <scm>
   	<url>scm:git:git@github.com:taktod/myLib.git</url>
