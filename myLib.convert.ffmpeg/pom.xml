@@ -16,7 +16,7 @@
     <dependency>
       <groupId>com.ttProject</groupId>
       <artifactId>myLib.convert</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.jboss.netty</groupId>
@@ -26,7 +26,12 @@
     <dependency>
       <groupId>com.ttProject</groupId>
       <artifactId>myLib.channels</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>log4j-over-slf4j</artifactId>
+      <version>1.7.5</version>
     </dependency>
   </dependencies>
 </project>
