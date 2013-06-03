@@ -117,6 +117,12 @@ public class BufferUtil {
 		buffer.get(data);
 		return new String(data).toLowerCase();
 	}
+	/**
+	 * 数値データを書き込む
+	 * @param target
+	 * @param data
+	 * @throws IOException
+	 */
 	public static void writeInt(WritableByteChannel target, int data) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocate(4);
 		buffer.putInt(data);
