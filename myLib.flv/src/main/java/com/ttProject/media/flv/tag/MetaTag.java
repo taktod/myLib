@@ -88,6 +88,7 @@ public class MetaTag extends Tag {
 		target.write(getHeaderBuffer((byte)0x12));
 		// 実データ部書き込み
 		// 内容を書き込む
+		rawData.position(0);
 		target.write(rawData);
 		target.write(getTailBuffer());
 	}

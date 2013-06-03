@@ -131,6 +131,7 @@ public class VideoTag extends Tag {
 	 */
 	@Override
 	public void writeTag(WritableByteChannel target) throws Exception {
+		data.position(0);
 		if(codec == CodecType.AVC) {
 			// sizeを決定させる必要がある。
 			setSize(data.remaining() + 2);

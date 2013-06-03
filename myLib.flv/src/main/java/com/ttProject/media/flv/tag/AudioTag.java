@@ -118,6 +118,7 @@ public class AudioTag extends Tag {
 	 */
 	@Override
 	public void writeTag(WritableByteChannel target) throws Exception {
+		data.position(0);
 		if(codec == CodecType.AAC) {
 			setSize(data.remaining() + 2);
 			target.write(getHeaderBuffer((byte)0x08));
