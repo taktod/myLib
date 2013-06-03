@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import org.junit.Test;
 
-import com.ttProject.nio.CustomBuffer;
+import com.ttProject.nio.CacheBuffer;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
@@ -14,7 +14,7 @@ public class BufferTest {
 		IFileReadChannel target = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("tmp.dat")
 		);
-		CustomBuffer buffer = new CustomBuffer(target, target.size());
+		CacheBuffer buffer = new CacheBuffer(target, target.size());
 		while(buffer.remaining() != 0) {
 			System.out.println(buffer.getInt());
 		}

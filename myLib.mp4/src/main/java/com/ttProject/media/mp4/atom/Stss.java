@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
-import com.ttProject.nio.CustomBuffer;
+import com.ttProject.nio.CacheBuffer;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.util.BufferUtil;
@@ -13,6 +13,9 @@ public class Stss extends Atom {
 	private byte version;
 	private int flags;
 	private int syncCount;
+
+	private CacheBuffer buffer;
+	private int keyFrame = -1;
 	public Stss(int size, int position) {
 		super(Stss.class.getSimpleName().toLowerCase(), size, position);
 	}
@@ -27,11 +30,8 @@ public class Stss extends Atom {
 		analyzed();
 		// このあとはint値のkeyFrameになるsampleの番号値リスト
 	}
-	private IFileReadChannel source;
-	private int keyFrame = -1;
-	private CustomBuffer buffer;
-//	private int currentPos;
 	public void start(IFileReadChannel src, boolean copy) throws Exception {
+		IFileReadChannel source;
 		if(copy) {
 			source = FileReadChannel.openFileReadChannel(src.getUri());
 		}
@@ -39,42 +39,15 @@ public class Stss extends Atom {
 			source = src;
 		}
 		source.position(getPosition() + 16);
-		buffer = new CustomBuffer(source, getSize() - 16);
-//		currentPos = source.position();
+		buffer = new CacheBuffer(source, getSize() - 16);
 	}
 	public int nextKeyFrame() throws Exception {
 		if(buffer.remaining() == 0) {
 			return -1;
 		}
-//		if(currentPos == getPosition() + getSize()) {
-//			return -1;
-//		}
-//		source.position(currentPos);
-//		ByteBuffer buffer = BufferUtil.safeRead(source, 4);
-//		currentPos = source.position();
 		keyFrame = buffer.getInt();
 		return keyFrame;
-	} //*/
-/*	public void start(IFileReadChannel src, boolean copy) throws Exception {
-		if(copy) {
-			source = FileReadChannel.openFileReadChannel(src.getUri());
-		}
-		else {
-			source = src;
-		}
-		source.position(getPosition() + 16);
-		currentPos = source.position();
 	}
-	public int nextKeyFrame() throws Exception {
-		if(currentPos == getPosition() + getSize()) {
-			return -1;
-		}
-		source.position(currentPos);
-		ByteBuffer buffer = BufferUtil.safeRead(source, 4);
-		currentPos = source.position();
-		keyFrame = buffer.getInt();
-		return keyFrame;
-	} //*/
 	public int getKeyFrame() {
 		return keyFrame;
 	}

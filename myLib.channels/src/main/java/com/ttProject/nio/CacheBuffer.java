@@ -9,13 +9,13 @@ import com.ttProject.nio.channels.IFileReadChannel;
  * なるべくbufferからデータを取り出すことで高速アクセスを実現してみる。
  * @author taktod
  */
-public class CustomBuffer {
+public class CacheBuffer {
 	private ByteBuffer buffer = null;
 	private IFileReadChannel targetChannel;
 	private int position;
 	private final int size; // これいらないかも・・・
 	private int remaining; // 残り読み込みデータ量
-	public CustomBuffer(IFileReadChannel source, int size) throws Exception {
+	public CacheBuffer(IFileReadChannel source, int size) throws Exception {
 		this.targetChannel = source;
 		this.position = source.position();
 		this.size = size;
@@ -64,5 +64,8 @@ public class CustomBuffer {
 			return remaining;
 		}
 		return remaining + buffer.remaining();
+	}
+	public int size() {
+		return size;
 	}
 }

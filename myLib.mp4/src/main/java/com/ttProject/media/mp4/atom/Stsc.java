@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
-import com.ttProject.nio.CustomBuffer;
+import com.ttProject.nio.CacheBuffer;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.util.BufferUtil;
@@ -18,6 +18,14 @@ public class Stsc extends Atom {
 	private byte version;
 	private int flags;
 	private int count;
+
+	private CacheBuffer buffer;
+	private int nextChunkNum;
+	private int nextSampleCount;
+	private int nextDataRef;
+	private int chunkNum;
+	private int sampleCount;
+	private int dataRef;
 	public Stsc(int size, int position) {
 		super(Stsc.class.getSimpleName().toLowerCase(), size, position);
 	}
@@ -42,16 +50,8 @@ public class Stsc extends Atom {
 		 * 7,1,2...となる
 		 */
 	}
-	private IFileReadChannel source;
-	private int nextChunkNum;
-	private int nextSampleCount;
-	private int nextDataRef;
-	private int chunkNum;
-	private int sampleCount;
-	private int dataRef;
-	private CustomBuffer buffer;
-//	private int currentPos;
 	public void start(IFileReadChannel src, boolean copy) throws Exception {
+		IFileReadChannel source;
 		if(copy) {
 			source = FileReadChannel.openFileReadChannel(src.getUri());
 		}
@@ -59,8 +59,7 @@ public class Stsc extends Atom {
 			source = src;
 		}
 		source.position(getPosition() + 16);
-		buffer = new CustomBuffer(source, getSize() - 16);
-//		currentPos = source.position();
+		buffer = new CacheBuffer(source, getSize() - 16);
 	}
 	public int nextChunk() throws Exception {
 		chunkNum ++;
@@ -79,9 +78,6 @@ public class Stsc extends Atom {
 			// まだデータがのこっている場合はそれを応答する。
 			return -1;
 		}
-//		source.position(currentPos);
-//		ByteBuffer buffer = BufferUtil.safeRead(source, 12);
-//		currentPos = source.position();
 		sampleCount = nextSampleCount;
 		dataRef = nextDataRef;
 		nextChunkNum = buffer.getInt();
@@ -93,47 +89,6 @@ public class Stsc extends Atom {
 		}
 		return nextChunkNum;
 	}
-/*	public void start(IFileReadChannel src, boolean copy) throws Exception {
-		if(copy) {
-			source = FileReadChannel.openFileReadChannel(src.getUri());
-		}
-		else {
-			source = src;
-		}
-		source.position(getPosition() + 16);
-		currentPos = source.position();
-	}
-	public int nextChunk() throws Exception {
-		chunkNum ++;
-		if(nextChunkNum > chunkNum) {
-			return nextChunkNum;
-		}
-		else if(chunkNum == nextChunkNum) {
-			sampleCount = nextSampleCount;
-			dataRef = nextDataRef;
-		}
-		if(currentPos == getPosition() + getSize()) {
-			sampleCount = 1;
-			if(chunkNum == nextChunkNum) {
-				return chunkNum;
-			}
-			// まだデータがのこっている場合はそれを応答する。
-			return -1;
-		}
-		source.position(currentPos);
-		ByteBuffer buffer = BufferUtil.safeRead(source, 12);
-		currentPos = source.position();
-		sampleCount = nextSampleCount;
-		dataRef = nextDataRef;
-		nextChunkNum = buffer.getInt();
-		nextSampleCount = buffer.getInt();
-		nextDataRef = buffer.getInt();
-		if(chunkNum == nextChunkNum) {
-			sampleCount = nextSampleCount;
-			dataRef = nextDataRef;
-		}
-		return nextChunkNum;
-	}// */
 	public int getChunkNum() {
 		return chunkNum;
 	}
