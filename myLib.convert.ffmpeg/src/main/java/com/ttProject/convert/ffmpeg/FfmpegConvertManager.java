@@ -118,6 +118,16 @@ public class FfmpegConvertManager implements IConvertManager {
 	 */
 	@Override
 	public void close() {
+		// サーバーを閉じておく
+		if(server != null) {
+			server.closeServer();
+		}
+		// データ転送threadを閉じておく。
+		if(dataSendingThread != null) {
+			dataSendingThread.interrupt();
+			dataSendingThread = null;
+		}
+		// 処理データqueueを閉じておく
 		if(dataQueue != null) {
 			dataQueue.clear();
 			dataQueue = null;
