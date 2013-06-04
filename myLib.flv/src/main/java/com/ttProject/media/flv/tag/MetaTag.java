@@ -100,11 +100,29 @@ public class MetaTag extends Tag {
 	public int getRealSize() throws Exception {
 		// データ量を調べ直す必要あり。
 		ByteBuffer titleBuffer = Amf0Value.getValueBuffer(title);
+		// TODO この部分のmapは場合によってはデータが大きくなりすぎるのでちょっとずつ書き込めたほうがいいかも
 		ByteBuffer dataBuffer = Amf0Value.getValueBuffer(data);
 		rawData = ByteBuffer.allocate(titleBuffer.remaining() + dataBuffer.remaining());
 		rawData.put(titleBuffer);
 		rawData.put(dataBuffer);
 		rawData.flip();
 		return rawData.remaining() + 15;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ByteBuffer getBuffer() throws Exception {
+		if(rawData == null) {
+			getRealSize();
+		}
+		// 全体のデータサイズを知っておく必要がある。
+		ByteBuffer buffer = ByteBuffer.allocate(rawData.remaining() + 15);
+		buffer.put(getHeaderBuffer((byte)0x12));
+		rawData.position(0);
+		buffer.put(rawData);
+		buffer.put(getTailBuffer());
+		buffer.flip();
+		return buffer;
 	}
 }

@@ -74,6 +74,10 @@ public abstract class Tag {
 	 */
 	public abstract void writeTag(WritableByteChannel target) throws Exception;
 	/**
+	 * 内部データをByteBufferの形で取り出します
+	 */
+	public abstract ByteBuffer getBuffer() throws Exception;
+	/**
 	 * サイズデータの更新
 	 * @param size
 	 */

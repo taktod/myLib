@@ -1,5 +1,6 @@
 package com.ttProject.media.flv.tag;
 
+import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +55,10 @@ public class AggregateTag extends Tag {
 		for(Tag tag : tagList) {
 			tag.writeTag(target);
 		}
+	}
+	@Override
+	public ByteBuffer getBuffer() {
+		throw new RuntimeException("aggregateTagはgetBufferには対応しないことにします。");
 	}
 	@Override
 	public int getRealSize() throws Exception {

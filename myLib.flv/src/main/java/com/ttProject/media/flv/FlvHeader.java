@@ -81,6 +81,13 @@ public class FlvHeader {
 	 * @throws Exception
 	 */
 	public void writeTag(WritableByteChannel target) throws Exception {
+		target.write(getBuffer());
+	}
+	/**
+	 * bufferの参照
+	 * @return
+	 */
+	public ByteBuffer getBuffer() {
 		ByteBuffer buffer = ByteBuffer.allocate(13);
 		buffer.put(FLV_HEADER);
 		buffer.position(4);
@@ -94,6 +101,6 @@ public class FlvHeader {
 		buffer.put(flg);
 		buffer.position(13);
 		buffer.flip();
-		target.write(buffer);
+		return buffer;
 	}
 }

@@ -131,82 +131,56 @@ public class VideoTag extends Tag {
 	 */
 	@Override
 	public void writeTag(WritableByteChannel target) throws Exception {
+		target.write(getBuffer());
+	}
+	@Override
+	public ByteBuffer getBuffer() throws Exception {
 		data.position(0);
+		// tagの作成
+		byte tagByte = 0x00;
+		// デフォルトサイズの更新
+		setSize(data.remaining() + 1);
+		switch(codec) {
+		case JPEG:			tagByte = 0x01;	break;
+		case H263:			tagByte = 0x02;	break;
+		case SCREEN:		tagByte = 0x03;	break;
+		case ON2VP6:		tagByte = 0x04;	break;
+		case ON2VP6_ALPHA:	tagByte = 0x05;	break;
+		case SCREEN_V2:		tagByte = 0x06;	break;
+		case AVC:			tagByte = 0x07;
+			setSize(data.remaining() + 2); // avcの場合はサイズがかわるの修正しておく。
+			break;
+		default:
+			throw new Exception("定義されていないコーデックです。");
+		}
+		switch(frame) {
+		case Key:			tagByte |= 0x10;break;
+		case Inner:			tagByte |= 0x20;break;
+		case Disposable:	tagByte |= 0x30;break;
+		default:
+			throw new Exception("定義されていないフレームです。");
+		}
+		ByteBuffer buffer = ByteBuffer.allocate(getRealSize());
+		// header
+		buffer.put(getHeaderBuffer((byte)0x09));
+		// tag
+		buffer.put(tagByte);
+		// avcの場合はmsh判定が必要
 		if(codec == CodecType.AVC) {
-			// sizeを決定させる必要がある。
-			setSize(data.remaining() + 2);
-			// 頭11バイトの書き込み
-			target.write(getHeaderBuffer((byte)0x09));
-			// keyFrameとmshFlgの書き込み
-			ByteBuffer buffer = ByteBuffer.allocate(2);
-			switch(frame) {
-			case Key:
-				buffer.put((byte)0x17);
-				break;
-			case Inner:
-				buffer.put((byte)0x27);
-				break;
-			}
 			if(isMediaSequenceHeader) {
 				buffer.put((byte)0x00);
 			}
 			else {
 				buffer.put((byte)0x01);
 			}
-			buffer.flip();
-			target.write(buffer);
-			// 実データの書き込み
-			target.write(data);
-			// 終端長の書き込み
-			target.write(getTailBuffer());
 		}
-		else {
-			// それ以外
-			setSize(data.remaining() + 1);
-			target.write(getHeaderBuffer((byte)0x09));
-			byte tagByte = 0x00;
-			switch(codec) {
-			case JPEG:
-				tagByte = 0x01;
-				break;
-			case H263:
-				tagByte = 0x02;
-				break;
-			case SCREEN:
-				tagByte = 0x03;
-				break;
-			case ON2VP6:
-				tagByte = 0x04;
-				break;
-			case ON2VP6_ALPHA:
-				tagByte = 0x05;
-				break;
-			case SCREEN_V2:
-				tagByte = 0x06;
-				break;
-			default:
-				throw new Exception("定義されていないコーデックです。");
-			}
-			switch(frame) {
-			case Key:
-				tagByte |= 0x10;
-				break;
-			case Inner:
-				tagByte |= 0x20;
-				break;
-			case Disposable:
-				tagByte |= 0x30;
-				break;
-			default:
-				throw new Exception("定義されていないフレームです。");
-			}
-			ByteBuffer buffer = ByteBuffer.allocate(1);
-			buffer.put(tagByte);
-			buffer.flip();
-			target.write(buffer);
-			target.write(data);
-			target.write(getTailBuffer());
-		}
+		// 実データ
+		buffer.put(data);
+		// 終端処理
+		buffer.put(getTailBuffer());
+		// 読み込みモードにする。
+		buffer.flip();
+		return buffer;
 	}
 	/**
 	 * mediaSequenceHeaderかどうか参照
