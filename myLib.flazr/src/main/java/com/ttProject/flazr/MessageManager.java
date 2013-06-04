@@ -1,5 +1,6 @@
 package com.ttProject.flazr;
 
+import java.nio.ByteBuffer;
 import java.util.Map.Entry;
 
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -18,8 +19,8 @@ import com.ttProject.media.flv.tag.VideoTag;
  * rtmpメッセージを操作する動作
  * @author taktod
  */
-public class RtmpMessageUtil {
-	public Tag convertToTag(RtmpMessage message) {
+public class MessageManager {
+	public Tag getTag(RtmpMessage message) {
 		RtmpHeader header = message.getHeader();
 		if(header.isAggregate()) {
 			// tagのリストとして応答してやる必要がある。
@@ -105,8 +106,14 @@ public class RtmpMessageUtil {
 			byte mshFlg = data.readByte();
 			tag.setMSHFlg(mshFlg == 0x00);
 		}
+		if(data.readableBytes() == 0) {
+			return null;
+		}
 		tag.setTimestamp(header.getTime());
-		tag.setData(data.toByteBuffer()); // toByteBufferを実行すると残っているデータの分だけbyteBufferになるっぽい。
+		ByteBuffer buffer = ByteBuffer.allocate(data.readableBytes());
+		buffer.put(data.toByteBuffer());
+		buffer.flip();
+		tag.setData(buffer); // toByteBufferを実行すると残っているデータの分だけbyteBufferになるっぽい。
 		return tag;
 	}
 	/**
@@ -126,8 +133,14 @@ public class RtmpMessageUtil {
 			byte mshFlg = data.readByte();
 			tag.setMSHFlg(mshFlg == 0x00);
 		}
+		if(data.readableBytes() == 0) {
+			return null;
+		}
 		tag.setTimestamp(header.getTime());
-		tag.setData(data.toByteBuffer());
+		ByteBuffer buffer = ByteBuffer.allocate(data.readableBytes());
+		buffer.put(data.toByteBuffer());
+		buffer.flip();
+		tag.setData(buffer);
 		return tag;
 	}
 }
