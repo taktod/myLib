@@ -11,3 +11,8 @@
 /*/mvn-repo
 *release*
 */lib/*
+*.class
+*.log
+*.flv
+*.mp4
+*.tmp
