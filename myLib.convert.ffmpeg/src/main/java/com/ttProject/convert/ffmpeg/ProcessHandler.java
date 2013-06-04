@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ public class ProcessHandler {
 	private final int port;
 	private String processCommand = null;
 	private final Set<IConvertListener> listeners = new HashSet<IConvertListener>();
+	private Map<String, String> envExtra = null;
 	/**
 	 * コンストラクタ
 	 * @param port
@@ -35,6 +37,9 @@ public class ProcessHandler {
 	 */
 	public void setCommand(String command) {
 		this.processCommand = command;
+	}
+	public void setEnvExtra(Map<String, String> envExtra) {
+		this.envExtra = envExtra;
 	}
 	public void addListener(IConvertListener listener) {
 		listeners.add(listener);
@@ -62,7 +67,19 @@ public class ProcessHandler {
 		System.out.println("プロセスを起動します。");
 		System.out.println(command);
 		ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", "-c", command.toString());
-//		Map<String, String> end = processBuilder.environment();
+		if(envExtra != null) {
+			Map<String, String> env = processBuilder.environment();
+			for(String key : envExtra.keySet()) {
+				String envData = env.get(key);
+				if(env == null || "".equals(envData)) {
+					envData = envExtra.get(key);
+				}
+				else {
+					envData += ":" + envExtra.get(key);
+				}
+				env.put(key, envData);
+			}
+		}
 //		パスの変更が必要だったりする場合はここでenvをいじっておく必要あり。
 		Process process = processBuilder.start();
 		final ReadableByteChannel outputChannel = Channels.newChannel(process.getInputStream());
