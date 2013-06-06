@@ -8,11 +8,15 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
+import org.apache.log4j.Logger;
+
 /**
  * http経由でのデータDL用のfileChannel
  * @author taktod
  */
 public class URLFileReadChannel implements IFileReadChannel {
+	/** ロガー */
+	private static final Logger logger = Logger.getLogger(URLFileReadChannel.class);
 	/** ターゲットURI */
 	private final URL url;
 	/** 接続保持 */
@@ -57,6 +61,7 @@ public class URLFileReadChannel implements IFileReadChannel {
 			// オブジェクトをつくった瞬間にデータを作成します。
 			URLConnection urlConn = url.openConnection();
 			if(!(urlConn instanceof HttpURLConnection)) {
+				logger.error("コネクションを開いたところhttpではありませんでした。");
 				throw new IOException("connection is not http");
 			}
 			conn = (HttpURLConnection)urlConn;
@@ -77,6 +82,7 @@ public class URLFileReadChannel implements IFileReadChannel {
 		else {
 			open = false;
 			if(position > size) {
+				logger.error("httpのファイルのサイズを超過した部分の位置から開こうとしました。");
 				throw new IOException("out of range for http");
 			}
 		}
@@ -140,6 +146,7 @@ public class URLFileReadChannel implements IFileReadChannel {
 			conn.getInputStream().skip(skipSize);
 		}
 		else {
+			logger.info("positionの変更を実行するために、コネクションをつなぎ直す必要がでました。");
 			// 巻き戻す場合は、接続し直す必要がある。(たとえ近くても無理)
 			// それ以上離れている場合は、接続し直した方がよさそう。
 			closeConnection();
