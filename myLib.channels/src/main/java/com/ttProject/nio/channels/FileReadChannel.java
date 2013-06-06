@@ -15,6 +15,7 @@ import java.nio.channels.FileChannel;
 public class FileReadChannel implements IFileReadChannel {
 	/** 動作ファイルチャンネル */
 	private FileChannel channel;
+	/** 動作パス */
 	private final String path;
 	/**
 	 * コンストラクタ

@@ -10,10 +10,6 @@ import com.ttProject.util.BufferUtil;
 
 /**
  * audioデータ
- * 知っておきたいこと
- * コーデック?
- * sampleRate? channel?
- * mediaSequenceHeader?
  * @author taktod
  */
 public class AudioTag extends Tag {
@@ -42,6 +38,12 @@ public class AudioTag extends Tag {
 	public AudioTag(final int size, final int position, final int timestamp) {
 		super(size, position, timestamp);
 	}
+	/**
+	 * メディアタグ用のbyteデータから必要な情報を抽出します。
+	 * 12バイト目にあるやつ
+	 * @param tagByte
+	 * @return
+	 */
 	public boolean analyzeTagByte(byte tagByte) {
 		// サンプルレート解析
 		switch(tagByte & 0x0C) {
@@ -67,15 +69,38 @@ public class AudioTag extends Tag {
 		codec = CodecType.getAudioCodecType(tagByte);
 		return (codec == CodecType.AAC);
 	}
+	/**
+	 * コーデックを設定
+	 * @param codec
+	 */
 	public void setCodec(CodecType codec) {
 		this.codec = codec;
 	}
+	/**
+	 * コーデックを参照
+	 * @return
+	 */
+	public CodecType getCodec() {
+		return codec;
+	}
+	/**
+	 * サンプルレートを設定
+	 * @param rate
+	 */
 	public void setSampleRate(int rate) {
 		sampleRate = rate;
 	}
+	/**
+	 * 音声チャンネル数を設定
+	 * @param channels
+	 */
 	public void setChannels(byte channels) {
 		this.channels = channels;
 	}
+	/**
+	 * mshであるか設定する
+	 * @param flg
+	 */
 	public void setMSHFlg(boolean flg) {
 		isMediaSequenceHeader = flg;
 	}
@@ -99,7 +124,7 @@ public class AudioTag extends Tag {
 	 */
 	@Override
 	public void analyze(IFileReadChannel ch, boolean atBegin) throws Exception {
-		
+		// ファイルからの解析はあとでつくっておく。
 	}
 	/**
 	 * 実際のタグ全体の大きさを返します。
@@ -120,6 +145,9 @@ public class AudioTag extends Tag {
 	public void writeTag(WritableByteChannel target) throws Exception {
 		target.write(getBuffer());
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getBuffer() throws Exception {
 		data.position(0);
@@ -202,6 +230,9 @@ public class AudioTag extends Tag {
 	public boolean isMediaSequenceHeader() {
 		return isMediaSequenceHeader;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return "audioTag:" + getTimestamp();

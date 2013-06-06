@@ -14,14 +14,15 @@ import com.ttProject.util.BufferUtil;
 /**
  * amf0のデータを扱うクラス
  * @author taktod
- * Number	0x00 8バイト doublebits
- * Boolean	0x01 1バイト 0x01:true 0x00:false
- * String	0x02 2バイト(サイズ) データ
- * Object	0x03 [2バイト(サイズ) データ 型タイプ 型データ] x 要素数分 00 00 09(eof)
- * Map		0x08 4バイト(intデータ(要素数？)) [2バイト(サイズ) データ 型タイプ 型データ] x 要素数分 00 00 09(eof)
- * Array	0x0A [型タイプ 型データ] x 要素数分 00 00 09(eof)
- * Date		0x0B 8バイト(doubleBits(unixtime)) 2バイト(timezone?)
- * LongString 0x0C 4バイト(サイズ) データ
+ * 
+ * Number		0x00 8バイト doublebits
+ * Boolean		0x01 1バイト 0x01:true 0x00:false
+ * String		0x02 2バイト(サイズ) データ
+ * Object		0x03 [2バイト(サイズ) データ 型タイプ 型データ] x 要素数分 00 00 09(eof)
+ * Map			0x08 4バイト(intデータ(要素数？)) [2バイト(サイズ) データ 型タイプ 型データ] x 要素数分 00 00 09(eof)
+ * Array		0x0A [型タイプ 型データ] x 要素数分 00 00 09(eof)
+ * Date			0x0B 8バイト(doubleBits(unixtime)) 2バイト(timezone?)
+ * LongString	0x0C 4バイト(サイズ) データ
  */
 public class Amf0Value {
 	/**

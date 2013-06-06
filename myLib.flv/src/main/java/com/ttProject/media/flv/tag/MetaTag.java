@@ -92,10 +92,9 @@ public class MetaTag extends Tag {
 		target.write(rawData);
 		target.write(getTailBuffer());
 	}
-	@Override
-	public String toString() {
-		return "metaTag:" + getTimestamp();
-	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int getRealSize() throws Exception {
 		// データ量を調べ直す必要あり。
@@ -124,5 +123,12 @@ public class MetaTag extends Tag {
 		buffer.put(getTailBuffer());
 		buffer.flip();
 		return buffer;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return "metaTag:" + getTimestamp();
 	}
 }

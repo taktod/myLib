@@ -13,8 +13,11 @@ import com.ttProject.media.flv.tag.VideoTag;
  * @author taktod
  */
 public class FlvTagOrderManager {
+	/** 処理待ちaudioTagリスト */
 	private final List<Tag> audioTags = new ArrayList<Tag>();
+	/** 処理待ちvideoTagリスト */
 	private final List<Tag> videoTags = new ArrayList<Tag>();
+	/** 各メディアトラックがもうなくなったかのフラグ */
 	private boolean videoEndFlg = false;
 	private boolean audioEndFlg = false;
 	/**
@@ -122,6 +125,9 @@ public class FlvTagOrderManager {
 	public void setNomoreAudio() {
 		audioEndFlg = true;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return "manager:\n" + audioTags.toString() + "\n" + videoTags.toString();

@@ -21,7 +21,6 @@ public abstract class Tag {
 	 * コンストラクタ
 	 */
 	public Tag() {
-		
 	}
 	/**
 	 * コンストラクタ

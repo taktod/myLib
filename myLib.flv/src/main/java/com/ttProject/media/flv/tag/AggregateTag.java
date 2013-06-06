@@ -13,6 +13,7 @@ import com.ttProject.nio.channels.IFileReadChannel;
  * @author taktod
  */
 public class AggregateTag extends Tag {
+	/** 集合タグの内部タグリスト */
 	private List<Tag> tagList = new ArrayList<Tag>();
 	/**
 	 * コンストラクタ
@@ -56,10 +57,16 @@ public class AggregateTag extends Tag {
 			tag.writeTag(target);
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getBuffer() {
 		throw new RuntimeException("aggregateTagはgetBufferには対応しないことにします。");
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public int getRealSize() throws Exception {
 		throw new Exception("aggregateTagはflvのサイズ応答をサポートしません");

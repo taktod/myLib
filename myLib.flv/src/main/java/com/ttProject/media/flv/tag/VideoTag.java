@@ -10,10 +10,6 @@ import com.ttProject.util.BufferUtil;
 
 /**
  * videoデータ
- * 知っておきたいこと
- * コーデック?
- * keyFrame? innerFrame? disposable?
- * mediaSequenceHeader?
  * @author taktod
  */
 public class VideoTag extends Tag {
@@ -21,6 +17,9 @@ public class VideoTag extends Tag {
 	private CodecType codec;
 	/** フレーム情報 */
 	private FrameType frame;
+	/**
+	 * フレームタイプ定義
+	 */
 	private enum FrameType {
 		Key,
 		Inner,
@@ -66,9 +65,24 @@ public class VideoTag extends Tag {
 		// h.264である場合はmshが必要
 		return (codec == CodecType.AVC);
 	}
+	/**
+	 * コーデックを設定
+	 * @param codec
+	 */
 	public void setCodec(CodecType codec) {
 		this.codec = codec;
 	}
+	/**
+	 * コーデックを参照
+	 * @return
+	 */
+	public CodecType getCodec() {
+		return codec;
+	}
+	/**
+	 * フレームタイプを設定する
+	 * @param keyFrame
+	 */
 	public void setFrameType(boolean keyFrame) {
 		if(keyFrame) {
 			frame = FrameType.Key;
@@ -77,9 +91,19 @@ public class VideoTag extends Tag {
 			frame = FrameType.Inner;
 		}
 	}
+	/**
+	 * mshであるか設定する
+	 * @param flg
+	 */
 	public void setMSHFlg(boolean flg) {
 		isMediaSequenceHeader = flg;
 	}
+	/**
+	 * データを登録しておく
+	 * @param source
+	 * @param size
+	 * @throws Exception
+	 */
 	public void setData(IFileReadChannel source, int size) throws Exception {
 		if(codec == CodecType.AVC) {
 			// h.264の場合は、頭に00 00 00をいれてsourceのデータコピーが必要になる。
@@ -133,6 +157,9 @@ public class VideoTag extends Tag {
 	public void writeTag(WritableByteChannel target) throws Exception {
 		target.write(getBuffer());
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getBuffer() throws Exception {
 		data.position(0);
@@ -189,6 +216,9 @@ public class VideoTag extends Tag {
 	public boolean isMediaSequenceHeader() {
 		return isMediaSequenceHeader;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return "videoTag:" + getTimestamp();

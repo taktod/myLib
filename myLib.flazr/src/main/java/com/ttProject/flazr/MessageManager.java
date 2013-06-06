@@ -20,6 +20,11 @@ import com.ttProject.media.flv.tag.VideoTag;
  * @author taktod
  */
 public class MessageManager {
+	/**
+	 * rtmpメッセージから、myLib.flvのtagを作成して応答します。
+	 * @param message
+	 * @return
+	 */
 	public Tag getTag(RtmpMessage message) {
 		RtmpHeader header = message.getHeader();
 		if(header.isAggregate()) {
@@ -35,6 +40,7 @@ public class MessageManager {
 		else if(header.isMetadata() && message instanceof Metadata) {
 			return convertToMetaTag((Metadata)message);
 		}
+		// どのデータにも当てはまらなかったのでnullを応答します。
 		return null;
 	}
 	/**
@@ -110,10 +116,12 @@ public class MessageManager {
 			return null;
 		}
 		tag.setTimestamp(header.getTime());
+		// toByteBufferを実行すると残っているデータの分だけbyteBufferになるっぽい。
+		// 仕方ないので別のByteBufferをつくって、一部だけのデータをつくっておく。
 		ByteBuffer buffer = ByteBuffer.allocate(data.readableBytes());
 		buffer.put(data.toByteBuffer());
 		buffer.flip();
-		tag.setData(buffer); // toByteBufferを実行すると残っているデータの分だけbyteBufferになるっぽい。
+		tag.setData(buffer);
 		return tag;
 	}
 	/**
@@ -137,6 +145,7 @@ public class MessageManager {
 			return null;
 		}
 		tag.setTimestamp(header.getTime());
+		// toByteBuffer以下videoのやつと同じ
 		ByteBuffer buffer = ByteBuffer.allocate(data.readableBytes());
 		buffer.put(data.toByteBuffer());
 		buffer.flip();
