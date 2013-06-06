@@ -6,6 +6,17 @@
 
 　ライセンスはあとで変更するかもしれませんが、とりあえずLGPLとします。
 
+下準備：
+1:mavenとjava1.6以降、gitを準備します。
+2:myLibをcloneしてきます。
+$ git clone git://github.com/taktod/myLib.git
+3:myLib.m2eHelperをいれます。
+$ cd myLib/myLib.m2eHelper
+$ mvn install
+4:myLibをいれます。
+$ cd ..
+$ mvn install
+
 使い方：
 
 　maven2とjava(開発ではjava6をつかっています。)が必要ですので入手してください。
