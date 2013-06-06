@@ -8,23 +8,31 @@ import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.util.BufferUtil;
 
 public class Mdhd extends Atom {
-	private byte version;
-	private int flags;
+	/** 作成日時 */
 	private long creationTime;
+	/** 更新日時 */
 	private long modifitaionTime;
+	/** sttsのtimescale情報 */
 	private int timescale;
+	/** データの長さ(timestampによるtic数で記述) */
 	private long duration;
+	/**
+	 * コンストラクタ
+	 * @param size
+	 * @param position
+	 */
 	public Mdhd(int size, int position) {
 		super(Mdhd.class.getSimpleName().toLowerCase(), size, position);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
 		ch.position(getPosition() + 8);
 		ByteBuffer buffer = BufferUtil.safeRead(ch, getSize() - 8);
-		int head = buffer.getInt();
-		version = (byte)((head >> 24) & 0xFF);
-		flags = (head & 0x00FFFFFF);
-		if(version == 0) {
+		analyzeFirstInt(buffer.getInt());
+		if(getVersion() == 0) {
 			creationTime = buffer.getInt();
 			modifitaionTime = buffer.getInt();
 		}
@@ -33,7 +41,7 @@ public class Mdhd extends Atom {
 			modifitaionTime = buffer.getLong();
 		}
 		timescale = buffer.getInt();
-		if(version == 0) {
+		if(getVersion() == 0) {
 			duration = buffer.getInt();
 		}
 		else {
@@ -42,11 +50,29 @@ public class Mdhd extends Atom {
 		// あとはpad 1 とLanguage 5x3 Reserved 16 = 32bit でおわるはず。
 		// 4バイトのこっているはず。
 	}
+	/**
+	 * @return
+	 */
 	public int getTimescale() {
 		return timescale;
 	}
+	/**
+	 * @return
+	 */
 	public long getDuration() {
 		return duration;
+	}
+	/**
+	 * @return
+	 */
+	public long getCreationTime() {
+		return creationTime;
+	}
+	/**
+	 * @return
+	 */
+	public long getModificationTime() {
+		return modifitaionTime;
 	}
 	@Override
 	public String toString() {

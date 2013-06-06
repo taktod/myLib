@@ -7,6 +7,7 @@ import com.ttProject.media.mp4.IAtomAnalyzer;
 import com.ttProject.media.mp4.atom.stsd.data.Avcc;
 import com.ttProject.nio.channels.IFileReadChannel;
 
+@SuppressWarnings("unused")
 public abstract class VideoRecord extends Record {
 	private byte[] unknown1 = new byte[6];
 	private short dataReferenceIndex;

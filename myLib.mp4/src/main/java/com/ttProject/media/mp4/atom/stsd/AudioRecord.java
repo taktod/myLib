@@ -7,6 +7,7 @@ import com.ttProject.media.mp4.IAtomAnalyzer;
 import com.ttProject.media.mp4.atom.stsd.data.Esds;
 import com.ttProject.nio.channels.IFileReadChannel;
 
+@SuppressWarnings("unused")
 public abstract class AudioRecord extends Record {
 	private byte[] unknown1 = new byte[6];
 	private short dataReferenceIndex;
@@ -21,7 +22,6 @@ public abstract class AudioRecord extends Record {
 	public Esds getEsds() {
 		return esds;
 	}
-//	private * boxes;
 	public AudioRecord(String name, int size, int position) {
 		super(name, size, position);
 	}

@@ -13,8 +13,6 @@ import com.ttProject.nio.channels.IFileReadChannel;
  * @author taktod
  */
 public class Tkhd extends Atom {
-	private byte version;
-	private int flags;
 	private long creationTime;
 	private long modificationTime;
 	private int trackId;
@@ -36,11 +34,9 @@ public class Tkhd extends Atom {
 		// tkhdの中身を解析していく。
 		ch.position(getPosition() + 8);
 		ByteBuffer buffer = BufferUtil.safeRead(ch, 4);
-		int head = buffer.getInt();
+		analyzeFirstInt(buffer.getInt());
 		int i;
-		version = (byte)((head >> 24) & 0xFF);
-		flags = (head & 0x00FFFFFF);
-		if(version == 0) {
+		if(getVersion() == 0) {
 			buffer = BufferUtil.safeRead(ch, 80);
 			creationTime = buffer.getInt();
 			modificationTime = buffer.getInt();
@@ -52,7 +48,7 @@ public class Tkhd extends Atom {
 		}
 		trackId = buffer.getInt();
 		reserved1 = buffer.getInt();
-		if(version == 0) {
+		if(getVersion() == 0) {
 			duration = buffer.getInt();
 		}
 		else {
@@ -83,12 +79,6 @@ public class Tkhd extends Atom {
 			.append("]");
 		}
 		return data.toString();
-	}
-	public byte getVersion() {
-		return version;
-	}
-	public int getFlags() {
-		return flags;
 	}
 	public long getCreationTime() {
 		return creationTime;

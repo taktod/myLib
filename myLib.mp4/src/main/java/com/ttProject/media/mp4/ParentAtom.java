@@ -46,6 +46,9 @@ public abstract class ParentAtom extends Atom {
 	public List<Atom> getAtoms() {
 		return new ArrayList<Atom>(atoms);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString(String space) {
 		StringBuilder data = new StringBuilder();

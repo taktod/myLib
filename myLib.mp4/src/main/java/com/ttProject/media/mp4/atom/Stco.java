@@ -14,8 +14,6 @@ import com.ttProject.nio.channels.IFileReadChannel;
  * @author taktod
  */
 public class Stco extends Atom {
-	private byte version;
-	private int flags;
 	private int offsetCount;
 	
 	private CacheBuffer buffer;
@@ -27,9 +25,7 @@ public class Stco extends Atom {
 	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
 		ch.position(getPosition() + 8);
 		ByteBuffer buffer = BufferUtil.safeRead(ch, 8);
-		int head = buffer.getInt();
-		version = (byte)((head >> 24) & 0xFF);
-		flags = (head & 0x00FFFFFF);
+		analyzeFirstInt(buffer.getInt());
 		offsetCount = buffer.getInt();
 		analyzed();
 		// この後のデータはchunkの開始indexがならんでいるだけ
@@ -61,12 +57,6 @@ public class Stco extends Atom {
 	@Override
 	public String toString() {
 		return super.toString("          ");
-	}
-	public byte getVersion() {
-		return version;
-	}
-	public int getFlags() {
-		return flags;
 	}
 	public int getOffsetCount() {
 		return offsetCount;

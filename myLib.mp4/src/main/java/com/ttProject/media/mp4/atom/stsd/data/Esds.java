@@ -14,6 +14,7 @@ import com.ttProject.nio.channels.IFileReadChannel;
  * データ的には音声onlyではないかもしれない
  * @author taktod
  */
+@SuppressWarnings("unused")
 public class Esds extends Atom {
 	private int unknown;
 	// 内部のタグのデータ
@@ -21,9 +22,18 @@ public class Esds extends Atom {
 	private final int DECODER_CONFIG = 0x04;
 	private final int DECODER_SPECIFIC = 0x05;
 	private final int SL_CONFIG = 0x06;
+	private byte objectType;
 	private byte[] sequenceHeader;
 	public byte[] getSequenceHeader() {
 		return sequenceHeader;
+	}
+	/**
+	 * esdsに設定されているobjectTypeのyteデータを参照する。
+	 * TODO このデータを見れば、コーデックがmp3かaacかとかわかるはず。
+	 * @return
+	 */
+	public byte getObjectType() {
+		return objectType;
 	}
 	public Esds(int size, int position) {
 		super(Esds.class.getSimpleName().toLowerCase(), size, position);
@@ -60,7 +70,7 @@ public class Esds extends Atom {
 			break;
 		case DECODER_CONFIG:
 			// 1バイトオブジェクトタイプ
-			byte objectType = buffer.get();
+			objectType = buffer.get();
 			System.out.println("objType:" + Integer.toHexString(objectType));
 			switch(objectType & 0xFF) {
 			case 0x01: // system v1
@@ -145,7 +155,6 @@ public class Esds extends Atom {
 			buffer.get(msh);
 			// このデータがmediaSequenceHeaderのデータ(flvにするにはこれが欲しい)
 			sequenceHeader = msh;
-//			System.out.println(HexUtils.toHex(msh, true));
 			analyzeTag(buffer);
 			break;
 		case SL_CONFIG:

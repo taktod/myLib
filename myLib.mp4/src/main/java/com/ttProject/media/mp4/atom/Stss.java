@@ -10,8 +10,6 @@ import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.util.BufferUtil;
 
 public class Stss extends Atom {
-	private byte version;
-	private int flags;
 	private int syncCount;
 
 	private CacheBuffer buffer;
@@ -23,9 +21,7 @@ public class Stss extends Atom {
 	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
 		ch.position(getPosition() + 8);
 		ByteBuffer buffer = BufferUtil.safeRead(ch, 8);
-		int head = buffer.getInt();
-		version = (byte)((head >> 24) & 0xFF);
-		flags = (head & 0x00FFFFFF);
+		analyzeFirstInt(buffer.getInt());
 		syncCount = buffer.getInt();
 		analyzed();
 		// このあとはint値のkeyFrameになるsampleの番号値リスト
@@ -50,12 +46,6 @@ public class Stss extends Atom {
 	}
 	public int getKeyFrame() {
 		return keyFrame;
-	}
-	public byte getVersion() {
-		return version;
-	}
-	public int getFlags() {
-		return flags;
 	}
 	public int getSyncCount() {
 		return syncCount;

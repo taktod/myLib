@@ -17,8 +17,6 @@ import com.ttProject.nio.channels.IFileReadChannel;
  * @author taktod
  */
 public class Stsd extends Atom {
-	private byte version;
-	private int flags;
 	private int trackCount;
 	private List<Record> records = new ArrayList<Record>();
 	public Stsd(int size, int position) {
@@ -28,9 +26,7 @@ public class Stsd extends Atom {
 	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
 		ch.position(getPosition() + 8);
 		ByteBuffer buffer = BufferUtil.safeRead(ch, 8);
-		int head = buffer.getInt();
-		version = (byte)((head >> 24) & 0xFF);
-		flags = (head & 0x00FFFFFF);
+		analyzeFirstInt(buffer.getInt());
 		trackCount = buffer.getInt();
 		// trackCountは1であることを望んでおきます。(マルチトラックはやらない。)
 		if(trackCount != 1) {
@@ -42,12 +38,6 @@ public class Stsd extends Atom {
 				records.add(recordAnalyzer.analyze(ch));
 			}
 		}
-	}
-	public byte getVersion() {
-		return version;
-	}
-	public int getFlags() {
-		return flags;
 	}
 	public List<Record> getRecords() {
 		return records;

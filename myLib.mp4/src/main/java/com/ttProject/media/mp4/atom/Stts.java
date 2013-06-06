@@ -10,8 +10,6 @@ import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.util.BufferUtil;
 
 public class Stts extends Atom {
-	private byte version;
-	private int flags;
 	private int count;
 	
 	private CacheBuffer buffer;
@@ -24,9 +22,7 @@ public class Stts extends Atom {
 	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
 		ch.position(getPosition() + 8);
 		ByteBuffer buffer = BufferUtil.safeRead(ch, 8);
-		int head = buffer.getInt();
-		version = (byte)((head >> 24) & 0xFF);
-		flags = (head & 0x00FFFFFF);
+		analyzeFirstInt(buffer.getInt());
 		count = buffer.getInt();
 		analyzed();
 		// このあとのデータはサンプルカウント デルタ長(実際の時間に治すにはtimescale値を参照する必要あり)(両方int)
@@ -74,12 +70,6 @@ public class Stts extends Atom {
 	}
 	public int getDuration() {
 		return delta;
-	}
-	public byte getVersion() {
-		return version;
-	}
-	public int getFlags() {
-		return flags;
 	}
 	public int getCount() {
 		return count;

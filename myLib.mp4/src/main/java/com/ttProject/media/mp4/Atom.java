@@ -18,6 +18,10 @@ public abstract class Atom {
 	private final int position;
 	/** 解析済みフラグ */
 	private boolean analized;
+	/** 先頭の1バイトに入っているversion */
+	private byte version;
+	/** 続く3バイトのフラグ情報 */
+	private int flags;
 	/**
 	 * コンストラクタ
 	 * @param name
@@ -90,10 +94,40 @@ public abstract class Atom {
 	public void analyzed() {
 		this.analized = true;
 	}
+	/**
+	 * tagのあとにあるversionとflagsについて解析しておく。
+	 * @param data
+	 */
+	protected void analyzeFirstInt(int data) {
+		version = (byte)((data >> 24) & 0xFF);
+		flags = (data & 0x00FFFFFF);
+	}
+	/**
+	 * version参照
+	 * @return
+	 */
+	public byte getVersion() {
+		return version;
+	}
+	/**
+	 * flags参照
+	 * @return
+	 */
+	public int getFlags() {
+		return flags;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return toString("");
 	}
+	/**
+	 * 情報表示
+	 * @param space
+	 * @return
+	 */
 	public String toString(String space) {
 		StringBuilder data = new StringBuilder(space);
 		data.append(name);
