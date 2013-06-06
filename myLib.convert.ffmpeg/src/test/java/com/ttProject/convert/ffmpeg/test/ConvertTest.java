@@ -16,6 +16,7 @@ import com.ttProject.nio.channels.IFileReadChannel;
  * 動作テスト用
  * @author taktod
  */
+@SuppressWarnings("unused")
 public class ConvertTest {
 //	@Test
 	public void test() throws Exception {

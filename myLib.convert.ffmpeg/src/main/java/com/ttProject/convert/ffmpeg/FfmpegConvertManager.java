@@ -8,10 +8,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.ttProject.convert.IConvertManager;
 import com.ttProject.convert.ffmpeg.process.ProcessServer;
@@ -23,28 +22,45 @@ import com.ttProject.convert.ffmpeg.process.ProcessServer;
  * @author taktod
  */
 public class FfmpegConvertManager implements IConvertManager {
-	private final Logger logger = LoggerFactory.getLogger(FfmpegConvertManager.class);
+	/** 動作ロガー */
+	private static final Logger logger = Logger.getLogger(FfmpegConvertManager.class);
+	/** 対象プロセス */
 	private final Map<String, ProcessHandler> handlers = new HashMap<String, ProcessHandler>();
+	/** 動作pid */
 	private static final String pid;
+	/** 動作ポート番号 */
 	private final int portNumber;
+	/** 動作サーバー */
 	private final ProcessServer server;
+	/** データ転送用のスレッド */
 	private Thread dataSendingThread = null;
+	/** 稼働中フラグ */
+	private boolean workFlg = true;
+	/** データ転送用のqueue */
 	private LinkedBlockingQueue<ChannelBuffer> dataQueue = new LinkedBlockingQueue<ChannelBuffer>();
+	/**
+	 * 静的初期化
+	 */
 	static {
 		RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
 		pid = bean.getName().split("@")[0];
 	}
+	/**
+	 * コンストラクタ
+	 * @throws Exception
+	 */
 	public FfmpegConvertManager() throws Exception {
 		// このタイミングでサーバーを起動していた方がいいかも・・・
 		// このタイミングでサーバーをつくる
-		ProcessServer ps = null;
+		ProcessServer processServer = null;
+		// 処理可能なポート番号をみつける必要がある。
 		int portNumber = Integer.parseInt(pid);
 		if(portNumber < 1000) {
 			portNumber += 1000;
 		}
 		for(;portNumber < 65535;portNumber += 1000) {
 			try {
-				ps = new ProcessServer(portNumber);
+				processServer = new ProcessServer(portNumber);
 				break;
 			}
 			catch(Exception e) {
@@ -52,9 +68,11 @@ public class FfmpegConvertManager implements IConvertManager {
 			}
 		}
 		if(portNumber > 65535) {
+			logger.fatal("プロセス番号ベースでローカルサーバー用のポート番号が見つけられませんでした。");
 			throw new RuntimeException("ローカルサーバーの動作ポート番号が決まりませんでした。");
 		}
-		server = ps;
+		// データが決まったので処理を続ける
+		server = processServer;
 		this.portNumber = portNumber;
 		// threadをつくってデータを送る
 		dataSendingThread = new Thread(new Runnable() {
@@ -65,10 +83,13 @@ public class FfmpegConvertManager implements IConvertManager {
 					synchronized(keySet) {
 						keySet.wait();
 					}
-					while(true) {
+					while(workFlg) {
 						ChannelBuffer buffer = dataQueue.take();
 						server.sendData(buffer);
 					}
+				}
+				catch (InterruptedException e) {
+					// 停止処理になっただけなので放置しておく。
 				}
 				catch (Exception e) {
 					logger.info("データ送信動作がとまりました。", e);
@@ -118,6 +139,10 @@ public class FfmpegConvertManager implements IConvertManager {
 	 */
 	@Override
 	public void close() {
+		workFlg = false;
+		for(String key : handlers.keySet()) {
+			handlers.get(key).close();
+		}
 		// サーバーを閉じておく
 		if(server != null) {
 			server.closeServer();

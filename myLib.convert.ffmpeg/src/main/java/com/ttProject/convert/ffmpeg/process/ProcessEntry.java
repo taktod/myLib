@@ -24,6 +24,8 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
  * 動作引数としては、port番号とキー情報をおくります。
  * 起動したら。port番号のサーバーに接続を実施し、コネクトした時に自分のキー情報をサーバーに送ります。
  * サーバーからデータをうけとったら標準出力としてデータを吐かせます。
+ * 
+ * log4jをつかったらややこしくなるので、とりあえず標準エラーにデータを出力しておきます。
  */
 public class ProcessEntry {
 	/** 標準出力用の出力チャンネル */
@@ -40,6 +42,7 @@ public class ProcessEntry {
 			System.err.println("引数の数がおかしいです");
 			return;
 		}
+		// ポート番号
 		int port = 0;
 		try {
 			port = Integer.parseInt(args[0]);
@@ -47,6 +50,7 @@ public class ProcessEntry {
 		catch (Exception e) {
 			System.err.println("入力ポート番号が数値解釈できませんでした。");
 		}
+		// アクセスキー
 		String key = args[1];
 		new ProcessEntry(port, key);
 	}
@@ -81,15 +85,40 @@ public class ProcessEntry {
 		}
 		bootstrap.releaseExternalResources();
 	}
+	/**
+	 * 内部のクライアントクラス
+	 * @author taktod
+	 */
 	private class ProcessClientHandler extends SimpleChannelUpstreamHandler {
+		/** 初めのキーを送ったかどうかフラグ */
+		boolean passedFirstReply = false;
 		/**
 		 * メッセージをうけとったときの動作
 		 */
 		@Override
 		public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 				throws Exception {
-			System.err.println("メッセージをうけとりました。");
+			// メッセージの受け取りがしばらくなくなったらしぬ動作がいるかも・・・
 			ByteBuffer buffer = ((ChannelBuffer)e.getMessage()).toByteBuffer();
+			if(!passedFirstReply) {
+				try {
+					byte[] reply = buffer.duplicate().array();
+					if('r' == reply[0]
+					&& 'e' == reply[1]
+					&& 'f' == reply[2]
+					&& 'u' == reply[3]
+					&& 's' == reply[4]
+					&& 'e' == reply[5]
+					&& 'd' == reply[6]) {
+						System.err.println("拒否メッセージがきたので、とめておきます。");
+						System.exit(0);
+					}
+					passedFirstReply = true;
+				}
+				catch (Exception ee) {
+					ee.printStackTrace();
+				}
+			}
 			stdout.write(buffer);
 		}
 		/**

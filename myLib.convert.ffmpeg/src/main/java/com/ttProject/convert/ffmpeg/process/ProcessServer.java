@@ -6,8 +6,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.Executors;
 
+import org.apache.log4j.Logger;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -18,8 +20,6 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * 子プロセスにデータを送信するサーバー動作
@@ -27,11 +27,14 @@ import org.slf4j.LoggerFactory;
  */
 public class ProcessServer {
 	/** ロガー */
-	private Logger logger = LoggerFactory.getLogger(ProcessServer.class);
+	private static final Logger logger = Logger.getLogger(ProcessServer.class);
 	/** つながっているクライアントのchannelデータ */
 	private final Set<Channel> channels = new HashSet<Channel>();
+	/** 動作サーバーチャンネル */
 	private final Channel serverChannel;
+	/** サーバーbootstrap */
 	private final ServerBootstrap bootstrap;
+	/** アクセスがくる子プロセスのキー情報 */
 	private final Set<String> keySet = new HashSet<String>();
 	/**
 	 * コンストラクタ
@@ -49,7 +52,6 @@ public class ProcessServer {
 			}
 		});
 		serverChannel = bootstrap.bind(new InetSocketAddress(port));
-		System.out.println("サーバーを立ち上げました。");
 	}
 	/**
 	 * 動作キーデータを登録する
@@ -58,6 +60,10 @@ public class ProcessServer {
 	public void addKey(String key) {
 		this.keySet.add(key);
 	}
+	/**
+	 * キーセットを参照します。
+	 * @return
+	 */
 	public Set<String> getKeySet() {
 		return keySet;
 	}
@@ -98,9 +104,6 @@ public class ProcessServer {
 		@Override
 		public void channelConnected(ChannelHandlerContext ctx,
 				ChannelStateEvent e) throws Exception {
-			synchronized(channels) {
-				channels.add(e.getChannel());
-			}
 		}
 		/**
 		 * メッセージ取得動作
@@ -111,16 +114,21 @@ public class ProcessServer {
 		@Override
 		public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 				throws Exception {
-			if(keySet.size() == 0) {
-				// すでに全キー接続完了か確認する
-				return;
-			}
 			Object message = e.getMessage();
 			if(message instanceof ChannelBuffer) {
 				ByteBuffer buffer = ((ChannelBuffer) message).toByteBuffer();
 				byte[] data = new byte[buffer.remaining()];
 				buffer.get(data);
-				keySet.remove(new String(data).intern());
+				if(!keySet.remove(new String(data).intern())) {
+					// キーの設定のないアクセスだったのでおかしな接続であると判定します。
+					logger.info("キーが合わない接続がきたので、拒否しておきます。");
+					channels.remove(e.getChannel());
+					e.getChannel().write(ChannelBuffers.copiedBuffer("refused".getBytes()));
+					return;
+				}
+				synchronized(channels) {
+					channels.add(e.getChannel());
+				}
 				if(keySet.size() == 0) {
 					logger.info("子プロセスから全接続をうけとったので、処理開始");
 					synchronized(keySet) {
