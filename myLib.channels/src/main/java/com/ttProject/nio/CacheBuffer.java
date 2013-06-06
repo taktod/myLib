@@ -10,15 +10,31 @@ import com.ttProject.nio.channels.IFileReadChannel;
  * @author taktod
  */
 public class CacheBuffer {
+	/** 動作用buffer */
 	private ByteBuffer buffer = null;
+	/** 動作ターゲットチャンネル */
 	private IFileReadChannel targetChannel;
+	/** 処理位置 */
 	private int position;
-	private final int size; // これいらないかも・・・
+	/** 残り読み込みデータ量forChannel */
 	private int remaining; // 残り読み込みデータ量
+	/**
+	 * コンストラクタ
+	 * @param source
+	 * @throws Exception
+	 */
+	public CacheBuffer(IFileReadChannel source) throws Exception {
+		this(source, source.size());
+	}
+	/**
+	 * コンストラクタ
+	 * @param source
+	 * @param size
+	 * @throws Exception
+	 */
 	public CacheBuffer(IFileReadChannel source, int size) throws Exception {
 		this.targetChannel = source;
 		this.position = source.position();
-		this.size = size;
 		this.remaining = size;
 	}
 	/**
@@ -64,8 +80,5 @@ public class CacheBuffer {
 			return remaining;
 		}
 		return remaining + buffer.remaining();
-	}
-	public int size() {
-		return size;
 	}
 }
