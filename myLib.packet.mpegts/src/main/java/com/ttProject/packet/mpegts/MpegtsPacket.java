@@ -4,20 +4,16 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.packet.MediaPacket;
 
+@SuppressWarnings("unused")
 public abstract class MpegtsPacket extends MediaPacket {
 	/** マネージャー保持 */
 	private final MpegtsPacketManager manager;
 	/** 特に使わないであろうデータたち sizeはつかうか・・・ */
-	@SuppressWarnings("unused")
 	private int type; // 識別子
 	private int size; // データ長
-	@SuppressWarnings("unused")
 	private int versionNumber; // バージョン番号
-	@SuppressWarnings("unused")
 	private byte currentNextOrder; // nextOrder
-	@SuppressWarnings("unused")
 	private int sectionNumber; // セクション番号
-	@SuppressWarnings("unused")
 	private int lastSectionNumber; // ラストセクション番号
 	/**
 	 * コンストラクタ

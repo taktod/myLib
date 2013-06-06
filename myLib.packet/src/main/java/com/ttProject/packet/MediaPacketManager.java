@@ -24,6 +24,10 @@ public abstract class MediaPacketManager implements IMediaPacketManager {
 	public float getDuration() {
 		return duration;
 	}
+	/**
+	 * duration値参照
+	 * @param duration
+	 */
 	public void setDuration(float duration) {
 		this.duration = duration;
 	}
@@ -93,6 +97,9 @@ public abstract class MediaPacketManager implements IMediaPacketManager {
 	public float getPassedTime() {
 		return passedTime;
 	}
+	/**
+	 * データをリセットしておく。
+	 */
 	public void reset() {
 		passedTime = 0;
 		currentPacket = null;

@@ -50,5 +50,4 @@ public class Mp3PacketManager extends MediaPacketManager {
 			return null;
 		}
 	}
-
 }

@@ -9,8 +9,7 @@ import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
  * buffer用の便利関数
- * @author todatakahiko
- *
+ * @author taktod
  */
 public class BufferUtil {
 	public static ByteBuffer safeRead(ReadableByteChannel ch, int length) throws Exception {

@@ -52,17 +52,14 @@ public class FlvHeaderPacket extends FlvPacket {
 		buffer.rewind();
 		switch(type) {
 		case FlvPacketManager.AUDIO_TAG:
-//			System.out.println("audioTagの書き込み");
 			audioSequenceHeader = buffer;
 			isSaved = false;
 			break;
 		case FlvPacketManager.VIDEO_TAG:
-//			System.out.println("videoTagの書き込み");
 			videoSequenceHeader = buffer;
 			isSaved = false;
 			break;
 		case FlvPacketManager.FLV_TAG:
-//			System.out.println("flvtagの書き込み");
 			flvHeader = buffer;
 			videoSequenceHeader = null;
 			audioSequenceHeader = null;
