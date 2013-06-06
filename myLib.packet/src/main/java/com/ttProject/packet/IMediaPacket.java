@@ -29,4 +29,9 @@ public interface IMediaPacket {
 	 * @return
 	 */
 	public float getDuration();
+	/**
+	 * 生データ参照用
+	 * @return
+	 */
+	public byte[] getRawData();
 }

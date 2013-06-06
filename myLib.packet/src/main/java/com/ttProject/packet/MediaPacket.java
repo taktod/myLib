@@ -14,7 +14,7 @@ public abstract class MediaPacket implements IMediaPacket {
 	private ByteBuffer buffer;
 	private float duration = 0;
 	/**
-	 * 書き込み酔うのバッファ参照
+	 * 書き込み用のバッファ参照
 	 * TODO この方法だと、bufferが大きくなると動作が重くなります。
 	 * @param size 必要サイズ
 	 * @return
@@ -71,5 +71,14 @@ public abstract class MediaPacket implements IMediaPacket {
 	public float getDuration() {
 		return duration;
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public byte[] getRawData() {
+		buffer.flip();
+		byte[] data = new byte[buffer.limit()];
+		buffer.get(data);
+		return data;
+	}
 }
