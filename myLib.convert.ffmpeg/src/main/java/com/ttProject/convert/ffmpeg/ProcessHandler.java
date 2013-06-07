@@ -1,5 +1,6 @@
 package com.ttProject.convert.ffmpeg;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.ClosedByInterruptException;
@@ -133,6 +134,9 @@ public class ProcessHandler {
 				}
 				catch (ClosedByInterruptException e) {
 					// チャンネルが別途閉じられただけの処理
+				}
+				catch (IOException e) {
+					// stream.closeというのがくる可能性があるらしい。
 				}
 				catch (Exception e) {
 					logger.error("プロセスからのデータ応答取得エラー", e);
