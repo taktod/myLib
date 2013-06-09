@@ -1,22 +1,30 @@
 package com.ttProject.jmx.test;
 
-import org.junit.Test;
-
 import com.ttProject.jmx.JMXFactory;
-import com.ttProject.jmx.JMXServerFactory;
 
-@SuppressWarnings("unused")
+/**
+ * jmxの動作
+ * @author taktod
+ *
+ */
 public class JMXTest {
-	public static final String TEST_SERVER_ADDRESS = 
-			"service:jmx:rmi:///jndi/rmi://localhost/trivia";
-//	@Test
-	public void test() throws Exception {
-		// テスト動作をやってみる。
-		JMXServerFactory.openJMXRemoteServer(3000);
-		// MXBeanとそれに追随するIMXBeanBaseのインターフェイスがあれば、それをJconsole経由で呼び出し可能になります。
-		JMXFactory.registerMBean("testhogehoge", new TestMXBean());
-		while(true) {
-			Thread.sleep(1000);
+	/**
+	 * エントリー
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		System.out.println("動作開始");
+		TestMXBean mxBean = new TestMXBean();
+		JMXFactory.registerMBean("control", mxBean);
+		try {
+			while(mxBean.isWork()) {
+				Thread.sleep(1000);
+			}
+		}
+		catch (InterruptedException e) {
+		}
+		catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }
