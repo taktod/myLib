@@ -5,7 +5,6 @@ import com.ttProject.jmx.JMXFactory;
 /**
  * jmxの動作
  * @author taktod
- *
  */
 public class JMXTest {
 	/**

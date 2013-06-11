@@ -1,5 +1,6 @@
 package com.ttProject.jmx.bean;
 
+import javax.management.NotificationBroadcasterSupport;
 import javax.management.ObjectName;
 
 import com.ttProject.jmx.JMXFactory;
@@ -8,7 +9,7 @@ import com.ttProject.jmx.JMXFactory;
  * MXBeanの実体ベース
  * @author taktod
  */
-public abstract class MXBeanBase implements IMXBeanBase {
+public abstract class MXBeanBase extends NotificationBroadcasterSupport implements IMXBeanBase {
 	/**
 	 * 自分の動作objectNameの保持
 	 */
