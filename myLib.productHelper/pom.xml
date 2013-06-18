@@ -85,6 +85,7 @@
                   <exclude>*.log</exclude>
                   <exclude>pom.xml</exclude>
                   <include>*</include>
+                  <include>*/*</include>
                 </resource>
               </resources>
             </configuration>
