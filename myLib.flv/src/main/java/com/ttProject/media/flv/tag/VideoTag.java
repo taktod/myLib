@@ -60,6 +60,7 @@ public class VideoTag extends Tag {
 			break;
 		case 0x30:
 			frame = FrameType.Disposable;
+			break;
 		}
 		codec = CodecType.getVideoCodecType(tagByte);
 		// h.264である場合はmshが必要
@@ -131,6 +132,13 @@ public class VideoTag extends Tag {
 	 */
 	public boolean isKeyFrame() {
 		return frame == FrameType.Key;
+	}
+	/**
+	 * disposableInnerFrameであるか応答する。
+	 * @return
+	 */
+	public boolean isDisposableInner() {
+		return frame == FrameType.Disposable;
 	}
 	/**
 	 * {@inheritDoc}
