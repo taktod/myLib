@@ -27,6 +27,7 @@
     <module>myLib.convert.ffmpeg</module>
     <module>myLib.convert.xuggle</module>
     <module>myLib.jmx</module>
+    <module>myLib.mkv</module>
   </modules>
   <scm>
   	<url>scm:git:git@github.com:taktod/myLib.git</url>
