@@ -122,7 +122,7 @@ public class ProcessServer {
 				if(!keySet.remove(new String(data).intern())) {
 					// キーの設定のないアクセスだったのでおかしな接続であると判定します。
 					logger.info("キーが合わない接続がきたので、拒否しておきます。");
-					channels.remove(e.getChannel());
+//					channels.remove(e.getChannel());
 					e.getChannel().write(ChannelBuffers.copiedBuffer("refused".getBytes()));
 					return;
 				}
