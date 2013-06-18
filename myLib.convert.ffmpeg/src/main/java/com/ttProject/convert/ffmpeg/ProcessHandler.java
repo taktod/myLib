@@ -1,10 +1,6 @@
 package com.ttProject.convert.ffmpeg;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
-import java.nio.channels.ClosedByInterruptException;
-import java.nio.channels.ReadableByteChannel;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +9,7 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import com.ttProject.convert.IConvertListener;
+import com.ttProject.convert.ffmpeg.worker.DataReceiveWorker;
 
 /**
  * ffmpegConvertManagerで利用する内部プロセスのハンドルクラス
@@ -27,8 +24,6 @@ public class ProcessHandler {
 	private final int port;
 	/** 子プロセスの標準出力受付thread */
 	private Thread thread = null;
-	/** 子プロセス用threadの動作フラグ */
-	private boolean processFlg = true;
 	/** 動作させるコマンド(標準入力でデータを渡して、標準出力に吐く必要あり) */
 	private String processCommand = null;
 	/** コマンド動作時に追加する追加環境変数 */
@@ -37,6 +32,8 @@ public class ProcessHandler {
 	private final Set<IConvertListener> listeners = new HashSet<IConvertListener>();
 	/** 動作プロセス */
 	private Process process = null;
+	/** データ受信処理 */
+	private DataReceiveWorker worker = null;
 	/**
 	 * コンストラクタ
 	 * @param port
@@ -116,52 +113,32 @@ public class ProcessHandler {
 		}
 		// プロセスを開始する
 		process = processBuilder.start();
-		final ReadableByteChannel outputChannel = Channels.newChannel(process.getInputStream());
-		thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					while(processFlg) {
-						// 順次データを読み込んでいく。
-						ByteBuffer buffer = ByteBuffer.allocate(65536);
-						outputChannel.read(buffer); // この部分でwaitがかかる
-						buffer.flip();
-						// うけとったデータは対象のIConvertListenerに渡す。
-						for(IConvertListener listener : listeners) {
-							listener.receiveData(buffer);
-						}
-					}
-				}
-				catch (ClosedByInterruptException e) {
-					// チャンネルが別途閉じられただけの処理
-				}
-				catch (IOException e) {
-					// stream.closeというのがくる可能性があるらしい。
-				}
-				catch (Exception e) {
-					logger.error("プロセスからのデータ応答取得エラー", e);
-				}
-			}
-		});
 		// 応答読み取りスレッド
-		thread.setName("ffmpegConvertProcess:" + hashCode());
+		worker = new DataReceiveWorker(Channels.newChannel(process.getInputStream()), listeners);
+		thread = new Thread(worker);
+//		thread.setDaemon(true);
+		thread.setName("ffmpegDataReceiveThread");
 		thread.start();
 	}
 	/**
 	 * 閉じる処理
 	 */
 	public void close() {
+		// 管理リスナーを解放しておく。
+		listeners.clear();
+		// 内部threadの処理を抜けさせる
+		if(worker != null) {
+			worker.stop();
+		}
+		// Threadの解放
 		if(thread != null) {
-			logger.info("停止させます。");
-			processFlg = false;
 			thread.interrupt();
 			thread = null;
-			if(process != null) {
-				// processに対して停止をかけておきます。
-				logger.info("プロセス動作も停止しておきます。");
-				process.destroy();
-				process = null;
-			}
+		}
+		// 作成プロセスをこわしておく
+		if(process != null) {
+			process.destroy();
+			process = null;
 		}
 	}
 }

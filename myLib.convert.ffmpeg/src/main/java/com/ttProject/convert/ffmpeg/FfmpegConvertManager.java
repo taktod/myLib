@@ -5,7 +5,6 @@ import java.lang.management.RuntimeMXBean;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
@@ -14,6 +13,7 @@ import org.jboss.netty.buffer.ChannelBuffers;
 
 import com.ttProject.convert.IConvertManager;
 import com.ttProject.convert.ffmpeg.process.ProcessServer;
+import com.ttProject.convert.ffmpeg.worker.DataSendWorker;
 
 /**
  * ffmpegやavconvを利用してメディアデータを変換するプログラム
@@ -29,13 +29,13 @@ public class FfmpegConvertManager implements IConvertManager {
 	/** 動作pid */
 	private static final String pid;
 	/** 動作ポート番号 */
-	private final int portNumber;
+	private int portNumber;
 	/** 動作サーバー */
-	private final ProcessServer server;
+	private ProcessServer server;
 	/** データ転送用のスレッド */
-	private Thread dataSendingThread = null;
-	/** 稼働中フラグ */
-	private boolean workFlg = true;
+	private Thread thread = null;
+	/** データ送信処理 */
+	private DataSendWorker worker = null;
 	/** データ転送用のqueue */
 	private LinkedBlockingQueue<ChannelBuffer> dataQueue = new LinkedBlockingQueue<ChannelBuffer>();
 	/**
@@ -47,10 +47,11 @@ public class FfmpegConvertManager implements IConvertManager {
 	}
 	/**
 	 * コンストラクタ
+	 * TODO この処理が重すぎて歪みがでる場合は関数にわけた方がよさそう。
+	 * とりあえず利用側で回避している状態
 	 * @throws Exception
 	 */
 	public FfmpegConvertManager() throws Exception {
-		// このタイミングでサーバーを起動していた方がいいかも・・・
 		// このタイミングでサーバーをつくる
 		ProcessServer processServer = null;
 		// 処理可能なポート番号をみつける必要がある。
@@ -75,30 +76,11 @@ public class FfmpegConvertManager implements IConvertManager {
 		server = processServer;
 		this.portNumber = portNumber;
 		// threadをつくってデータを送る
-		dataSendingThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				Set<String> keySet = server.getKeySet();
-				try {
-					synchronized(keySet) {
-						keySet.wait();
-					}
-					while(workFlg) {
-						ChannelBuffer buffer = dataQueue.take();
-						server.sendData(buffer);
-					}
-				}
-				catch (InterruptedException e) {
-					// 停止処理になっただけなので放置しておく。
-				}
-				catch (Exception e) {
-					logger.info("データ送信動作がとまりました。", e);
-				}
-			}
-		});
-		dataSendingThread.setDaemon(true);
-		dataSendingThread.setName("ffmpegDataSendingThread");
-		dataSendingThread.start();
+		worker = new DataSendWorker(server, dataQueue);
+		thread = new Thread(worker);
+//		dataSendThread.setDaemon(true);
+		thread.setName("ffmpegDataSendThread");
+		thread.start();
 	}
 	/**
 	 * 動作handlerを取得する
@@ -135,11 +117,19 @@ public class FfmpegConvertManager implements IConvertManager {
 		dataQueue.add(ChannelBuffers.copiedBuffer(buffer));
 	}
 	/**
+	 * きちんとcloseされなかったときのために、finalizerでcloseしておきます。
+	 */
+	@Override
+	protected void finalize() throws Throwable {
+		close();
+		super.finalize();
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void close() {
-		workFlg = false;
+		// 内部処理workerを閉じておく。
 		for(String key : handlers.keySet()) {
 			handlers.get(key).close();
 		}
@@ -147,10 +137,14 @@ public class FfmpegConvertManager implements IConvertManager {
 		if(server != null) {
 			server.closeServer();
 		}
-		// データ転送threadを閉じておく。
-		if(dataSendingThread != null) {
-			dataSendingThread.interrupt();
-			dataSendingThread = null;
+		// 内部threadの処理を抜けさせる
+		if(worker != null) {
+			worker.stop();
+		}
+		// Threadの解放
+		if(thread != null) {
+			thread.interrupt();
+			thread = null;
 		}
 		// 処理データqueueを閉じておく
 		if(dataQueue != null) {
