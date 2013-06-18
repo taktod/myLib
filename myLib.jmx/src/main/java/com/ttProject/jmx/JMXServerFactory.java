@@ -13,7 +13,7 @@ import javax.management.remote.JMXServiceURL;
  * @author taktod
  */
 public class JMXServerFactory {
-	private static int port;
+	private static int port = -1;
 	/**
 	 * 動作ポート番号参照
 	 * @return
@@ -38,6 +38,10 @@ public class JMXServerFactory {
 	 * @throws Exception
 	 */
 	public static void openJMXRemoteServer() throws Exception {
+		if(JMXServerFactory.port == -1) {
+			// すでに決定済み
+			return;
+		}
 		RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
 		int pid = Integer.parseInt(bean.getName().split("@")[0]);
 		if(pid < 1000) {
