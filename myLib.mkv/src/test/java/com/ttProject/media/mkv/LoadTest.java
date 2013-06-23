@@ -1,21 +1,28 @@
 package com.ttProject.media.mkv;
 
-import java.nio.ByteBuffer;
-
 import org.junit.Test;
 
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
-import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtils;
 
+/**
+ * h.264のmshはcodecPrivateの中にはいっていた。
+ * aacのmshもcodecPrivateの中にはいっていた。
+ * @author taktod
+ *
+ */
 public class LoadTest {
 	@Test
 	public void test() throws Exception {
 		IFileReadChannel channel = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("testffmpeg.webm")
 		);
-		ByteBuffer buffer = BufferUtil.safeRead(channel, 4);
-		System.out.println(HexUtils.toHex(buffer, true));
+		IElementAnalyzer analyzer = new ElementAnalyzer();
+		// とりあえず中身をしる必要があるので、しっていく
+		Element e = null;
+		while((e = analyzer.analyze(channel)) != null) {
+			System.out.println(e);
+		}
+		System.out.println("おしまい");
 	}
 }

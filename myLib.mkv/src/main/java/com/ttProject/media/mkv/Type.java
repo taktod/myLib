@@ -39,17 +39,29 @@ public enum Type {
 		Cluster(0x1F43B675),
 			Timecode(0xE7),
 			SimpleBlock(0xA3),
+			BlockGroup(0xa0),
+				Block(0xa1),
+				ReferenceBlock(0xfb),
+			EncryptedBlock(0xaf), // deplicated
 		Tracks(0x1654AE6B),
 			TrackEntry(0xAE),
 				TrackNumber(0xD7),
 				TrackUID(0x73C5),
 				TrackType(0x83),
+				FlagEnabled(0xb9),
+				FlagDefault(0x88),
+				FlagForced(0x55aa),
 				FlagLacing(0x9C),
+				MinCache(0x6de7),
 				DefaultDuration(0x23E383),
+				TrackTimecodeScale(0x23314f), // depricated
+				MaxBlockAdditionID(0x55ee),
 				Language(0x22B59C),
 				CodecID(0x86),
 				CodecPrivate(0x63A2),
+				CodecDecodeAll(0xaa),
 				Video(0xE0),
+					FlagInterlaced(0x9a),
 					PixelWidth(0xB0),
 					PixelHeight(0xBA),
 					DisplayWidth(0x54B0),
@@ -59,14 +71,41 @@ public enum Type {
 					SamplingFrequency(0xB5),
 					Channels(0x9F),
 					BitDepth(0x6264),
-				
+		Cues(0x1c53bb6b),
+			CuePoint(0xBB),
+				CueTime(0xb3),
+				CueTrackPositions(0xb7),
+					CueTrack(0xf7),
+					CueClusterPosition(0xf1),
+		Tags(0x1254c367),
 	Void(0xEC),
-	CRC32(0xBF);
+	CRC32(0xBF),
+//	Unknown1(0xFF),
+//	Unknown2(0x651b),
+	Unknown(-1);
 	private final int value;
 	private Type(int value) {
 		this.value = value;
 	}
 	public int intValue() {
 		return value;
+	}
+	public int tagSize() {
+		if(value < 0x0100)
+			return 1;
+		if(value < 0x010000)
+			return 2;
+		if(value < 0x01000000)
+			return 3;
+		return 4;
+	}
+	public static Type getType(int value) {
+		for(Type t : values()) {
+			if(t.intValue() == value) {
+				return t;
+			}
+		}
+		System.out.println(Integer.toHexString(value));
+		return Unknown;
 	}
 }
