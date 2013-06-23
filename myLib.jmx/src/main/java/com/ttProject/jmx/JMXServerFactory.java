@@ -38,7 +38,7 @@ public class JMXServerFactory {
 	 * @throws Exception
 	 */
 	public static void openJMXRemoteServer() throws Exception {
-		if(JMXServerFactory.port == -1) {
+		if(JMXServerFactory.port != -1) {
 			// すでに決定済み
 			return;
 		}
