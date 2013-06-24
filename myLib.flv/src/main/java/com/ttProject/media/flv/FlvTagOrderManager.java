@@ -3,6 +3,8 @@ package com.ttProject.media.flv;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.flv.tag.AudioTag;
 import com.ttProject.media.flv.tag.VideoTag;
 
@@ -13,6 +15,8 @@ import com.ttProject.media.flv.tag.VideoTag;
  * @author taktod
  */
 public class FlvTagOrderManager {
+	/** ロガー */
+	private static final Logger logger = Logger.getLogger(FlvTagOrderManager.class);
 	/** 処理待ちaudioTagリスト */
 	private final List<Tag> audioTags = new ArrayList<Tag>();
 	/** 処理待ちvideoTagリスト */
@@ -42,7 +46,9 @@ public class FlvTagOrderManager {
 			else {
 				Tag prevTag = audioTags.get(audioTags.size() - 1);
 				if(prevTag.getTimestamp() > tag.getTimestamp()) {
-					throw new Exception("同一メディアでデータのflipがありました。");
+//					throw new Exception("同一メディアでデータのflipがありました。");
+					logger.warn("音声データのflipがありました。");
+					return;
 				}
 				audioTags.add(tag);
 			}
@@ -54,7 +60,9 @@ public class FlvTagOrderManager {
 			else {
 				Tag prevTag = videoTags.get(videoTags.size() - 1);
 				if(prevTag.getTimestamp() > tag.getTimestamp()) {
-					throw new Exception("同一メディアでデータのflipがありました。2");
+//					throw new Exception("同一メディアでデータのflipがありました。2");
+					logger.warn("映像データのflipがありました。");
+					return;
 				}
 				videoTags.add(tag);
 			}
