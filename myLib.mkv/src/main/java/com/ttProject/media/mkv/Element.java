@@ -76,6 +76,9 @@ public abstract class Element {
 	public static long getSize(IFileReadChannel source) throws Exception {
 		return getData(source, true);
 	}
+	public static long getEbmlNumber(IFileReadChannel source) throws Exception {
+		return getData(source, true);
+	}
 	public static Type getTag(IFileReadChannel source) throws Exception {
 		return Type.getType((int)getData(source, false));
 	}
