@@ -63,6 +63,9 @@ public class DataReceiveWorker implements Runnable {
 		catch (IOException e) {
 			// stream.closeというのがくる(outputChannelに対するもの)
 		}
+		catch (InterruptedException e) {
+			// 処理中断させれただけなので放置します。
+		}
 		catch (Exception e) {
 			logger.error("想定外の例外が発生しました。", e);
 		}
