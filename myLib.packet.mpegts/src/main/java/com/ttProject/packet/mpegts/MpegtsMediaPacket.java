@@ -77,7 +77,7 @@ public class MpegtsMediaPacket extends MpegtsPacket {
 					getManager().setTimeTic(tic);
 					++pos;
 					// durationを更新
-					setDuration((int)(getManager().getPassedTic() / 9000 - getManager().getPassedTime() * 10) / 10f);
+					setDuration(getManager().getPassedTic() / 90000f - getManager().getPassedTime());
 				}
 			}
 		}
