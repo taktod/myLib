@@ -1,8 +1,6 @@
 package com.ttProject.media.mp3.frame;
 
-import com.ttProject.media.IAnalyzer;
 import com.ttProject.media.mp3.Frame;
-import com.ttProject.nio.channels.IFileReadChannel;
 
 public class ID3 extends Frame {
 	public static final int tagSize = 10;
@@ -12,10 +10,6 @@ public class ID3 extends Frame {
 		super(position, size);
 		this.version = version;
 		this.flg = flg;
-	}
-	@Override
-	public void analyze(IFileReadChannel ch, IAnalyzer<?> analyzer)
-			throws Exception {
 	}
 	public short getVersion() {
 		return version;

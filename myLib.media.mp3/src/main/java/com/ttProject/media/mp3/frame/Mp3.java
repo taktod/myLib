@@ -1,8 +1,6 @@
 package com.ttProject.media.mp3.frame;
 
-import com.ttProject.media.IAnalyzer;
 import com.ttProject.media.mp3.Frame;
-import com.ttProject.nio.channels.IFileReadChannel;
 
 public class Mp3 extends Frame {
 	private final byte mpegVersion; // 2:mpeg2.5(unofficial) 2:mpeg2 3:mpeg1
@@ -54,10 +52,6 @@ public class Mp3 extends Frame {
 	 */
 	public float getDuration() {
 		return getTime(frameCount + 1) / 1000.0f - getTime();
-	}
-	@Override
-	public void analyze(IFileReadChannel ch, IAnalyzer<?> analyzer)
-			throws Exception {
 	}
 	/**
 	 * パケットから現在時刻を取得する。
