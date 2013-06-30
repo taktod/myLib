@@ -13,6 +13,4 @@
 */lib/*
 *.class
 *.log
-*.flv
-*.mp4
 *.tmp
