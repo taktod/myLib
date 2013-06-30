@@ -30,6 +30,7 @@
     <module>myLib.mkv</module>
     <module>myLib.mp3</module>
     <module>myLib.log4j</module>
+    <module>myLib.media</module>
   </modules>
   <scm>
   	<url>scm:git:git@github.com:taktod/myLib.git</url>
