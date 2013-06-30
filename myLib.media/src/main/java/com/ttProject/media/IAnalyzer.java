@@ -7,12 +7,12 @@ import com.ttProject.nio.channels.IFileReadChannel;
  * @author taktod
  *
  */
-public interface IUnitAnalyzer {
+public interface IAnalyzer<U> {
 	/**
 	 * 解析動作
 	 * @param ch 読み込み対象チャンネル
 	 * @return 解析後生成されるUnitエレメント
 	 * @throws Exception 処理中に例外がでた場合の処理
 	 */
-	public Unit analyze(IFileReadChannel ch) throws Exception;
+	public U analyze(IFileReadChannel ch) throws Exception;
 }
