@@ -14,17 +14,63 @@ import com.ttProject.util.BufferUtil;
 /**
  * amf0のデータを扱うクラス
  * @author taktod
- * 
+ * @see http://download.macromedia.com/pub/labs/amf/amf0_spec_121207.pdf
  * Number		0x00 8バイト doublebits
  * Boolean		0x01 1バイト 0x01:true 0x00:false
  * String		0x02 2バイト(サイズ) データ
  * Object		0x03 [2バイト(サイズ) データ 型タイプ 型データ] x 要素数分 00 00 09(eof)
- * Map			0x08 4バイト(intデータ(要素数？)) [2バイト(サイズ) データ 型タイプ 型データ] x 要素数分 00 00 09(eof)
- * Array		0x0A [型タイプ 型データ] x 要素数分 00 00 09(eof)
+ * MovieClip	0x04 ;予約済みで未サポート
+ * Null			0x05 
+ * Undefined	0x06
+ * Reference	0x07 2バイト(参照値)
+ * Map			0x08 4バイト(intデータ(要素数？)) [2バイト(サイズ) データ 型タイプ 型データ] x 要素数分 [00 00 2バイト(サイズ0)] 09(eof)
+ * ObjectEnd	0x09
+ * Array		0x0A [型タイプ 型データ] x 要素数分 [00 00 2バイト(サイズ0)] 09(eof)
  * Date			0x0B 8バイト(doubleBits(unixtime)) 2バイト(timezone?)
  * LongString	0x0C 4バイト(サイズ) データ
+ * Unsupported	0x0D
+ * RecordSet	0x0E ;予約済みで未サポート
+ * XmlDocument	0x0F
+ * TypedObject	0x10
  */
 public class Amf0Value {
+	/**
+	 * データタイプ
+	 */
+	public enum Type {
+		Number(0x00),
+		Boolean(0x01),
+		String(0x02),
+		Object(0x03),
+		MovieClip(0x04),
+		Null(0x05),
+		Undefined(0x06),
+		Reference(0x07),
+		Map(0x08),
+		ObjectEnd(0x09), // これ先頭にこないっぽい。
+		Array(0x0A),
+		Date(0x0B),
+		LongString(0x0C),
+		Unsupported(0x0D),
+		RecordSet(0x0E),
+		XmlDocument(0x0F),
+		TypedObject(0x10);
+		private final int value;
+		private Type(int value) {
+			this.value = value;
+		}
+		public int intValue() {
+			return value;
+		}
+		public static Type getType(int value) {
+			for(Type t : values()) {
+				if(t.intValue() == value) {
+					return t;
+				}
+			}
+			throw new RuntimeException("解析不能なデータでした。" + value);
+		}
+	}
 	/**
 	 * ファイルからデータを呼び出してオブジェクト化していく。
 	 * @param source
@@ -32,25 +78,31 @@ public class Amf0Value {
 	 */
 	public static Object getValueObject(IFileReadChannel source) throws Exception {
 		ByteBuffer data = null;
-		System.out.println(Integer.toHexString(source.position()));
+		Type type = Type.getType(BufferUtil.safeRead(source, 1).get());
 		// 先頭の１バイトを読み込む
-		switch(BufferUtil.safeRead(source, 1).get()) {
-		case 0x00: // Double
+		switch(type) {
+		case Number:
 			{
 				data = BufferUtil.safeRead(source, 8);
 				return Double.longBitsToDouble(data.getLong());
 			}
-		case 0x01: // Boolean
+		case Boolean:
 			{
-				return BufferUtil.safeRead(source, 1).get() == 0x01;
+				return BufferUtil.safeRead(source, 1).get() != 0x00;
 			}
-		case 0x02: // String
+		case String:
 			{
 				int length = BufferUtil.safeRead(source, 2).getShort();
 				data = BufferUtil.safeRead(source, length);
 				return new String(data.array()).intern();
 			}
-		case 0x03: // Object
+		case LongString:
+			{
+				int length = BufferUtil.safeRead(source, 4).getInt();
+				data = BufferUtil.safeRead(source, length);
+				return new String(data.array()).intern();
+			}
+		case Object:
 			{
 				Amf0Object<String, Object> object = new Amf0Object<String, Object>();
 				int nameSize;
@@ -60,12 +112,18 @@ public class Amf0Value {
 					Object value = getValueObject(source);
 					object.put(key, value);
 				}
-				if(BufferUtil.safeRead(source, 1).get() != 0x09) {
-					throw new Exception("mapの終端がおかしかったです。");
+				if(Type.getType(BufferUtil.safeRead(source, 1).get()) != Type.ObjectEnd) {
+					throw new Exception("objectの終端がおかしかったです。");
 				}
 				return object;
 			}
-		case 0x08: // Map
+		case Null:
+		case Unsupported:
+		case Undefined:
+			{
+				return null;
+			}
+		case Map:
 			{
 				Map<String, Object> map = new LinkedHashMap<String, Object>();
 				/*int length = */BufferUtil.safeRead(source, 4).getInt();
@@ -76,12 +134,12 @@ public class Amf0Value {
 					Object value = getValueObject(source);
 					map.put(key, value);
 				}
-				if(BufferUtil.safeRead(source, 1).get() != 0x09) {
+				if(Type.getType(BufferUtil.safeRead(source, 1).get()) != Type.ObjectEnd) {
 					throw new Exception("mapの終端がおかしかったです。");
 				}
 				return map;
 			}
-		case 0x0A: // Array
+		case Array:
 			{
 				List<Object> array = new ArrayList<Object>();
 				int length = BufferUtil.safeRead(source, 4).getInt();
@@ -90,7 +148,7 @@ public class Amf0Value {
 				}
 				return array;
 			}
-		case 0x0B: // date
+		case Date:
 			{
 				data = BufferUtil.safeRead(source, 8);
 				Date date = new Date((long)Double.longBitsToDouble(data.getLong()));
@@ -98,7 +156,7 @@ public class Amf0Value {
 				return date;
 			}
 		default:
-			throw new Exception("知らないデータがきました。");
+			throw new Exception("知らないデータがきました。:" + type);
 		}
 	}
 	/**
