@@ -8,7 +8,7 @@ import com.ttProject.nio.channels.IFileReadChannel;
  */
 public abstract class Unit {
 	/** データサイズ */
-	private final int size;
+	private int size;
 	/** ファイル上の位置 */
 	private int position;
 	/**
@@ -41,6 +41,9 @@ public abstract class Unit {
 	 */
 	public int getSize() {
 		return size;
+	}
+	public void setSize(int size) {
+		this.size = size;
 	}
 	/**
 	 * データ位置取得
