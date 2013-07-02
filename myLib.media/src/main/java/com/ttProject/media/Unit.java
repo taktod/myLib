@@ -10,7 +10,7 @@ public abstract class Unit {
 	/** データサイズ */
 	private final int size;
 	/** ファイル上の位置 */
-	private final int position;
+	private int position;
 	/**
 	 * コンストラクタ
 	 * @param position
@@ -48,5 +48,8 @@ public abstract class Unit {
 	 */
 	public int getPosition() {
 		return position;
+	}
+	public void setPosition(int position) {
+		this.position = position;
 	}
 }
