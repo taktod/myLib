@@ -3,6 +3,8 @@ package com.ttProject.media.flv;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
+import com.ttProject.media.IAnalyzer;
+import com.ttProject.media.Unit;
 import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.util.BufferUtil;
 
@@ -10,7 +12,7 @@ import com.ttProject.util.BufferUtil;
  * flvのHeader処理
  * @author taktod
  */
-public class FlvHeader {
+public class FlvHeader extends Unit {
 	/** audioデータがあるかフラグ */
 	private boolean audioFlg;
 	/** videoデータがあるかフラグ */
@@ -23,17 +25,18 @@ public class FlvHeader {
 	 * コンストラクタ
 	 */
 	public FlvHeader() {
+		super(0, 13);
 		videoFlg = false;
 		audioFlg = false;
 	}
 	/**
-	 * 解析実施
-	 * @param ch
-	 * @throws Exception
+	 * {@inheritDoc}
 	 */
-	public void analyze(IFileReadChannel ch) throws Exception {
+	@Override
+	public void analyze(IFileReadChannel ch, IAnalyzer<?> analyzer)
+			throws Exception {
 		ch.position(0);
-		// 先頭の13バイトを読み込んで解析しておく。
+		// 先頭の13バイトを読み込んで自分のものにしていく
 		ByteBuffer buffer = BufferUtil.safeRead(ch, 13);
 		byte[] tag = new byte[13];
 		buffer.get(tag);
