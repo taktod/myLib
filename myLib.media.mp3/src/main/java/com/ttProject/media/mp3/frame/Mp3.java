@@ -57,7 +57,7 @@ public class Mp3 extends Frame {
 	 * パケットから現在時刻を取得する。
 	 * @return
 	 */
-	protected int getTime(int frameCount) {
+	private int getTime(int frameCount) {
 		if(layer == 0) { // layer1
 			return (int)Math.floor(frameCount * 384 / samplingRate);
 		}
@@ -73,5 +73,16 @@ public class Mp3 extends Frame {
 			}
 		}
 		return -1;
+	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append("v:").append(mpegVersion);
+		data.append(" l:").append(layer);
+		data.append(" b:").append(bitrate);
+		data.append(" s:").append(samplingRate);
+		data.append(" tPos:").append(getTime());
+		data.append(" d:").append(getDuration());
+		return data.toString();
 	}
 }

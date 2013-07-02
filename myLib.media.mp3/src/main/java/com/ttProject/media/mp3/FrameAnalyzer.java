@@ -40,6 +40,7 @@ public class FrameAnalyzer implements IFrameAnalyzer {
 				throw new RuntimeException("ID3v1はサポートしていないです。");
 		}
 		else if(data[0] == (byte)0xFF && (data[1] & 0xE0) == 0xE0) {
+			byte data3 = BufferUtil.safeRead(ch, 1).get();
 			byte mpegVersion = 0;
 			byte layer = 0;
 			int bitrate;
@@ -62,14 +63,14 @@ public class FrameAnalyzer implements IFrameAnalyzer {
 			}
 			// protectionbit(無視)
 			// bitrate
-			bitrate = getBitrate(data[2] & 0xF0 >>> 4, mpegVersion, layer);
+			bitrate = getBitrate((data[2] & 0xF0) >>> 4, mpegVersion, layer);
 			// samplingRate
 			samplingRate = sampleRateTable[mpegVersion][(data[2] & 0x0C) >>> 2];
 			// paddingBit
 			paddingBit = (byte)((data[2] & 0x02) >>> 1);
 			// private Bit(無視)
 			// channelMode
-			channelMode = (byte)((data[3] & 0xC0) >>> 6);
+			channelMode = (byte)((data3 & 0xC0) >>> 6);
 			// データの長さ
 			int size = getSize(mpegVersion, layer, bitrate, samplingRate, paddingBit); // 4バイトのheader部をぬいてあります。
 			return new Mp3(position, size, mpegVersion, layer, bitrate, samplingRate, paddingBit, channelMode, frameCount ++);
