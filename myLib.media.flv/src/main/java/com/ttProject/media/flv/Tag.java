@@ -13,10 +13,6 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public abstract class Tag extends Unit {
-	/** 中のデータのサイズ */
-	private int size;
-	/** 読み込みファイル上での元の位置 */
-	private int position;
 	/** timestamp */
 	private int timestamp;
 	/**
@@ -34,8 +30,6 @@ public abstract class Tag extends Unit {
 	public Tag(final int size, final int position, final int timestamp) {
 		// ここで保持しているサイズはタグの中身のサイズになっているので、調整が必要。
 		super(position, size + 15);
-		this.size = size;
-		this.position = position;
 		this.timestamp = timestamp;
 	}
 	/**
@@ -86,27 +80,6 @@ public abstract class Tag extends Unit {
 	 */
 	public abstract ByteBuffer getBuffer() throws Exception;
 	/**
-	 * サイズデータの更新
-	 * @param size
-	 */
-	protected void setSize(int size) {
-		this.size = size;
-	}
-	/**
-	 * サイズ参照
-	 * @return
-	 */
-	public int getSize() {
-		return size;
-	}
-	/**
-	 * 位置参照
-	 * @return
-	 */
-	public int getPosition() {
-		return position;
-	}
-	/**
 	 * タイムスタンプ参照
 	 * @return
 	 */
@@ -128,9 +101,9 @@ public abstract class Tag extends Unit {
 	protected ByteBuffer getHeaderBuffer(byte type) {
 		ByteBuffer buffer = ByteBuffer.allocate(11);
 		buffer.put(type);
-		buffer.put(getSizeBuffer());
-		buffer.put(getTimestampBuffer());
-		buffer.put(getTrackBuffer());
+		buffer.put(getSizeBytes());
+		buffer.put(getTimestampBytes());
+		buffer.put(getTrackBytes());
 		buffer.flip();
 		return buffer;
 	}
@@ -140,7 +113,7 @@ public abstract class Tag extends Unit {
 	 */
 	protected ByteBuffer getTailBuffer() {
 		ByteBuffer buffer = ByteBuffer.allocate(4);
-		buffer.putInt(size + 11);
+		buffer.putInt(getSize() - 4);
 		buffer.flip();
 		return buffer;
 	}
@@ -148,7 +121,8 @@ public abstract class Tag extends Unit {
 	 * サイズBufferの作成補助
 	 * @return
 	 */
-	protected byte[] getSizeBuffer() {
+	protected byte[] getSizeBytes() {
+		int size = getSize() - 15;
 		return new byte[] {
 				(byte)((size >> 16) & 0xFF),
 				(byte)((size >> 8) & 0xFF),
@@ -159,7 +133,7 @@ public abstract class Tag extends Unit {
 	 * timestampBufferの作成補助
 	 * @return
 	 */
-	protected byte[] getTimestampBuffer() {
+	protected byte[] getTimestampBytes() {
 		return new byte[]{
 				(byte)((timestamp >> 16) & 0xFF),
 				(byte)((timestamp >> 8) & 0xFF),
@@ -171,7 +145,7 @@ public abstract class Tag extends Unit {
 	 * trackIDBufferの作成補助(0固定)
 	 * @return
 	 */
-	protected byte[] getTrackBuffer() {
+	protected byte[] getTrackBytes() {
 		return new byte[] {
 				(byte)0x00,
 				(byte)0x00,
@@ -182,8 +156,8 @@ public abstract class Tag extends Unit {
 	 * 終端タグ用サイズ作成補助
 	 * @return
 	 */
-	protected byte[] eofSizeBuffer() {
-		int eofSize = size + 11;
+	protected byte[] eofSizeBytes() {
+		int eofSize = getSize() - 4;
 		return new byte[] {
 				(byte)((eofSize >> 24) & 0xFF),
 				(byte)((eofSize >> 16) & 0xFF),
