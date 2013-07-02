@@ -18,6 +18,7 @@ public class FrameAnalyzer implements IFrameAnalyzer {
 		if(frame == null) {
 			return null;
 		}
+		frame.analyze(ch, this);
 		if(frame instanceof Mp3) {
 			frameCount ++;
 		}
