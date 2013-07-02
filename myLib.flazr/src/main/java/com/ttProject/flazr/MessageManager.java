@@ -9,6 +9,7 @@ import com.flazr.io.flv.FlvAtom;
 import com.flazr.rtmp.RtmpHeader;
 import com.flazr.rtmp.RtmpMessage;
 import com.flazr.rtmp.message.Metadata;
+import com.ttProject.flazr.rtmp.message.MetadataAmf3;
 import com.ttProject.media.flv.Tag;
 import com.ttProject.media.flv.tag.AggregateTag;
 import com.ttProject.media.flv.tag.AudioTag;
@@ -36,6 +37,9 @@ public class MessageManager {
 		}
 		else if(header.isVideo()) {
 			return convertToVideoTag(new FlvAtom(header.getMessageType(), header.getTime(), message.encode()));
+		}
+		else if(message instanceof MetadataAmf3) {
+			return convertToMetaTag((MetadataAmf3)message);
 		}
 		else if(header.isMetadata() && message instanceof Metadata) {
 			return convertToMetaTag((Metadata)message);
@@ -92,6 +96,14 @@ public class MessageManager {
 			// →試して見たところ問題なさそう
 			metaTag.putData(entry.getKey(), entry.getValue());
 		}
+		return metaTag;
+	}
+	private MetaTag convertToMetaTag(MetadataAmf3 meta) {
+		MetaTag metaTag = new MetaTag();
+		for(Entry<String, Object> entry : meta.getData().entrySet()) {
+			metaTag.putData(entry.getKey(), entry.getValue());
+		}
+		System.out.println("応答するmetaData" + metaTag.toString());
 		return metaTag;
 	}
 	/**
