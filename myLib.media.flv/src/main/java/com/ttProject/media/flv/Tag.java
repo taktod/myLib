@@ -44,6 +44,7 @@ public abstract class Tag extends Unit {
 	 * @param target
 	 * @throws Exception
 	 */
+	@Deprecated
 	public void copy(IFileReadChannel ch, WritableByteChannel target) throws Exception {
 		int position = ch.position();
 		// 開始位置をいれておく

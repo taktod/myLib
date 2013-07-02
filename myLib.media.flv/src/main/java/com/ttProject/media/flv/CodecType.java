@@ -16,7 +16,7 @@ public enum CodecType {
 	 * @return
 	 */
 	public static CodecType getAudioCodecType(byte tagByte) {
-		switch((tagByte &0xFF) >>> 4) {
+		switch((tagByte & 0xFF) >>> 4) {
 		case 0:  return PCM;
 		case 1:  return ADPCM;
 		case 2:  return MP3;
