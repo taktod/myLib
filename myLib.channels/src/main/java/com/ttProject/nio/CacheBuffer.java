@@ -7,6 +7,7 @@ import com.ttProject.nio.channels.IFileReadChannel;
 /**
  * ファイル上のデータにより高速にアクセスするためのバッファ
  * なるべくbufferからデータを取り出すことで高速アクセスを実現してみる。
+ * TODO そろそろintのみではなく、他のデータも引き出せるようにしたい
  * @author taktod
  */
 public class CacheBuffer {

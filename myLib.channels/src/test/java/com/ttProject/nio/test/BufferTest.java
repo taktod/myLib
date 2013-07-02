@@ -5,11 +5,12 @@ import java.nio.ByteBuffer;
 import org.junit.Test;
 
 import com.ttProject.nio.CacheBuffer;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 public class BufferTest {
-	@Test
+//	@Test
 	public void test() throws Exception {
 		IFileReadChannel target = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("tmp.dat")
@@ -19,7 +20,7 @@ public class BufferTest {
 			System.out.println(buffer.getInt());
 		}
 	}
-	@Test
+//	@Test
 	public void test2() throws Exception {
 		IFileReadChannel target = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("tmp.dat")
@@ -29,6 +30,18 @@ public class BufferTest {
 			target.read(buffer);
 			buffer.flip();
 			System.out.println(buffer.getInt());
+		}
+	}
+	@Test
+	public void test3() throws Exception {
+		System.out.println("here");
+		IFileReadChannel target = new ByteReadChannel("test".getBytes());
+		ByteBuffer buffer = ByteBuffer.allocate(10);
+		target.read(buffer);
+		buffer.flip();
+		System.out.println(buffer.remaining());
+		while(buffer.remaining() != 0) {
+			System.out.println(Integer.toHexString(buffer.get() & 0xFF));
 		}
 	}
 }

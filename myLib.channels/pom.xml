@@ -6,4 +6,7 @@
     <version>0.0.2-SNAPSHOT</version>
   </parent>
   <artifactId>myLib.channels</artifactId>
+  <name>myLib.channels</name>
+  <description>myLib内部で利用するデータ読み込みまわりのライブラリ
+http経由で外にあるファイルを読み込んで利用したりできます。</description>
 </project>
