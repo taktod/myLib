@@ -6,7 +6,7 @@
     <version>0.0.2-SNAPSHOT</version>
   </parent>
   <artifactId>myLib.media</artifactId>
-  <name>media</name>
+  <name>myLib.media</name>
   <description>Mediaコンテナのベースになるプロジェクト</description>
   <dependencies>
     <dependency>
