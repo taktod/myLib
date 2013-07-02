@@ -26,9 +26,6 @@ public class Mp3AnalyzeTest {
 			Frame frame = null;
 			while((frame = analyzer.analyze(channel)) != null) {
 				System.out.println(frame);
-				// いままでなら、analyzerの中でこのchannel.positionもやっていたけど・・・
-				// そこが不満だ・・・
-				channel.position(frame.getPosition() + frame.getSize());
 			}
 		}
 		catch (Exception e) {
