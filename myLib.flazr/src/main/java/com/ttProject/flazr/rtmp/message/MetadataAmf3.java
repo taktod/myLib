@@ -43,12 +43,10 @@ public class MetadataAmf3 implements RtmpMessage {
 		byte[] bytes = new byte[length];
 		in.readBytes(bytes);
 		try {
-			System.out.println(HexUtils.toHex(bytes, true));
 			// 処理しやすいようにするため、IFileReadChannelの形に変化させます。
 			IFileReadChannel channel = new ByteReadChannel(bytes);
 			
 			// 先頭のデータを確認して、どういうデータであるか確認する。
-			// 00 02 00 0A 6F 6E 4D 65 74 61 44 61 74 61 
 			// 00 02 00 0A 6F 6E 4D 65 74 61 44 61 74 61であることを期待してあります。
 			if(BufferUtil.safeRead(channel, 1).get() != 0x00) {
 				throw new Exception("先頭のデータはAMF0として転送されてきていることが期待されています。");
@@ -63,7 +61,6 @@ public class MetadataAmf3 implements RtmpMessage {
 			if(BufferUtil.safeRead(channel, 1).get() != 0x11) {
 				throw new Exception("中途のデータはAMF3のObjectデータとして転送されていることを期待しておきます。");
 			}
-			// 11 0A 0B 01 03 61 06 03 62 01
 			// 内部データを解析しておく。
 			data = (Map<String, Object>)Amf3Value.getValueObject(channel);
 			// まだデータがある場合は読み込んで次のObjectに配置した方がいいのかもしれない。

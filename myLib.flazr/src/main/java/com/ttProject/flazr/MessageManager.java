@@ -98,12 +98,16 @@ public class MessageManager {
 		}
 		return metaTag;
 	}
+	/**
+	 * メタデータを応答する。(ベースがMetadataAmf3バージョン)
+	 * @param meta
+	 * @return
+	 */
 	private MetaTag convertToMetaTag(MetadataAmf3 meta) {
 		MetaTag metaTag = new MetaTag();
 		for(Entry<String, Object> entry : meta.getData().entrySet()) {
 			metaTag.putData(entry.getKey(), entry.getValue());
 		}
-		System.out.println("応答するmetaData" + metaTag.toString());
 		return metaTag;
 	}
 	/**
