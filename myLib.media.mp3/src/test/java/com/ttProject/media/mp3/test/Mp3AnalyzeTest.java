@@ -27,6 +27,7 @@ public class Mp3AnalyzeTest {
 			while((frame = analyzer.analyze(channel)) != null) {
 				System.out.println(frame);
 			}
+			channel.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
