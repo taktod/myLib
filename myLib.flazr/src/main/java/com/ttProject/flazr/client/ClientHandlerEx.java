@@ -15,15 +15,15 @@ import com.ttProject.flazr.rtmp.message.MetadataAmf3;
  * @author taktod
  */
 public class ClientHandlerEx extends ClientHandler {
-	/** メッセージ送信先のwriter */
-	private RtmpWriter writer = null;
+	/** 動作オプション保持 */
+	private final ClientOptions options;
 	/**
 	 * コンストラクタ
 	 * @param options
 	 */
 	public ClientHandlerEx(ClientOptions options) {
 		super(options);
-		writer = options.getWriterToSave();
+		this.options = options;
 	}
 	/**
 	 * メッセージの受信処理
@@ -36,6 +36,8 @@ public class ClientHandlerEx extends ClientHandler {
 		case METADATA_AMF3:
 			MetadataAmf3 metadata = (MetadataAmf3) message;
 			if(metadata.getName().equals("onMetaData")) {
+				// 毎回参照するようにしておく。(データがかわっていっているため)
+				RtmpWriter writer = options.getWriterToSave();
 				if(writer != null) {
 					writer.write(message);
 				}
