@@ -44,7 +44,7 @@ public class FlvHeader extends Unit {
 			if(i != 4 && tag[i] != FLV_HEADER[i]) {
 				throw new Exception("headerがおかしいです。");
 			}
-			else {
+			else if(i == 4) {
 				audioFlg = ((tag[i] & 0x04) != 0x00);
 				videoFlg = ((tag[i] & 0x01) != 0x00);
 			}
@@ -105,5 +105,11 @@ public class FlvHeader extends Unit {
 		buffer.position(13);
 		buffer.flip();
 		return buffer;
+	}
+	@Override
+	public String toString() {
+		StringBuilder str = new StringBuilder();
+		str.append("flvHeader audio:").append(audioFlg).append(" video:").append(videoFlg);
+		return str.toString();
 	}
 }
