@@ -64,11 +64,4 @@ public class AggregateTag extends Tag {
 	public ByteBuffer getBuffer() {
 		throw new RuntimeException("aggregateTagはgetBufferには対応しないことにします。");
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getRealSize() throws Exception {
-		throw new Exception("aggregateTagはflvのサイズ応答をサポートしません");
-	}
 }

@@ -30,19 +30,19 @@ public class VideoTag extends Tag {
 	/** データ本体 */
 	private ByteBuffer data;
 	/**
-	 * コンストラクタ
+	 * コンストラクタ(データがファイルにない場合の処理)
 	 */
 	public VideoTag() {
 		super();
 	}
 	/**
-	 * コンストラクタ
+	 * コンストラクタ(データがそもそもファイルにある場合の処理)
 	 * @param size
 	 * @param position
 	 * @param timestamp
 	 */
-	public VideoTag(final int size, final int position, final int timestamp) {
-		super(size, position, timestamp);
+	public VideoTag(final int position, final int size, final int timestamp) {
+		super(position, size, timestamp);
 	}
 	/**
 	 * byteデータからコーデックとframeタイプを解析する
@@ -145,17 +145,22 @@ public class VideoTag extends Tag {
 	 */
 	@Override
 	public void analyze(IFileReadChannel ch, boolean atBegin) throws Exception {
-	}
-	/**
-	 * 実際のタグ全体の大きさを返します。
-	 * @return
-	 */
-	public int getRealSize() {
+		super.analyze(ch, atBegin);
+		// 実データを読み込んでおく。
+		ch.position(getPosition() + 11);
+		// 1バイト読み込んで、コーデックを解析しておく。
+		analyzeTagByte(BufferUtil.safeRead(ch, 1).get());
+		int dataSize = getSize() - 16;
+		// h.264の場合はさらに4バイト読み込む必要あり。
 		if(codec == CodecType.AVC) {
-			return 17 + data.remaining();
+			isMediaSequenceHeader = (BufferUtil.safeRead(ch, 1).get() != 0x01);
+			// 続く３バイトは0x00であることが予想されているべきだが、ほっとく。
+			dataSize --;
 		}
-		else {
-			return 16 + data.remaining();
+		setData(BufferUtil.safeRead(ch, dataSize));
+		// tailを読み込む
+		if(BufferUtil.safeRead(ch, 4).getInt() != getSize() - 4) {
+			throw new Exception("tailByteの長さが狂ってます");
 		}
 	}
 	/**
@@ -174,7 +179,7 @@ public class VideoTag extends Tag {
 		// tagの作成
 		byte tagByte = 0x00;
 		// デフォルトサイズの更新
-		setSize(data.remaining() + 1);
+		setSize(data.remaining() + 1 + 15);
 		switch(codec) {
 		case JPEG:			tagByte = 0x01;	break;
 		case H263:			tagByte = 0x02;	break;
@@ -183,7 +188,7 @@ public class VideoTag extends Tag {
 		case ON2VP6_ALPHA:	tagByte = 0x05;	break;
 		case SCREEN_V2:		tagByte = 0x06;	break;
 		case AVC:			tagByte = 0x07;
-			setSize(data.remaining() + 2); // avcの場合はサイズがかわるの修正しておく。
+			setSize(data.remaining() + 2 + 15); // avcの場合はサイズがかわるの修正しておく。
 			break;
 		default:
 			throw new Exception("定義されていないコーデックです。");
@@ -195,7 +200,7 @@ public class VideoTag extends Tag {
 		default:
 			throw new Exception("定義されていないフレームです。");
 		}
-		ByteBuffer buffer = ByteBuffer.allocate(getRealSize());
+		ByteBuffer buffer = ByteBuffer.allocate(getSize());
 		// header
 		buffer.put(getHeaderBuffer((byte)0x09));
 		// tag

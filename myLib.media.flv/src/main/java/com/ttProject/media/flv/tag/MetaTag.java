@@ -4,18 +4,18 @@ import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.ttProject.media.flv.Tag;
 import com.ttProject.media.flv.amf.Amf0Value;
 import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.util.BufferUtil;
 
 /**
  * medaデータ
- * 12 size timestamp 00 00 00 02 
- * 文字列 onMetaData 02 size(short) データ
- * Map 08 int値
- *   文字列 データの繰り返し
- * 00 00 09(eof for map) 
+ * 12 xx xx xx tt tt tt tt 00 00 00 [AMF0でonMetaData(文字列)] [AMF0でObjectMapデータ] xx xx xx xx
+ * xxの部分はサイズ、先頭のサイズと終端のサイズと２つある。
+ * ttの部分はtimestamp
  * 
  * @author taktod
  */
@@ -33,7 +33,16 @@ public class MetaTag extends Tag {
 	 */
 	public void putData(String key, Object data) {
 		rawData = null;
+		// 追加したら、すでに計算済みのrawDataを破棄して、あたらしいデータを追加しておきます。
 		this.data.put(key, data);
+	}
+	/**
+	 * データの削除
+	 * @param key
+	 */
+	public void removeData(String key) {
+		rawData = null;
+		this.data.remove(key);
 	}
 	/**
 	 * データの参照
@@ -44,35 +53,50 @@ public class MetaTag extends Tag {
 		return data.get(key);
 	}
 	/**
-	 * コンストラクタ
+	 * コンストラクタ(メモリーからつくられる場合)
 	 */
 	public MetaTag() {
 		super();
 	}
 	/**
-	 * コンストラクタ
+	 * コンストラクタ(ファイルベースの場合・・・だがMetaTagとしては、デフォルトでデータを読み込んでdataをつくっておきたいところ・・・)
 	 * @param size
 	 * @param position
 	 * @param timestamp
 	 */
-	public MetaTag(final int size, final int position, final int timestamp) {
-		super(size, position, timestamp);
+	public MetaTag(final int position, final int size, final int timestamp) {
+		super(position, size, timestamp);
 	}
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void analyze(IFileReadChannel ch, boolean atBegin) throws Exception {
-		// ファイルから読み込んでなんとかしておく。
-		if(atBegin) {
-			// 先頭部分のデータを読み込んでおく。
-		}
+		super.analyze(ch, atBegin);
+		// 実データを読み込む
+		ch.position(getPosition() + 11);
 		// データを読み込む
 		String tag = (String)Amf0Value.getValueObject(ch);
 		if(!"onMetaData".equals(tag)) {
 			throw new Exception("先頭がonMetaDataになっていませんでした。");
 		}
-		System.out.println(Amf0Value.getValueObject(ch));
+		while(ch.position() < getPosition() + super.getSize() - 4) { // tailの部分があるので4バイト引いておく。
+			Object data = Amf0Value.getValueObject(ch);
+			if(!(data instanceof Map<?, ?>)) {
+				throw new Exception("内部データの構成がMapではありませんでした。");
+			}
+			Map<String, Object> object = (Map<String, Object>)data;
+			for(Entry<String, Object> entry : object.entrySet()) {
+				this.data.put(entry.getKey(), entry.getValue());
+			}
+		}
+		// tailについて確認しておく。
+		if(BufferUtil.safeRead(ch, 4).getInt() != super.getSize() - 4) {
+			throw new Exception("tailByteの長さが狂ってます");
+		}
+		
+		rawData = null;
 	}
 	/**
 	 * {@inheritDoc}
@@ -80,13 +104,11 @@ public class MetaTag extends Tag {
 	@Override
 	public void writeTag(WritableByteChannel target) throws Exception {
 		if(rawData == null) {
-			getRealSize();
+			getSize();
 		}
-		// データサイズを書き換えておく
-		setSize(rawData.remaining());
 		// 頭の11バイト書き込み
 		target.write(getHeaderBuffer((byte)0x12));
-		// 実データ部書き込み
+		// 実データ部書き込みdata
 		// 内容を書き込む
 		rawData.position(0);
 		target.write(rawData);
@@ -96,27 +118,33 @@ public class MetaTag extends Tag {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int getRealSize() throws Exception {
-		// データ量を調べ直す必要あり。
-		ByteBuffer titleBuffer = Amf0Value.getValueBuffer(title);
-		// TODO この部分のmapは場合によってはデータが大きくなりすぎるのでちょっとずつ書き込めたほうがいいかも
-		ByteBuffer dataBuffer = Amf0Value.getValueBuffer(data);
-		rawData = ByteBuffer.allocate(titleBuffer.remaining() + dataBuffer.remaining());
-		rawData.put(titleBuffer);
-		rawData.put(dataBuffer);
-		rawData.flip();
-		return rawData.remaining() + 15;
+	public int getSize() {
+		// 実データbufferを作成して計算しなおしておく。
+		if(rawData == null) {
+			System.out.println("サイズを計算します。");
+			try {
+				// onMetaDataの文字列の部分
+				ByteBuffer titleBuffer = Amf0Value.getValueBuffer(title);
+				ByteBuffer dataBuffer = Amf0Value.getValueBuffer(data);
+				rawData = ByteBuffer.allocate(titleBuffer.remaining() + dataBuffer.remaining());
+				rawData.put(titleBuffer);
+				rawData.put(dataBuffer);
+				rawData.flip();
+				super.setSize(rawData.remaining() + 15);
+			}
+			catch (Exception e) {
+				throw new RuntimeException("不明な例外が発生しました。");
+			}
+		}
+		return super.getSize();
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public ByteBuffer getBuffer() throws Exception {
-		if(rawData == null) {
-			getRealSize();
-		}
 		// 全体のデータサイズを知っておく必要がある。
-		ByteBuffer buffer = ByteBuffer.allocate(rawData.remaining() + 15);
+		ByteBuffer buffer = ByteBuffer.allocate(getSize());
 		buffer.put(getHeaderBuffer((byte)0x12));
 		rawData.position(0);
 		buffer.put(rawData);
@@ -129,6 +157,6 @@ public class MetaTag extends Tag {
 	 */
 	@Override
 	public String toString() {
-		return "metaTag:" + getTimestamp();
+		return "metaTag ts:" + getTimestamp() + " pos:" + getPosition() + " sz:" + getSize();
 	}
 }

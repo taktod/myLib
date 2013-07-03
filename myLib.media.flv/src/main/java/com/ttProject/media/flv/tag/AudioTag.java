@@ -24,19 +24,19 @@ public class AudioTag extends Tag {
 	/** データ本体 */
 	private ByteBuffer data;
 	/**
-	 * コンストラクタ
+	 * コンストラクタ(データがファイルにない場合の処理)
 	 */
 	public AudioTag() {
 		super();
 	}
 	/**
-	 * コンストラクタ
+	 * コンストラクタ(データがそもそもファイルにある場合の処理)
 	 * @param size
 	 * @param position
 	 * @param timestamp
 	 */
-	public AudioTag(final int size, final int position, final int timestamp) {
-		super(size, position, timestamp);
+	public AudioTag(final int position, final int size, final int timestamp) {
+		super(position, size, timestamp);
 	}
 	/**
 	 * メディアタグ用のbyteデータから必要な情報を抽出します。
@@ -105,7 +105,7 @@ public class AudioTag extends Tag {
 		isMediaSequenceHeader = flg;
 	}
 	/**
-	 * データを登録しておく
+	 * データを登録しておく(メディアデータの本当の部分のみ)
 	 * @param source
 	 * @param size
 	 */
@@ -113,7 +113,7 @@ public class AudioTag extends Tag {
 		data = BufferUtil.safeRead(source, size);
 	}
 	/**
-	 * データを登録しておく
+	 * データを登録しておく(メディアデータの本当の部分のみ)
 	 * @param buffer
 	 */
 	public void setData(ByteBuffer buffer) {
@@ -125,17 +125,22 @@ public class AudioTag extends Tag {
 	@Override
 	public void analyze(IFileReadChannel ch, boolean atBegin) throws Exception {
 		// ファイルからの解析はあとでつくっておく。
-	}
-	/**
-	 * 実際のタグ全体の大きさを返します。
-	 * @return
-	 */
-	public int getRealSize() {
+		super.analyze(ch, atBegin);
+		// 実データを読み込んでおく。
+		ch.position(getPosition() + 11);
+		// 1バイト読み込んで、コーデックを解析しておく。
+		analyzeTagByte(BufferUtil.safeRead(ch, 1).get());
+		int dataSize = getSize() - 16;
+		// AACの場合はさらに1バイト読み込んでおく。
 		if(codec == CodecType.AAC) {
-			return 17 + data.remaining();
+			isMediaSequenceHeader = (BufferUtil.safeRead(ch, 1).get() != 0x01);
+			dataSize --;
 		}
-		else {
-			return 16 + data.remaining();
+		// 実データ部を読み込む
+		setData(ch, dataSize);
+		// tailを読み込む
+		if(BufferUtil.safeRead(ch, 4).getInt() != getSize() - 4) {
+			throw new Exception("tailByteの長さが狂ってます");
 		}
 	}
 	/**
@@ -150,11 +155,12 @@ public class AudioTag extends Tag {
 	 */
 	@Override
 	public ByteBuffer getBuffer() throws Exception {
+		// データのベース位置を更新します。
 		data.position(0);
 		// tagを作成します。
 		byte tagByte = 0x00;
 		// デフォルトサイズの更新
-		setSize(data.remaining() + 1);
+		setSize(data.remaining() + 1 + 15);
 		// codec判定
 		switch(codec) {
 //		case PCM: tagByte = 0x00;
@@ -172,7 +178,7 @@ public class AudioTag extends Tag {
 		case DEVICE_SPECIFIC:	tagByte = (byte)0xF2;break;
 
 		case AAC: 				tagByte = (byte)0xA2;
-			setSize(data.remaining() + 2); // aacの場合はサイズがちょっとかわるので、上書きしておく。
+			setSize(data.remaining() + 2 + 15); // aacの場合はサイズがちょっとかわるので、上書きしておく。
 			break;
 
 //		case 12: // 不明
@@ -201,7 +207,7 @@ public class AudioTag extends Tag {
 			tagByte |= 1;
 		}
 		// データの作成
-		ByteBuffer buffer = ByteBuffer.allocate(getRealSize());
+		ByteBuffer buffer = ByteBuffer.allocate(getSize());
 		// header
 		buffer.put(getHeaderBuffer((byte)0x08));
 		// tag
