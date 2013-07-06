@@ -2,7 +2,6 @@ package com.ttProject.media.mkv;
 
 import java.lang.reflect.Constructor;
 
-import com.ttProject.media.mkv.element.Cluster;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 public class ElementAnalyzer implements IElementAnalyzer {
@@ -12,7 +11,7 @@ public class ElementAnalyzer implements IElementAnalyzer {
 			return null;
 		}
 		Type tag = Element.getTag(ch);
-		System.out.println(tag);
+//		System.out.println(tag);
 		try {
 			Class<?> cls = Thread.currentThread().getContextClassLoader().loadClass(getClassName(tag));
 			Element element = null;

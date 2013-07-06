@@ -19,9 +19,7 @@ public class LoadTest {
 		);
 		IElementAnalyzer analyzer = new ElementAnalyzer();
 		// とりあえず中身をしる必要があるので、しっていく
-		Element e = null;
-		while((e = analyzer.analyze(channel)) != null) {
-			System.out.println(e);
+		while(analyzer.analyze(channel) != null) {
 		}
 		System.out.println("おしまい");
 	}
