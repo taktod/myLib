@@ -1,0 +1,34 @@
+package com.ttProject.media.mp4.atom;
+
+import java.nio.ByteBuffer;
+
+import com.ttProject.util.BufferUtil;
+import com.ttProject.media.mp4.Atom;
+import com.ttProject.media.mp4.IAtomAnalyzer;
+import com.ttProject.nio.channels.IFileReadChannel;
+
+/**
+ * stcoの64bitバージョン
+ * chunkがfile上のどこにあるか保持しています
+ * @author taktod
+ */
+public class Co64 extends Atom {
+	private int offsetCount;
+	public Co64(int position, int size) {
+		super(Co64.class.getSimpleName().toLowerCase(), position, size);
+	}
+	@Override
+	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
+		ch.position(getPosition() + 8);
+		ByteBuffer buffer = BufferUtil.safeRead(ch, 8);
+		analyzeFirstInt(buffer.getInt());
+		offsetCount = buffer.getInt();
+	}
+	@Override
+	public String toString() {
+		return super.toString("          ");
+	}
+	public int getOffsetCount() {
+		return offsetCount;
+	}
+}
