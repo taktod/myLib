@@ -81,6 +81,7 @@ public class BufferUtil {
 				// ここで抜ける場合は例外にしておいた方が本当はよさそう。(中途で読み込みが完全にできなくなった場合になるため。)
 				break;
 			}
+			Thread.sleep(10);
 			targetSize -= buffer.remaining();
 			target.write(buffer);
 		}
@@ -103,6 +104,7 @@ public class BufferUtil {
 				// ここで抜ける場合は例外にしておいた方が本当はよさそう。(中途で読み込みが完全にできなくなった場合になるため。)
 				break;
 			}
+			Thread.sleep(10);
 			targetSize -= buffer.remaining();
 		}
 	}
