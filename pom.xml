@@ -33,6 +33,9 @@
     <module>myLib.media</module>
     <module>myLib.media.mp3</module>
     <module>myLib.media.flv</module>
+    <module>myLib.media.mp4</module>
+    <module>myLib.media.mkv</module>
+    <module>myLib.media.mpegts</module>
   </modules>
   <scm>
   	<url>scm:git:git@github.com:taktod/myLib.git</url>

@@ -217,7 +217,6 @@ public abstract class Tag extends Unit {
 		case 0x12:
 			return new MetaTag(position, innerSize + 15, timestamp);
 		default:
-			System.out.println(Integer.toHexString(source.position()));
 			throw new Exception("解析不能なflvデータタグをうけとりました。:" + Integer.toHexString(type));
 		}
 	}

@@ -1,6 +1,8 @@
 package com.ttProject.media.flv;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -24,6 +26,11 @@ public class FlvTagOrderManager {
 	/** 各メディアトラックがもうなくなったかのフラグ */
 	private boolean videoEndFlg = false;
 	private boolean audioEndFlg = false;
+	/** ソート用の比較オブジェクト */
+	private final TagComparator tagSort = new TagComparator();
+	/** 比較に用いるindex値を設定、設定数のタグは無条件で保持になります */
+	private final int videoCompIndex = 5;
+	private final int audioCompIndex = 20; // ちょっと大きいけど、まぁconvertの遅延もあるし、いいだろw
 	/**
 	 * 全初期化する。
 	 */
@@ -37,7 +44,7 @@ public class FlvTagOrderManager {
 	 * tagを追加する。
 	 * @return
 	 */
-	public void addTag(Tag tag) throws Exception {
+	public synchronized void addTag(Tag tag) throws Exception {
 		// 対象のタグをaudioTagsとvideoTagsに登録する。
 		if(tag instanceof AudioTag) {
 			if(audioTags.size() == 0) {
@@ -46,11 +53,17 @@ public class FlvTagOrderManager {
 			else {
 				Tag prevTag = audioTags.get(audioTags.size() - 1);
 				if(prevTag.getTimestamp() > tag.getTimestamp()) {
-//					throw new Exception("同一メディアでデータのflipがありました。");
-					logger.warn("音声データのflipがありました。");
-					return;
+					logger.warn("音声データのflipがありました。prev:" + prevTag.getTimestamp() + ", current:" + tag.getTimestamp());
+					if(audioTags.size() > audioCompIndex) {
+						prevTag = audioTags.get(audioTags.size() - audioCompIndex);
+						if(prevTag.getTimestamp() > tag.getTimestamp()) {
+							logger.warn("再チャレンジ音声データのflipがありました。prev:" + prevTag.getTimestamp() + ", current:" + tag.getTimestamp());
+							return;
+						}
+					}
 				}
 				audioTags.add(tag);
+				Collections.sort(audioTags, tagSort);
 			}
 		}
 		else if(tag instanceof VideoTag) {
@@ -60,11 +73,17 @@ public class FlvTagOrderManager {
 			else {
 				Tag prevTag = videoTags.get(videoTags.size() - 1);
 				if(prevTag.getTimestamp() > tag.getTimestamp()) {
-//					throw new Exception("同一メディアでデータのflipがありました。2");
 					logger.warn("映像データのflipがありました。");
-					return;
+					if(videoTags.size() > videoCompIndex) {
+						prevTag = videoTags.get(videoTags.size() - videoCompIndex);
+						if(prevTag.getTimestamp() > tag.getTimestamp()) {
+							logger.warn("再チャレンジ映像データのflipがありました。");
+							return;
+						}
+					}
 				}
 				videoTags.add(tag);
+				Collections.sort(videoTags, tagSort);
 			}
 		}
 	}
@@ -82,7 +101,7 @@ public class FlvTagOrderManager {
 	 * 確定済みのタグを取り出す
 	 * @return
 	 */
-	public List<Tag> getCompleteTags() {
+	public synchronized List<Tag> getCompleteTags() {
 		List<Tag> result = new ArrayList<Tag>();
 		// データが定まったtagを応答します。
 		Tag videoTag = null;
@@ -90,13 +109,13 @@ public class FlvTagOrderManager {
 		while(true) {
 			// audioTagsとvideoTagsからデータを取り出して、順番に応答していきます。
 			if(videoTag == null) {
-				if(videoTags.size() == 0) {
+				if(videoTags.size() < videoCompIndex) {
 					break;
 				}
 				videoTag = videoTags.get(0);
 			}
 			if(audioTag == null) {
-				if(audioTags.size() == 0) {
+				if(audioTags.size() < audioCompIndex) {
 					break;
 				}
 				audioTag = audioTags.get(0);
@@ -139,5 +158,11 @@ public class FlvTagOrderManager {
 	@Override
 	public String toString() {
 		return "manager:\n" + audioTags.toString() + "\n" + videoTags.toString();
+	}
+	private class TagComparator implements Comparator<Tag> {
+		@Override
+		public int compare(Tag t1, Tag t2) {
+			return t1.getTimestamp() - t2.getTimestamp();
+		}
 	}
 }

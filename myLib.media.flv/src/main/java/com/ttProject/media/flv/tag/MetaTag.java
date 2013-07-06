@@ -121,7 +121,6 @@ public class MetaTag extends Tag {
 	public int getSize() {
 		// 実データbufferを作成して計算しなおしておく。
 		if(rawData == null) {
-			System.out.println("サイズを計算します。");
 			try {
 				// onMetaDataの文字列の部分
 				ByteBuffer titleBuffer = Amf0Value.getValueBuffer(title);

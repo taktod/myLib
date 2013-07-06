@@ -13,7 +13,7 @@ import com.ttProject.media.flv.tag.VideoTag;
  * @author taktod
  */
 public class TagOrderTest {
-	@Test
+/*	@Test
 	public void orderTest() throws Exception {
 		FlvTagOrderManager manager = new FlvTagOrderManager();
 		Tag tag = new VideoTag();
@@ -55,5 +55,5 @@ public class TagOrderTest {
 		manager.addTag(tag);
 		System.out.println(manager.getCompleteTags());
 		System.out.println(manager);
-	}
+	}*/
 }

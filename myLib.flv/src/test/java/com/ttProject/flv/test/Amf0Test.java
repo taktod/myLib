@@ -4,8 +4,6 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
 import com.ttProject.media.flv.amf.Amf0Value;
 import com.ttProject.util.HexUtils;
 
@@ -14,7 +12,7 @@ import com.ttProject.util.HexUtils;
  * @author taktod
  */
 public class Amf0Test {
-	@Test
+//	@Test
 	public void dataTest() throws Exception {
 		Map<String, Object> data = new HashMap<String, Object>();
 		data.put("test", 132.12);
