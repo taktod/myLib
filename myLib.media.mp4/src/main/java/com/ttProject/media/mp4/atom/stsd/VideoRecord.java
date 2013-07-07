@@ -67,7 +67,7 @@ public abstract class VideoRecord extends Record {
 			buffer.get(name);
 			String tag = (new String(name)).toLowerCase();
 			if("avcc".equals(tag)) {
-				avcc = new Avcc(size, position);
+				avcc = new Avcc(position, size);
 				avcc.analyze(ch);
 			}
 //			System.out.println(tag);
