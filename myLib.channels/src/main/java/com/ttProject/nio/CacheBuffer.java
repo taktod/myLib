@@ -45,6 +45,7 @@ public class CacheBuffer {
 	public int getInt() throws Exception {
 		// buffer内のデータがまにあっているか確認する。
 		if(buffer == null || buffer.remaining() < 4) {
+			// TODO このデータの作り直しの部分だけなんとかしておけば、bufferの読み込み動作はいくらでもつくれそうな予感
 			// 残りデータが0だったらもうデータなし
 			if(remaining == 0 && buffer.remaining() == 0) {
 				throw new Exception("eof already");
