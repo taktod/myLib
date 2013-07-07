@@ -43,10 +43,13 @@ public class CacheBuffer {
 	 * @return
 	 */
 	public int getInt() throws Exception {
+		// buffer内のデータがまにあっているか確認する。
 		if(buffer == null || buffer.remaining() < 4) {
+			// 残りデータが0だったらもうデータなし
 			if(remaining == 0 && buffer.remaining() == 0) {
 				throw new Exception("eof already");
 			}
+			// bufferの中にあるデータ量を確認
 			int bufRemain;
 			if(buffer == null) {
 				bufRemain = 0;
@@ -57,11 +60,13 @@ public class CacheBuffer {
 			// bufferが足りないので読み込む必要がある。
 			int bufSize = (16777216 > remaining) ? remaining : 16777216;
 			ByteBuffer buf = ByteBuffer.allocate(bufSize);
-			targetChannel.position(position);
-			targetChannel.read(buf);
+			targetChannel.position(position); // 処理位置から
+			targetChannel.read(buf); // 必要なデータを読み込む
 			buf.flip();
+			// 位置情報と残りデータ量を更新しておく。
 			position += buf.remaining();
 			remaining -= buf.remaining();
+			// bufferデータを更新しておく。
 			ByteBuffer buf2 = ByteBuffer.allocate(buf.remaining() + bufRemain);
 			if(bufRemain != 0) {
 				buf2.put(buffer);
