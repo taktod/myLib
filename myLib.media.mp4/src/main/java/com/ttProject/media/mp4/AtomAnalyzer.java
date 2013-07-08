@@ -5,9 +5,10 @@ import com.ttProject.media.mp4.atom.stsd.RecordAnalyzer;
 import com.ttProject.nio.channels.IReadChannel;
 
 public class AtomAnalyzer implements IAtomAnalyzer {
+	private final Mp4Manager manager = new Mp4Manager();
 	@Override
 	public Atom analyze(IReadChannel ch) throws Exception {
-		Atom atom = Atom.getAtom(ch);
+		Atom atom = manager.getUnit(ch);
 		if(atom == null) {
 			return null;
 		}

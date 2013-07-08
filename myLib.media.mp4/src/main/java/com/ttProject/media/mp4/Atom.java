@@ -1,12 +1,8 @@
 package com.ttProject.media.mp4;
 
-import java.lang.reflect.Constructor;
-import java.nio.ByteBuffer;
-
 import com.ttProject.media.IAnalyzer;
 import com.ttProject.media.Unit;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.util.BufferUtil;
 
 public abstract class Atom extends Unit {
 	/** atom名 */
@@ -89,35 +85,5 @@ public abstract class Atom extends Unit {
 		data.append("[size:0x").append(Integer.toHexString(getSize())).append("]");
 		data.append("[pos:0x").append(Integer.toHexString(getPosition())).append("]");
 		return data.toString();
-	}
-	// TODO この下に解析用の読み込み動作をいれておく必要あり。
-	public static Atom getAtom(IReadChannel source) throws Exception {
-		if(source.size() - source.position() < 8) {
-			return null;
-		}
-		int position = source.position();
-		ByteBuffer buffer = BufferUtil.safeRead(source, 8);
-		int size = buffer.getInt();
-		String tag = BufferUtil.getDwordText(buffer);
-		// TODO あまり良くないけど、refrectionをつかって処理しておく。(コード書くのが面倒)
-		try {
-			Class<?> cls = Thread.currentThread().getContextClassLoader().loadClass(getClassName(tag));
-			if(cls == null) {
-				return null;
-			}
-			Constructor<?> construct = cls.getConstructor(new Class<?>[]{int.class, int.class});
-			return (Atom)construct.newInstance(new Object[]{position, size});
-		}
-		catch (Exception e) {
-		}
-		return null;
-	}
-	/**
-	 * lowerCaseの文字列から、クラス名を取得する
-	 * @param lowerTagName
-	 * @return
-	 */
-	private static String getClassName(String lowerTagName) {
-		return "com.ttProject.media.mp4.atom." + lowerTagName.substring(0, 1).toUpperCase() + lowerTagName.substring(1).toLowerCase();
 	}
 }

@@ -43,29 +43,24 @@ public class FlvManager extends Manager<Tag> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Tag> getUnits(ByteBuffer data) {
+	public List<Tag> getUnits(ByteBuffer data) throws Exception {
 		ByteBuffer buffer = appendBuffer(data);
 		if(buffer == null) {
 			return null;
 		}
 		IReadChannel bufferChannel = new ByteReadChannel(buffer);
 		List<Tag> result = new ArrayList<Tag>();
-		try {
-			while(true) {
-				int position = bufferChannel.position();
-				Tag tag = getUnit(bufferChannel);
-				// tagを読み込むのに必要なデータ量があるか確認しておく。
-				if(tag == null) {
-					// データが足りない
-					buffer.position(position);
-					break;
-				}
-				tag.analyze(bufferChannel, false);
-				result.add(tag);
+		while(true) {
+			int position = bufferChannel.position();
+			Tag tag = getUnit(bufferChannel);
+			// tagを読み込むのに必要なデータ量があるか確認しておく。
+			if(tag == null) {
+				// データが足りない
+				buffer.position(position);
+				break;
 			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
+			tag.analyze(bufferChannel, false);
+			result.add(tag);
 		}
 		return result;
 	}

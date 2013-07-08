@@ -36,7 +36,7 @@ public abstract class Manager<T> {
 		return buffer;
 	}
 	// データをいれると、取得可能になったデータがでてくる。
-	public abstract List<T> getUnits(ByteBuffer data);
+	public abstract List<T> getUnits(ByteBuffer data) throws Exception;
 	// IReadChannelをいれると、１つ分のデータが取得できる。
 	public abstract T getUnit(IReadChannel source) throws Exception;
 }

@@ -22,29 +22,24 @@ public class Mp3Manager extends Manager<Frame> {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Frame> getUnits(ByteBuffer data) {
+	public List<Frame> getUnits(ByteBuffer data) throws Exception {
 		ByteBuffer buffer = appendBuffer(data);
 		if(buffer == null) {
 			return null;
 		}
 		IReadChannel bufferChannel = new ByteReadChannel(buffer);
 		List<Frame> result = new ArrayList<Frame>();
-		try {
-			while(true) {
-				int position = bufferChannel.position();
-				Frame frame = getUnit(bufferChannel);
-				if(frame == null) {
-					buffer.position(position);
-					break;
-				}
-				frame.analyze(bufferChannel);
-				// TODO analyze動作の中身をつくっておきたいところ。
-				bufferChannel.position(position + frame.getSize());
-				result.add(frame);
+		while(true) {
+			int position = bufferChannel.position();
+			Frame frame = getUnit(bufferChannel);
+			if(frame == null) {
+				buffer.position(position);
+				break;
 			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
+			frame.analyze(bufferChannel);
+			// TODO analyze動作の中身をつくっておきたいところ。
+			bufferChannel.position(position + frame.getSize());
+			result.add(frame);
 		}
 		return result;
 	}
