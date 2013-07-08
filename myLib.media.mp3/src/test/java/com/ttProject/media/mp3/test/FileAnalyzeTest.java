@@ -16,46 +16,58 @@ import com.ttProject.util.BufferUtil;
  * mp3の解析テスト
  * @author taktod
  */
-public class Mp3AnalyzeTest {
+public class FileAnalyzeTest {
 	/**
-	 * mp3ファイルを解析して、内容をdumpしてみる。
+	 * ファイルサイズが固定されている状態での動作テスト
 	 */
-//	@Test
-	public void test() {
+	@Test
+	public void fixedFileTest() {
 		try {
 			IReadChannel channel = FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("sample.mp3")
 			);
 			IFrameAnalyzer analyzer = new FrameAnalyzer();
+			// channelをそのまま解析します。
 			Frame frame = null;
 			while((frame = analyzer.analyze(channel)) != null) {
 				System.out.println(frame);
 			}
+			// 最後までいったらおわり
 			channel.close();
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * ファイルサイズはわからないがbyteBufferデータが順番に追加される状態での動作テスト
+	 * stdinみたいにサイズがわかっていないデータはこちら側
+	 */
 	@Test
-	public void test2() {
+	public void appendingBufferTest() {
 		try {
 			IReadChannel source = FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("sample.mp3")
 			);
+			// 適当な量ずつデータを取り出します。
 			ByteBuffer buffer = BufferUtil.safeRead(source, 2560);
 			Mp3Manager manager = new Mp3Manager();
+			// 解析にまわす。
 			for(Frame tag : manager.getUnits(buffer)) {
 				System.out.println(tag);
 			}
+			// 続きのデータを読み込む
+			buffer = BufferUtil.safeRead(source, 256);
+			// 解析にまわす
+			for(Frame tag : manager.getUnits(buffer)) {
+				System.out.println(tag);
+			}
+			// さらにつづける
 			buffer = BufferUtil.safeRead(source, 256);
 			for(Frame tag : manager.getUnits(buffer)) {
 				System.out.println(tag);
 			}
-			buffer = BufferUtil.safeRead(source, 256);
-			for(Frame tag : manager.getUnits(buffer)) {
-				System.out.println(tag);
-			}
+			// 飽きたらやめる
 			source.close();
 		}
 		catch (Exception e) {
