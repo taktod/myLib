@@ -5,9 +5,6 @@ import java.nio.channels.WritableByteChannel;
 
 import com.ttProject.media.IAnalyzer;
 import com.ttProject.media.Unit;
-import com.ttProject.media.flv.tag.AudioTag;
-import com.ttProject.media.flv.tag.MetaTag;
-import com.ttProject.media.flv.tag.VideoTag;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
@@ -36,20 +33,6 @@ public abstract class Tag extends Unit {
 		this.timestamp = timestamp;
 	}
 	/**
-	 * 単にそのままコピーする動作
-	 * @param ch
-	 * @param target
-	 * @throws Exception
-	 */
-	@Deprecated
-	public void copy(IReadChannel ch, WritableByteChannel target) throws Exception {
-		int position = ch.position();
-		// 開始位置をいれておく
-		ch.position(getPosition());
-		BufferUtil.quickCopy(ch, target, getSize() + 11 + 4);
-		ch.position(position);
-	}
-	/**
 	 * 元のファイルから読み込んで解析しておく。
 	 * @param ch 読み込みデータソース
 	 * @param atBegin true:初めから読み込む false:実データ部から読み込む
@@ -64,9 +47,9 @@ public abstract class Tag extends Unit {
 			// サイズとか読み込んで利用しておく
 			ByteBuffer buffer = BufferUtil.safeRead(ch, 11);
 			byte type = buffer.get();
-			int innerSize = analyzeInnerSize(buffer);
-			int timestasmp = analyzeTimestamp(buffer);
-			int trackId = analyzeTrackId(buffer);
+//			int innerSize = analyzeInnerSize(buffer);
+//			int timestasmp = analyzeTimestamp(buffer);
+//			int trackId = analyzeTrackId(buffer);
 		}
 	}
 	public void analyze(IReadChannel ch, IAnalyzer<?> analyzer)
@@ -181,43 +164,5 @@ public abstract class Tag extends Unit {
 				(byte)((eofSize >> 8) & 0xFF),
 				(byte)((eofSize >> 0) & 0xFF)
 		};
-	}
-	private static int analyzeInnerSize(ByteBuffer buffer) {
-		return ((buffer.get() & 0xFF) << 16) + ((buffer.get() & 0xFF) << 8) + (buffer.get() & 0xFF);
-	}
-	private static int analyzeTimestamp(ByteBuffer buffer) {
-		return ((buffer.get() & 0xFF) << 16) + ((buffer.get() & 0xFF) << 8) + (buffer.get() & 0xFF) + ((buffer.get() & 0xFF) << 24);
-	}
-	private static int analyzeTrackId(ByteBuffer buffer) {
-		return ((buffer.get() & 0xFF) << 16) + ((buffer.get() & 0xFF) << 8) + (buffer.get() & 0xFF);
-	}
-	/**
-	 * タグを読み込んで解析しておく。
-	 * @param source
-	 * @return
-	 */
-	public static Tag getTag(IReadChannel source) throws Exception {
-		// この部分はTagとFlvHeaderのどちらかを応答するので、Unitを応答するものとします。s
-		// 通常データを読み込みます。
-		if(source.size() - source.position() < 11) {
-			return null;
-		}
-		int position = source.position();
-		ByteBuffer buffer = BufferUtil.safeRead(source, 11);
-		byte type = buffer.get();
-		int innerSize = analyzeInnerSize(buffer);
-		int timestamp = analyzeTimestamp(buffer);
-		@SuppressWarnings("unused")
-		int trackId = analyzeTrackId(buffer);
-		switch(type) {
-		case 0x08:
-			return new AudioTag(position, innerSize + 15, timestamp);
-		case 0x09:
-			return new VideoTag(position, innerSize + 15, timestamp);
-		case 0x12:
-			return new MetaTag(position, innerSize + 15, timestamp);
-		default:
-			throw new Exception("解析不能なflvデータタグをうけとりました。:" + Integer.toHexString(type));
-		}
 	}
 }

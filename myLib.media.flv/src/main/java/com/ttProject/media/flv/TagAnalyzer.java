@@ -3,9 +3,10 @@ package com.ttProject.media.flv;
 import com.ttProject.nio.channels.IReadChannel;
 
 public class TagAnalyzer implements ITagAnalyzer {
+	private final FlvManager manager = new FlvManager();
 	@Override
 	public Tag analyze(IReadChannel ch) throws Exception {
-		Tag tag = Tag.getTag(ch);
+		Tag tag = manager.getUnit(ch);
 		if(tag == null) {
 			return null;
 		}
