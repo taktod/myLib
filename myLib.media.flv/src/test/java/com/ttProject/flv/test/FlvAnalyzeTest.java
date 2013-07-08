@@ -14,7 +14,6 @@ public class FlvAnalyzeTest {
 /*		System.out.println("flvのデータを読み込むテスト");
 		IFileReadChannel source = FileReadChannel.openFileReadChannel(
 			Thread.currentThread().getContextClassLoader().getResource("target.flv")
-//			"/home/taktod/デスクトップ/xtest/mario.flv"
 		);
 		// ヘッダ情報を読み込んでおく。
 		FlvHeader flvHeader = new FlvHeader();
