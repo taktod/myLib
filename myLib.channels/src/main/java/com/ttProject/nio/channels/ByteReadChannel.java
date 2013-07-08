@@ -73,11 +73,4 @@ public class ByteReadChannel implements IReadChannel {
 	public void close() throws IOException {
 
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public String getUri() {
-		return null;
-	}
 }

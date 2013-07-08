@@ -6,6 +6,7 @@ import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
 import com.ttProject.nio.CacheBuffer;
 import com.ttProject.nio.channels.FileReadChannel;
+import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
@@ -50,7 +51,10 @@ public class Stsc extends Atom {
 	public void start(IReadChannel src, boolean copy) throws Exception {
 		IReadChannel source;
 		if(copy) {
-			source = FileReadChannel.openFileReadChannel(src.getUri());
+			if(!(src instanceof IFileReadChannel)) {
+				throw new Exception("IFileReadChannel系のreadChannelでないと、オブジェクトのcloneは作成不能です");
+			}
+			source = FileReadChannel.openFileReadChannel(((IFileReadChannel)src).getUri());
 		}
 		else {
 			source = src;
