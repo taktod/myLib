@@ -6,7 +6,7 @@ import com.ttProject.util.BufferUtil;
 import com.ttProject.util.IntUtil;
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 public class Ftyp extends Atom {
 	private int majorBrand = -1;
@@ -18,7 +18,7 @@ public class Ftyp extends Atom {
 		compatibleBrands = new int[counter];
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
+	public void analyze(IReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
 		int size = getSize() - 8;
 		ch.position(getPosition() + 8);
 		ByteBuffer data = BufferUtil.safeRead(ch, size);

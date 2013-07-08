@@ -9,7 +9,7 @@ import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
 import com.ttProject.media.mp4.atom.stsd.IRecordAnalyzer;
 import com.ttProject.media.mp4.atom.stsd.Record;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * 各トラックのメディア詳細データを保持しているみたいです。
@@ -23,7 +23,7 @@ public class Stsd extends Atom {
 		super(Stsd.class.getSimpleName().toLowerCase(), size, position);
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
+	public void analyze(IReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
 		ch.position(getPosition() + 8);
 		ByteBuffer buffer = BufferUtil.safeRead(ch, 8);
 		analyzeFirstInt(buffer.getInt());

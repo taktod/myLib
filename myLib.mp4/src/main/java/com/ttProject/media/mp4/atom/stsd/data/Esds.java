@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import com.ttProject.util.BufferUtil;
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * mp4のstsdの内部データのさらに奥のデータ
@@ -39,7 +39,7 @@ public class Esds extends Atom {
 		super(Esds.class.getSimpleName().toLowerCase(), size, position);
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
+	public void analyze(IReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
 		// とりあえず解析しよう。
 		ch.position(getPosition() + 8);
 		ByteBuffer buffer = BufferUtil.safeRead(ch, getSize() - 8);

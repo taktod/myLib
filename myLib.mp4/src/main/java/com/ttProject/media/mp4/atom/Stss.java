@@ -6,7 +6,7 @@ import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
 import com.ttProject.nio.CacheBuffer;
 import com.ttProject.nio.channels.FileReadChannel;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 public class Stss extends Atom {
@@ -18,7 +18,7 @@ public class Stss extends Atom {
 		super(Stss.class.getSimpleName().toLowerCase(), size, position);
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
+	public void analyze(IReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
 		ch.position(getPosition() + 8);
 		ByteBuffer buffer = BufferUtil.safeRead(ch, 8);
 		analyzeFirstInt(buffer.getInt());
@@ -26,8 +26,8 @@ public class Stss extends Atom {
 		analyzed();
 		// このあとはint値のkeyFrameになるsampleの番号値リスト
 	}
-	public void start(IFileReadChannel src, boolean copy) throws Exception {
-		IFileReadChannel source;
+	public void start(IReadChannel src, boolean copy) throws Exception {
+		IReadChannel source;
 		if(copy) {
 			source = FileReadChannel.openFileReadChannel(src.getUri());
 		}

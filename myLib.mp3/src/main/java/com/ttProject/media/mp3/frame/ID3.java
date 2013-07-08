@@ -2,7 +2,7 @@ package com.ttProject.media.mp3.frame;
 
 import com.ttProject.media.mp3.Frame;
 import com.ttProject.media.mp3.IFrameAnalyzer;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * mp3のid3v2タグ
@@ -19,7 +19,7 @@ public class ID3 extends Frame {
 		this.flg = flg;
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IFrameAnalyzer analyzer)
+	public void analyze(IReadChannel ch, IFrameAnalyzer analyzer)
 			throws Exception {
 	}
 	public short getVersion() {

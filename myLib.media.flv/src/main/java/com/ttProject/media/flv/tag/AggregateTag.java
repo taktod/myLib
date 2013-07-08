@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ttProject.media.flv.Tag;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * 複数のtagをまとめて管理するtag
@@ -45,7 +45,7 @@ public class AggregateTag extends Tag {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void analyze(IFileReadChannel ch, boolean atBegin) throws Exception {
+	public void analyze(IReadChannel ch, boolean atBegin) throws Exception {
 		throw new Exception("ファイルから解析するタグではないです。");
 	}
 	/**

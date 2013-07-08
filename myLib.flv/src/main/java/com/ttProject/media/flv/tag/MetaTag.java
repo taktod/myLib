@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.ttProject.media.flv.Tag;
 import com.ttProject.media.flv.amf.Amf0Value;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * medaデータ
@@ -62,7 +62,7 @@ public class MetaTag extends Tag {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void analyze(IFileReadChannel ch, boolean atBegin) throws Exception {
+	public void analyze(IReadChannel ch, boolean atBegin) throws Exception {
 		// ファイルから読み込んでなんとかしておく。
 		if(atBegin) {
 			// 先頭部分のデータを読み込んでおく。

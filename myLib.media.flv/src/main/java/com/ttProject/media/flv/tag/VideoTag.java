@@ -5,7 +5,7 @@ import java.nio.channels.WritableByteChannel;
 
 import com.ttProject.media.flv.CodecType;
 import com.ttProject.media.flv.Tag;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -105,7 +105,7 @@ public class VideoTag extends Tag {
 	 * @param size
 	 * @throws Exception
 	 */
-	public void setData(IFileReadChannel source, int size) throws Exception {
+	public void setData(IReadChannel source, int size) throws Exception {
 		if(codec == CodecType.AVC) {
 			// h.264の場合は、頭に00 00 00をいれてsourceのデータコピーが必要になる。
 			data = ByteBuffer.allocate(size + 3);
@@ -144,7 +144,7 @@ public class VideoTag extends Tag {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void analyze(IFileReadChannel ch, boolean atBegin) throws Exception {
+	public void analyze(IReadChannel ch, boolean atBegin) throws Exception {
 		super.analyze(ch, atBegin);
 		// 実データを読み込んでおく。
 		ch.position(getPosition() + 11);

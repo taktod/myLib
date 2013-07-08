@@ -6,7 +6,7 @@ import com.ttProject.media.IAnalyzer;
 import com.ttProject.media.Unit;
 import com.ttProject.media.mp3.frame.ID3;
 import com.ttProject.media.mp3.frame.Mp3;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 public abstract class Frame extends Unit {
@@ -14,14 +14,14 @@ public abstract class Frame extends Unit {
 		super(position, size);
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IAnalyzer<?> analyzer)
+	public void analyze(IReadChannel ch, IAnalyzer<?> analyzer)
 			throws Exception {
 	}
 	/**
 	 * フレームデータを読み込む
 	 * @return
 	 */
-	public static Frame getFrame(IFileReadChannel source, int frameCount) throws Exception {
+	public static Frame getFrame(IReadChannel source, int frameCount) throws Exception {
 		// ３バイトの確認を実行します。
 		if(source.size() - source.position() < 3) {
 			return null;

@@ -12,7 +12,7 @@ import java.nio.channels.FileChannel;
  * ローカルファイル読み込み
  * @author taktod
  */
-public class FileReadChannel implements IFileReadChannel {
+public class FileReadChannel implements IReadChannel {
 	/** 動作ファイルチャンネル */
 	private FileChannel channel;
 	/** 動作パス */
@@ -112,7 +112,7 @@ public class FileReadChannel implements IFileReadChannel {
 	 * @return
 	 * @throws Exception
 	 */
-	public static IFileReadChannel openFileReadChannel(String uri) throws Exception {
+	public static IReadChannel openFileReadChannel(String uri) throws Exception {
 		if(uri.startsWith("http")) {
 			return new URLFileReadChannel(uri);
 		}
@@ -127,7 +127,7 @@ public class FileReadChannel implements IFileReadChannel {
 	 * @return
 	 * @throws Exception
 	 */
-	public static IFileReadChannel openFileReadChannel(String uri, int position) throws Exception {
+	public static IReadChannel openFileReadChannel(String uri, int position) throws Exception {
 		if(uri.startsWith("http")) {
 			return new URLFileReadChannel(uri, position);
 		}
@@ -141,7 +141,7 @@ public class FileReadChannel implements IFileReadChannel {
 	 * @return
 	 * @throws Exception
 	 */
-	public static IFileReadChannel openFileReadChannel(URL url) throws Exception {
+	public static IReadChannel openFileReadChannel(URL url) throws Exception {
 		try {
 			File file = new File(url.toURI());
 			return new FileReadChannel(file);
@@ -158,7 +158,7 @@ public class FileReadChannel implements IFileReadChannel {
 	 * @return
 	 * @throws Exception
 	 */
-	public static IFileReadChannel openFileReadChannel(URL url, int position) throws Exception {
+	public static IReadChannel openFileReadChannel(URL url, int position) throws Exception {
 		try {
 			File file = new File(url.toURI());
 			return new FileReadChannel(file, position);

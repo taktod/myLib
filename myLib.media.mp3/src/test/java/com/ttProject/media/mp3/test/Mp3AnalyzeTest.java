@@ -6,7 +6,7 @@ import com.ttProject.media.mp3.Frame;
 import com.ttProject.media.mp3.FrameAnalyzer;
 import com.ttProject.media.mp3.IFrameAnalyzer;
 import com.ttProject.nio.channels.FileReadChannel;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * mp3の解析テスト
@@ -19,7 +19,7 @@ public class Mp3AnalyzeTest {
 	@Test
 	public void test() {
 		try {
-			IFileReadChannel channel = FileReadChannel.openFileReadChannel(
+			IReadChannel channel = FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("sample.mp3")
 			);
 			IFrameAnalyzer analyzer = new FrameAnalyzer();

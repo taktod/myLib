@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import com.ttProject.util.BufferUtil;
 import com.ttProject.media.mp4.IAtomAnalyzer;
 import com.ttProject.media.mp4.atom.stsd.data.Esds;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 @SuppressWarnings("unused")
 public abstract class AudioRecord extends Record {
@@ -26,7 +26,7 @@ public abstract class AudioRecord extends Record {
 		super(name, size, position);
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer)
+	public void analyze(IReadChannel ch, IAtomAnalyzer analyzer)
 			throws Exception {
 		ByteBuffer buffer = BufferUtil.safeRead(ch, 28);
 		buffer.get(unknown1);

@@ -8,7 +8,7 @@ import java.util.Map.Entry;
 
 import com.ttProject.media.flv.Tag;
 import com.ttProject.media.flv.amf.Amf0Value;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -72,7 +72,7 @@ public class MetaTag extends Tag {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public void analyze(IFileReadChannel ch, boolean atBegin) throws Exception {
+	public void analyze(IReadChannel ch, boolean atBegin) throws Exception {
 		super.analyze(ch, atBegin);
 		// 実データを読み込む
 		ch.position(getPosition() + 11);

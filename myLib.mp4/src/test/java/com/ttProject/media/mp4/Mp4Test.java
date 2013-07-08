@@ -3,13 +3,13 @@ package com.ttProject.media.mp4;
 import org.junit.Test;
 
 import com.ttProject.nio.channels.FileReadChannel;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 public class Mp4Test {
 	@Test
 	public void mp4Analize() throws Exception {
 		try {
-			IFileReadChannel fc = FileReadChannel.openFileReadChannel("http://www.gomplayer.jp/img/sample/mp4_h264_aac.mp4");
+			IReadChannel fc = FileReadChannel.openFileReadChannel("http://www.gomplayer.jp/img/sample/mp4_h264_aac.mp4");
 			IAtomAnalyzer analyzer = new AtomAnalyzer();
 			Atom atom = null;
 			while((atom = analyzer.analyze(fc)) != null) {

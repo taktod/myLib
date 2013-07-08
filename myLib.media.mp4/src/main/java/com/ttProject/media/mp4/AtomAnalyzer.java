@@ -2,11 +2,11 @@ package com.ttProject.media.mp4;
 
 import com.ttProject.media.mp4.atom.Stsd;
 import com.ttProject.media.mp4.atom.stsd.RecordAnalyzer;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 public class AtomAnalyzer implements IAtomAnalyzer {
 	@Override
-	public Atom analyze(IFileReadChannel ch) throws Exception {
+	public Atom analyze(IReadChannel ch) throws Exception {
 		Atom atom = Atom.getAtom(ch);
 		if(atom == null) {
 			return null;

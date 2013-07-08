@@ -8,7 +8,7 @@ import com.ttProject.media.Unit;
 import com.ttProject.media.flv.tag.AudioTag;
 import com.ttProject.media.flv.tag.MetaTag;
 import com.ttProject.media.flv.tag.VideoTag;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -42,7 +42,7 @@ public abstract class Tag extends Unit {
 	 * @throws Exception
 	 */
 	@Deprecated
-	public void copy(IFileReadChannel ch, WritableByteChannel target) throws Exception {
+	public void copy(IReadChannel ch, WritableByteChannel target) throws Exception {
 		int position = ch.position();
 		// 開始位置をいれておく
 		ch.position(getPosition());
@@ -56,7 +56,7 @@ public abstract class Tag extends Unit {
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unused")
-	public void analyze(IFileReadChannel ch, boolean atBegin) throws Exception {
+	public void analyze(IReadChannel ch, boolean atBegin) throws Exception {
 		// ファイルから読み込んでなんとかしておく。
 		if(atBegin) {
 			// 先頭部分のデータを読み込んでおく。
@@ -69,7 +69,7 @@ public abstract class Tag extends Unit {
 			int trackId = analyzeTrackId(buffer);
 		}
 	}
-	public void analyze(IFileReadChannel ch, IAnalyzer<?> analyzer)
+	public void analyze(IReadChannel ch, IAnalyzer<?> analyzer)
 			throws Exception {
 		analyze(ch, true);
 	}
@@ -78,7 +78,7 @@ public abstract class Tag extends Unit {
 	 * @param ch
 	 * @throws Exception
 	 */
-	public void analyze(IFileReadChannel ch) throws Exception {
+	public void analyze(IReadChannel ch) throws Exception {
 		analyze(ch, true);
 	}
 	/**
@@ -196,7 +196,7 @@ public abstract class Tag extends Unit {
 	 * @param source
 	 * @return
 	 */
-	public static Tag getTag(IFileReadChannel source) throws Exception {
+	public static Tag getTag(IReadChannel source) throws Exception {
 		// この部分はTagとFlvHeaderのどちらかを応答するので、Unitを応答するものとします。s
 		// 通常データを読み込みます。
 		if(source.size() - source.position() < 11) {

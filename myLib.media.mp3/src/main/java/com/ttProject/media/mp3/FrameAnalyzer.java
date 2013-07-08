@@ -1,7 +1,7 @@
 package com.ttProject.media.mp3;
 
 import com.ttProject.media.mp3.frame.Mp3;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * mp3の解析動作
@@ -13,7 +13,7 @@ public class FrameAnalyzer implements IFrameAnalyzer {
 		frameCount = 0;
 	}
 	@Override
-	public Frame analyze(IFileReadChannel ch) throws Exception {
+	public Frame analyze(IReadChannel ch) throws Exception {
 		Frame frame = Frame.getFrame(ch, frameCount);
 		if(frame == null) {
 			return null;

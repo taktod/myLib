@@ -6,7 +6,7 @@ import java.nio.channels.ReadableByteChannel;
 
 /**
  * ファイル読み込み
- * TODO こっち側にRead系のchannelをすべてマージしておきたいね。
+ * TODO 最近fileだけじゃなく、byteデータやstdinのデータとかもこのデータで扱いたくなってきたので、なんとかしておきたい。
  * @author taktod
  */
 public interface IReadChannel extends ReadableByteChannel {

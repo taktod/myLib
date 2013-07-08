@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
  * Byteデータ、ByteBufferデータをIFileReadChannelと同じ勢いでデータ確認できるようにしてみた。
  * @author taktod
  */
-public class ByteReadChannel implements IFileReadChannel {
+public class ByteReadChannel implements IReadChannel {
 	/** 保持データBuffer */
 	private final ByteBuffer buffer;
 	/**
@@ -51,7 +51,7 @@ public class ByteReadChannel implements IFileReadChannel {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IFileReadChannel position(int newPosition) throws IOException {
+	public IReadChannel position(int newPosition) throws IOException {
 		buffer.position(newPosition);
 		return this;
 	}

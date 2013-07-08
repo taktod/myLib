@@ -5,12 +5,12 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.media.mp4.atom.Stsd;
 import com.ttProject.media.mp4.atom.stsd.RecordAnalyzer;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 public class AtomAnalyzer implements IAtomAnalyzer {
 
-	public Atom analyze(IFileReadChannel ch) throws Exception {
+	public Atom analyze(IReadChannel ch) throws Exception {
 		if(ch.size() == ch.position()) {
 			// もうデータがない
 			return null;

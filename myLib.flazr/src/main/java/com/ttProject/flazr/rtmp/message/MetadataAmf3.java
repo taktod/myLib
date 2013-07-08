@@ -11,7 +11,7 @@ import com.flazr.rtmp.RtmpMessage;
 import com.ttProject.media.flv.amf.Amf0Value;
 import com.ttProject.media.flv.amf.Amf3Value;
 import com.ttProject.nio.channels.ByteReadChannel;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 import com.ttProject.util.HexUtils;
 
@@ -44,7 +44,7 @@ public class MetadataAmf3 implements RtmpMessage {
 		in.readBytes(bytes);
 		try {
 			// 処理しやすいようにするため、IFileReadChannelの形に変化させます。
-			IFileReadChannel channel = new ByteReadChannel(bytes);
+			IReadChannel channel = new ByteReadChannel(bytes);
 			
 			// 先頭のデータを確認して、どういうデータであるか確認する。
 			// 00 02 00 0A 6F 6E 4D 65 74 61 44 61 74 61であることを期待してあります。

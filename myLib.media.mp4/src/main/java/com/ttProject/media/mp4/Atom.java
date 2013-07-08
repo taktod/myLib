@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.media.IAnalyzer;
 import com.ttProject.media.Unit;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 public abstract class Atom extends Unit {
@@ -65,7 +65,7 @@ public abstract class Atom extends Unit {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void analyze(IFileReadChannel ch, IAnalyzer<?> analyzer)
+	public void analyze(IReadChannel ch, IAnalyzer<?> analyzer)
 			throws Exception {
 		if(analyzer != null && !(analyzer instanceof IAtomAnalyzer)) {
 			throw new Exception("Atomの解析用のanalyzerではないです。");
@@ -77,7 +77,7 @@ public abstract class Atom extends Unit {
 	 * @param ch
 	 * @param analyzer
 	 */
-	public abstract void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception;
+	public abstract void analyze(IReadChannel ch, IAtomAnalyzer analyzer) throws Exception;
 	/**
 	 * 情報表示
 	 * @param space
@@ -91,7 +91,7 @@ public abstract class Atom extends Unit {
 		return data.toString();
 	}
 	// TODO この下に解析用の読み込み動作をいれておく必要あり。
-	public static Atom getAtom(IFileReadChannel source) throws Exception {
+	public static Atom getAtom(IReadChannel source) throws Exception {
 		if(source.size() - source.position() < 8) {
 			return null;
 		}

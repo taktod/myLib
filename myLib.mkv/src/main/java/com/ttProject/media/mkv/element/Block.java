@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import com.ttProject.media.mkv.Element;
 import com.ttProject.media.mkv.IElementAnalyzer;
 import com.ttProject.media.mkv.Type;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -25,11 +25,11 @@ public class Block extends Element {
 	public Block(long position, long size, long dataPosition) {
 		super(Type.Block, position, size, dataPosition);
 	}
-	public Block(IFileReadChannel ch) throws Exception {
+	public Block(IReadChannel ch) throws Exception {
 		this(ch.position() - Type.Block.tagSize(), Element.getSize(ch), ch.position());
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IElementAnalyzer analyzer)
+	public void analyze(IReadChannel ch, IElementAnalyzer analyzer)
 			throws Exception {
 		// blockの内容を解析します。
 		ch.position((int)getDataPosition());

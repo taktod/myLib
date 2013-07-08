@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
  * http経由でのデータDL用のfileChannel
  * @author taktod
  */
-public class URLFileReadChannel implements IFileReadChannel {
+public class URLFileReadChannel implements IReadChannel {
 	/** ロガー */
 	private static final Logger logger = Logger.getLogger(URLFileReadChannel.class);
 	/** ターゲットURI */

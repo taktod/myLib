@@ -2,7 +2,7 @@ package com.ttProject.util;
 
 import java.nio.channels.FileChannel;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * channel用のUtility
@@ -19,7 +19,7 @@ public class ChannelUtil {
 		}
 		return null;
 	}
-	public static IFileReadChannel safeClose(IFileReadChannel channel) {
+	public static IReadChannel safeClose(IReadChannel channel) {
 		if(channel != null) {
 			try {
 				channel.close();

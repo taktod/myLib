@@ -2,7 +2,7 @@ package com.ttProject.media.mp4.atom.stsd.data;
 
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * mp4のstsdの内部データのさらに奥にあるデータ
@@ -14,7 +14,7 @@ public class Btrt extends Atom {
 		super(Btrt.class.getSimpleName().toLowerCase(), size, position);
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
+	public void analyze(IReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
 
 	}
 }

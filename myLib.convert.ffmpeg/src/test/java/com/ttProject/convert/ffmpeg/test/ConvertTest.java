@@ -10,7 +10,7 @@ import com.ttProject.convert.IConvertListener;
 import com.ttProject.convert.ffmpeg.FfmpegConvertManager;
 import com.ttProject.convert.ffmpeg.ProcessHandler;
 import com.ttProject.nio.channels.FileReadChannel;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * 動作テスト用
@@ -21,7 +21,7 @@ public class ConvertTest {
 //	@Test
 	public void test() throws Exception {
 		// データ元
-		IFileReadChannel fc1 = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.mp4");
+		IReadChannel fc1 = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.mp4");
 		// 保存先
 		final FileChannel fc2 = new FileOutputStream("output.flv").getChannel();
 		// 変換マネージャー

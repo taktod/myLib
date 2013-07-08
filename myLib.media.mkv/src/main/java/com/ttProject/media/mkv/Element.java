@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.media.IAnalyzer;
 import com.ttProject.media.Unit;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -28,7 +28,7 @@ public abstract class Element extends Unit {
 		this.dataPosition = dataPosition;
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IAnalyzer<?> analyzer)
+	public void analyze(IReadChannel ch, IAnalyzer<?> analyzer)
 			throws Exception {
 
 	}
@@ -58,7 +58,7 @@ public abstract class Element extends Unit {
 	 * @return
 	 * @throws Exception
 	 */
-	private static long getData(IFileReadChannel source, boolean removeBitflg) throws Exception {
+	private static long getData(IReadChannel source, boolean removeBitflg) throws Exception {
 		long result = BufferUtil.safeRead(source, 1).get() & 0xFF;
 		int i = 0;
 		for(i = 0;i < 8;i ++) {
@@ -78,13 +78,13 @@ public abstract class Element extends Unit {
 		}
 		return result;
 	}
-	public static long getSize(IFileReadChannel source) throws Exception {
+	public static long getSize(IReadChannel source) throws Exception {
 		return getData(source, true);
 	}
-	public static long getEbmlNumber(IFileReadChannel source) throws Exception {
+	public static long getEbmlNumber(IReadChannel source) throws Exception {
 		return getData(source, true);
 	}
-	public static Type getType(IFileReadChannel source) throws Exception {
+	public static Type getType(IReadChannel source) throws Exception {
 		return Type.getType(((int)getData(source, false)));
 	}
 }

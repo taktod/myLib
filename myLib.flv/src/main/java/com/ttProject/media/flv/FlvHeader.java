@@ -3,7 +3,7 @@ package com.ttProject.media.flv;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -31,7 +31,7 @@ public class FlvHeader {
 	 * @param ch
 	 * @throws Exception
 	 */
-	public void analyze(IFileReadChannel ch) throws Exception {
+	public void analyze(IReadChannel ch) throws Exception {
 		ch.position(0);
 		// 先頭の13バイトを読み込んで解析しておく。
 		ByteBuffer buffer = BufferUtil.safeRead(ch, 13);

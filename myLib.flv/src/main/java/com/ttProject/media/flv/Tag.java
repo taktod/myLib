@@ -3,7 +3,7 @@ package com.ttProject.media.flv;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -39,7 +39,7 @@ public abstract class Tag {
 	 * @param target
 	 * @throws Exception
 	 */
-	public void copy(IFileReadChannel ch, WritableByteChannel target) throws Exception {
+	public void copy(IReadChannel ch, WritableByteChannel target) throws Exception {
 		int position = ch.position();
 		// 開始位置をいれておく
 		ch.position(getPosition());
@@ -52,13 +52,13 @@ public abstract class Tag {
 	 * @param atBegin true:初めから読み込む false:実データ部から読み込む
 	 * @throws Exception
 	 */
-	public abstract void analyze(IFileReadChannel ch, boolean atBegin) throws Exception;
+	public abstract void analyze(IReadChannel ch, boolean atBegin) throws Exception;
 	/**
 	 * 解析を実施する(初めから読み込まないバージョン)
 	 * @param ch
 	 * @throws Exception
 	 */
-	public void analyze(IFileReadChannel ch) throws Exception {
+	public void analyze(IReadChannel ch) throws Exception {
 		analyze(ch, false);
 	}
 	/**

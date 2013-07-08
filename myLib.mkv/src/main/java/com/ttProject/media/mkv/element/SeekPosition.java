@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import com.ttProject.media.mkv.Element;
 import com.ttProject.media.mkv.IElementAnalyzer;
 import com.ttProject.media.mkv.Type;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -19,11 +19,11 @@ public class SeekPosition extends Element {
 	public SeekPosition(long position, long size, long dataPosition) {
 		super(Type.SeekPosition, position, size, dataPosition);
 	}
-	public SeekPosition(IFileReadChannel ch) throws Exception {
+	public SeekPosition(IReadChannel ch) throws Exception {
 		this(ch.position() - Type.SeekPosition.tagSize(), Element.getSize(ch), ch.position());
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IElementAnalyzer analyzer)
+	public void analyze(IReadChannel ch, IElementAnalyzer analyzer)
 			throws Exception {
 		ch.position((int)getDataPosition());
 		ByteBuffer buffer = BufferUtil.safeRead(ch, (int)getSize());

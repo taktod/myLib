@@ -2,7 +2,7 @@ package com.ttProject.nio;
 
 import java.nio.ByteBuffer;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * ファイル上のデータにより高速にアクセスするためのバッファ
@@ -14,7 +14,7 @@ public class CacheBuffer {
 	/** 動作用buffer */
 	private ByteBuffer buffer = null;
 	/** 動作ターゲットチャンネル */
-	private IFileReadChannel targetChannel;
+	private IReadChannel targetChannel;
 	/** 処理位置 */
 	private int position;
 	/** 残り読み込みデータ量forChannel */
@@ -24,7 +24,7 @@ public class CacheBuffer {
 	 * @param source
 	 * @throws Exception
 	 */
-	public CacheBuffer(IFileReadChannel source) throws Exception {
+	public CacheBuffer(IReadChannel source) throws Exception {
 		this(source, source.size());
 	}
 	/**
@@ -33,7 +33,7 @@ public class CacheBuffer {
 	 * @param size
 	 * @throws Exception
 	 */
-	public CacheBuffer(IFileReadChannel source, int size) throws Exception {
+	public CacheBuffer(IReadChannel source, int size) throws Exception {
 		this.targetChannel = source;
 		this.position = source.position();
 		this.remaining = size;

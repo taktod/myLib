@@ -2,7 +2,7 @@ package com.ttProject.media.mp4.atom.stsd.data;
 
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * h.264のmediaSequenceHeaderを保持しているデータ
@@ -14,7 +14,7 @@ public class Avcc extends Atom {
 		super(Avcc.class.getSimpleName().toLowerCase(), position, size);
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
+	public void analyze(IReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
 
 	}
 }

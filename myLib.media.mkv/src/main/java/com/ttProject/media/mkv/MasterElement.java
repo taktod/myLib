@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ttProject.media.IAnalyzer;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 public abstract class MasterElement extends Element {
 	/** 子要素一覧 */
@@ -13,7 +13,7 @@ public abstract class MasterElement extends Element {
 		super(type, position, size, dataPosition);
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IAnalyzer<?> analyzer)
+	public void analyze(IReadChannel ch, IAnalyzer<?> analyzer)
 			throws Exception {
 	}
 	public List<Element> getElements() {

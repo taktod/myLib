@@ -1,6 +1,6 @@
 package com.ttProject.media;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * unitの解析処理
@@ -14,5 +14,5 @@ public interface IAnalyzer<U> {
 	 * @return 解析後生成されるUnitエレメント
 	 * @throws Exception 処理中に例外がでた場合の処理
 	 */
-	public U analyze(IFileReadChannel ch) throws Exception;
+	public U analyze(IReadChannel ch) throws Exception;
 }

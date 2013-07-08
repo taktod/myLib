@@ -5,7 +5,7 @@ import java.nio.channels.WritableByteChannel;
 
 import com.ttProject.media.IAnalyzer;
 import com.ttProject.media.Unit;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -33,7 +33,7 @@ public class FlvHeader extends Unit {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void analyze(IFileReadChannel ch, IAnalyzer<?> analyzer)
+	public void analyze(IReadChannel ch, IAnalyzer<?> analyzer)
 			throws Exception {
 		ch.position(0);
 		// 先頭の13バイトを読み込んで自分のものにしていく

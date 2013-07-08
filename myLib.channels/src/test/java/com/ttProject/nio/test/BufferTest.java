@@ -7,12 +7,12 @@ import org.junit.Test;
 import com.ttProject.nio.CacheBuffer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.FileReadChannel;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 public class BufferTest {
 //	@Test
 	public void test() throws Exception {
-		IFileReadChannel target = FileReadChannel.openFileReadChannel(
+		IReadChannel target = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("tmp.dat")
 		);
 		CacheBuffer buffer = new CacheBuffer(target, target.size());
@@ -22,7 +22,7 @@ public class BufferTest {
 	}
 //	@Test
 	public void test2() throws Exception {
-		IFileReadChannel target = FileReadChannel.openFileReadChannel(
+		IReadChannel target = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("tmp.dat")
 		);
 		while(target.position() != target.size()) {
@@ -35,7 +35,7 @@ public class BufferTest {
 	@Test
 	public void test3() throws Exception {
 		System.out.println("here");
-		IFileReadChannel target = new ByteReadChannel("test".getBytes());
+		IReadChannel target = new ByteReadChannel("test".getBytes());
 		ByteBuffer buffer = ByteBuffer.allocate(10);
 		target.read(buffer);
 		buffer.flip();

@@ -3,7 +3,7 @@ package com.ttProject.media.mkv;
 import org.junit.Test;
 
 import com.ttProject.nio.channels.FileReadChannel;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * h.264のmshはcodecPrivateの中にはいっていた。
@@ -14,7 +14,7 @@ import com.ttProject.nio.channels.IFileReadChannel;
 public class LoadTest {
 	@Test
 	public void test() throws Exception {
-		IFileReadChannel channel = FileReadChannel.openFileReadChannel(
+		IReadChannel channel = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("testffmpeg.webm")
 		);
 		IElementAnalyzer analyzer = new ElementAnalyzer();

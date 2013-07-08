@@ -1,6 +1,6 @@
 package com.ttProject.media;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * ファイル上のmediaの基本ベース
@@ -26,13 +26,13 @@ public abstract class Unit {
 	 * @param analyzer
 	 * @throws Exception
 	 */
-	public abstract void analyze(IFileReadChannel ch, IAnalyzer<?> analyzer) throws Exception;
+	public abstract void analyze(IReadChannel ch, IAnalyzer<?> analyzer) throws Exception;
 	/**
 	 * 解析動作
 	 * @param ch
 	 * @throws Exception
 	 */
-	public void analyze(IFileReadChannel ch) throws Exception {
+	public void analyze(IReadChannel ch) throws Exception {
 		analyze(ch, null);
 	}
 	/**

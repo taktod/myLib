@@ -3,7 +3,7 @@ package com.ttProject.media.mp4;
 import java.nio.channels.WritableByteChannel;
 
 import com.ttProject.util.BufferUtil;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * atomデータ
@@ -40,13 +40,13 @@ public abstract class Atom {
 	 * @param analyzer
 	 * @throws Exception
 	 */
-	public abstract void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception;
+	public abstract void analyze(IReadChannel ch, IAtomAnalyzer analyzer) throws Exception;
 	/**
 	 * 解析動作
 	 * @param ch
 	 * @throws Exception
 	 */
-	public void analyze(IFileReadChannel ch) throws Exception {
+	public void analyze(IReadChannel ch) throws Exception {
 		analyze(ch, null);
 	}
 	/**
@@ -55,7 +55,7 @@ public abstract class Atom {
 	 * @param target
 	 * @throws Exception
 	 */
-	public void copy(IFileReadChannel ch, WritableByteChannel target) throws Exception {
+	public void copy(IReadChannel ch, WritableByteChannel target) throws Exception {
 		// 開始位置をいれておく
 		ch.position(getPosition());
 		BufferUtil.quickCopy(ch, target, getSize());

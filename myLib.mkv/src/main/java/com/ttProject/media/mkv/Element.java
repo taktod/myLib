@@ -2,7 +2,7 @@ package com.ttProject.media.mkv;
 
 import java.nio.ByteBuffer;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -22,8 +22,8 @@ public abstract class Element {
 		this.size = size;
 		this.dataPosition = dataPosition;
 	}
-	public abstract void analyze(IFileReadChannel ch, IElementAnalyzer analyzer) throws Exception;
-	public void analyze(IFileReadChannel ch) throws Exception {
+	public abstract void analyze(IReadChannel ch, IElementAnalyzer analyzer) throws Exception;
+	public void analyze(IReadChannel ch) throws Exception {
 		analyze(ch, null);
 	}
 	protected Type getType() {
@@ -49,7 +49,7 @@ public abstract class Element {
 		data.append("[position:0x").append(Long.toHexString(position)).append("]");
 		return data.toString();
 	}
-	private static long getData(IFileReadChannel source, boolean removeBitflg) throws Exception {
+	private static long getData(IReadChannel source, boolean removeBitflg) throws Exception {
 		// はじめの1バイト目を確認して、先頭のbitがどこにあるか確認する。
 		long result = BufferUtil.safeRead(source, 1).get() & 0xFF;
 		// bitフラグがどこであるか確認する。
@@ -73,13 +73,13 @@ public abstract class Element {
 		}
 		return result;
 	}
-	public static long getSize(IFileReadChannel source) throws Exception {
+	public static long getSize(IReadChannel source) throws Exception {
 		return getData(source, true);
 	}
-	public static long getEbmlNumber(IFileReadChannel source) throws Exception {
+	public static long getEbmlNumber(IReadChannel source) throws Exception {
 		return getData(source, true);
 	}
-	public static Type getTag(IFileReadChannel source) throws Exception {
+	public static Type getTag(IReadChannel source) throws Exception {
 		return Type.getType((int)getData(source, false));
 	}
 }

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -76,7 +76,7 @@ public class Amf0Value {
 	 * @param source
 	 * @return
 	 */
-	public static Object getValueObject(IFileReadChannel source) throws Exception {
+	public static Object getValueObject(IReadChannel source) throws Exception {
 		ByteBuffer data = null;
 		Type type = Type.getType(BufferUtil.safeRead(source, 1).get());
 		// 先頭の１バイトを読み込む

@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -56,7 +56,7 @@ public class Amf3Value {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Object getValueObject(IFileReadChannel source) throws Exception {
+	public static Object getValueObject(IReadChannel source) throws Exception {
 		ByteBuffer data = null;
 		// 先頭のデータを読み込みます。
 		Type type = Type.getType(BufferUtil.safeRead(source, 1).get());
@@ -118,7 +118,7 @@ public class Amf3Value {
 	 * @return
 	 * @throws Exception
 	 */
-	public static int getU29Integer(IFileReadChannel source) throws Exception {
+	public static int getU29Integer(IReadChannel source) throws Exception {
 		byte b = BufferUtil.safeRead(source, 1).get();
 		int data = 0;
 		while((b & 0x80) != 0x00) {

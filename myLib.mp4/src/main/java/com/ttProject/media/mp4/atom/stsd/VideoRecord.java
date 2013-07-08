@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import com.ttProject.util.BufferUtil;
 import com.ttProject.media.mp4.IAtomAnalyzer;
 import com.ttProject.media.mp4.atom.stsd.data.Avcc;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 @SuppressWarnings("unused")
 public abstract class VideoRecord extends Record {
@@ -35,7 +35,7 @@ public abstract class VideoRecord extends Record {
 		return avcc;
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer)
+	public void analyze(IReadChannel ch, IAtomAnalyzer analyzer)
 			throws Exception {
 		// ぶっちゃげここのデータはどうでもいい、ほしいのは、mediaSequenceHeader
 		ByteBuffer buffer = BufferUtil.safeRead(ch, 78);

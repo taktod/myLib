@@ -3,7 +3,7 @@ package com.ttProject.media.mp4;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * 子要素を持つAtom
@@ -25,7 +25,7 @@ public abstract class ParentAtom extends Atom {
 	 * 解析
 	 */
 	@Override
-	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer)
+	public void analyze(IReadChannel ch, IAtomAnalyzer analyzer)
 			throws Exception {
 		if(analyzer == null) {
 			return;

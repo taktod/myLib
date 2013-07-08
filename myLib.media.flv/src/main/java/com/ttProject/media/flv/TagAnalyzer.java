@@ -1,10 +1,10 @@
 package com.ttProject.media.flv;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 public class TagAnalyzer implements ITagAnalyzer {
 	@Override
-	public Tag analyze(IFileReadChannel ch) throws Exception {
+	public Tag analyze(IReadChannel ch) throws Exception {
 		Tag tag = Tag.getTag(ch);
 		if(tag == null) {
 			return null;

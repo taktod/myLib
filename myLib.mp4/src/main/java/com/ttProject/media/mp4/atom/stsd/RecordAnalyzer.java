@@ -3,10 +3,10 @@ package com.ttProject.media.mp4.atom.stsd;
 import java.nio.ByteBuffer;
 
 import com.ttProject.util.BufferUtil;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 public class RecordAnalyzer implements IRecordAnalyzer {
-	public Record analyze(IFileReadChannel ch) throws Exception {
+	public Record analyze(IReadChannel ch) throws Exception {
 		int position = ch.position();
 		ByteBuffer buffer = BufferUtil.safeRead(ch, 8);
 		int size = buffer.getInt();

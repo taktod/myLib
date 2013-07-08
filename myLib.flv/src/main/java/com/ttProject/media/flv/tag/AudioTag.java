@@ -5,7 +5,7 @@ import java.nio.channels.WritableByteChannel;
 
 import com.ttProject.media.flv.CodecType;
 import com.ttProject.media.flv.Tag;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -109,7 +109,7 @@ public class AudioTag extends Tag {
 	 * @param source
 	 * @param size
 	 */
-	public void setData(IFileReadChannel source, int size) throws Exception {
+	public void setData(IReadChannel source, int size) throws Exception {
 		data = BufferUtil.safeRead(source, size);
 	}
 	/**
@@ -123,7 +123,7 @@ public class AudioTag extends Tag {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void analyze(IFileReadChannel ch, boolean atBegin) throws Exception {
+	public void analyze(IReadChannel ch, boolean atBegin) throws Exception {
 		// ファイルからの解析はあとでつくっておく。
 	}
 	/**

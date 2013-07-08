@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * buffer用の便利関数
@@ -37,13 +37,13 @@ public class BufferUtil {
 			count ++;
 		}
 	}
-	public static ByteBuffer safeRead(IFileReadChannel ch, int length) throws Exception {
+	public static ByteBuffer safeRead(IReadChannel ch, int length) throws Exception {
 		return safeRead(ch, length, -1);
 	}
-	public static ByteBuffer safeRead(IFileReadChannel ch, int length, int timeout) throws Exception {
+	public static ByteBuffer safeRead(IReadChannel ch, int length, int timeout) throws Exception {
 		return safeRead(ch, length, timeout, -1);
 	}
-	public static ByteBuffer safeRead(IFileReadChannel ch, int length, int timeout, int tryCount) throws Exception {
+	public static ByteBuffer safeRead(IReadChannel ch, int length, int timeout, int tryCount) throws Exception {
 		ByteBuffer buffer = ByteBuffer.allocate(length);
 		int count = 0;
 		while(true) {
@@ -69,7 +69,7 @@ public class BufferUtil {
 	 * @param size
 	 * @throws Exception
 	 */
-	public static void quickCopy(IFileReadChannel source, WritableByteChannel target, int size) throws Exception {
+	public static void quickCopy(IReadChannel source, WritableByteChannel target, int size) throws Exception {
 		ByteBuffer buffer = null;
 		int targetSize = size;
 		while(targetSize > 0) {
@@ -92,7 +92,7 @@ public class BufferUtil {
 	 * @param size
 	 * @throws Exception
 	 */
-	public static void quickDispose(IFileReadChannel source, int size) throws Exception {
+	public static void quickDispose(IReadChannel source, int size) throws Exception {
 		ByteBuffer buffer = null;
 		int targetSize = size;
 		while(targetSize > 0) {

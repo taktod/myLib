@@ -1,6 +1,6 @@
 package com.ttProject.media.mkv;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * Elementの解析処理
@@ -13,5 +13,5 @@ public interface IElementAnalyzer {
 	 * @return
 	 * @throws Exception
 	 */
-	public Element analyze(IFileReadChannel ch) throws Exception;
+	public Element analyze(IReadChannel ch) throws Exception;
 }

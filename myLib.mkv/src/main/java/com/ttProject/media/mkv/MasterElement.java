@@ -3,7 +3,7 @@ package com.ttProject.media.mkv;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * 子要素を持つElement
@@ -16,7 +16,7 @@ public abstract class MasterElement extends Element {
 		super(type, position, size, dataPosition);
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IElementAnalyzer analyzer)
+	public void analyze(IReadChannel ch, IElementAnalyzer analyzer)
 			throws Exception {
 		if(analyzer == null) {
 			return;

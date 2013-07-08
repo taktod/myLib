@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import com.ttProject.util.BufferUtil;
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * トラック情報を保持
@@ -30,7 +30,7 @@ public class Tkhd extends Atom {
 		super(Tkhd.class.getSimpleName().toLowerCase(), size, position);
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
+	public void analyze(IReadChannel ch, IAtomAnalyzer analyzer) throws Exception {
 		// tkhdの中身を解析していく。
 		ch.position(getPosition() + 8);
 		ByteBuffer buffer = BufferUtil.safeRead(ch, 4);

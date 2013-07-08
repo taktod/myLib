@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.media.mp3.frame.ID3;
 import com.ttProject.media.mp3.frame.Mp3Frame;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -32,13 +32,13 @@ public abstract class Frame {
 	 * @param analyzer
 	 * @throws Exception
 	 */
-	public abstract void analyze(IFileReadChannel ch, IFrameAnalyzer analyzer) throws Exception;
+	public abstract void analyze(IReadChannel ch, IFrameAnalyzer analyzer) throws Exception;
 	/**
 	 * 解析動作
 	 * @param ch
 	 * @throws Exception
 	 */
-	public void analyze(IFileReadChannel ch) throws Exception {
+	public void analyze(IReadChannel ch) throws Exception {
 		analyze(ch, null);
 	}
 	public int getSize() {
@@ -58,7 +58,7 @@ public abstract class Frame {
 	 * 先頭を確認して、データがなにであるか確認する。
 	 * @return
 	 */
-	public static Frame getFrame(IFileReadChannel target) throws Exception {
+	public static Frame getFrame(IReadChannel target) throws Exception {
 		// はじめの3バイトを読み込めばなんのデータかわかるっぽい。
 		if(target.size() - target.position() < 3) {
 			return null;

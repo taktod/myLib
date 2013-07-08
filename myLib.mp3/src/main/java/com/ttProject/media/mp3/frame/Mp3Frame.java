@@ -2,7 +2,7 @@ package com.ttProject.media.mp3.frame;
 
 import com.ttProject.media.mp3.Frame;
 import com.ttProject.media.mp3.IFrameAnalyzer;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * mp3のベースフレーム
@@ -61,7 +61,7 @@ public class Mp3Frame extends Frame {
 		return Frame.getTime(mpegVersion, layer, frameCount + 1, samplingRate) / 1000.0f - getTime();
 	}
 	@Override
-	public void analyze(IFileReadChannel ch, IFrameAnalyzer analyzer)
+	public void analyze(IReadChannel ch, IFrameAnalyzer analyzer)
 			throws Exception {
 	}
 }

@@ -13,7 +13,7 @@ import com.ttProject.media.flv.ITagAnalyzer;
 import com.ttProject.media.flv.Tag;
 import com.ttProject.media.flv.TagAnalyzer;
 import com.ttProject.nio.channels.FileReadChannel;
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 public class FlvTestReader implements RtmpReader {
 	private final LinkedBlockingQueue<FlvAtom> dataQueue = new LinkedBlockingQueue<FlvAtom>();
@@ -27,7 +27,7 @@ public class FlvTestReader implements RtmpReader {
 				// flvデータの読み込みを実施してデータを送り込む
 				System.out.println("読み込み処理開始");
 				try {
-					IFileReadChannel channel = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.flv");
+					IReadChannel channel = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.flv");
 					FlvHeader header = new FlvHeader();
 					header.analyze(channel);
 					ITagAnalyzer analyzer = new TagAnalyzer();

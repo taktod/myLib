@@ -1,6 +1,6 @@
 package com.ttProject.media.mp3;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * frameの解析処理(mp3には必要なさそうだけどね)
@@ -13,5 +13,5 @@ public interface IFrameAnalyzer {
 	 * @return
 	 * @throws Exception
 	 */
-	public Frame analyze(IFileReadChannel ch) throws Exception;
+	public Frame analyze(IReadChannel ch) throws Exception;
 }

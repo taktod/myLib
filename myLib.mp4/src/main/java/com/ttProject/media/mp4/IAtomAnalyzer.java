@@ -1,6 +1,6 @@
 package com.ttProject.media.mp4;
 
-import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * atomの解析処理
@@ -13,5 +13,5 @@ public interface IAtomAnalyzer {
 	 * @return
 	 * @throws Exception
 	 */
-	public Atom analyze(IFileReadChannel ch) throws Exception;
+	public Atom analyze(IReadChannel ch) throws Exception;
 }
