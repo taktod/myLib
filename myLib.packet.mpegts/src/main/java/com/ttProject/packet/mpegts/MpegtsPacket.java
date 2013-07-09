@@ -94,7 +94,8 @@ public abstract class MpegtsPacket extends MediaPacket {
 			// 放送番組識別 16bit
 			// 111 3bit (固定)
 			// PIDデータ 13bit
-			int data = buffer.getInt(); // ４倍と読み込む
+			// TODO ここまちがってない？
+			int data = buffer.getInt(); // ４バイト読み込む
 			if((data & 0xF000) >>> 13 != Integer.parseInt("111", 2)) {
 				// 固定bitが一致しない。
 				buffer.position(position);
@@ -103,7 +104,7 @@ public abstract class MpegtsPacket extends MediaPacket {
 			if(data >>> 16 != 0) {
 				// PMT PID
 				// pmtなので、保持させる。
-				manager.addPmtId(data & 0x1FFF);
+				manager.addPmtId(data & 0x1FFF); // dataが32bitになっているので、上位16bitについて確認するべきだとおもうけど。
 			}
 			else {
 				// ネットワークPID
