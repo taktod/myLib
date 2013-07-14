@@ -4,12 +4,26 @@ package com.ttProject.media.extra;
  * 4ビットを表現する型
  * @author taktod
  */
-public class Bit4 {
-	private byte value;
-	public void set(int value) {
-		this.value = (byte)(value & 0x0F);
+public class Bit4 extends Bit {
+	/**
+	 * コンストラクタ
+	 */
+	public Bit4() {
+		this(0);
 	}
-	public byte get() {
-		return value;
+	/**
+	 * コンストラクタ
+	 * @param value
+	 */
+	public Bit4(int value) {
+		super(4);
+		set(value);
+	}
+	/**
+	 * データ設定
+	 * @param value
+	 */
+	public void set(int value) {
+		super.set(value & 0x0F);
 	}
 }
