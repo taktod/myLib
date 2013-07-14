@@ -154,6 +154,7 @@ public class Aac extends Frame {
 				new Bit3((byte)(adtsBufferFullness >>> 8)), new Bit8((byte)(adtsBufferFullness & 0xFF)), noRawDataBlocksInFrame));
 		// 実データ部をつくっておく。
 		buffer.put(data);
+		buffer.flip();
 		return buffer; // 応答
 	}
 	/**
