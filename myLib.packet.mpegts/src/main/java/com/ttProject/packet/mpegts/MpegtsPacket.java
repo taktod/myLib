@@ -94,7 +94,6 @@ public abstract class MpegtsPacket extends MediaPacket {
 			// 放送番組識別 16bit
 			// 111 3bit (固定)
 			// PIDデータ 13bit
-			// TODO ここまちがってない？
 			int data = buffer.getInt(); // ４バイト読み込む
 			if((data & 0xF000) >>> 13 != Integer.parseInt("111", 2)) {
 				// 固定bitが一致しない。
