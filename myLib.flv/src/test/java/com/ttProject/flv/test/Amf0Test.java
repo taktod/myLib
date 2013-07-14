@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.ttProject.media.flv.amf.Amf0Value;
-import com.ttProject.util.HexUtils;
+import com.ttProject.util.HexUtil;
 
 /**
  * amf0用のデータがきちんとできているか動作テスト
@@ -19,6 +19,6 @@ public class Amf0Test {
 		ByteBuffer buf = Amf0Value.getValueBuffer(data);
 		byte[] dat = new byte[buf.remaining()];
 		buf.get(dat);
-		System.out.println(HexUtils.toHex(dat, true));
+		System.out.println(HexUtil.toHex(dat, true));
 	}
 }

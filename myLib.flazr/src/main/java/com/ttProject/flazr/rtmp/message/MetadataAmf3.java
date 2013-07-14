@@ -13,7 +13,7 @@ import com.ttProject.media.flv.amf.Amf3Value;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtils;
+import com.ttProject.util.HexUtil;
 
 /**
  * FlazrがMetadataAmf3に対応していないので、対応してみた。
@@ -67,7 +67,7 @@ public class MetadataAmf3 implements RtmpMessage {
 		}
 		catch (Exception e) {
 			logger.error("MetadataAmf3を解析しているときに、例外が発生しました。", e);
-			logger.error("errorData: {}", HexUtils.toHex(bytes, true));
+			logger.error("errorData: {}", HexUtil.toHex(bytes, true));
 			throw new RuntimeException("解析不能な例外が発生しました。");
 		}
 	}

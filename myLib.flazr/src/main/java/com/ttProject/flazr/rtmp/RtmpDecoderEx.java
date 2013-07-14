@@ -14,7 +14,7 @@ import com.flazr.rtmp.RtmpDecoder.DecoderState;
 import com.flazr.rtmp.message.ChunkSize;
 import com.flazr.rtmp.message.MessageType;
 import com.ttProject.flazr.rtmp.message.MetadataAmf3;
-import com.ttProject.util.HexUtils;
+import com.ttProject.util.HexUtil;
 
 /**
  * Rtmpのメッセージのデコーダー処理
@@ -68,7 +68,7 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 //				|| header.getMessageType() == MessageType.METADATA_AMF3
 				|| header.getMessageType() == MessageType.SHARED_OBJECT_AMF3) {
 					logger.warn("解釈が設定されていない命令なので、無視しておきます。(このままだとプロセスが落ちます)");
-					logger.info("type:{}, dump:{}", header.getMessageType(), HexUtils.toHex(bytes, true));
+					logger.info("type:{}, dump:{}", header.getMessageType(), HexUtil.toHex(bytes, true));
 					return null;
 				}
 				final RtmpHeader prevHeader = completedHeaders[channelId];
@@ -87,7 +87,7 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 			catch (Exception e) {
 				logger.error("decode error:", e);
 				logger.info("------------------ type:{} -----------------", header.getMessageType());
-				logger.info(HexUtils.toHex(bytes, true));
+				logger.info(HexUtil.toHex(bytes, true));
 				return null;
 			}
 		default:

@@ -6,7 +6,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
 import com.ttProject.media.flv.CodecType;
-import com.ttProject.util.HexUtils;
+import com.ttProject.util.HexUtil;
 
 public class FlvMediaPacket extends FlvPacket {
 	private final FlvHeaderPacket headerPacket;
@@ -45,7 +45,7 @@ public class FlvMediaPacket extends FlvPacket {
 				byte[] data = new byte[buffer.remaining()];
 				buffer.get(data);
 				System.out.println("position:" + position);
-				System.out.println(HexUtils.toHex(data, true));
+				System.out.println(HexUtil.toHex(data, true));
 				throw new RuntimeException("解析不能なデータがきました。" + header);
 			}
 			if(result != null) {
