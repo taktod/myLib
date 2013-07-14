@@ -64,20 +64,21 @@ public class Aac extends Frame {
 	 */
 	public Aac(int size) {
 		super(0, size);
-		id = new Bit1();
-		layer = new Bit2();
-		protectionAbsent = new Bit1(1);
-		profile = new Bit2(0);
-		samplingFrequenceIndex = new Bit4(4);
-		privateBit = new Bit1();
-		channelConfiguration = new Bit3(2);
-		originalFlg = new Bit1();
-		home = new Bit1();
-		copyrightIdentificationBit = new Bit1();
-		copyrightIdentificationStart = new Bit1();
-		frameSize = size;
+		// デフォルト設定
+		id = new Bit1(); // 0:Mpeg4
+		layer = new Bit2(); // 常に0
+		protectionAbsent = new Bit1(1); // 一応保護あり
+		profile = new Bit2(0); // main profileにしておく
+		samplingFrequenceIndex = new Bit4(4); // 44.100kHzとしておく。あとで変更すべき
+		privateBit = new Bit1(); // 1固定
+		channelConfiguration = new Bit3(2); // チャンネル数とりあえずステレオにしておく。
+		originalFlg = new Bit1(); // オリジナルデータ
+		home = new Bit1(); // わからん。とりあえず0
+		copyrightIdentificationBit = new Bit1(); // 0
+		copyrightIdentificationStart = new Bit1(); // 0
+		frameSize = size; // データサイズ
 		adtsBufferFullness = 0x7FF; // とりあえずVBR
-		noRawDataBlocksInFrame = new Bit2();
+		noRawDataBlocksInFrame = new Bit2(); // 0でOKみたい
 	}
 	/**
 	 * コンストラクタwith細かい情報
