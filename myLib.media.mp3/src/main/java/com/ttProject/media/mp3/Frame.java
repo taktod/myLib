@@ -12,4 +12,5 @@ public abstract class Frame extends Unit {
 	public void analyze(IReadChannel ch, IAnalyzer<?> analyzer)
 			throws Exception {
 	}
+	public abstract void analyze(IReadChannel ch, IFrameAnalyzer analyzer) throws Exception;
 }
