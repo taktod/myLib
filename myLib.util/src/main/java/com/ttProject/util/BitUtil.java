@@ -10,7 +10,7 @@ public class BitUtil {
 	public static String toBit(final int value, int length) {
 		String data = Integer.toBinaryString(value);
 		if(data.length() > length) {
-			return data.substring(length - data.length());
+			return data.substring(data.length() - length);
 		}
 		else if(data.length() < length) {
 			// 先頭に0を追加しておく。

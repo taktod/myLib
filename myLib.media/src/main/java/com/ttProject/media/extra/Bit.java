@@ -27,8 +27,8 @@ public abstract class Bit {
 	 * 内部データ参照
 	 * @return
 	 */
-	protected byte get() {
-		return value;
+	public int get() {
+		return value & 0xFF;
 	}
 	/**
 	 * データDump
@@ -57,15 +57,14 @@ public abstract class Bit {
 		for(Bit bit : bits) {
 			size += bit.bitCount;
 		}
-		System.out.println(size);
-		CacheBuffer buffer = new CacheBuffer(channel, (int)Math.floor(size / 8));
+		CacheBuffer buffer = new CacheBuffer(channel, (int)Math.ceil(size / 8.0));
 		// channelのデータを読みこむ
 		int floatData = 0;
 		int left = 0; // 読み込み待ちのbit数
 		for(Bit bit : bits) {
 			// bitデータを読み込む
 			while(left < bit.bitCount) {
-				floatData = (floatData << 8) + buffer.get();
+				floatData = (floatData << 8) | (buffer.get() & 0xFF);
 				left += 8;
 			}
 			// 必要なデータ量読み込む
