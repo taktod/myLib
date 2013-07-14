@@ -1,5 +1,7 @@
 package com.ttProject.media.extra.test;
 
+import java.nio.ByteBuffer;
+
 import org.junit.Test;
 
 import com.ttProject.media.extra.Bit;
@@ -11,6 +13,7 @@ import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit8;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.util.HexUtil;
 
 public class BitTest {
 	@Test
@@ -42,5 +45,12 @@ public class BitTest {
 			copyrightIdentificationBit, copyrightIdentificationStart, frameSize1, frameSize2,
 			adtsBufferFullness1, adtsBufferFullness2, noRawDataBlocksInFrame);
 		channel.close();
+		
+		ByteBuffer buffer = Bit.bitConnector(
+				syncBit1, syncBit2, id, layer, protectionAbsent, profile, samplingFrequenceIndex,
+				privateBit, channelConfiguration, originalFlg, home,
+				copyrightIdentificationBit, copyrightIdentificationStart, frameSize1, frameSize2,
+				adtsBufferFullness1, adtsBufferFullness2, noRawDataBlocksInFrame);
+		System.out.println(HexUtil.toHex(buffer.array(), true));
 	}
 }
