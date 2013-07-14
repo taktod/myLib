@@ -3,6 +3,24 @@ package com.ttProject.media.flv;
 /**
  * コーデック処理
  * @author taktod
+ * 
+h263の場合のサイズをとる方法の部分、先頭の部分にデータがはいっているみたい・・・
+00        00        84        00        81        40        00        B4        12
+0000 0000 0000 0000 1000 0100 0000 0000 1000 0001 0100 0000 0000 0000 1011 0100 0001 0010 ...
+DDD = 000の場合
+AAAA AAAA AAAA AAAA ABBB BBCC CCCC CCDD DEEE EEEE EFFF FFFF FGGH IIII I
+DDD = 001の場合
+AAAA AAAA AAAA AAAA ABBB BBCC CCCC CCDD DEEE EEEE EEEE EEEE EFFF FFFF FFFF FFFF FGGH IIII I
+DDDそれ以外の場合
+AAAA AAAA AAAA AAAA ABBB BBCC CCCC CCDD DGGH IIII I
+
+http://hkpr.info/flash/swf/index.php?%E3%83%93%E3%83%87%E3%82%AA%2FSorenson%20H.263%20%E3%83%93%E3%83%83%E3%83%88%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%A0%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88
+
+h264の場合nal構造のspsをみればいいみたい。
+
+AACの情報
+http://jongyeob.com/moniwiki/pds/upload/13818-7.pdf
+
  */
 public enum CodecType {
 	NONE,

@@ -11,6 +11,17 @@ import com.ttProject.util.BufferUtil;
 /**
  * videoデータ
  * @author taktod
+ * 
+ * 01 4D 40 1E FF E1 00 19 67 4D 40 1E 92 42 01 40 5F F2 E0 22 00 00 03 00 C8 00 00 2E D5 1E 2C 5C 90 01 00 04 68 EE 32 C8
+ * [] avcC version 1
+ *    [      ] profile compatibility level
+ *             [] 111111 + 2bit nal size - 1(ff固定とおもっててOKでしょう)
+ *                [] number of SPS e1固定？
+ *                   [   ] spsLength
+ *                         [spsNalデータ                                                            ]
+ *                                                                                                    [] number of PPS
+ *                                                                                                       [   ] ppsLength
+ *                                                                                                             [         ] ppsData
  */
 public class VideoTag extends Tag {
 	/** コーデック */
