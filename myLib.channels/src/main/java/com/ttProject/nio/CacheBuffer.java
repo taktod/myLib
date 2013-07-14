@@ -38,13 +38,29 @@ public class CacheBuffer {
 		this.position = source.position();
 		this.remaining = size;
 	}
+	public byte get() throws Exception {
+		resetData(1);
+		return buffer.get();
+	}
+	public short getShort() throws Exception {
+		resetData(2);
+		return buffer.getShort();
+	}
+	public long getLong() throws Exception {
+		resetData(8);
+		return buffer.getLong();
+	}
 	/**
 	 * 整数の値のみ応答することにします。
 	 * @return
 	 */
 	public int getInt() throws Exception {
+		resetData(4);
+		return buffer.getInt();
+	}
+	private void resetData(int bytesLoad) throws Exception {
 		// buffer内のデータがまにあっているか確認する。
-		if(buffer == null || buffer.remaining() < 4) {
+		if(buffer == null || buffer.remaining() < bytesLoad) {
 			// TODO このデータの作り直しの部分だけなんとかしておけば、bufferの読み込み動作はいくらでもつくれそうな予感
 			// 残りデータが0だったらもうデータなし
 			if(remaining == 0 && buffer.remaining() == 0) {
@@ -76,7 +92,6 @@ public class CacheBuffer {
 			buf2.flip();
 			buffer = buf2;
 		}
-		return buffer.getInt();
 	}
 	/**
 	 * 残りデータ量を応答する
