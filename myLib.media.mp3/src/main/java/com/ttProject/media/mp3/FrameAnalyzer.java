@@ -7,7 +7,7 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class FrameAnalyzer implements IFrameAnalyzer {
-	private Mp3Manager manager = new Mp3Manager();
+	private final Mp3Manager manager = new Mp3Manager();
 	@Override
 	public Frame analyze(IReadChannel ch) throws Exception {
 		Frame frame = manager.getUnit(ch);
