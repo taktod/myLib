@@ -19,11 +19,18 @@ public class FileAnalyzeTest {
 	 */
 	@Test
 	public void fixedFileTest() throws Exception {
-		IReadChannel source = FileReadChannel.openFileReadChannel("~/tmp/mario.ts");
+		IReadChannel source = FileReadChannel.openFileReadChannel(
+				Thread.currentThread().getContextClassLoader().getResource("mario.ts")
+		);
 		IPacketAnalyzer analyzer = new PacketAnalyzer();
 		Packet packet = null;
+		int i = 0;
 		while((packet = analyzer.analyze(source)) != null) {
 			System.out.println(packet);
+			i ++;
+			if(i > 20) {
+				break;
+			}
 		}
 		source.close();
 	}

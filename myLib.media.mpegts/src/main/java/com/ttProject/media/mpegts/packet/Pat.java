@@ -1,25 +1,32 @@
 package com.ttProject.media.mpegts.packet;
 
 import java.nio.ByteBuffer;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.ttProject.media.mpegts.Packet;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.util.BufferUtil;
 
+/**
+ * Pat(Program Association Table)
+ * @author taktod
+ */
 public class Pat extends Packet {
-	public Pat() {
-		this(0);
+	/** pmtIdリスト */
+	private Set<Integer> pmtIds = new HashSet<Integer>();
+	public Pat(ByteBuffer buffer) {
+		this(0, buffer);
 	}
-	public Pat(int position) {
-		super(position);
+	public Pat(int position, ByteBuffer buffer) {
+		super(position, buffer);
 	}
 	@Override
 	public void analyze(IReadChannel ch) throws Exception {
 		// 直接ここにくるはず。
 		// 先頭の3バイトはすでに読み込み済みになっているはず。
-		ByteBuffer buffer = BufferUtil.safeRead(ch, 185);
+		ByteBuffer buffer = getBuffer();
 		// すでに3バイトすすんでいるところから解析するので、2バイトスキップさせる必要あり。
-		buffer.position(2);
+		buffer.position(5);
 		if(!analyzeHeader(buffer, (byte)0x00)) {
 			throw new RuntimeException("ヘッダ部読み込み時に不正なデータを検出しました。");
 		}
@@ -36,14 +43,21 @@ public class Pat extends Packet {
 				throw new Exception("固定bitが一致しない");
 			}
 			// PIDデータ13ビット
-			if(data >>> 16 != 0) { // 先頭のbitフラグが立っているので0にならないことはありえないと思う。
-			// if((data & 0x1FFF0000) >> 16 != 0)
+			if(data >>> 16 != 0) { // 放送識別IDが0でなかったらPMTであるとする。
+				// if((data & 0x1FFF0000) >> 16 != 0)
 				// PMT pid
-				System.out.println("pmtPid:" + (data & 0x1FFF));
+				pmtIds.add((data & 0x1FFF));
 			}
 			else {
 				// ネットワークPID
 			}
 		}
+	}
+	public Set<Integer> getPmtIds() {
+		return new HashSet<Integer>(pmtIds);
+	}
+	@Override
+	public String toString() {
+		return "Pat: ";
 	}
 }
