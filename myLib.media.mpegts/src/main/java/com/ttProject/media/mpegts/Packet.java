@@ -2,8 +2,6 @@ package com.ttProject.media.mpegts;
 
 import java.nio.ByteBuffer;
 
-import org.apache.log4j.Logger;
-
 import com.ttProject.media.IAnalyzer;
 import com.ttProject.media.Unit;
 import com.ttProject.media.extra.Bit;
@@ -20,7 +18,6 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public abstract class Packet extends Unit {
-	private static final Logger logger = Logger.getLogger(Packet.class);
 	// 実データ(readModeではいっているものとします。)
 	private ByteBuffer buffer;
 	private final byte syncByte = 0x47;
