@@ -66,9 +66,11 @@ public class MpegtsManager extends Manager<Packet> {
 			return pat;
 		}
 		else if(pid == sdtId) {
+			System.out.println("ここにきた。");
 			Sdt sdt = new Sdt(position, buffer);
 			// 外でほしかったら勝手にanalyzeすればいいと思う
-			return sdt;
+			sdt.analyze(source);
+			return null;
 		}
 		else if(pmtIdSet.contains(pid)) {
 			Pmt pmt = new Pmt(position, buffer);
