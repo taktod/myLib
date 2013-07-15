@@ -87,8 +87,8 @@ public class Mp3Manager extends Manager<Frame> {
 			IReadChannel byteChannel = new ByteReadChannel(new byte[]{
 				data[0], data[1], data[2], data3
 			});
-			Bit3 syncBit1 = new Bit3();
-			Bit8 syncBit2 = new Bit8();
+			Bit3 syncBit_1 = new Bit3();
+			Bit8 syncBit_2 = new Bit8();
 			Bit2 mpegVersion = new Bit2();
 			Bit2 layer = new Bit2();
 			Bit1 protectionBit = new Bit1();
@@ -101,7 +101,7 @@ public class Mp3Manager extends Manager<Frame> {
 			Bit1 copyRight = new Bit1();
 			Bit1 originalFlg = new Bit1();
 			Bit2 emphasis = new Bit2();
-			Bit.bitLoader(byteChannel, syncBit1, syncBit2,
+			Bit.bitLoader(byteChannel, syncBit_1, syncBit_2,
 					mpegVersion, layer, protectionBit, bitrateIndex, samplingRateIndex,
 					paddingBit, privateBit, channelMode, modeExtension, copyRight, 
 					originalFlg, emphasis);

@@ -32,8 +32,8 @@ public class AacManager extends Manager<Frame> {
 			return null;
 		}
 		int position = source.position();
-		Bit4 syncBit1 = new Bit4();
-		Bit8 syncBit2 = new Bit8();
+		Bit4 syncBit_1 = new Bit4();
+		Bit8 syncBit_2 = new Bit8();
 		Bit1 id = new Bit1();
 		Bit2 layer = new Bit2();
 		Bit1 protectionAbsent = new Bit1();
@@ -45,17 +45,17 @@ public class AacManager extends Manager<Frame> {
 		Bit1 home = new Bit1();
 		Bit1 copyrightIdentificationBit = new Bit1();
 		Bit1 copyrightIdentificationStart = new Bit1();
-		Bit5 frameSize1 = new Bit5();
-		Bit8 frameSize2 = new Bit8();
-		Bit3 adtsBufferFullness1 = new Bit3();
-		Bit8 adtsBufferFullness2 = new Bit8();
+		Bit5 frameSize_1 = new Bit5();
+		Bit8 frameSize_2 = new Bit8();
+		Bit3 adtsBufferFullness_1 = new Bit3();
+		Bit8 adtsBufferFullness_2 = new Bit8();
 		Bit2 noRawDataBlocksInFrame = new Bit2();
 		Bit.bitLoader(source,
-			syncBit1, syncBit2, id, layer, protectionAbsent, profile, samplingFrequenceIndex,
+			syncBit_1, syncBit_2, id, layer, protectionAbsent, profile, samplingFrequenceIndex,
 			privateBit, channelConfiguration, originalFlg, home,
-			copyrightIdentificationBit, copyrightIdentificationStart, frameSize1, frameSize2,
-			adtsBufferFullness1, adtsBufferFullness2, noRawDataBlocksInFrame);
-		int size = (frameSize1.get() << 8) + frameSize2.get();
-		return new Aac(position, size, id, layer, protectionAbsent, profile, samplingFrequenceIndex, privateBit, channelConfiguration, originalFlg, home, copyrightIdentificationBit, copyrightIdentificationStart, size, (adtsBufferFullness1.get() << 8) + adtsBufferFullness2.get(), noRawDataBlocksInFrame);
+			copyrightIdentificationBit, copyrightIdentificationStart, frameSize_1, frameSize_2,
+			adtsBufferFullness_1, adtsBufferFullness_2, noRawDataBlocksInFrame);
+		int size = (frameSize_1.get() << 8) + frameSize_2.get();
+		return new Aac(position, size, id, layer, protectionAbsent, profile, samplingFrequenceIndex, privateBit, channelConfiguration, originalFlg, home, copyrightIdentificationBit, copyrightIdentificationStart, size, (adtsBufferFullness_1.get() << 8) + adtsBufferFullness_2.get(), noRawDataBlocksInFrame);
 	}
 }
