@@ -26,7 +26,8 @@ public abstract class Packet extends Unit {
 	private Bit1 transportPriority;
 	private short pid; // 13bit
 	private Bit2 scramblingControl;
-	private Bit2 adaptationFieldExist;
+	private Bit1 adaptationFieldExist;
+	private Bit1 payloadFieldExist;
 	private Bit4 continuityCounter;
 	
 	/** 内包しているadaptationFieldの情報 */
@@ -66,10 +67,11 @@ public abstract class Packet extends Unit {
 		Bit5 pid_1 = new Bit5();
 		Bit8 pid_2 = new Bit8();
 		scramblingControl = new Bit2();
-		adaptationFieldExist = new Bit2();
+		adaptationFieldExist = new Bit1();
+		payloadFieldExist = new Bit1();
 		continuityCounter = new Bit4();
 		Bit.bitLoader(channel, syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority,
-				pid_1, pid_2, scramblingControl, adaptationFieldExist, continuityCounter);
+				pid_1, pid_2, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
 		if(syncByte.get() != this.syncByte) {
 			throw new Exception("syncByteがおかしいです。");
 		}
@@ -89,6 +91,7 @@ public abstract class Packet extends Unit {
 		data.append(" pid:").append(Integer.toHexString(pid));
 		data.append(" sc:").append(scramblingControl);
 		data.append(" afe:").append(adaptationFieldExist);
+		data.append(" pfe:").append(payloadFieldExist);
 		data.append(" cc:").append(continuityCounter);
 		return data.toString();
 	}

@@ -15,6 +15,7 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class ProgramPacket extends Packet {
+	private Bit8 pointerField;
 	private Bit8 tableId;
 	private Bit1 sectionSyntaxIndicator;
 	private Bit1 zero;
@@ -40,6 +41,7 @@ public class ProgramPacket extends Packet {
 	protected void analyzeHeader(IReadChannel channel) throws Exception {
 		System.out.println("analyzeHeader:programPacket");
 		super.analyzeHeader(channel);
+		pointerField = new Bit8();
 		tableId = new Bit8();
 		sectionSyntaxIndicator = new Bit1();
 		zero = new Bit1();
@@ -53,7 +55,7 @@ public class ProgramPacket extends Packet {
 		currentNextOrder = new Bit1();
 		sectionNumber = new Bit8();
 		lastSectionNumber = new Bit8();
-		Bit.bitLoader(channel, tableId, sectionSyntaxIndicator, zero, reserved1,
+		Bit.bitLoader(channel, pointerField, tableId, sectionSyntaxIndicator, zero, reserved1,
 				sectionLength_1, sectionLength_2, programNumber_1, programNumber_2,
 				reserved2, versionNumber, currentNextOrder, sectionNumber, lastSectionNumber);
 		sectionLength = (short)((sectionLength_1.get() << 8) | sectionLength_2.get());

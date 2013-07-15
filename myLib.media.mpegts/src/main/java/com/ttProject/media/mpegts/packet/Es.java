@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.media.mpegts.CodecType;
 import com.ttProject.media.mpegts.Packet;
+import com.ttProject.nio.channels.ByteReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * ElementaryStreamPacket
@@ -72,6 +74,11 @@ public class Es extends Packet {
 	 */
 	public CodecType getCodec() {
 		return codec;
+	}
+	@Override
+	public void analyze(IReadChannel ch) throws Exception {
+		IReadChannel channel = new ByteReadChannel(getBuffer());
+		analyzeHeader(channel);
 	}
 	@Override
 	public String toString() {

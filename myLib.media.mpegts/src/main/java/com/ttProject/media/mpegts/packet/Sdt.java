@@ -25,6 +25,7 @@ import com.ttProject.nio.channels.IReadChannel;
  */
 public class Sdt extends Packet {
 	// 内容データ
+	private Bit8 pointerField;
 	private Bit8 tableId; // 0x42固定
 	private Bit1 sectionSyntaxIndicator;
 	private Bit1 reservedFutureUse1;
@@ -62,6 +63,7 @@ public class Sdt extends Packet {
 		IReadChannel channel = new ByteReadChannel(getBuffer());
 		// 先頭の部分解析しておく。
 		analyzeHeader(channel);
+		pointerField = new Bit8();
 		tableId = new Bit8();
 		sectionSyntaxIndicator = new Bit1();
 		reservedFutureUse1 = new Bit1();
@@ -78,7 +80,7 @@ public class Sdt extends Packet {
 		Bit8 originalNetworkId_1 = new Bit8();
 		Bit8 originalNetworkId_2 = new Bit8();
 		reservedFutureUse2 = new Bit8();
-		Bit.bitLoader(channel,
+		Bit.bitLoader(channel, pointerField,
 				tableId, sectionSyntaxIndicator, reservedFutureUse1,
 				reserved1,
 				sectionLength_1, sectionLength_2,

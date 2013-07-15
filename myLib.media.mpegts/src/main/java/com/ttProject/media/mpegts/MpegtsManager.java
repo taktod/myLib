@@ -85,6 +85,7 @@ public class MpegtsManager extends Manager<Packet> {
 			System.out.println("最後にここまできた。");
 			// メディアデータ
 			Es es = new Es(position, buffer, esMap.get(pid), pid == pcrPid);
+			es.analyze(source);
 			return null;
 //			return es;
 		}
