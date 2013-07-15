@@ -2,11 +2,13 @@ package com.ttProject.media.mpegts.field;
 
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
+import com.ttProject.media.extra.Bit6;
 import com.ttProject.media.extra.Bit8;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * adaptationFieldの内容保持
+ * ちなみにPCRは100msec以内に一度更新してやる必要があるらしいので注意が必要。
  * @author taktod
  */
 public class AdaptationField {
@@ -15,20 +17,112 @@ public class AdaptationField {
 	private Bit1 randomAccessIndicator;
 	private Bit1 elementaryStreamPriorityIndicator;
 	private Bit1 pcrFlag;
-	private Bit1 opcrFlag;
+	private Bit1 opcrFlag; // originalPcr(コピーするときにつかうらしい。)
 	private Bit1 splicingPointFlag;
 	private Bit1 transportPrivateDataFlag;
 	private Bit1 adaptationFieldExtensionFlag;
+	
+	// PCR用
+	private long pcrBase; // 33bit 90KHz表示
+	private Bit6 pcrPadding;
+	private short pcrExtension; // 9bit 27MHz
+	
+	// OPCR用
+	private long opcrBase; // 33bit 90KHz表示
+	private Bit6 opcrPadding;
+	private short opcrExtension; // 9bit 27MHz
+
 	// pcr opcr spliceCountdown stuffingBytes等々・・・
 	public void analyze(IReadChannel channel) throws Exception {
 		// とりあえずlengthをみておく。
 		adaptationFieldLength = new Bit8();
-		Bit.bitLoader(channel, adaptationFieldLength);
-		if(adaptationFieldLength.get() == 0x00) {
-			// データがなければここでおわり。
-			return;
-		}
+		discontinuityIndicator = new Bit1();
+		randomAccessIndicator = new Bit1();
+		elementaryStreamPriorityIndicator = new Bit1();
+		pcrFlag = new Bit1();
+		opcrFlag = new Bit1();
+		splicingPointFlag = new Bit1();
+		transportPrivateDataFlag = new Bit1();
+		adaptationFieldExtensionFlag = new Bit1();
+		Bit.bitLoader(channel, adaptationFieldLength, discontinuityIndicator, randomAccessIndicator,
+				elementaryStreamPriorityIndicator, pcrFlag, opcrFlag, splicingPointFlag,
+				transportPrivateDataFlag, adaptationFieldExtensionFlag);
 		// 他のデータがある場合は読み込んでいく必要あり。
-		throw new Exception("未解析はadaptationFieldがありました。");
+		if(pcrFlag.get() != 0x00) {
+			// pcrがある場合
+			// とりあえず、つづく、33bit + 6Bit + 9Bitからデータがなるみたいです。
+			// 33bitの部分を90000で割るとおよそのデータ長がとれるみたい。
+			// はじめの33bitは90kHzでの表示、最終の9bitは27MHzでの表示となるみたいです。
+			// 中間の6bitはpaddingBit
+			// とりあえずおおよそのデータがわかればよろしい感じなので、データはとっておきますが、33bitの部分からだけでデータを取得しておきます。
+			Bit1 pcrBase_1 = new Bit1();
+			Bit8 pcrBase_2 = new Bit8();
+			Bit8 pcrBase_3 = new Bit8();
+			Bit8 pcrBase_4 = new Bit8();
+			Bit8 pcrBase_5 = new Bit8();
+			pcrPadding = new Bit6();
+			Bit1 pcrExtension_1 = new Bit1();
+			Bit8 pcrExtension_2 = new Bit8();
+			Bit.bitLoader(channel, pcrBase_1, pcrBase_2, pcrBase_3, pcrBase_4, pcrBase_5,
+					pcrPadding, pcrExtension_1, pcrExtension_2);
+			pcrBase = (((long)pcrBase_1.get()) << 32) | (((long)pcrBase_2.get()) << 24) | (pcrBase_3.get() << 16) | (pcrBase_4.get() << 8) | pcrBase_5.get();
+			pcrExtension = (short)((pcrExtension_1.get() << 8) | pcrExtension_2.get());
+		}
+		if(opcrFlag.get() != 0x00) {
+			// pcrと同じっぽいので実装しとく。
+			Bit1 opcrBase_1 = new Bit1();
+			Bit8 opcrBase_2 = new Bit8();
+			Bit8 opcrBase_3 = new Bit8();
+			Bit8 opcrBase_4 = new Bit8();
+			Bit8 opcrBase_5 = new Bit8();
+			opcrPadding = new Bit6();
+			Bit1 opcrExtension_1 = new Bit1();
+			Bit8 opcrExtension_2 = new Bit8();
+			Bit.bitLoader(channel, opcrBase_1, opcrBase_2, opcrBase_3, opcrBase_4, opcrBase_5,
+					opcrPadding, opcrExtension_1, opcrExtension_2);
+			opcrBase = (((long)opcrBase_1.get()) << 32) | (((long)opcrBase_2.get()) << 24) | (opcrBase_3.get() << 16) | (opcrBase_4.get() << 8) | opcrBase_5.get();
+			opcrExtension = (short)((opcrExtension_1.get() << 8) | opcrExtension_2.get());
+		}
+		if(splicingPointFlag.get() != 0x00) {
+			throw new Exception("splicingPointの解析は未実装です。");
+		}
+		if(transportPrivateDataFlag.get() != 0x00) {
+			throw new Exception("transportPrivateDataの解析は未実装です。");
+		}
+		if(adaptationFieldExtensionFlag.get() != 0x00) {
+			throw new Exception("adaptationFieldExtensionの解析は未実装です。");
+		}
+		System.out.println(dump());
+	}
+	/**
+	 * 
+	 * @return
+	 */
+	public String dump() {
+		StringBuilder data = new StringBuilder("adaptationField:");
+		data.append(" afl:").append(Integer.toHexString(adaptationFieldLength.get()));
+		data.append(" di:").append(discontinuityIndicator);
+		data.append(" rai:").append(randomAccessIndicator);
+		data.append(" espi:").append(elementaryStreamPriorityIndicator);
+		data.append(" pf:").append(pcrFlag);
+		data.append(" of:").append(opcrFlag);
+		data.append(" spf:").append(splicingPointFlag);
+		data.append(" tpdf:").append(transportPrivateDataFlag);
+		data.append(" afef:").append(adaptationFieldExtensionFlag);
+		if(pcrFlag.get() != 0x00) {
+			data.append("[pcrBase:").append(Long.toHexString(pcrBase))
+				.append("(").append(pcrBase / 90000f).append("sec)");
+			data.append(" pcrPadding:").append(pcrPadding);
+			data.append(" pcrExtension:").append(pcrExtension);
+			data.append("]");
+		}
+		if(opcrFlag.get() != 0x00) {
+			data.append("[opcrBase:").append(Long.toHexString(opcrBase))
+				.append("(").append(opcrBase / 90000f).append("sec)");
+			data.append(" opcrPadding:").append(opcrPadding);
+			data.append(" opcrExtension:").append(opcrExtension);
+			data.append("]");
+		}
+		return data.toString();
 	}
 }
