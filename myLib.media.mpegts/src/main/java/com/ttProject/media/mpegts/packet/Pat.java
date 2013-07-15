@@ -1,19 +1,24 @@
 package com.ttProject.media.mpegts.packet;
 
 import java.nio.ByteBuffer;
-import java.util.HashSet;
-import java.util.Set;
 
-import com.ttProject.media.mpegts.Packet;
+import com.ttProject.media.extra.Bit;
+import com.ttProject.media.extra.Bit3;
+import com.ttProject.media.extra.Bit5;
+import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.mpegts.ProgramPacket;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * Pat(Program Association Table)
+ * 474000100000B00D0001C100000001F0002AB104B2
  * @author taktod
  */
-public class Pat extends Packet {
-	/** pmtIdリスト */
-	private Set<Integer> pmtIds = new HashSet<Integer>();
+public class Pat extends ProgramPacket {
+	private short programNum; // 16bit
+	private Bit3 reserved;
+	private short programPid; // 13bit
 	public Pat(ByteBuffer buffer) {
 		this(0, buffer);
 	}
@@ -22,39 +27,30 @@ public class Pat extends Packet {
 	}
 	@Override
 	public void analyze(IReadChannel ch) throws Exception {
-		// 直接ここにくるはず。
-		// 先頭の3バイトはすでに読み込み済みになっているはず。
-		ByteBuffer buffer = getBuffer();
-		// すでに3バイトすすんでいるところから解析するので、2バイトスキップさせる必要あり。
-		buffer.position(5);
-		if(!analyzeHeader(buffer, (byte)0x00)) {
-			throw new RuntimeException("ヘッダ部読み込み時に不正なデータを検出しました。");
-		}
-		int size = getDataSize(); // 内部の実データサイズを取得しておく。
-		size -= 5; // はじめの５バイトはデータとして読み込み済みのはず。(headerで取得できる情報)
-		// 実データがいくつあるか確認する。
-		while(size > 4) {
-			size -= 4;
-			// 放送番組識別 16bit
-			int data = buffer.getInt(); // 4バイト読み込んで処理にまわしておく。
-			// 111 3bit(固定)
-			if((data & 0xF000) >>> 13 != Integer.parseInt("111", 2)) {
-				// 固定bitが一致しない
-				throw new Exception("固定bitが一致しない");
-			}
-			// PIDデータ13ビット
-			if(data >>> 16 != 0) { // 放送識別IDが0でなかったらPMTであるとする。
-				// if((data & 0x1FFF0000) >> 16 != 0)
-				// PMT pid
-				pmtIds.add((data & 0x1FFF));
-			}
-			else {
-				// ネットワークPID
-			}
-		}
+		IReadChannel channel = new ByteReadChannel(getBuffer());
+		// 先頭の部分を解析しておく。
+		analyzeHeader(channel);
+		Bit8 programNum_1 = new Bit8();
+		Bit8 programNum_2 = new Bit8();
+		reserved = new Bit3();
+		Bit5 programPid_1 = new Bit5();
+		Bit8 programPid_2 = new Bit8();
+		
+		Bit.bitLoader(channel, programNum_1, programNum_2,
+				reserved, programPid_1, programPid_2);
+		programNum = (short)((programNum_1.get() << 8) | programNum_2.get());
+		programPid = (short)((programPid_1.get() << 8) | programPid_2.get());
+		System.out.println(dump3());
 	}
-	public Set<Integer> getPmtIds() {
-		return new HashSet<Integer>(pmtIds);
+	public short getProgramPId() {
+		return programPid;
+	}
+	public String dump3() {
+		StringBuilder data = new StringBuilder("Pat:");
+		data.append(" pn:").append(Integer.toHexString(programNum));
+		data.append(" r:").append(reserved);
+		data.append(" pp:").append(Integer.toHexString(programPid));
+		return data.toString();
 	}
 	@Override
 	public String toString() {
