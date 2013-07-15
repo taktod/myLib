@@ -29,5 +29,6 @@ public class AdaptationField {
 			return;
 		}
 		// 他のデータがある場合は読み込んでいく必要あり。
+		throw new Exception("未解析はadaptationFieldがありました。");
 	}
 }

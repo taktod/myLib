@@ -2,12 +2,11 @@ package com.ttProject.media.mpegts;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.ttProject.media.Manager;
+import com.ttProject.media.mpegts.field.PmtElementaryField;
 import com.ttProject.media.mpegts.packet.Es;
 import com.ttProject.media.mpegts.packet.Pat;
 import com.ttProject.media.mpegts.packet.Pmt;
@@ -28,10 +27,10 @@ public class MpegtsManager extends Manager<Packet> {
 	/** SdtID(情報) */
 	private final int sdtId = 0x0011;
 	/** PmtID(Patによる) */
-	private Set<Integer> pmtIdSet = new HashSet<Integer>();
+	private short pmtId;
 	/** pcrとして、指定されているPID */
 	private int pcrPid;
-	/** elementStreamのデータ pic -> codecとしてある */
+	/** elementStreamのデータ pic -> CodecTypeとしてある */
 	private Map<Integer, CodecType> esMap = new HashMap<Integer, CodecType>();
 	/**
 	 * {@inheritDoc}
@@ -62,30 +61,32 @@ public class MpegtsManager extends Manager<Packet> {
 			Pat pat = new Pat(position, buffer);
 			// patを解析して、pmtを知る必要あり
 			pat.analyze(source);
-			pmtIdSet = pat.getPmtIds();
+			pmtId = pat.getProgramPId();
 			return pat;
 		}
 		else if(pid == sdtId) {
-			System.out.println("ここにきた。");
 			Sdt sdt = new Sdt(position, buffer);
 			// 外でほしかったら勝手にanalyzeすればいいと思う
 			sdt.analyze(source);
-			return null;
+			return sdt;
 		}
-		else if(pmtIdSet.contains(pid)) {
+		else if(pmtId == pid) {
 			Pmt pmt = new Pmt(position, buffer);
 			// pmtを解析して、esを知る必要あり。
 			pmt.analyze(source);
 			// pcr(時間情報を保持しているesのpid)
 			pcrPid = pmt.getPcrPid();
-			// esのデータ
-			esMap = pmt.getEsMap();
+			for(PmtElementaryField field : pmt.getFields()) {
+				esMap.put((int)field.getPid(), field.getCodecType());
+			}
 			return pmt;
 		}
 		else if(esMap.containsKey(pid)) {
+			System.out.println("最後にここまできた。");
 			// メディアデータ
 			Es es = new Es(position, buffer, esMap.get(pid), pid == pcrPid);
-			return es;
+			return null;
+//			return es;
 		}
 		else {
 			// しらないデータ、これがきた場合は、なんとかしておかないとだめ

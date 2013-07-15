@@ -57,6 +57,7 @@ public abstract class Packet extends Unit {
 	 * @throws Exception
 	 */
 	protected void analyzeHeader(IReadChannel channel) throws Exception {
+		System.out.println("analyzeHeader:Packet");
 		// headerを解析しておきます。
 		Bit8 syncByte = new Bit8();
 		transportErrorIndicator = new Bit1();

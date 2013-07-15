@@ -59,7 +59,6 @@ public class Sdt extends Packet {
 	 */
 	@Override
 	public void analyze(IReadChannel ch) throws Exception {
-		System.out.println("解析してみます。");
 		IReadChannel channel = new ByteReadChannel(getBuffer());
 		// 先頭の部分解析しておく。
 		analyzeHeader(channel);
@@ -98,7 +97,7 @@ public class Sdt extends Packet {
 			size -= ssfield.getSize();
 			serviceFields.add(ssfield);
 		}
-		System.out.println(dump2());
+//		System.out.println(dump2());
 		return;
 	}
 	public String dump2() {

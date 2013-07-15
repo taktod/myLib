@@ -38,7 +38,7 @@ public class ServiceDescriptor extends Descriptor {
 		serviceNameLength = new Bit8();
 		Bit.bitLoader(channel, serviceNameLength);
 		serviceName = new String(BufferUtil.safeRead(channel, serviceNameLength.get()).array());
-		System.out.println(dump4());
+//		System.out.println(dump4());
 	}
 	public String dump4() {
 		StringBuilder data = new StringBuilder("serviceDescriptor:");

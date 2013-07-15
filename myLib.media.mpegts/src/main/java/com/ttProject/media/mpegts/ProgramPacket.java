@@ -56,7 +56,7 @@ public class ProgramPacket extends Packet {
 		Bit.bitLoader(channel, tableId, sectionSyntaxIndicator, zero, reserved1,
 				sectionLength_1, sectionLength_2, programNumber_1, programNumber_2,
 				reserved2, versionNumber, currentNextOrder, sectionNumber, lastSectionNumber);
-		sectionLength = (short)((sectionLength_1.get() << 8) |  sectionLength_2.get());
+		sectionLength = (short)((sectionLength_1.get() << 8) | sectionLength_2.get());
 		programNumber = (short)((programNumber_1.get() << 8) | programNumber_2.get());
 		System.out.println(dump1());
 	}

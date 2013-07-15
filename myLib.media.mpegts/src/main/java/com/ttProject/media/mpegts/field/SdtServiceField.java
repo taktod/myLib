@@ -72,7 +72,7 @@ public class SdtServiceField {
 			size -= descriptor.getDescriptorLength().get() + 2; // データ長 + データtype&length定義分
 			descriptors.add(descriptor);
 		}
-		System.out.println(dump3());
+//		System.out.println(dump3());
 	}
 	public String dump3() {
 		StringBuilder data = new StringBuilder("sdtServiceField:");

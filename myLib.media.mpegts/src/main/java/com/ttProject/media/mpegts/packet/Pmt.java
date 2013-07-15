@@ -1,20 +1,33 @@
 package com.ttProject.media.mpegts.packet;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.ttProject.media.mpegts.CodecType;
-import com.ttProject.media.mpegts.Packet;
+import com.ttProject.media.extra.Bit;
+import com.ttProject.media.extra.Bit3;
+import com.ttProject.media.extra.Bit4;
+import com.ttProject.media.extra.Bit5;
+import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.mpegts.ProgramPacket;
+import com.ttProject.media.mpegts.field.PmtElementaryField;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * Pmt
+ * 475000100002B0120001C10000 E100F0000FE100F000B69BC0D9
  * @author taktod
  */
-public class Pmt extends Packet {
-	private int pcrPid;
-	private Map<Integer, CodecType> esMap = new HashMap<Integer, CodecType>();
+public class Pmt extends ProgramPacket {
+	private Bit3 reserved1;
+	private short pcrPid; // 13bit
+	private Bit4 reserved2;
+	private short programInfoLength; // 12bit (どうみてもこれ0なんだが・・・どうなるんだろう)
+
+	private List<PmtElementaryField> fields = new ArrayList<PmtElementaryField>();
+	// 以下programDescriptor
+	// type 3bit pid 4bit esInfoLength eDescriptor
 	public Pmt(ByteBuffer buffer) {
 		this(0, buffer);
 	}
@@ -23,62 +36,34 @@ public class Pmt extends Packet {
 	}
 	@Override
 	public void analyze(IReadChannel ch) throws Exception {
-		// pcrとメディアPidを取得する必要あり。
-		ByteBuffer buffer = getBuffer();
-		buffer.position(5);
-		if(!analyzeHeader(buffer, (byte)0x02)) {
-			throw new Exception("ヘッダ部の読み込み時に不正なデータを検出しました。");
-		}
-		int size = getDataSize();
-		size -= 5;
-		int data;
-		data = buffer.getShort() & 0xFFFF;
-		size -= 2;
-		// reserved3bit
-		if(data >>> 13 != Integer.parseInt("111", 2)) {
-			throw new Exception("PCRPID用の指示bitがおかしいです。");
-		}
-		// PCRPID(13bit)
-		pcrPid = data & 0x1FFF;
-		data = buffer.getShort() & 0xFFFF;
-		size -= 2;
-		// reserved(4bit)
-		if(data >>> 12 != Integer.parseInt("1111", 2)) {
-			throw new Exception("番組情報長の指示ビットがおかしいです。");
-		}
-		// programInfoLength(2+10bit)
-		int programInfoLength = data & 0x0FFF;
-		// programDescriptor(N * 8) // programInfoLengthの長さと一致するサイズ(とりあえず飛ばしておく)
-		size -= programInfoLength;
-		buffer.position(buffer.position() + programInfoLength);
-		// Track情報
+		IReadChannel channel = new ByteReadChannel(getBuffer());
+		analyzeHeader(channel);
+		int size = getSectionLength() - 5; // 残りの読み込むべきデータ量
+		// 自分のデータを読み込む
+		reserved1 = new Bit3();
+		Bit5 pcrPid_1 = new Bit5();
+		Bit8 pcrPid_2 = new Bit8();
+		reserved2 = new Bit4();
+		Bit4 programInfoLength_1 = new Bit4();
+		Bit8 programInfoLength_2 = new Bit8();
+		Bit.bitLoader(channel, reserved1, pcrPid_1, pcrPid_2, reserved2, programInfoLength_1, programInfoLength_2);
+		pcrPid = (short)((pcrPid_1.get() << 8) | pcrPid_2.get());
+		programInfoLength = (short)((programInfoLength_1.get() << 8) | programInfoLength_2.get());
+		// sectionLengthから残りのデータ量を見積もる。
+		size -= 4;
 		while(size > 4) {
-			// type(8bit)
-			int type = buffer.get();
-			CodecType codec = CodecType.getType(type);
-			size -= 1;
-			data = buffer.getShort() & 0xFFFF;
-			size -= 2;
-			// reserved(3bit)
-			// mediaPid(13bit)
-			int pid = data & 0x1FFF;
-			esMap.put(pid, codec);
-			data = buffer.getShort() & 0xFFFF;
-			size -= 2;
-			// reserved(4bit)
-			// esInfoLength(12bit)
-			int esInfoLength = data & 0x0FFF;
-			// esDescriptor(esInfoLength)
-			size -= esInfoLength;
-			buffer.position(buffer.position() + esInfoLength);
+			// 残りの部分がpmtElementaryFieldになる。
+			PmtElementaryField elementaryField = new PmtElementaryField();
+			elementaryField.analyze(channel);
+			size -= elementaryField.getSize();
+			fields.add(elementaryField);
 		}
-		// crc32
 	}
 	public int getPcrPid() {
 		return pcrPid;
 	}
-	public Map<Integer, CodecType> getEsMap() {
-		return new HashMap<Integer, CodecType>(esMap);
+	public List<PmtElementaryField> getFields() {
+		return fields;
 	}
 	@Override
 	public String toString() {
