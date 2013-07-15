@@ -39,7 +39,6 @@ public class ProgramPacket extends Packet {
 	 * ヘッダー部分の解析補助補助
 	 */
 	protected void analyzeHeader(IReadChannel channel) throws Exception {
-		System.out.println("analyzeHeader:programPacket");
 		super.analyzeHeader(channel);
 		pointerField = new Bit8();
 		tableId = new Bit8();
@@ -60,7 +59,6 @@ public class ProgramPacket extends Packet {
 				reserved2, versionNumber, currentNextOrder, sectionNumber, lastSectionNumber);
 		sectionLength = (short)((sectionLength_1.get() << 8) | sectionLength_2.get());
 		programNumber = (short)((programNumber_1.get() << 8) | programNumber_2.get());
-		System.out.println(dump1());
 	}
 	public short getSectionLength() {
 		return sectionLength;

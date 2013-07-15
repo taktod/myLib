@@ -40,7 +40,6 @@ public class Pat extends ProgramPacket {
 				reserved, programPid_1, programPid_2);
 		programNum = (short)((programNum_1.get() << 8) | programNum_2.get());
 		programPid = (short)((programPid_1.get() << 8) | programPid_2.get());
-		System.out.println(dump3());
 	}
 	public short getProgramPId() {
 		return programPid;

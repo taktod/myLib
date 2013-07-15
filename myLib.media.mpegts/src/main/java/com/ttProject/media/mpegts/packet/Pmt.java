@@ -23,6 +23,7 @@ public class Pmt extends ProgramPacket {
 	private Bit3 reserved1;
 	private short pcrPid; // 13bit
 	private Bit4 reserved2;
+	@SuppressWarnings("unused")
 	private short programInfoLength; // 12bit (どうみてもこれ0なんだが・・・どうなるんだろう)
 
 	private List<PmtElementaryField> fields = new ArrayList<PmtElementaryField>();

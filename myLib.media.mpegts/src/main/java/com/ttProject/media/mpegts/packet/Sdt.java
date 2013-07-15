@@ -99,7 +99,6 @@ public class Sdt extends Packet {
 			size -= ssfield.getSize();
 			serviceFields.add(ssfield);
 		}
-//		System.out.println(dump2());
 		return;
 	}
 	public String dump2() {

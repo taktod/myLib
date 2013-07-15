@@ -58,7 +58,6 @@ public abstract class Packet extends Unit {
 	 * @throws Exception
 	 */
 	protected void analyzeHeader(IReadChannel channel) throws Exception {
-		System.out.println("analyzeHeader:Packet");
 		// headerを解析しておきます。
 		Bit8 syncByte = new Bit8();
 		transportErrorIndicator = new Bit1();
@@ -76,7 +75,6 @@ public abstract class Packet extends Unit {
 			throw new Exception("syncByteがおかしいです。");
 		}
 		pid = (short)((pid_1.get() << 8) + pid_2.get());
-		System.out.println(dump());
 		if(adaptationFieldExist.get() != 0x00) {
 			// adaptationFieldがある場合
 			adaptationField = new AdaptationField();

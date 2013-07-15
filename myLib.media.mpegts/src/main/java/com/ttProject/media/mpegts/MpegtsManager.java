@@ -82,12 +82,11 @@ public class MpegtsManager extends Manager<Packet> {
 			return pmt;
 		}
 		else if(esMap.containsKey(pid)) {
-			System.out.println("最後にここまできた。");
 			// メディアデータ
 			Es es = new Es(position, buffer, esMap.get(pid), pid == pcrPid);
+			System.out.println("position:" + Integer.toHexString(position));
 			es.analyze(source);
-			return null;
-//			return es;
+			return es;
 		}
 		else {
 			// しらないデータ、これがきた場合は、なんとかしておかないとだめ
