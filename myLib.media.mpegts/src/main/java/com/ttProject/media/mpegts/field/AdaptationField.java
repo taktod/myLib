@@ -36,6 +36,12 @@ public class AdaptationField {
 	public void analyze(IReadChannel channel) throws Exception {
 		// とりあえずlengthをみておく。
 		adaptationFieldLength = new Bit8();
+		Bit.bitLoader(channel, adaptationFieldLength);
+		if(adaptationFieldLength.get() == 0x00) {
+			// TODO 実際にadaptationFieldはあると定義されているのに、内容が0で存在しない場合があるみたい。
+			System.out.println("adaptationFieldの設定がなかった。");
+			return;
+		}
 		discontinuityIndicator = new Bit1();
 		randomAccessIndicator = new Bit1();
 		elementaryStreamPriorityIndicator = new Bit1();
@@ -44,7 +50,7 @@ public class AdaptationField {
 		splicingPointFlag = new Bit1();
 		transportPrivateDataFlag = new Bit1();
 		adaptationFieldExtensionFlag = new Bit1();
-		Bit.bitLoader(channel, adaptationFieldLength, discontinuityIndicator, randomAccessIndicator,
+		Bit.bitLoader(channel, discontinuityIndicator, randomAccessIndicator,
 				elementaryStreamPriorityIndicator, pcrFlag, opcrFlag, splicingPointFlag,
 				transportPrivateDataFlag, adaptationFieldExtensionFlag);
 		// 他のデータがある場合は読み込んでいく必要あり。
@@ -92,7 +98,6 @@ public class AdaptationField {
 		if(adaptationFieldExtensionFlag.get() != 0x00) {
 			throw new Exception("adaptationFieldExtensionの解析は未実装です。");
 		}
-		System.out.println(dump());
 	}
 	/**
 	 * 
@@ -101,27 +106,29 @@ public class AdaptationField {
 	public String dump() {
 		StringBuilder data = new StringBuilder("adaptationField:");
 		data.append(" afl:").append(Integer.toHexString(adaptationFieldLength.get()));
-		data.append(" di:").append(discontinuityIndicator);
-		data.append(" rai:").append(randomAccessIndicator);
-		data.append(" espi:").append(elementaryStreamPriorityIndicator);
-		data.append(" pf:").append(pcrFlag);
-		data.append(" of:").append(opcrFlag);
-		data.append(" spf:").append(splicingPointFlag);
-		data.append(" tpdf:").append(transportPrivateDataFlag);
-		data.append(" afef:").append(adaptationFieldExtensionFlag);
-		if(pcrFlag.get() != 0x00) {
-			data.append("[pcrBase:").append(Long.toHexString(pcrBase))
-				.append("(").append(pcrBase / 90000f).append("sec)");
-			data.append(" pcrPadding:").append(pcrPadding);
-			data.append(" pcrExtension:").append(pcrExtension);
-			data.append("]");
-		}
-		if(opcrFlag.get() != 0x00) {
-			data.append("[opcrBase:").append(Long.toHexString(opcrBase))
-				.append("(").append(opcrBase / 90000f).append("sec)");
-			data.append(" opcrPadding:").append(opcrPadding);
-			data.append(" opcrExtension:").append(opcrExtension);
-			data.append("]");
+		if(adaptationFieldLength.get() != 0) {
+			data.append(" di:").append(discontinuityIndicator);
+			data.append(" rai:").append(randomAccessIndicator);
+			data.append(" espi:").append(elementaryStreamPriorityIndicator);
+			data.append(" pf:").append(pcrFlag);
+			data.append(" of:").append(opcrFlag);
+			data.append(" spf:").append(splicingPointFlag);
+			data.append(" tpdf:").append(transportPrivateDataFlag);
+			data.append(" afef:").append(adaptationFieldExtensionFlag);
+			if(pcrFlag.get() != 0x00) {
+				data.append("[pcrBase:").append(Long.toHexString(pcrBase))
+					.append("(").append(pcrBase / 90000f).append("sec)");
+				data.append(" pcrPadding:").append(pcrPadding);
+				data.append(" pcrExtension:").append(pcrExtension);
+				data.append("]");
+			}
+			if(opcrFlag.get() != 0x00) {
+				data.append("[opcrBase:").append(Long.toHexString(opcrBase))
+					.append("(").append(opcrBase / 90000f).append("sec)");
+				data.append(" opcrPadding:").append(opcrPadding);
+				data.append(" opcrExtension:").append(opcrExtension);
+				data.append("]");
+			}
 		}
 		return data.toString();
 	}
