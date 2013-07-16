@@ -7,4 +7,6 @@
     <relativePath>..</relativePath>
   </parent>
   <artifactId>myLib.jmx</artifactId>
+  <name>myLib.jmx</name>
+  <description>扱うのが面倒なjmxBeanを自分なりに使いやすくしてみた。</description>
 </project>

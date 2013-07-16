@@ -7,4 +7,6 @@
     <relativePath>..</relativePath>
   </parent>
   <artifactId>myLib.log4j</artifactId>
+  <name>myLib.log4j</name>
+  <description>log4jのNDCで一意の値をすべてのthreadの動作でいれたかったのだがいい方法が思いつかなかったのでヘルパーをつくってみた。</description>
 </project>

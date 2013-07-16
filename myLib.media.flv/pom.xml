@@ -13,4 +13,7 @@
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
+  <name>myLib.media.flv</name>
+  <description>flvのデータ読み込み補助プロジェクト
+</description>
 </project>

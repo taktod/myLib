@@ -6,4 +6,8 @@
     <version>0.0.2-SNAPSHOT</version>
   </parent>
   <artifactId>myLib.convert</artifactId>
+  <name>myLib.convert</name>
+  <description>convertのモジュールプロジェクトでは、ByteBufferのデータを送ると、変換されたデータがつぎつぎに応答されていく形になります。
+
+とりあえず、ffmpeg avconv xuggleでいろいろできると思う。</description>
 </project>
