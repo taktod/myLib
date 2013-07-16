@@ -20,6 +20,9 @@ h264の場合nal構造のspsをみればいいみたい。
 
 AACの情報
 http://jongyeob.com/moniwiki/pds/upload/13818-7.pdf
+http://ee72078.moo.jp/chinsan/pc/Lab/index.php?AAC
+http://blog-imgs-18-origin.fc2.com/n/a/n/nanncyatte/aacfileheader.png
+
 
  */
 public enum CodecType {
