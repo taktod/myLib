@@ -11,13 +11,22 @@ import org.apache.log4j.spi.LoggingEvent;
  * @author taktod
  */
 public class NDCInjectAppender extends AppenderSkeleton {
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void close() {
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean requiresLayout() {
 		return false;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void append(LoggingEvent event) {
 		// 書き込み時に登録したいデータとNDCに登録されているデータの数を比べてずれている場合は、初期化しなおす。

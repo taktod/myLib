@@ -25,7 +25,9 @@ public class MetadataAmf3 implements RtmpMessage {
 	private static final Logger logger = LoggerFactory.getLogger(MetadataAmf3.class);
 	/** rtmpHeader */
 	private final RtmpHeader header;
+	/** 保持データmap */
 	private Map<String, Object> data = null;
+	/** 設定名称(onMetaData固定) */
 	private String name;
 	/**
 	 * コンストラクタ
@@ -36,6 +38,9 @@ public class MetadataAmf3 implements RtmpMessage {
 		this.header = header;
 		decode(in);
 	}
+	/**
+	 * channelBufferからデータを復元します
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public void decode(ChannelBuffer in) {
@@ -43,7 +48,7 @@ public class MetadataAmf3 implements RtmpMessage {
 		byte[] bytes = new byte[length];
 		in.readBytes(bytes);
 		try {
-			// 処理しやすいようにするため、IFileReadChannelの形に変化させます。
+			// 処理しやすいようにするため、IReadChannelの形に変化させます。
 			IReadChannel channel = new ByteReadChannel(bytes);
 			
 			// 先頭のデータを確認して、どういうデータであるか確認する。
@@ -71,18 +76,32 @@ public class MetadataAmf3 implements RtmpMessage {
 			throw new RuntimeException("解析不能な例外が発生しました。");
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ChannelBuffer encode() {
-		// データの作成はあとで気が向いたらつくっておく。
+		// AMF3として、メタデータを転送する用事がないので、サポートしません。
 		throw new RuntimeException("encode is not supported now.");
 	}
+	/**
+	 * header部取得
+	 */
 	@Override
 	public RtmpHeader getHeader() {
 		return header;
 	}
+	/**
+	 * 名称取得(onMetaData)
+	 * @return
+	 */
 	public String getName() {
 		return name;
 	}
+	/**
+	 * 内部データ取得
+	 * @return
+	 */
 	public Map<String, Object> getData() {
 		return data;
 	}

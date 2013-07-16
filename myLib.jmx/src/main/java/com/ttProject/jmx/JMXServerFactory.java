@@ -13,6 +13,7 @@ import javax.management.remote.JMXServiceURL;
  * @author taktod
  */
 public class JMXServerFactory {
+	/** jmxサーバーとして利用しているポート */
 	private static int port = -1;
 	/**
 	 * 動作ポート番号参照

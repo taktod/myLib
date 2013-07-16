@@ -5,7 +5,6 @@ import java.nio.ByteBuffer;
 /**
  * コンバートする動作のマネージャー
  * @author taktod
- *
  */
 public interface IConvertManager {
 	/**

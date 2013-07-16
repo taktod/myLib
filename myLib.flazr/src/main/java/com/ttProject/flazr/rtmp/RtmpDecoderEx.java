@@ -30,6 +30,7 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 	public RtmpDecoderEx() {
 		super(DecoderState.GET_HEADER);
 	}
+	// 中途バッファ
 	private RtmpHeader header;
 	private int channelId;
 	private ChannelBuffer payload;
@@ -39,6 +40,9 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 	private final ChannelBuffer[] incompletePayloads = new ChannelBuffer[RtmpHeader.MAX_CHANNEL_ID];
 	private final RtmpHeader[] completedHeaders = new RtmpHeader[RtmpHeader.MAX_CHANNEL_ID];
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected Object decode(ChannelHandlerContext context, Channel channel,
 			ChannelBuffer in, DecoderState state) throws Exception {
@@ -94,6 +98,12 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 			throw new RuntimeException("unexpected decoder state:" + state);
 		}
 	}
+	/**
+	 * RtmpMessageをデコードします
+	 * @param header
+	 * @param payload
+	 * @return
+	 */
 	private RtmpMessage MessageTypeDecode(RtmpHeader header, ChannelBuffer payload) {
 		// metadataAmf3みたいな独自実装はMessageType.decodeで解釈できないので、ここで分岐させておく。
 		if(header.getMessageType() == MessageType.METADATA_AMF3) {
