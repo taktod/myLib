@@ -5,7 +5,7 @@ package com.ttProject.media.mpegts;
  * @see http://pda.etsi.org/exchangefolder/en_300468v011301p.pdf
  * @author taktod
  */
-public enum Section {
+public enum TableId {
 	/*
 	 * @see http://pda.etsi.org/exchangefolder/en_300468v011301p.pdf
 	 * テーブルシグネチャのメモ(table_idとなっている)
@@ -68,14 +68,14 @@ public enum Section {
 	DiscontinuityInformationSection(0x7E),
 	SelectionInformationSection(0x7F);
 	private final int value;
-	private Section(int value) {
+	private TableId(int value) {
 		this.value = value;
 	}
 	public int intValue() {
 		return value;
 	}
-	public static Section getSection(int value) throws Exception {
-		for(Section s : values()) {
+	public static TableId getSection(int value) throws Exception {
+		for(TableId s : values()) {
 			if(s.intValue() == value) {
 				return s;
 			}
