@@ -58,6 +58,32 @@ public class CacheBuffer {
 		resetData(4);
 		return buffer.getInt();
 	}
+	/**
+	 * 3バイト読み込む
+	 * @return
+	 * @throws Exception
+	 */
+	public int getMidiumInt() throws Exception {
+		// buffer内のデータがまにあっているか確認する。
+		resetData(3);
+		return (buffer.get() << 16) + buffer.getShort();
+	}
+	/**
+	 * 任意のデータ量読み込む
+	 * @param size
+	 * @return
+	 * @throws Exception
+	 */
+	public ByteBuffer getBuffer(int size) throws Exception {
+		resetData(size);
+		byte[] data = new byte[size];
+		buffer.get(data);
+		return ByteBuffer.wrap(data);
+	}
+	/**
+	 * データが足りない場合に、データの読み直しを実施してみる。
+	 * @throws Exception
+	 */
 	private void resetData(int bytesLoad) throws Exception {
 		// buffer内のデータがまにあっているか確認する。
 		if(buffer == null || buffer.remaining() < bytesLoad) {
@@ -91,6 +117,9 @@ public class CacheBuffer {
 			buf2.put(buf);
 			buf2.flip();
 			buffer = buf2;
+		}
+		if(buffer.remaining() < bytesLoad) {
+			throw new Exception("データがたりません。");
 		}
 	}
 	/**
