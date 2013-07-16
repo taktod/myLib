@@ -16,9 +16,9 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class Pat extends ProgramPacket {
-	private short programNum; // 16bit
-	private Bit3 reserved;
-	private short programPid; // 13bit
+	private short programNum; // 16bit // 1
+	private Bit3 reserved; // 111
+	private short programPid; // 13bit // 4096(0x1000)
 	public Pat(ByteBuffer buffer) {
 		this(0, buffer);
 	}

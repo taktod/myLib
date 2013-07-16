@@ -21,13 +21,13 @@ public abstract class Packet extends Unit {
 	// 実データ(readModeではいっているものとします。)
 	private ByteBuffer buffer;
 	private final byte syncByte = 0x47;
-	private Bit1 transportErrorIndicator;
+	private Bit1 transportErrorIndicator; // 0
 	private Bit1 payloadUnitStartIndicator;
-	private Bit1 transportPriority;
+	private Bit1 transportPriority; // 0
 	private short pid; // 13bit
-	private Bit2 scramblingControl;
+	private Bit2 scramblingControl; // 0
 	private Bit1 adaptationFieldExist;
-	private Bit1 payloadFieldExist;
+	private Bit1 payloadFieldExist; // 1
 	private Bit4 continuityCounter;
 	
 	/** 内包しているadaptationFieldの情報 */

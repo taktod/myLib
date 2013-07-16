@@ -13,19 +13,19 @@ import com.ttProject.nio.channels.IReadChannel;
  */
 public class AdaptationField {
 	private Bit8 adaptationFieldLength;
-	private Bit1 discontinuityIndicator;
-	private Bit1 randomAccessIndicator;
-	private Bit1 elementaryStreamPriorityIndicator;
+	private Bit1 discontinuityIndicator; // 0
+	private Bit1 randomAccessIndicator; // aacの先頭だけ、たってる？ (aacのみでも同様)
+	private Bit1 elementaryStreamPriorityIndicator; // 0
 	private Bit1 pcrFlag;
-	private Bit1 opcrFlag; // originalPcr(コピーするときにつかうらしい。)
-	private Bit1 splicingPointFlag;
-	private Bit1 transportPrivateDataFlag;
-	private Bit1 adaptationFieldExtensionFlag;
+	private Bit1 opcrFlag; // originalPcr(コピーするときにつかうらしい。) // 0
+	private Bit1 splicingPointFlag; // 0
+	private Bit1 transportPrivateDataFlag; // 0
+	private Bit1 adaptationFieldExtensionFlag; // 0
 	
 	// PCR用
 	private long pcrBase; // 33bit 90KHz表示
-	private Bit6 pcrPadding;
-	private short pcrExtension; // 9bit 27MHz
+	private Bit6 pcrPadding; // 111111
+	private short pcrExtension; // 9bit 27MHz // 0
 	
 	// OPCR用
 	private long opcrBase; // 33bit 90KHz表示

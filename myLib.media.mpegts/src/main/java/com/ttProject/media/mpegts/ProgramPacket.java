@@ -15,18 +15,18 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class ProgramPacket extends Packet {
-	private Bit8 pointerField;
-	private Bit8 tableId;
-	private Bit1 sectionSyntaxIndicator;
-	private Bit1 zero;
-	private Bit2 reserved1;
+	private Bit8 pointerField; // 0000 0000
+	private Bit8 tableId; // packet固定値
+	private Bit1 sectionSyntaxIndicator; // 1
+	private Bit1 zero; // 0
+	private Bit2 reserved1; // 11
 	private short sectionLength; // 12bit
 	private short programNumber; // 16bit
-	private Bit2 reserved2;
-	private Bit5 versionNumber;
-	private Bit1 currentNextOrder;
-	private Bit8 sectionNumber;
-	private Bit8 lastSectionNumber;
+	private Bit2 reserved2; // 11
+	private Bit5 versionNumber; // 00000
+	private Bit1 currentNextOrder; // 1
+	private Bit8 sectionNumber; // 00000000
+	private Bit8 lastSectionNumber; // 00000000
 	/**
 	 * コンストラクタ
 	 * @param position

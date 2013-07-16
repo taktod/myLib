@@ -11,7 +11,7 @@ import com.ttProject.util.BufferUtil;
  *
  */
 public class ServiceDescriptor extends Descriptor {
-	private Bit8 serviceType;
+	private Bit8 serviceType; // 00000001
 	private Bit8 serviceProviderNameLength;
 	private String serviceProviderName;
 	private Bit8 serviceNameLength;

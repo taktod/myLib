@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.ttProject.media.Manager;
 import com.ttProject.media.mpegts.field.PmtElementaryField;
-import com.ttProject.media.mpegts.packet.Es;
+import com.ttProject.media.mpegts.packet.Pes;
 import com.ttProject.media.mpegts.packet.Pat;
 import com.ttProject.media.mpegts.packet.Pmt;
 import com.ttProject.media.mpegts.packet.Sdt;
@@ -83,7 +83,7 @@ public class MpegtsManager extends Manager<Packet> {
 		}
 		else if(esMap.containsKey(pid)) {
 			// メディアデータ
-			Es es = new Es(position, buffer, esMap.get(pid), pid == pcrPid);
+			Pes es = new Pes(position, buffer, esMap.get(pid), pid == pcrPid);
 			System.out.println("position:" + Integer.toHexString(position));
 			es.analyze(source);
 			return es;
