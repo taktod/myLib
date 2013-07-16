@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
- * Byteデータ、ByteBufferデータをIFileReadChannelと同じ勢いでデータ確認できるようにしてみた。
+ * Byteデータ、ByteBufferデータをIReadChannelと同じ勢いでデータ確認できるようにしてみた。
  * @author taktod
  */
 public class ByteReadChannel implements IReadChannel {
