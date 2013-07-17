@@ -53,6 +53,9 @@ public abstract class Packet extends Unit {
 	public ByteBuffer getBuffer() {
 		return buffer;
 	}
+	public boolean isPayloadUnitStart() {
+		return payloadUnitStartIndicator.get() != 0x00;
+	}
 	/**
 	 * header部の解析を実施しておく
 	 * @throws Exception
