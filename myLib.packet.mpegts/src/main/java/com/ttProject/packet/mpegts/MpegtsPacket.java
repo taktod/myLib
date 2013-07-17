@@ -103,7 +103,7 @@ public abstract class MpegtsPacket extends MediaPacket {
 			if(data >>> 16 != 0) {
 				// PMT PID
 				// pmtなので、保持させる。
-				manager.addPmtId(data & 0x1FFF); // dataが32bitになっているので、上位16bitについて確認するべきだとおもうけど。
+				manager.addPmtId(data & 0x1FFF);
 			}
 			else {
 				// ネットワークPID
