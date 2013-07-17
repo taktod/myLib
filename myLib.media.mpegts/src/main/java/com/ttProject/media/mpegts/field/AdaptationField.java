@@ -38,10 +38,10 @@ public class AdaptationField {
 		adaptationFieldLength = new Bit8();
 		Bit.bitLoader(channel, adaptationFieldLength);
 		if(adaptationFieldLength.get() == 0x00) {
-			// TODO 実際にadaptationFieldはあると定義されているのに、内容が0で存在しない場合があるみたい。
-			System.out.println("adaptationFieldの設定がなかった。");
+//			System.out.println("adaptationFieldの設定がなかった。");
 			return;
 		}
+		int size = adaptationFieldLength.get();
 		discontinuityIndicator = new Bit1();
 		randomAccessIndicator = new Bit1();
 		elementaryStreamPriorityIndicator = new Bit1();
@@ -53,6 +53,7 @@ public class AdaptationField {
 		Bit.bitLoader(channel, discontinuityIndicator, randomAccessIndicator,
 				elementaryStreamPriorityIndicator, pcrFlag, opcrFlag, splicingPointFlag,
 				transportPrivateDataFlag, adaptationFieldExtensionFlag);
+		size --;
 		// 他のデータがある場合は読み込んでいく必要あり。
 		if(pcrFlag.get() != 0x00) {
 			// pcrがある場合
@@ -73,6 +74,7 @@ public class AdaptationField {
 					pcrPadding, pcrExtension_1, pcrExtension_2);
 			pcrBase = (((long)pcrBase_1.get()) << 32) | (((long)pcrBase_2.get()) << 24) | (pcrBase_3.get() << 16) | (pcrBase_4.get() << 8) | pcrBase_5.get();
 			pcrExtension = (short)((pcrExtension_1.get() << 8) | pcrExtension_2.get());
+			size -= 6;
 		}
 		if(opcrFlag.get() != 0x00) {
 			// pcrと同じっぽいので実装しとく。
@@ -88,6 +90,7 @@ public class AdaptationField {
 					opcrPadding, opcrExtension_1, opcrExtension_2);
 			opcrBase = (((long)opcrBase_1.get()) << 32) | (((long)opcrBase_2.get()) << 24) | (opcrBase_3.get() << 16) | (opcrBase_4.get() << 8) | opcrBase_5.get();
 			opcrExtension = (short)((opcrExtension_1.get() << 8) | opcrExtension_2.get());
+			size -= 6;
 		}
 		if(splicingPointFlag.get() != 0x00) {
 			throw new Exception("splicingPointの解析は未実装です。");
@@ -97,6 +100,11 @@ public class AdaptationField {
 		}
 		if(adaptationFieldExtensionFlag.get() != 0x00) {
 			throw new Exception("adaptationFieldExtensionの解析は未実装です。");
+		}
+		if(size != 0) {
+			// 何のフラグもなくてすべてffで埋められているっぽい。
+			// とりあえずスルーする必要があるっぽいが
+			channel.position(channel.position() + size); // あいている部分はスキップしてやる必要あり。
 		}
 	}
 	/**
