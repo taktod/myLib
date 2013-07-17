@@ -19,6 +19,22 @@ import com.ttProject.util.BufferUtil;
  * サンプルデータ例
  * FF F1 50 80 02 1F FC
  * FF F1 50 80 40 9F FC
+ * prifile 01
+ * sampleRateIndex 0100
+ * channelConfiguration 010
+ * 
+ * (profile + 1) << 3 | sampleRateIndex >> 1
+ * (sampleRateIndex & 0x01) << 7 | channelConfig << 3
+ * 
+ * 0x12 0x10　mshの部分
+ * 0001 0010 0x12
+ * 0001 0000 0x10
+ * おぉっ
+ * 
+ * その後のflvタグは次のようになっている。
+ * 08 size[3byte] timestamp[4byte(転地あり)] trackId[3byte(0埋め)] コーデックタイプ、チャンネル、サンプリングレートフラグ(1byte)
+ * mshFlag(00:msh 01:通常フレーム) adtsのヘッダ部をのぞいたデータ
+ * tailSize[4byte]
  * @author taktod
  */
 public class Aac extends Frame {
@@ -37,6 +53,7 @@ public class Aac extends Frame {
 	private int frameSize; // 13bit
 	private int adtsBufferFullness; // 11bit
 	private Bit2 noRawDataBlocksInFrame;
+	
 	/** 保持している実データ部 */
 	private ByteBuffer data;
 	/** 周波数テーブル */
@@ -68,7 +85,7 @@ public class Aac extends Frame {
 		id = new Bit1(); // 0:Mpeg4
 		layer = new Bit2(); // 常に0
 		protectionAbsent = new Bit1(1); // 一応保護あり
-		profile = new Bit2(0); // main profileにしておく
+		profile = new Bit2(0); // main profileにしておく(mediaSequenceHeaderの情報から拾える)
 		samplingFrequenceIndex = new Bit4(4); // 44.100kHzとしておく。あとで変更すべき
 		privateBit = new Bit1(); // 1固定
 		channelConfiguration = new Bit3(2); // チャンネル数とりあえずステレオにしておく。
