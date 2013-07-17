@@ -83,10 +83,9 @@ public class MpegtsManager extends Manager<Packet> {
 		}
 		else if(esMap.containsKey(pid)) {
 			// メディアデータ
-			Pes es = new Pes(position, buffer, esMap.get(pid), pid == pcrPid);
-			System.out.println("position:" + Integer.toHexString(position));
-			es.analyze(source);
-			return es;
+			Pes pes = new Pes(position, buffer, esMap.get(pid), pid == pcrPid);
+			pes.analyze(source);
+			return pes;
 		}
 		else {
 			// しらないデータ、これがきた場合は、なんとかしておかないとだめ
