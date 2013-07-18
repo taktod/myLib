@@ -168,6 +168,9 @@ public class Aac extends Frame {
 	 */
 	public void setData(ByteBuffer buffer) {
 		this.data = buffer.duplicate();
+		// TODO このタイミングでframeSizeとsizeを更新する必要あり。
+		setSize(7 + data.remaining());
+		this.frameSize = 7 + data.remaining();
 	}
 	/**
 	 * adtsのデータとして、データを応答する(aacファイルやmpegtsで使う)
