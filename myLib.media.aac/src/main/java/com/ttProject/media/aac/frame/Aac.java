@@ -2,6 +2,7 @@ package com.ttProject.media.aac.frame;
 
 import java.nio.ByteBuffer;
 
+import com.ttProject.media.aac.DecoderSpecificInfo;
 import com.ttProject.media.aac.Frame;
 import com.ttProject.media.aac.IFrameAnalyzer;
 import com.ttProject.media.extra.Bit;
@@ -96,6 +97,17 @@ public class Aac extends Frame {
 		frameSize = size; // データサイズ
 		adtsBufferFullness = 0x7FF; // とりあえずVBR
 		noRawDataBlocksInFrame = new Bit2(); // 0でOKみたい
+	}
+	/**
+	 * コンストラクタwith specificInfo
+	 * @param size
+	 * @param specificInfo
+	 */
+	public Aac(int size, DecoderSpecificInfo specificInfo) {
+		this(size);
+		profile = new Bit2(specificInfo.getObjectType());
+		samplingFrequenceIndex = new Bit4(specificInfo.getFrequenctIndex());
+		channelConfiguration = new Bit3(specificInfo.getChannelConfiguration());
 	}
 	/**
 	 * コンストラクタwith細かい情報
