@@ -20,6 +20,8 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class Pmt extends ProgramPacket {
+	/** 巡回データカウンター */
+	private static byte counter = 0;
 	private Bit3 reserved1;
 	private short pcrPid; // 13bit
 	private Bit4 reserved2;
@@ -29,16 +31,24 @@ public class Pmt extends ProgramPacket {
 	private List<PmtElementaryField> fields = new ArrayList<PmtElementaryField>();
 	// 以下programDescriptor
 	// type 3bit pid 4bit esInfoLength eDescriptor
-	public Pmt(ByteBuffer buffer) {
+	public Pmt(ByteBuffer buffer) throws Exception {
 		this(0, buffer);
 	}
-	public Pmt(int position, ByteBuffer buffer) {
-		super(position, buffer);
+	public Pmt(int position, ByteBuffer buffer) throws Exception {
+		super(position);
+		analyze(new ByteReadChannel(buffer));
+	}
+	@Override
+	public void setupDefault() {
+		// TODO Auto-generated method stub
+		
 	}
 	@Override
 	public void analyze(IReadChannel ch) throws Exception {
-		IReadChannel channel = new ByteReadChannel(getBuffer());
-		analyzeHeader(channel);
+		analyzeHeader(ch, counter ++);
+		if(counter > 0x0F) {
+			counter = 0;
+		}
 		int size = getSectionLength() - 5; // 残りの読み込むべきデータ量
 		// 自分のデータを読み込む
 		reserved1 = new Bit3();
@@ -47,7 +57,7 @@ public class Pmt extends ProgramPacket {
 		reserved2 = new Bit4();
 		Bit4 programInfoLength_1 = new Bit4();
 		Bit8 programInfoLength_2 = new Bit8();
-		Bit.bitLoader(channel, reserved1, pcrPid_1, pcrPid_2, reserved2, programInfoLength_1, programInfoLength_2);
+		Bit.bitLoader(ch, reserved1, pcrPid_1, pcrPid_2, reserved2, programInfoLength_1, programInfoLength_2);
 		pcrPid = (short)((pcrPid_1.get() << 8) | pcrPid_2.get());
 		programInfoLength = (short)((programInfoLength_1.get() << 8) | programInfoLength_2.get());
 		// sectionLengthから残りのデータ量を見積もる。
@@ -55,7 +65,7 @@ public class Pmt extends ProgramPacket {
 		while(size > 4) {
 			// 残りの部分がpmtElementaryFieldになる。
 			PmtElementaryField elementaryField = new PmtElementaryField();
-			elementaryField.analyze(channel);
+			elementaryField.analyze(ch);
 			size -= elementaryField.getSize();
 			fields.add(elementaryField);
 		}

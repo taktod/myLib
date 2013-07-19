@@ -1,7 +1,5 @@
 package com.ttProject.media.mpegts;
 
-import java.nio.ByteBuffer;
-
 import com.ttProject.media.IAnalyzer;
 import com.ttProject.media.Unit;
 import com.ttProject.media.extra.Bit;
@@ -19,7 +17,7 @@ import com.ttProject.nio.channels.IReadChannel;
  */
 public abstract class Packet extends Unit {
 	// 実データ(readModeではいっているものとします。)
-	private ByteBuffer buffer;
+	// packetがかならずbufferをもっているとすると、ちょっと扱いにくいので、bufferがきたら読み込みを実行することとした方がよさそう。
 	private final byte syncByte = 0x47;
 	private Bit1 transportErrorIndicator; // 0
 	private Bit1 payloadUnitStartIndicator;
@@ -36,22 +34,16 @@ public abstract class Packet extends Unit {
 	 * コンストラクタ
 	 * @param position
 	 */
-	public Packet(int position, ByteBuffer buffer) {
+	public Packet(int position) {
 		// 大きさは188バイト固定
 		super(position, 188);
-		this.buffer = buffer.duplicate();
-		this.buffer.position(0);
 	}
+	/**
+	 * 解析動作
+	 */
 	@Override
 	public void analyze(IReadChannel ch, IAnalyzer<?> analyzer)
 			throws Exception {
-	}
-	/**
-	 * データ実態を応答する
-	 * @return
-	 */
-	public ByteBuffer getBuffer() {
-		return buffer;
 	}
 	public boolean isPayloadUnitStart() {
 		return payloadUnitStartIndicator.get() != 0x00;
@@ -60,7 +52,7 @@ public abstract class Packet extends Unit {
 	 * header部の解析を実施しておく
 	 * @throws Exception
 	 */
-	protected void analyzeHeader(IReadChannel channel) throws Exception {
+	protected void analyzeHeader(IReadChannel channel, byte counter) throws Exception {
 		// headerを解析しておきます。
 		Bit8 syncByte = new Bit8();
 		transportErrorIndicator = new Bit1();
@@ -74,6 +66,7 @@ public abstract class Packet extends Unit {
 		continuityCounter = new Bit4();
 		Bit.bitLoader(channel, syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority,
 				pid_1, pid_2, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
+		continuityCounter = new Bit4(counter);
 		if(syncByte.get() != this.syncByte) {
 			throw new Exception("syncByteがおかしいです。");
 		}
@@ -84,6 +77,10 @@ public abstract class Packet extends Unit {
 			adaptationField.analyze(channel);
 		}
 	}
+	/**
+	 * デフォルトの設定をつくっておく。
+	 */
+	public abstract void setupDefault()throws Exception ;
 	public String dump() {
 		StringBuilder data = new StringBuilder("packet:");
 		data.append(" tei:").append(transportErrorIndicator);

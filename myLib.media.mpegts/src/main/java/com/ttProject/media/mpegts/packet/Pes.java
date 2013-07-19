@@ -45,6 +45,8 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class Pes extends Packet {
+	/** 巡回データカウンター */
+	private static byte counter = 0;
 	private int prefix; // 3バイト 0x000001固定
 	private Bit8 streamId; // audioなら0xC0 - 0xDF videoなら0xE0 - 0xEF通常は0xC0もしくは0xE0(トラックが１つずつしかないため)
 	private short pesPacketLength; // 2バイト
@@ -120,7 +122,7 @@ public class Pes extends Packet {
 	 * @param codec
 	 * @param pcrFlg
 	 */
-	public Pes(ByteBuffer buffer, CodecType codec, boolean pcrFlg) {
+	public Pes(ByteBuffer buffer, CodecType codec, boolean pcrFlg) throws Exception {
 		this(0, buffer, codec, pcrFlg);
 	}
 	/**
@@ -130,10 +132,11 @@ public class Pes extends Packet {
 	 * @param codec
 	 * @param pcrFlg
 	 */
-	public Pes(int position, ByteBuffer buffer, CodecType codec, boolean pcrFlg) {
-		super(position, buffer);
+	public Pes(int position, ByteBuffer buffer, CodecType codec, boolean pcrFlg) throws Exception {
+		super(position);
 		this.codec = codec;
 		this.pcrFlg = pcrFlg;
+		analyze(new ByteReadChannel(buffer));
 	}
 	/**
 	 * pcrパケットであるか確認
@@ -150,9 +153,16 @@ public class Pes extends Packet {
 		return codec;
 	}
 	@Override
+	public void setupDefault() {
+		// TODO Auto-generated method stub
+		
+	}
+	@Override
 	public void analyze(IReadChannel ch) throws Exception {
-		IReadChannel channel = new ByteReadChannel(getBuffer());
-		analyzeHeader(channel);
+		analyzeHeader(ch, counter ++);
+		if(counter > 0x0F) {
+			counter = 0;
+		}
 		if(!isPayloadUnitStart()) {
 			return;
 		}
@@ -177,7 +187,7 @@ public class Pes extends Packet {
 		CRCFlag = new Bit1();
 		extensionFlag = new Bit1();
 		PESHeaederLength = new Bit8();
-		Bit.bitLoader(channel, prefix_1, prefix_2, prefix_3, streamId,
+		Bit.bitLoader(ch, prefix_1, prefix_2, prefix_3, streamId,
 				pesPacketLength_1, pesPacketLength_2, markerBits, scramblingControl,
 				priority, dataAlignmentIndicator, copyright, originFlg,
 				ptsDtsIndicator, escrFlag, esRateFlag, DSMTrickModeFlag, additionalCopyInfoFlag,
@@ -210,7 +220,7 @@ public class Pes extends Packet {
 				dts4 = new Bit7();
 				dts5 = new Bit8();
 				dtsFlag3 = new Bit1();
-				Bit.bitLoader(channel,
+				Bit.bitLoader(ch,
 						ptsSignature, pts1, ptsFlag1,
 						pts2, pts3, ptsFlag2,
 						pts4, pts5, ptsFlag3,
@@ -242,7 +252,7 @@ public class Pes extends Packet {
 				pts4 = new Bit7();
 				pts5 = new Bit8();
 				ptsFlag3 = new Bit1();
-				Bit.bitLoader(channel,
+				Bit.bitLoader(ch,
 						ptsSignature, pts1, ptsFlag1,
 						pts2, pts3, ptsFlag2,
 						pts4, pts5, ptsFlag3);

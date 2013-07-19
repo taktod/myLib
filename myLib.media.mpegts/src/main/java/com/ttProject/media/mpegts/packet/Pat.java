@@ -16,27 +16,38 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class Pat extends ProgramPacket {
+	/** 巡回データカウンター */
+	private static byte counter = 0;
 	private short programNum; // 16bit // 1
 	private Bit3 reserved; // 111
 	private short programPid; // 13bit // 4096(0x1000)
-	public Pat(ByteBuffer buffer) {
+	public Pat(ByteBuffer buffer) throws Exception {
 		this(0, buffer);
 	}
-	public Pat(int position, ByteBuffer buffer) {
-		super(position, buffer);
+	public Pat(int position, ByteBuffer buffer) throws Exception {
+		super(position);
+		// bufferがある場合はそのまま読み込むものとします。
+		analyze(new ByteReadChannel(buffer));
+	}
+	@Override
+	public void setupDefault() {
+		// TODO Auto-generated method stub
+		
 	}
 	@Override
 	public void analyze(IReadChannel ch) throws Exception {
-		IReadChannel channel = new ByteReadChannel(getBuffer());
 		// 先頭の部分を解析しておく。
-		analyzeHeader(channel);
+		analyzeHeader(ch, counter ++);
+		if(counter > 0x0F) {
+			counter = 0;
+		}
 		Bit8 programNum_1 = new Bit8();
 		Bit8 programNum_2 = new Bit8();
 		reserved = new Bit3();
 		Bit5 programPid_1 = new Bit5();
 		Bit8 programPid_2 = new Bit8();
 		
-		Bit.bitLoader(channel, programNum_1, programNum_2,
+		Bit.bitLoader(ch, programNum_1, programNum_2,
 				reserved, programPid_1, programPid_2);
 		programNum = (short)((programNum_1.get() << 8) | programNum_2.get());
 		programPid = (short)((programPid_1.get() << 8) | programPid_2.get());
