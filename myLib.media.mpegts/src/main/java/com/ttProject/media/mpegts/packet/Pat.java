@@ -43,6 +43,11 @@ public class Pat extends ProgramPacket {
 		programNum = 1;
 		reserved = new Bit3(0x07);
 		programPid = (short)0x1000;
+		short length = 0;
+		length += 5; // programPacket残り
+		length += 4; // pat独自データ
+		length += 4; // crc32
+		setSectionLength(length);
 	}
 	@Override
 	public List<Bit> getBits() {
