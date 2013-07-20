@@ -63,10 +63,10 @@ public class HexUtil {
 	 */
 	public static ByteBuffer makeBuffer(String hexString) {
 		String target = hexString;
-		ByteBuffer buffer =ByteBuffer.allocate(target.length() / 2);
+		ByteBuffer buffer = ByteBuffer.allocate(target.length() / 2);
 		while(target.length() > 0) {
 			String xStr = target.substring(0, 2);
-			target = target.substring(0, 2);
+			target = target.substring(2);
 			buffer.put((byte)Integer.parseInt(xStr, 16));
 		}
 		buffer.flip();
