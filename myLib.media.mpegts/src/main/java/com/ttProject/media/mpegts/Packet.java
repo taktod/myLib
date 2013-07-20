@@ -52,6 +52,9 @@ public abstract class Packet extends Unit {
 	public boolean isPayloadUnitStart() {
 		return payloadUnitStartIndicator.get() != 0x00;
 	}
+	public short getPid() {
+		return pid;
+	}
 	/**
 	 * header部の解析を実施しておく
 	 * @throws Exception

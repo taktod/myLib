@@ -63,6 +63,7 @@ public abstract class ProgramPacket extends Packet {
 	public short getSectionLength() {
 		return sectionLength;
 	}
+	// TODO setSectionLengthを呼び出して内容がかわったときに、データをただしくする動作がぬけているので、やっておく。
 	public void setSectionLength(short length) {
 		sectionLength = length;
 	}

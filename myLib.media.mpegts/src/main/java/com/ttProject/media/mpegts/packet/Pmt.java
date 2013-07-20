@@ -22,6 +22,7 @@ import com.ttProject.nio.channels.IReadChannel;
 public class Pmt extends ProgramPacket {
 	/** 巡回データカウンター */
 	private static byte counter = 0;
+	private static short pmtPid = 0x1000; // pmtのpid値
 	private Bit3 reserved1;
 	private short pcrPid; // 13bit
 	private Bit4 reserved2;
@@ -31,6 +32,13 @@ public class Pmt extends ProgramPacket {
 	private List<PmtElementaryField> fields = new ArrayList<PmtElementaryField>();
 	// 以下programDescriptor
 	// type 3bit pid 4bit esInfoLength eDescriptor
+	public Pmt() {
+		super(0);
+	}
+	public Pmt(short pid) {
+		super(0);
+		pmtPid = pid;
+	}
 	public Pmt(ByteBuffer buffer) throws Exception {
 		this(0, buffer);
 	}
@@ -39,9 +47,12 @@ public class Pmt extends ProgramPacket {
 		analyze(new ByteReadChannel(buffer));
 	}
 	@Override
-	public void setupDefault() {
-		// TODO Auto-generated method stub
-		
+	public void setupDefault() throws Exception {
+		byte b1 = (byte)(0x40 | (pmtPid >>> 8));
+		byte b2 = (byte)(pmtPid & 0xFF);
+		analyzeHeader(new ByteReadChannel(new byte[]{
+				0x47, b1, b2, 0x10, 0x00, 0x00, 0x02, (byte)0xB0, 0x12, 0x01, (byte)0xC1, 0x00, 0x00
+		}), counter ++);
 	}
 	@Override
 	public ByteBuffer getBuffer() throws Exception {
@@ -51,6 +62,7 @@ public class Pmt extends ProgramPacket {
 	@Override
 	public void analyze(IReadChannel ch) throws Exception {
 		analyzeHeader(ch, counter ++);
+		pmtPid = getPid();
 		if(counter > 0x0F) {
 			counter = 0;
 		}
