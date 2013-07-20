@@ -160,7 +160,7 @@ public class Sdt extends ProgramPacket {
 	@Override
 	public String toString() {
 		StringBuilder data = new StringBuilder();
-		data.append("sdt:");
+		data.append("Sdt:");
 		data.append("\n").append(super.toString());
 		data.append(" oni:").append(Integer.toHexString(originalNetworkId));
 		data.append(" rfu2:").append(reservedFutureUse2);

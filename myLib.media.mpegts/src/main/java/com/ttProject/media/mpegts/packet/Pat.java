@@ -1,11 +1,13 @@
 package com.ttProject.media.mpegts.packet;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.mpegts.Crc32;
 import com.ttProject.media.mpegts.ProgramPacket;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -21,6 +23,10 @@ public class Pat extends ProgramPacket {
 	private short programNum; // 16bit // 1
 	private Bit3 reserved; // 111
 	private short programPid; // 13bit // 4096(0x1000)
+	public Pat() throws Exception {
+		super(0);
+		setupDefault();
+	}
 	public Pat(ByteBuffer buffer) throws Exception {
 		this(0, buffer);
 	}
@@ -30,14 +36,41 @@ public class Pat extends ProgramPacket {
 		analyze(new ByteReadChannel(buffer));
 	}
 	@Override
-	public void setupDefault() {
-		// TODO Auto-generated method stub
-		
+	public void setupDefault() throws Exception {
+		analyzeHeader(new ByteReadChannel(new byte[]{
+			0x47, 0x40, 0x00, 0x10, 0x00, 0x00, (byte)0xB0, 0x0D, 0x00, 0x01, (byte)0xC1, 0x00, 0x00
+		}), counter ++);
+		programNum = 1;
+		reserved = new Bit3(0x07);
+		programPid = (short)0x1000;
+	}
+	@Override
+	public List<Bit> getBits() {
+		List<Bit> list = super.getBits();
+		list.add(new Bit8(programNum >>> 8));
+		list.add(new Bit8(programNum));
+		list.add(reserved);
+		list.add(new Bit5(programPid >>> 8));
+		list.add(new Bit8(programPid));
+		return list;
 	}
 	@Override
 	public ByteBuffer getBuffer() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		// 情報をbit配列に戻して応答する。
+		List<Bit> bitsList = getBits();
+		ByteBuffer buffer = Bit.bitConnector(bitsList.toArray(new Bit[]{}));
+		// あとはcrc32を計算するだけ。
+		buffer.position(5);
+		Crc32 crc32 = new Crc32();
+		while(buffer.remaining() > 0) {
+			crc32.update(buffer.get());
+		}
+		int crc32Val = (int)crc32.getValue();
+		bitsList.add(new Bit8(crc32Val >>> 24));
+		bitsList.add(new Bit8(crc32Val >>> 16));
+		bitsList.add(new Bit8(crc32Val >>> 8));
+		bitsList.add(new Bit8(crc32Val));
+		return Bit.bitConnector(bitsList.toArray(new Bit[]{}));
 	}
 	@Override
 	public void analyze(IReadChannel ch) throws Exception {
@@ -60,15 +93,14 @@ public class Pat extends ProgramPacket {
 	public short getProgramPId() {
 		return programPid;
 	}
-	public String dump3() {
-		StringBuilder data = new StringBuilder("Pat:");
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append("Pat:");
+		data.append("\n").append(super.toString());
 		data.append(" pn:").append(Integer.toHexString(programNum));
 		data.append(" r:").append(reserved);
 		data.append(" pp:").append(Integer.toHexString(programPid));
 		return data.toString();
-	}
-	@Override
-	public String toString() {
-		return "Pat: ";
 	}
 }
