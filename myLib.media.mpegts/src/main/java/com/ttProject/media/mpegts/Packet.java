@@ -80,7 +80,7 @@ public abstract class Packet extends Unit {
 	/**
 	 * デフォルトの設定をつくっておく。
 	 */
-	public abstract void setupDefault()throws Exception ;
+	public abstract void setupDefault() throws Exception;
 	public String dump() {
 		StringBuilder data = new StringBuilder("packet:");
 		data.append(" tei:").append(transportErrorIndicator);
