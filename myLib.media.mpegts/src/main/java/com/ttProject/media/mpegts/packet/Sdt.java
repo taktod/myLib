@@ -101,6 +101,20 @@ public class Sdt extends ProgramPacket {
 		}
 		serviceDescriptor.setName(provider, name);
 		targetField.addDescriptor(serviceDescriptor);
+		// 変更した場合にsetSectionLengthを変更する必要あり。
+		short length = 0;
+		// 5 sectionLength以降とprogramPacketデータ
+		length += 5;
+		// 3 sdtのデータ
+		length += 3;
+		// x sdtServiceFieldの長さ
+		for(SdtServiceField ssfield : serviceFields) {
+			length += ssfield.getSize();
+		}
+		// 4 crc32の長さ
+		length += 4;
+		// sdtServiceFieldの長さを調べます。
+		setSectionLength(length);
 	}
 	/**
 	 * {@inheritDoc}

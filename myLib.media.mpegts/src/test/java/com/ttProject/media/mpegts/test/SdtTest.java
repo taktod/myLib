@@ -23,7 +23,7 @@ public class SdtTest {
 	@Test
 	public void test() throws Exception {
 		Sdt sdt = new Sdt();
-		sdt.writeDefaultProvider("Libav", "Service01");
+		sdt.writeDefaultProvider("taktodTools", "mpegtsMuxer");
 		System.out.println(sdt);
 		System.out.println(HexUtil.toHex(sdt.getBuffer(), true));
 	}
