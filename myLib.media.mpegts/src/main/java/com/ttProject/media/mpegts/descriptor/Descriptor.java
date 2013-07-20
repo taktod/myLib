@@ -1,5 +1,8 @@
 package com.ttProject.media.mpegts.descriptor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit8;
 import com.ttProject.nio.channels.IReadChannel;
@@ -10,17 +13,20 @@ import com.ttProject.nio.channels.IReadChannel;
  */
 public abstract class Descriptor {
 	/** 設定タグ(descriptorによってまちまち) */
-	private Bit8 descriptorTag;
+	private Bit8 descriptorTag; // これは固定
 	/** 保持データ量 */
-	private Bit8 descriptorLength;
+	private Bit8 descriptorLength; // これは可変っていうか、設定データによって変わる。
 	/**
 	 * コンストラクタ
 	 * @param tag
 	 * @param length
 	 */
 	public Descriptor(Bit8 tag, Bit8 length) {
-		descriptorTag = tag;
+		this(tag);
 		descriptorLength = length;
+	}
+	public Descriptor(Bit8 tag) {
+		descriptorTag = tag;
 	}
 	/**
 	 * タグ参照
@@ -37,11 +43,25 @@ public abstract class Descriptor {
 		return descriptorLength;
 	}
 	/**
+	 * 設定長さ設定
+	 * @param length
+	 */
+	public void setDescriptorLength(Bit8 length) {
+		descriptorLength = length;
+	}
+	/**
 	 * 実データサイズ参照
 	 * @return
 	 */
 	public int getSize() {
+		System.out.println(descriptorLength);
 		return descriptorLength.get() + 2; // タグの設定長さ + tag&lengthBit
+	}
+	public List<Bit> getBits() {
+		List<Bit> list = new ArrayList<Bit>();
+		list.add(descriptorTag);
+		list.add(descriptorLength);
+		return list;
 	}
 	/**
 	 * descriptorを取り出す動作

@@ -1,5 +1,8 @@
 package com.ttProject.media.mpegts.field;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit6;
@@ -106,6 +109,42 @@ public class AdaptationField {
 			// とりあえずスルーする必要があるっぽいが
 			channel.position(channel.position() + size); // あいている部分はスキップしてやる必要あり。
 		}
+	}
+	public List<Bit> getBits() {
+		List<Bit> list = new ArrayList<Bit>();
+		return list;
+	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append(" ");
+		data.append("adaptationField:");
+		data.append(" afl:").append(Integer.toHexString(adaptationFieldLength.get()));
+		if(adaptationFieldLength.get() != 0) {
+			data.append(" di:").append(discontinuityIndicator);
+			data.append(" rai:").append(randomAccessIndicator);
+			data.append(" espi:").append(elementaryStreamPriorityIndicator);
+			data.append(" pf:").append(pcrFlag);
+			data.append(" of:").append(opcrFlag);
+			data.append(" spf:").append(splicingPointFlag);
+			data.append(" tpdf:").append(transportPrivateDataFlag);
+			data.append(" afef:").append(adaptationFieldExtensionFlag);
+			if(pcrFlag.get() != 0x00) {
+				data.append("[pcrBase:").append(Long.toHexString(pcrBase))
+					.append("(").append(pcrBase / 90000f).append("sec)");
+				data.append(" pcrPadding:").append(pcrPadding);
+				data.append(" pcrExtension:").append(pcrExtension);
+				data.append("]");
+			}
+			if(opcrFlag.get() != 0x00) {
+				data.append("[opcrBase:").append(Long.toHexString(opcrBase))
+					.append("(").append(opcrBase / 90000f).append("sec)");
+				data.append(" opcrPadding:").append(opcrPadding);
+				data.append(" opcrExtension:").append(opcrExtension);
+				data.append("]");
+			}
+		}
+		return data.toString();
 	}
 	/**
 	 * 

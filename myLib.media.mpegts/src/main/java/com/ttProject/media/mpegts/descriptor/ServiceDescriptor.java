@@ -1,5 +1,8 @@
 package com.ttProject.media.mpegts.descriptor;
 
+import java.nio.ByteBuffer;
+import java.util.List;
+
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit8;
 import com.ttProject.nio.channels.IReadChannel;
@@ -26,6 +29,49 @@ public class ServiceDescriptor extends Descriptor {
 		serviceType = new Bit8(1);
 	}
 	/**
+	 * コンストラクタ
+	 */
+	public ServiceDescriptor() {
+		super(new Bit8(DescriptorType.service_descriptor.intValue()));
+		serviceType = new Bit8(1);
+	}
+	/**
+	 * 名称を追加
+	 * @param providerName
+	 * @param name
+	 */
+	public void setName(String providerName, String name) {
+		serviceProviderName = providerName;
+		serviceProviderNameLength = new Bit8(providerName.length());
+		serviceName = name;
+		serviceNameLength = new Bit8(name.length());
+		setDescriptorLength(new Bit8(3 + providerName.length() + name.length()));
+	}
+	public String getProviderName() {
+		return serviceProviderName;
+	}
+	public String getName() {
+		return serviceName;
+	}
+	@Override
+	public List<Bit> getBits() {
+		List<Bit> list = super.getBits();
+		list.add(serviceType);
+		list.add(serviceProviderNameLength);
+		// stringの値をbitに変換して投入する必要あり。
+		ByteBuffer buffer;
+		buffer = ByteBuffer.wrap(serviceProviderName.getBytes());
+		while(buffer.remaining() > 0) {
+			list.add(new Bit8(buffer.get() & 0xFF));
+		}
+		list.add(serviceNameLength);
+		buffer = ByteBuffer.wrap(serviceName.getBytes());
+		while(buffer.remaining() > 0) {
+			list.add(new Bit8(buffer.get() & 0xFF));
+		}
+		return list;
+	}
+	/**
 	 * 解析動作
 	 * @param channel
 	 * @throws Exception
@@ -39,8 +85,11 @@ public class ServiceDescriptor extends Descriptor {
 		Bit.bitLoader(channel, serviceNameLength);
 		serviceName = new String(BufferUtil.safeRead(channel, serviceNameLength.get()).array());
 	}
-	public String dump4() {
-		StringBuilder data = new StringBuilder("serviceDescriptor:");
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append("    ");
+		data.append("serviceDescriptor:");
 		data.append(" length:").append(Integer.toHexString(getDescriptorLength().get()));
 		data.append(" type:").append(serviceType);
 		data.append(" providerName:").append(serviceProviderName);

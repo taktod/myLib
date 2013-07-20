@@ -1,5 +1,7 @@
 package com.ttProject.media.mpegts;
 
+import java.util.List;
+
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
@@ -64,8 +66,30 @@ public abstract class ProgramPacket extends Packet {
 	public void setSectionLength(short length) {
 		sectionLength = length;
 	}
-	public String dump1() {
-		StringBuilder data = new StringBuilder("pPacket:");
+	@Override
+	public List<Bit> getBits() {
+		List<Bit> list = super.getBits();
+		list.add(pointerField);
+		list.add(tableId);
+		list.add(sectionSyntaxIndicator);
+		list.add(reservedFutureUse1);
+		list.add(reserved1);
+		list.add(new Bit4(sectionLength >>> 8));
+		list.add(new Bit8(sectionLength));
+		list.add(new Bit8(programNumber >>> 8));
+		list.add(new Bit8(programNumber));
+		list.add(reserved2);
+		list.add(versionNumber);
+		list.add(currentNextOrder);
+		list.add(sectionNumber);
+		list.add(lastSectionNumber);
+		return list;
+	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append(" ");
+		data.append("parentPacket:");
 		data.append(" ti:").append(Integer.toHexString(tableId.get()));
 		data.append(" sso:").append(sectionSyntaxIndicator);
 		data.append(" rfu1:").append(reservedFutureUse1);
@@ -77,6 +101,7 @@ public abstract class ProgramPacket extends Packet {
 		data.append(" cno:").append(currentNextOrder);
 		data.append(" sn:").append(sectionNumber);
 		data.append(" lsn:").append(lastSectionNumber);
+		data.append("\n").append(super.toString());
 		return data.toString();
 	}
 }

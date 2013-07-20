@@ -1,5 +1,9 @@
 package com.ttProject.media.mpegts;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.ttProject.media.IAnalyzer;
 import com.ttProject.media.Unit;
 import com.ttProject.media.extra.Bit;
@@ -81,8 +85,29 @@ public abstract class Packet extends Unit {
 	 * デフォルトの設定をつくっておく。
 	 */
 	public abstract void setupDefault() throws Exception;
-	public String dump() {
-		StringBuilder data = new StringBuilder("packet:");
+	public abstract ByteBuffer getBuffer() throws Exception;
+	public List<Bit> getBits() {
+		List<Bit> list = new ArrayList<Bit>();
+		list.add(new Bit8(syncByte));
+		list.add(transportErrorIndicator);
+		list.add(payloadUnitStartIndicator);
+		list.add(transportPriority);
+		list.add(new Bit5(pid >>> 8));
+		list.add(new Bit8(pid));
+		list.add(scramblingControl);
+		list.add(adaptationFieldExist);
+		list.add(payloadFieldExist);
+		list.add(continuityCounter);
+		if(adaptationField != null) {
+			list.addAll(adaptationField.getBits());
+		}
+		return list;
+	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append(" ");
+		data.append("packet:");
 		data.append(" tei:").append(transportErrorIndicator);
 		data.append(" pusi:").append(payloadUnitStartIndicator);
 		data.append(" tp:").append(transportPriority);
@@ -91,6 +116,10 @@ public abstract class Packet extends Unit {
 		data.append(" afe:").append(adaptationFieldExist);
 		data.append(" pfe:").append(payloadFieldExist);
 		data.append(" cc:").append(continuityCounter);
+		if(adaptationField != null) {
+			data.append("\n");
+			data.append(adaptationField);
+		}
 		return data.toString();
 	}
 }

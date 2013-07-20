@@ -316,6 +316,11 @@ public class Pes extends Packet {
 		data.append(" phl:").append(Integer.toHexString(PESHeaederLength.get()));
 		return data.toString();
 	}
+	@Override
+	public ByteBuffer getBuffer() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	public String dump3() {
 		StringBuilder data = new StringBuilder();
 		if(ptsSignature != null) {

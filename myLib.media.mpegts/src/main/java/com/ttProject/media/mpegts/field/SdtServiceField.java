@@ -17,27 +17,57 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class SdtServiceField {
-	private short serviceId; // 16バイト
+	private short serviceId; // 16ビット
 	private Bit6 reservedFutureUse;
 	private Bit1 eitScheduleFlag;
 	private Bit1 eitPresentFollowingFlag;
 	private Bit3 runningStatus;
 	private Bit1 freeCAMode;
-	private short descriptorsLoopLength; // 12バイト
+	private short descriptorsLoopLength; // 12ビット
 	private List<Descriptor> descriptors = new ArrayList<Descriptor>();
 	/**
 	 * コンストラクタ
 	 */
 	public SdtServiceField() {
 		// デフォルト値は以下とします。
-		serviceId = 1;
+		serviceId = 1; // とりあえず1を指定しておく。
 		reservedFutureUse = new Bit6(0x3F);
-		eitScheduleFlag = new Bit1();
-		eitPresentFollowingFlag = new Bit1();
+		eitScheduleFlag = new Bit1(0);
+		eitPresentFollowingFlag = new Bit1(0);
 		runningStatus = new Bit3(0x4);
-		freeCAMode = new Bit1();
-		// descriptorsLoopLengthは保持データ依存
+		freeCAMode = new Bit1(0);
 	}
+	public void setServiceId(short id) {
+		this.serviceId = id;
+	}
+	public short getServiceId() {
+		return serviceId;
+	}
+	/**
+	 * 保持descriptorを応答する。
+	 * @return
+	 */
+	public List<Descriptor> getDescriptors() {
+		return new ArrayList<Descriptor>(descriptors);
+	}
+	public void addDescriptor(Descriptor descriptor) {
+		// すでに保持済みのオブジェクトなら多重で保持しない。
+		if(!descriptors.contains(descriptor)) {
+			descriptors.add(descriptor);
+		}
+		descriptorsLoopLength = 0;
+		for(Descriptor desc : descriptors) {
+			descriptorsLoopLength += desc.getSize();
+		}
+	}
+	public boolean removeDescripor(Descriptor descriptor) {
+		boolean result = descriptors.remove(descriptor);
+		for(Descriptor desc : descriptors) {
+			descriptorsLoopLength += desc.getSize();
+		}
+		return result;
+	}
+
 	/**
 	 * 保持データサイズを応答しておく
 	 * @return
@@ -73,8 +103,27 @@ public class SdtServiceField {
 			descriptors.add(descriptor);
 		}
 	}
-	public String dump3() {
-		StringBuilder data = new StringBuilder("sdtServiceField:");
+	public List<Bit> getBits() {
+		List<Bit> list = new ArrayList<Bit>();
+		list.add(new Bit8(serviceId >>> 8));
+		list.add(new Bit8(serviceId));
+		list.add(reservedFutureUse);
+		list.add(eitScheduleFlag);
+		list.add(eitPresentFollowingFlag);
+		list.add(runningStatus);
+		list.add(freeCAMode);
+		list.add(new Bit4(descriptorsLoopLength >>> 8));
+		list.add(new Bit8(descriptorsLoopLength));
+		for(Descriptor descriptor : descriptors) {
+			list.addAll(descriptor.getBits());
+		}
+		return list;
+	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append("  ");
+		data.append("sdtServiceField:");
 		data.append(" si:").append(Integer.toHexString(serviceId));
 		data.append(" rfu:").append(reservedFutureUse);
 		data.append(" esf:").append(eitScheduleFlag);
@@ -82,6 +131,10 @@ public class SdtServiceField {
 		data.append(" rs:").append(runningStatus);
 		data.append(" fcam:").append(freeCAMode);
 		data.append(" dll:").append(Integer.toHexString(descriptorsLoopLength));
+		for(Descriptor descriptor : descriptors) {
+			data.append("\n");
+			data.append(descriptor);
+		}
 		return data.toString();
 	}
 }

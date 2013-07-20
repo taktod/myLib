@@ -6,7 +6,10 @@ import java.util.List;
 
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.mpegts.Crc32;
 import com.ttProject.media.mpegts.ProgramPacket;
+import com.ttProject.media.mpegts.descriptor.Descriptor;
+import com.ttProject.media.mpegts.descriptor.ServiceDescriptor;
 import com.ttProject.media.mpegts.field.SdtServiceField;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -17,6 +20,8 @@ import com.ttProject.nio.channels.IReadChannel;
  * 474011100042F0240001C100000001FF 0001FC8013481101054C696261760953657276696365303168C5DB49
  * @see http://en.wikipedia.org/wiki/Service_Description_Table
  * @see http://pda.etsi.org/exchangefolder/en_300468v011301p.pdf
+ * ここでは、サービスごとに、descriptorが複数持てるようになっているみたいです。
+ * よって、sdtにデータをいれる場合は、serviceIdとdescriptorのデータを指定していれる必要があると思われます。
  * @author taktod
  */
 public class Sdt extends ProgramPacket {
@@ -30,8 +35,9 @@ public class Sdt extends ProgramPacket {
 	/**
 	 * コンストラクタ
 	 */
-	public Sdt() {
+	public Sdt() throws Exception {
 		super(0);
+		setupDefault();
 	}
 	/**
 	 * コンストラクタ
@@ -63,6 +69,40 @@ public class Sdt extends ProgramPacket {
 		// serviceFieldの中身はあとで決める必要あり
 	}
 	/**
+	 * 基本と鳴るDefaultProviderデータを書き込む
+	 * @param provider
+	 * @param name
+	 */
+	public void writeDefaultProvider(String provider, String name) {
+		// serviceFieldがあるか確認、１番のサービスフィールドにデータがなければ・・・
+		SdtServiceField targetField = null;
+		for(SdtServiceField ssfield : serviceFields) {
+			// serviceIdが1のデータをみつける。
+			if(ssfield.getServiceId() == 1) {
+				targetField = ssfield;
+				break;
+			}
+		}
+		if(targetField == null) {
+			targetField = new SdtServiceField();
+			serviceFields.add(targetField);
+		}
+		// 内部で保持している、descriptorsに同じproviderのdescriptorがあるか確認して、ある場合は上書き、ない場合は追加する。
+		ServiceDescriptor serviceDescriptor = null;
+		for(Descriptor descriptor : targetField.getDescriptors()) {
+			if(descriptor instanceof ServiceDescriptor) {
+				serviceDescriptor = (ServiceDescriptor)descriptor;
+				break;
+			}
+		}
+		if(serviceDescriptor == null) {
+			// データがセットされていない場合は上書きしてやる
+			serviceDescriptor = new ServiceDescriptor();
+		}
+		serviceDescriptor.setName(provider, name);
+		targetField.addDescriptor(serviceDescriptor);
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -86,17 +126,48 @@ public class Sdt extends ProgramPacket {
 			size -= ssfield.getSize();
 			serviceFields.add(ssfield);
 		}
-		System.out.println(dump2());
 		return;
 	}
-	public String dump2() {
-		StringBuilder data = new StringBuilder("sdt:");
-		data.append(" oni:").append(Integer.toHexString(originalNetworkId));
-		data.append(" rfu2:").append(reservedFutureUse2);
-		return data.toString();
+	@Override
+	public List<Bit> getBits() {
+		List<Bit> list = super.getBits();
+		list.add(new Bit8(originalNetworkId >>> 8));
+		list.add(new Bit8(originalNetworkId));
+		list.add(reservedFutureUse2);
+		for(SdtServiceField ssfield : serviceFields) {
+			list.addAll(ssfield.getBits());
+		}
+		return list;
+	}
+	@Override
+	public ByteBuffer getBuffer() throws Exception {
+		// 情報をbit配列に戻して応答する。
+		List<Bit> bitsList = getBits();
+		ByteBuffer buffer = Bit.bitConnector(bitsList.toArray(new Bit[]{}));
+		// あとはcrc32を計算するだけ。
+		buffer.position(5);
+		Crc32 crc32 = new Crc32();
+		while(buffer.remaining() > 0) {
+			crc32.update(buffer.get());
+		}
+		int crc32Val = (int)crc32.getValue();
+		bitsList.add(new Bit8(crc32Val >>> 24));
+		bitsList.add(new Bit8(crc32Val >>> 16));
+		bitsList.add(new Bit8(crc32Val >>> 8));
+		bitsList.add(new Bit8(crc32Val));
+		return Bit.bitConnector(bitsList.toArray(new Bit[]{}));
 	}
 	@Override
 	public String toString() {
-		return "Sdt: "; // 内容が解析済みなら、そのデータをDumpしておきたいところ
+		StringBuilder data = new StringBuilder();
+		data.append("sdt:");
+		data.append("\n").append(super.toString());
+		data.append(" oni:").append(Integer.toHexString(originalNetworkId));
+		data.append(" rfu2:").append(reservedFutureUse2);
+		for(SdtServiceField ssfield : serviceFields) {
+			data.append("\n");
+			data.append(ssfield);
+		}
+		return data.toString();
 	}
 }

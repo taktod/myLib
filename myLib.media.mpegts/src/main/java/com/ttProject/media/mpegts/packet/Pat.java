@@ -35,6 +35,11 @@ public class Pat extends ProgramPacket {
 		
 	}
 	@Override
+	public ByteBuffer getBuffer() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
 	public void analyze(IReadChannel ch) throws Exception {
 		// 先頭の部分を解析しておく。
 		analyzeHeader(ch, counter ++);
