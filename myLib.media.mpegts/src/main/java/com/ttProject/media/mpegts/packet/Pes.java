@@ -79,6 +79,7 @@ public class Pes extends Packet {
 	// note:
 	// 両方ある場合は、dtsがtimestamp、dtsとptsの差分がcompositionTimeになるみたいです。
 	// ptsしかない場合はptsがtimestamp、compositionTimeは0になります。
+	// 5byte
 	private Bit4 ptsSignature;
 	private Bit3 pts1;
 	private Bit1 ptsFlag1;
@@ -90,6 +91,7 @@ public class Pes extends Packet {
 	private Bit1 ptsFlag3;
 	private long pts;
 
+	// 5byte
 	private Bit4 dtsSignature;
 	private Bit3 dts1;
 	private Bit1 dtsFlag1;
