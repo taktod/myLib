@@ -123,6 +123,7 @@ public abstract class Packet extends Unit {
 			data.append("\n");
 			data.append(adaptationField);
 		}
+		data.append("\n");
 		return data.toString();
 	}
 }

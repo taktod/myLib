@@ -59,4 +59,20 @@ public class PmtElementaryField {
 			throw new Exception("elementaryStreamのdescriptorが定義されていました。作者に解析を依頼してください。");
 		}
 	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append("  ");
+		data.append("pmtElementrayField:");
+		try {
+			data.append(" type:").append(CodecType.getType(streamType.get()));
+		}
+		catch (Exception e) {
+		}
+		data.append(" r1:").append(reserved1);
+		data.append(" pid:").append(Integer.toHexString(pid));
+		data.append(" r2:").append(reserved2);
+		data.append(" eil").append(Integer.toHexString(esInfoLength));
+		return data.toString();
+	}
 }

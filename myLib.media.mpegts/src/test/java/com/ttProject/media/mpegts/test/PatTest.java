@@ -8,7 +8,6 @@ import com.ttProject.util.HexUtil;
 /**
  * patの動作確認用テスト
  * @author taktod
- *
  */
 public class PatTest {
 	public void check() throws Exception {

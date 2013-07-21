@@ -26,7 +26,6 @@ public class Pmt extends ProgramPacket {
 	private Bit3 reserved1;
 	private short pcrPid; // 13bit
 	private Bit4 reserved2;
-	@SuppressWarnings("unused")
 	private short programInfoLength; // 12bit (どうみてもこれ0なんだが・・・どうなるんだろう)
 
 	private List<PmtElementaryField> fields = new ArrayList<PmtElementaryField>();
@@ -56,7 +55,6 @@ public class Pmt extends ProgramPacket {
 	}
 	@Override
 	public ByteBuffer getBuffer() throws Exception {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
@@ -95,6 +93,18 @@ public class Pmt extends ProgramPacket {
 	}
 	@Override
 	public String toString() {
-		return "Pmt: ";
+		StringBuilder data = new StringBuilder();
+		data.append("Pmt:");
+		data.append("\n").append(super.toString());
+		data.append(" r1:").append(reserved1);
+		data.append(" pp:").append(Integer.toHexString(pcrPid));
+		data.append(" r2:").append(reserved2);
+		data.append(" pil:").append(Integer.toHexString(programInfoLength));
+		// あとはfieldのデータ
+		for(PmtElementaryField pefield : fields) {
+			data.append("\n");
+			data.append(pefield);
+		}
+		return data.toString();
 	}
 }
