@@ -54,4 +54,11 @@ public class PtsField {
 		list.add(new Bit1(1));
 		return list;
 	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append("PtsField:");
+		data.append(" pts:").append(Long.toHexString(pts)).append("(").append(pts / 90000f).append(")");
+		return super.toString();
+	}
 }

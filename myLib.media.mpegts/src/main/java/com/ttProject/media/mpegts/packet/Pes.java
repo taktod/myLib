@@ -5,12 +5,11 @@ import java.nio.ByteBuffer;
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
-import com.ttProject.media.extra.Bit3;
-import com.ttProject.media.extra.Bit4;
-import com.ttProject.media.extra.Bit7;
 import com.ttProject.media.extra.Bit8;
 import com.ttProject.media.mpegts.CodecType;
 import com.ttProject.media.mpegts.Packet;
+import com.ttProject.media.mpegts.field.DtsField;
+import com.ttProject.media.mpegts.field.PtsField;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -80,7 +79,9 @@ public class Pes extends Packet {
 	// 両方ある場合は、dtsがtimestamp、dtsとptsの差分がcompositionTimeになるみたいです。
 	// ptsしかない場合はptsがtimestamp、compositionTimeは0になります。
 	// 5byte
-	private Bit4 ptsSignature;
+	private PtsField pts = null;
+	private DtsField dts = null;
+/*	private Bit4 ptsSignature;
 	private Bit3 pts1;
 	private Bit1 ptsFlag1;
 	private Bit7 pts2;
@@ -101,7 +102,7 @@ public class Pes extends Packet {
 	private Bit7 dts4;
 	private Bit8 dts5;
 	private Bit1 dtsFlag3;
-	private long dts;
+	private long dts;*/
 
 	// 以下のデータは面倒なので、とりあえず未実装にしときます。
 	// ESCR(elementaryStreamClockReference)
@@ -246,8 +247,12 @@ public class Pes extends Packet {
 		case 0x03:
 			{
 				System.out.println("ptsDts");
+				pts = new PtsField();
+				dts = new DtsField();
+				pts.analyze(ch);
+				dts.analyze(ch);
 				// pts
-				ptsSignature = new Bit4();
+/*				ptsSignature = new Bit4();
 				pts1 = new Bit3();
 				ptsFlag1 = new Bit1();
 				pts2 = new Bit7();
@@ -282,6 +287,7 @@ public class Pes extends Packet {
 				}
 				pts = (long)(((pts1.get() & 0xFFL) << 30) | (pts2.get() << 23) | (pts3.get() << 15) | (pts4.get() << 8) | pts5.get());
 				dts = (long)(((dts1.get() & 0xFFL) << 30) | (dts2.get() << 23) | (dts3.get() << 15) | (dts4.get() << 8) | dts5.get());
+				*/
 				length -= 10;
 			}
 			break;
@@ -289,7 +295,7 @@ public class Pes extends Packet {
 			{
 				System.out.println("pts");
 				// pts
-				ptsSignature = new Bit4();
+/*				ptsSignature = new Bit4();
 				pts1 = new Bit3();
 				ptsFlag1 = new Bit1();
 				pts2 = new Bit7();
@@ -308,7 +314,9 @@ public class Pes extends Packet {
 				if(ptsFlag1.get() != 0x01 || ptsFlag2.get() != 0x01 || ptsFlag3.get() != 0x01) {
 					throw new Exception("中途flagがおかしいです。");
 				}
-				pts = (long)(((pts1.get() & 0xFFL) << 30) | (pts2.get() << 23) | (pts3.get() << 15) | (pts4.get() << 8) | pts5.get());
+				pts = (long)(((pts1.get() & 0xFFL) << 30) | (pts2.get() << 23) | (pts3.get() << 15) | (pts4.get() << 8) | pts5.get());*/
+				pts = new PtsField();
+				pts.analyze(ch);
 				length -= 5;
 			}
 			break;
@@ -369,11 +377,11 @@ public class Pes extends Packet {
 	}
 	public String dump3() {
 		StringBuilder data = new StringBuilder();
-		if(ptsSignature != null) {
-			data.append(" pts:").append(Long.toHexString(pts)).append("(").append(pts / 90000f).append(")");
+		if(pts != null) {
+			data.append(pts);
 		}
-		if(dtsSignature != null) {
-			data.append(" dts:").append(Long.toHexString(dts)).append("(").append(dts / 90000f).append(")");
+		if(dts != null) {
+			data.append(dts);
 		}
 		return data.toString();
 	}

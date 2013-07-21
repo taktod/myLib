@@ -52,4 +52,11 @@ public class DtsField {
 		list.add(new Bit1(1));
 		return list;
 	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append("DtsField:");
+		data.append(" dts:").append(Long.toHexString(dts)).append("(").append(dts / 90000f).append(")");
+		return super.toString();
+	}
 }
