@@ -1,5 +1,8 @@
 package com.ttProject.media.mpegts.field;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit4;
@@ -13,6 +16,8 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class PmtElementaryField {
+	// あたらしくトラックをつくった場合の次のpid
+	private static short nextTrackPid = 0x0100;
 	private Bit8 streamType;
 	private Bit3 reserved1;
 	private short pid; // 13bit
@@ -30,6 +35,15 @@ public class PmtElementaryField {
 	public short getPid() {
 		return pid;
 	}
+	public static PmtElementaryField makeNewField(CodecType codec) {
+		PmtElementaryField elementField = new PmtElementaryField();
+		elementField.streamType = new Bit8(codec.intValue());
+		elementField.reserved1 = new Bit3(0x07);
+		elementField.pid = nextTrackPid ++;
+		elementField.reserved2 = new Bit4(0x0F);
+		elementField.esInfoLength = 0;
+		return elementField;
+	}
 	/**
 	 * 対象コーデックタイプを取得
 	 * @return
@@ -37,6 +51,17 @@ public class PmtElementaryField {
 	 */
 	public CodecType getCodecType() throws Exception {
 		return CodecType.getType(streamType.get());
+	}
+	public List<Bit> getBits() {
+		List<Bit> list = new ArrayList<Bit>();
+		list.add(streamType);
+		list.add(reserved1);
+		list.add(new Bit5(pid >>> 8));
+		list.add(new Bit8(pid));
+		list.add(reserved2);
+		list.add(new Bit4(esInfoLength >>> 8));
+		list.add(new Bit8(esInfoLength));
+		return list;
 	}
 	/**
 	 * 解析しておく。
@@ -54,6 +79,9 @@ public class PmtElementaryField {
 		Bit.bitLoader(ch, streamType, reserved1, pid_1, pid_2, reserved2,
 				esInfoLength_1, esInfoLength_2);
 		pid = (short)((pid_1.get() << 8) | pid_2.get());
+		if(pid > nextTrackPid) {
+			nextTrackPid = (short)(pid + 1);
+		}
 		esInfoLength = (short)((esInfoLength_1.get() << 8) | esInfoLength_2.get());
 		if(esInfoLength != 0) {
 			throw new Exception("elementaryStreamのdescriptorが定義されていました。作者に解析を依頼してください。");

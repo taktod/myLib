@@ -9,6 +9,7 @@ import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.mpegts.Crc32;
 import com.ttProject.media.mpegts.ProgramPacket;
 import com.ttProject.media.mpegts.field.PmtElementaryField;
 import com.ttProject.nio.channels.ByteReadChannel;
@@ -31,12 +32,14 @@ public class Pmt extends ProgramPacket {
 	private List<PmtElementaryField> fields = new ArrayList<PmtElementaryField>();
 	// 以下programDescriptor
 	// type 3bit pid 4bit esInfoLength eDescriptor
-	public Pmt() {
+	public Pmt() throws Exception {
 		super(0);
+		setupDefault();
 	}
-	public Pmt(short pid) {
+	public Pmt(short pid) throws Exception {
 		super(0);
 		pmtPid = pid;
+		setupDefault();
 	}
 	public Pmt(ByteBuffer buffer) throws Exception {
 		this(0, buffer);
@@ -50,12 +53,63 @@ public class Pmt extends ProgramPacket {
 		byte b1 = (byte)(0x40 | (pmtPid >>> 8));
 		byte b2 = (byte)(pmtPid & 0xFF);
 		analyzeHeader(new ByteReadChannel(new byte[]{
-				0x47, b1, b2, 0x10, 0x00, 0x00, 0x02, (byte)0xB0, 0x12, 0x01, (byte)0xC1, 0x00, 0x00
+				0x47, b1, b2, 0x10, 0x00, 0x02, (byte)0xB0, 0x0D, 0x00, 0x01, (byte)0xC1, 0x00, 0x00
 		}), counter ++);
+		reserved1 = new Bit3(0x07);
+		pcrPid = 0x0100; // トラックは0x0100〜はじめるとして、一番目が固定でpcrになるようにしておく。
+		reserved2 = new Bit4(0x0F);
+		programInfoLength = 0;
+		// あとはトラック情報なんだが、そこはコーデック情報依存なので、あとでなんとかしておく。
+	}
+	@Override
+	public List<Bit> getBits() {
+		List<Bit> list = super.getBits();
+		list.add(reserved1);
+		list.add(new Bit5(pcrPid >>> 8));
+		list.add(new Bit8(pcrPid));
+		list.add(reserved2);
+		list.add(new Bit4(programInfoLength >>> 8));
+		list.add(new Bit8(programInfoLength));
+		for(PmtElementaryField pefield : fields) {
+			list.addAll(pefield.getBits());
+		}
+		return list;
+	}
+	public void addNewField(PmtElementaryField field) {
+		if(!fields.contains(field)) {
+			fields.add(field);
+			// 追加したらデータの計算しなおしを実行する必要あり。
+			short length = 0;
+			// programPacket由来
+			length += 5;
+			// pmtのデータ
+			length += 4;
+			// fieldの長さ
+			for(PmtElementaryField elementaryField : fields) {
+				length += (short)elementaryField.getSize();
+			}
+			// crc32
+			length += 4;
+			setSectionLength(length);
+		}
 	}
 	@Override
 	public ByteBuffer getBuffer() throws Exception {
-		return null;
+		// 情報をbit配列に戻して応答する。
+		List<Bit> bitsList = getBits();
+		ByteBuffer buffer = Bit.bitConnector(bitsList.toArray(new Bit[]{}));
+		// あとはcrc32を計算するだけ。
+		buffer.position(5);
+		Crc32 crc32 = new Crc32();
+		while(buffer.remaining() > 0) {
+			crc32.update(buffer.get());
+		}
+		int crc32Val = (int)crc32.getValue();
+		bitsList.add(new Bit8(crc32Val >>> 24));
+		bitsList.add(new Bit8(crc32Val >>> 16));
+		bitsList.add(new Bit8(crc32Val >>> 8));
+		bitsList.add(new Bit8(crc32Val));
+		return Bit.bitConnector(bitsList.toArray(new Bit[]{}));
 	}
 	@Override
 	public void analyze(IReadChannel ch) throws Exception {
@@ -89,7 +143,7 @@ public class Pmt extends ProgramPacket {
 		return pcrPid;
 	}
 	public List<PmtElementaryField> getFields() {
-		return fields;
+		return new ArrayList<PmtElementaryField>(fields);
 	}
 	@Override
 	public String toString() {
