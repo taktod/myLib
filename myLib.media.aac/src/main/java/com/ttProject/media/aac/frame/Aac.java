@@ -160,7 +160,7 @@ public class Aac extends Frame {
 			throws Exception {
 		// chからデータを読み込んでdataにいれておく。
 		ch.position(getPosition() + 7);
-		BufferUtil.safeRead(ch, getSize() - 7);
+		data = BufferUtil.safeRead(ch, getSize() - 7);
 	}
 	/**
 	 * データを設定する。

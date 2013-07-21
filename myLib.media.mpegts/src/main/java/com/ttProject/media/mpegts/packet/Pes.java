@@ -116,6 +116,12 @@ public class Pes extends Packet {
 	private final boolean pcrFlg;
 	/** このエレメントのコーデック情報 */
 	private final CodecType codec;
+	public Pes(CodecType codec, boolean pcrFlg, short pid) throws Exception {
+		super(0);
+		this.codec = codec;
+		this.pcrFlg = pcrFlg;
+		setupDefault(pid); // デフォルトを設定しておく。
+	}
 	/**
 	 * コンストラクタ
 	 * @param buffer
@@ -152,9 +158,47 @@ public class Pes extends Packet {
 	public CodecType getCodec() {
 		return codec;
 	}
+	public void setupDefault(short pid) throws Exception {
+		// 初期化します。
+		byte b1 = (byte)(0x40 | (pid >>> 8));
+		byte b2 = (byte)(pid & 0xFF);
+		// 47 41 00 30 07 50 00 00 6F 51 7E 00 00 00 01 E0 06 01 80 C0 0A 31 00 07 D8 61 11 00 07 A9 75
+		// adaptation fieldも追加しときたいけど、adaptationFieldのデータにpcrはいっていて、このデータがパケット依存なので、やるとしたら
+		analyzeHeader(new ByteReadChannel(new byte[]{
+				0x47, b1, b2, 0x30, 0x07, 0x50, 0x00, 0x00, 0x00, 0x00, 0x7E, 0x00
+		}), counter ++);
+		// adaptationFieldの内容はあとでなんとかしておく。
+		prefix = 0x000001;
+		// コーデック情報をベースに動作をきめていく。
+		// 複数トラックがある場合は、incrementする必要があるわけだが・・・まぁおいとく。
+		if(codec == CodecType.AUDIO_AAC) {
+			streamId = new Bit8(0xC0);
+		}
+		else if(codec == CodecType.VIDEO_H264) {
+			streamId = new Bit8(0xE0);
+		}
+		// packetLengthはmpegtsのパケットを超えたデータ量全体になる。
+		// あとで決める項目だと思う。
+		pesPacketLength = 0x0000;
+		markerBits = new Bit2(2);
+		scramblingControl = new Bit2(0);
+		priority = new Bit1(0);
+		dataAlignmentIndicator = new Bit1(0);
+		copyright = new Bit1(0);
+		originFlg = new Bit1(0); // originalをなのっておく。
+
+		// ここなにをいれればいいかちょっとわからない。
+		ptsDtsIndicator = new Bit2(2);
+		escrFlag = new Bit1(0);
+		esRateFlag = new Bit1(0);
+		DSMTrickModeFlag = new Bit1(0);
+		additionalCopyInfoFlag = new Bit1(0);
+		CRCFlag = new Bit1(0);
+		extensionFlag = new Bit1(0);
+		
+	}
 	@Override
-	public void setupDefault() {
-		// TODO Auto-generated method stub
+	public void setupDefault() throws Exception {
 		
 	}
 	@Override

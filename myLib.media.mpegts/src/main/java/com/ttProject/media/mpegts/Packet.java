@@ -84,6 +84,9 @@ public abstract class Packet extends Unit {
 			adaptationField.analyze(channel);
 		}
 	}
+	public AdaptationField getAdaptationField() {
+		return adaptationField;
+	}
 	/**
 	 * デフォルトの設定をつくっておく。
 	 */
