@@ -54,7 +54,6 @@ public abstract class Descriptor {
 	 * @return
 	 */
 	public int getSize() {
-		System.out.println(descriptorLength);
 		return descriptorLength.get() + 2; // タグの設定長さ + tag&lengthBit
 	}
 	public List<Bit> getBits() {
