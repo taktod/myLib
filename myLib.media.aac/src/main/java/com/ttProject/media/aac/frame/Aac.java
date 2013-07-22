@@ -39,7 +39,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Aac extends Frame {
-	private final short syncWork = (short)0xFFF0;
+	private final short syncWork = (short)0x0FFF;
 	private Bit1 id;
 	private Bit2 layer;
 	private Bit1 protectionAbsent;
@@ -180,10 +180,10 @@ public class Aac extends Frame {
 		ByteBuffer buffer = ByteBuffer.allocate(getSize());
 		// 先頭のデータもつくっておく。
 		buffer.put(Bit.bitConnector(
-				new Bit4((byte)(syncWork >>> 8)), new Bit8((byte)(syncWork & 0xFF)), id, layer, protectionAbsent, profile, samplingFrequenceIndex,
+				new Bit4((syncWork >>> 8)), new Bit8((syncWork)), id, layer, protectionAbsent, profile, samplingFrequenceIndex,
 				privateBit, channelConfiguration, originalFlg, home,
-				copyrightIdentificationBit, copyrightIdentificationStart, new Bit5((byte)(frameSize >>> 8)), new Bit8((byte)(frameSize & 0xFF)),
-				new Bit3((byte)(adtsBufferFullness >>> 8)), new Bit8((byte)(adtsBufferFullness & 0xFF)), noRawDataBlocksInFrame));
+				copyrightIdentificationBit, copyrightIdentificationStart, new Bit5((frameSize >>> 8)), new Bit8((frameSize & 0xFF)),
+				new Bit3((adtsBufferFullness >>> 8)), new Bit8((adtsBufferFullness & 0xFF)), noRawDataBlocksInFrame));
 		// 実データ部をつくっておく。
 		buffer.put(data);
 		buffer.flip();
