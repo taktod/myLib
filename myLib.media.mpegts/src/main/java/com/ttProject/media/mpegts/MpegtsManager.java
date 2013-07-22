@@ -57,23 +57,24 @@ public class MpegtsManager extends Manager<Packet> {
 		}
 		int pid = getPid(buffer); // 2バイト読み込んである
 		// pidによってなんのデータであるか分岐させておく必要がある
+		buffer.position(0);
 		if(pid == patId) {
 			Pat pat = new Pat(position, buffer);
 			// patを解析して、pmtを知る必要あり
-			pat.analyze(source);
+//			pat.analyze(source);
 			pmtId = pat.getProgramPId();
 			return pat;
 		}
 		else if(pid == sdtId) {
 			Sdt sdt = new Sdt(position, buffer);
 			// 外でほしかったら勝手にanalyzeすればいいと思う
-			sdt.analyze(source);
+//			sdt.analyze(source);
 			return sdt;
 		}
 		else if(pmtId == pid) {
 			Pmt pmt = new Pmt(position, buffer);
 			// pmtを解析して、esを知る必要あり。
-			pmt.analyze(source);
+//			pmt.analyze(source);
 			// pcr(時間情報を保持しているesのpid)
 			pcrPid = pmt.getPcrPid();
 			for(PmtElementaryField field : pmt.getFields()) {
@@ -84,7 +85,7 @@ public class MpegtsManager extends Manager<Packet> {
 		else if(esMap.containsKey(pid)) {
 			// メディアデータ
 			Pes pes = new Pes(position, buffer, esMap.get(pid), pid == pcrPid);
-			pes.analyze(source);
+//			pes.analyze(source);
 			return pes;
 		}
 		else {
