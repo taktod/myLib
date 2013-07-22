@@ -112,6 +112,35 @@ public class AdaptationField {
 	}
 	public List<Bit> getBits() {
 		List<Bit> list = new ArrayList<Bit>();
+		list.add(adaptationFieldLength);
+		list.add(discontinuityIndicator);
+		list.add(randomAccessIndicator);
+		list.add(elementaryStreamPriorityIndicator);
+		list.add(pcrFlag);
+		list.add(opcrFlag);
+		list.add(splicingPointFlag);
+		list.add(transportPrivateDataFlag);
+		list.add(adaptationFieldExtensionFlag);
+		if(pcrFlag.get() != 0x00) {
+			list.add(new Bit1((int)(pcrBase >>> 32)));
+			list.add(new Bit8((int)(pcrBase >>> 24)));
+			list.add(new Bit8((int)(pcrBase >>> 16)));
+			list.add(new Bit8((int)(pcrBase >>> 8)));
+			list.add(new Bit8((int)(pcrBase)));
+			list.add(pcrPadding);
+			list.add(new Bit1(pcrExtension >>> 8));
+			list.add(new Bit8(pcrExtension));
+		}
+		if(opcrFlag.get() != 0x00) {
+			list.add(new Bit1((int)(opcrBase >>> 32)));
+			list.add(new Bit8((int)(opcrBase >>> 24)));
+			list.add(new Bit8((int)(opcrBase >>> 16)));
+			list.add(new Bit8((int)(opcrBase >>> 8)));
+			list.add(new Bit8((int)(opcrBase)));
+			list.add(opcrPadding);
+			list.add(new Bit1(opcrExtension >>> 8));
+			list.add(new Bit8(opcrExtension));
+		}
 		return list;
 	}
 	@Override

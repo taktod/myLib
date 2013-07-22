@@ -39,6 +39,9 @@ public class DtsField {
 	public void setDts(long dts) {
 		this.dts = dts;
 	}
+	public void setSignature(Bit4 signature) {
+		this.signature = signature;
+	}
 	public List<Bit> getBits() {
 		List<Bit> list = new ArrayList<Bit>();
 		list.add(signature);

@@ -1,10 +1,12 @@
 package com.ttProject.media.mpegts.packet;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
+import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit8;
 import com.ttProject.media.mpegts.CodecType;
 import com.ttProject.media.mpegts.Packet;
@@ -182,6 +184,7 @@ public class Pes extends Packet {
 		}
 		// packetLengthはmpegtsのパケットを超えたデータ量全体になる。
 		// あとで決める項目だと思う。
+		// TODO このデータがあるため、ある程度でデータ量はくくってしまう必要がある。(きまらないとmpegtsがつくれない)
 		pesPacketLength = 0x0000;
 		markerBits = new Bit2(2);
 		scramblingControl = new Bit2(0);
@@ -190,7 +193,7 @@ public class Pes extends Packet {
 		copyright = new Bit1(0);
 		originFlg = new Bit1(0); // originalをなのっておく。
 
-		// ここなにをいれればいいかちょっとわからない。
+		// TODO ここなにをいれればいいかちょっとわからない。
 		ptsDtsIndicator = new Bit2(2);
 		escrFlag = new Bit1(0);
 		esRateFlag = new Bit1(0);
@@ -198,11 +201,13 @@ public class Pes extends Packet {
 		additionalCopyInfoFlag = new Bit1(0);
 		CRCFlag = new Bit1(0);
 		extensionFlag = new Bit1(0);
-		
+		// TODO このタイミングでPESHeaderLengthを入れる必要がある。
+		// ptsが設定されているので、PTSFIeldを書き込む必要があるはず。
+		// 126000 / 90000 = 1.4
+		PESHeaederLength = new Bit8(5);
 	}
 	@Override
 	public void setupDefault() throws Exception {
-		
 	}
 	@Override
 	public void analyze(IReadChannel ch) throws Exception {
@@ -252,42 +257,6 @@ public class Pes extends Packet {
 				pts.analyze(ch);
 				dts.analyze(ch);
 				// pts
-/*				ptsSignature = new Bit4();
-				pts1 = new Bit3();
-				ptsFlag1 = new Bit1();
-				pts2 = new Bit7();
-				pts3 = new Bit8();
-				ptsFlag2 = new Bit1();
-				pts4 = new Bit7();
-				pts5 = new Bit8();
-				ptsFlag3 = new Bit1();
-				// dts
-				dtsSignature = new Bit4();
-				dts1 = new Bit3();
-				dtsFlag1 = new Bit1();
-				dts2 = new Bit7();
-				dts3 = new Bit8();
-				dtsFlag2 = new Bit1();
-				dts4 = new Bit7();
-				dts5 = new Bit8();
-				dtsFlag3 = new Bit1();
-				Bit.bitLoader(ch,
-						ptsSignature, pts1, ptsFlag1,
-						pts2, pts3, ptsFlag2,
-						pts4, pts5, ptsFlag3,
-						dtsSignature, dts1, dtsFlag1,
-						dts2, dts3, dtsFlag2,
-						dts4, dts5, dtsFlag3);
-				if(ptsSignature.get() != 0x03 || dtsSignature.get() != 0x01) {
-					throw new Exception("ptsもしくはdtsのsignatureがおかしいです。pts:" + ptsSignature + " dts:" + dtsSignature);
-				}
-				if(ptsFlag1.get() != 0x01 || ptsFlag2.get() != 0x01 || ptsFlag3.get() != 0x01
-				|| dtsFlag1.get() != 0x01 || dtsFlag2.get() != 0x01 || dtsFlag3.get() != 0x01) {
-					throw new Exception("中途flagがおかしいです。");
-				}
-				pts = (long)(((pts1.get() & 0xFFL) << 30) | (pts2.get() << 23) | (pts3.get() << 15) | (pts4.get() << 8) | pts5.get());
-				dts = (long)(((dts1.get() & 0xFFL) << 30) | (dts2.get() << 23) | (dts3.get() << 15) | (dts4.get() << 8) | dts5.get());
-				*/
 				length -= 10;
 			}
 			break;
@@ -295,26 +264,6 @@ public class Pes extends Packet {
 			{
 				System.out.println("pts");
 				// pts
-/*				ptsSignature = new Bit4();
-				pts1 = new Bit3();
-				ptsFlag1 = new Bit1();
-				pts2 = new Bit7();
-				pts3 = new Bit8();
-				ptsFlag2 = new Bit1();
-				pts4 = new Bit7();
-				pts5 = new Bit8();
-				ptsFlag3 = new Bit1();
-				Bit.bitLoader(ch,
-						ptsSignature, pts1, ptsFlag1,
-						pts2, pts3, ptsFlag2,
-						pts4, pts5, ptsFlag3);
-				if(ptsSignature.get() != 0x02) {
-					throw new Exception("ptsのsigunatureがおかしいです。pts:" + ptsSignature);
-				}
-				if(ptsFlag1.get() != 0x01 || ptsFlag2.get() != 0x01 || ptsFlag3.get() != 0x01) {
-					throw new Exception("中途flagがおかしいです。");
-				}
-				pts = (long)(((pts1.get() & 0xFFL) << 30) | (pts2.get() << 23) | (pts3.get() << 15) | (pts4.get() << 8) | pts5.get());*/
 				pts = new PtsField();
 				pts.analyze(ch);
 				length -= 5;
@@ -346,11 +295,80 @@ public class Pes extends Packet {
 		if(length != 0) {
 			throw new Exception("読み込みできていないデータがあるみたいです。");
 		}
-//		System.out.println(dump2());
-		System.out.println(dump3());
 	}
-	public String dump2() {
-		StringBuilder data = new StringBuilder("Pes:");
+	@Override
+	public List<Bit> getBits() {
+		List<Bit> list = super.getBits();
+		list.add(new Bit8(prefix >>> 16));
+		list.add(new Bit8(prefix >>> 8));
+		list.add(new Bit8(prefix));
+		list.add(streamId);
+		list.add(new Bit8(pesPacketLength >>> 8));
+		list.add(new Bit8(pesPacketLength));
+		list.add(markerBits);
+		list.add(scramblingControl);
+		list.add(priority);
+		list.add(dataAlignmentIndicator);
+		list.add(copyright);
+		list.add(originFlg);
+		list.add(ptsDtsIndicator);
+		list.add(escrFlag);
+		list.add(esRateFlag);
+		list.add(DSMTrickModeFlag);
+		list.add(additionalCopyInfoFlag);
+		list.add(CRCFlag);
+		list.add(extensionFlag);
+		list.add(PESHeaederLength);
+		switch(ptsDtsIndicator.get()) {
+		case 0x03:
+			// ptsもdtsもある場合
+			pts.setSignature(new Bit4(3));
+			list.addAll(pts.getBits());
+			dts.setSignature(new Bit4(1));
+			list.addAll(dts.getBits());
+			break;
+		case 0x02:
+			// ptsのみの場合
+			pts.setSignature(new Bit4(2));
+			list.addAll(pts.getBits());
+			break;
+		default:
+			// なにもなし。
+			break;
+		}
+		return list;
+	}
+	@Override
+	public ByteBuffer getBuffer() throws Exception {
+		List<Bit> bitsList = getBits();
+		ByteBuffer buffer = Bit.bitConnector(bitsList.toArray(new Bit[]{}));
+//		System.out.println(HexUtil.toHex(buffer, true));
+		return buffer;
+	}
+	public void setPesPacketLength(short length) {
+		pesPacketLength = length;
+	}
+	public void setPts(PtsField pts) {
+		this.pts = pts;
+	}
+	public void setDts(DtsField dts) {
+		this.dts = dts;
+	}
+	public String dump3() {
+		StringBuilder data = new StringBuilder();
+		if(pts != null) {
+			data.append(pts);
+		}
+		if(dts != null) {
+			data.append(dts);
+		}
+		return data.toString();
+	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append("Pes:");
+		data.append("\n").append(super.toString());
 		data.append(" prefix:").append(prefix);
 		data.append(" si:").append(Integer.toHexString(streamId.get()));
 		data.append(" ppl:").append(Integer.toHexString(pesPacketLength));
@@ -369,32 +387,10 @@ public class Pes extends Packet {
 		data.append(" ef:").append(extensionFlag);
 		data.append(" phl:").append(Integer.toHexString(PESHeaederLength.get()));
 		return data.toString();
-	}
-	@Override
-	public ByteBuffer getBuffer() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	public String dump3() {
-		StringBuilder data = new StringBuilder();
-		if(pts != null) {
-			data.append(pts);
-		}
-		if(dts != null) {
-			data.append(dts);
-		}
-		return data.toString();
-	}
-	public String dump4() {
-		StringBuilder data = new StringBuilder();
-		return data.toString();
-	}
-	@Override
-	public String toString() {
-		StringBuilder dump = new StringBuilder();
-		dump.append("Pes:");
-		dump.append(" codec:").append(codec);
-		dump.append(" pcr:").append(pcrFlg);
-		return dump.toString();
+//		StringBuilder dump = new StringBuilder();
+//		dump.append("Pes:");
+//		dump.append(" codec:").append(codec);
+//		dump.append(" pcr:").append(pcrFlg);
+//		return dump.toString();
 	}
 }

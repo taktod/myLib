@@ -41,6 +41,9 @@ public class PtsField {
 	public void setPts(long pts) {
 		this.pts = pts;
 	}
+	public void setSignature(Bit4 signature) {
+		this.signature = signature;
+	}
 	public List<Bit> getBits() {
 		List<Bit> list = new ArrayList<Bit>();
 		list.add(signature);
