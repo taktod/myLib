@@ -35,6 +35,9 @@ public class AdaptationField {
 	private Bit6 opcrPadding;
 	private short opcrExtension; // 9bit 27MHz
 
+	public void setPcrBase(long base) {
+		pcrBase = base;
+	}
 	// pcr opcr spliceCountdown stuffingBytes等々・・・
 	public void analyze(IReadChannel channel) throws Exception {
 		// とりあえずlengthをみておく。

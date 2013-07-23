@@ -83,28 +83,6 @@ public class Pes extends Packet {
 	// 5byte
 	private PtsField pts = null;
 	private DtsField dts = null;
-/*	private Bit4 ptsSignature;
-	private Bit3 pts1;
-	private Bit1 ptsFlag1;
-	private Bit7 pts2;
-	private Bit8 pts3;
-	private Bit1 ptsFlag2;
-	private Bit7 pts4;
-	private Bit8 pts5;
-	private Bit1 ptsFlag3;
-	private long pts;
-
-	// 5byte
-	private Bit4 dtsSignature;
-	private Bit3 dts1;
-	private Bit1 dtsFlag1;
-	private Bit7 dts2;
-	private Bit8 dts3;
-	private Bit1 dtsFlag2;
-	private Bit7 dts4;
-	private Bit8 dts5;
-	private Bit1 dtsFlag3;
-	private long dts;*/
 
 	// 以下のデータは面倒なので、とりあえず未実装にしときます。
 	// ESCR(elementaryStreamClockReference)
@@ -172,6 +150,9 @@ public class Pes extends Packet {
 		analyzeHeader(new ByteReadChannel(new byte[]{
 				0x47, b1, b2, 0x30, 0x07, 0x50, 0x00, 0x00, 0x00, 0x00, 0x7E, 0x00
 		}), counter ++);
+		if(counter > 0x0F) {
+			counter = 0;
+		}
 		// adaptationFieldの内容はあとでなんとかしておく。
 		prefix = 0x000001;
 		// コーデック情報をベースに動作をきめていく。
@@ -251,7 +232,6 @@ public class Pes extends Packet {
 		switch(ptsDtsIndicator.get()) {
 		case 0x03:
 			{
-				System.out.println("ptsDts");
 				pts = new PtsField();
 				dts = new DtsField();
 				pts.analyze(ch);
@@ -262,7 +242,6 @@ public class Pes extends Packet {
 			break;
 		case 0x02:
 			{
-				System.out.println("pts");
 				// pts
 				pts = new PtsField();
 				pts.analyze(ch);
@@ -342,7 +321,28 @@ public class Pes extends Packet {
 	public ByteBuffer getBuffer() throws Exception {
 		List<Bit> bitsList = getBits();
 		ByteBuffer buffer = Bit.bitConnector(bitsList.toArray(new Bit[]{}));
-//		System.out.println(HexUtil.toHex(buffer, true));
+		return buffer;
+	}
+	// メディアデータの中途に挟むmpegtsのpacket用のデータをつくる。
+	public ByteBuffer getSubHeaderBuffer(boolean last) throws Exception {
+		ByteBuffer buffer = ByteBuffer.allocate(4);
+		byte b1 = (byte)(getPid() >>> 8);
+		byte b2 = (byte)(getPid() & 0xFF);
+		buffer.put((byte)0x47);
+		buffer.put(b1);
+		buffer.put(b2);
+		byte b3 = 0;
+		if(last) {
+			b3 = (byte)(0x30 | counter ++);
+		}
+		else {
+			b3 = (byte)(0x10 | counter ++);
+		}
+		if(counter > 0x0F) {
+			counter = 0;
+		}
+		buffer.put(b3);
+		buffer.flip();
 		return buffer;
 	}
 	public void setPesPacketLength(short length) {
@@ -369,23 +369,31 @@ public class Pes extends Packet {
 		StringBuilder data = new StringBuilder();
 		data.append("Pes:");
 		data.append("\n").append(super.toString());
-		data.append(" prefix:").append(prefix);
-		data.append(" si:").append(Integer.toHexString(streamId.get()));
-		data.append(" ppl:").append(Integer.toHexString(pesPacketLength));
-		data.append(" mb:").append(markerBits);
-		data.append(" sc:").append(scramblingControl);
-		data.append(" p:").append(priority);
-		data.append(" dai:").append(dataAlignmentIndicator);
-		data.append(" c:").append(copyright);
-		data.append(" of:").append(originFlg);
-		data.append(" pdi:").append(ptsDtsIndicator);
-		data.append(" ef:").append(escrFlag);
-		data.append(" erf:").append(esRateFlag);
-		data.append(" dtmf:").append(DSMTrickModeFlag);
-		data.append(" acif:").append(additionalCopyInfoFlag);
-		data.append(" cf:").append(CRCFlag);
-		data.append(" ef:").append(extensionFlag);
-		data.append(" phl:").append(Integer.toHexString(PESHeaederLength.get()));
+		if(isPayloadUnitStart()) {
+			data.append(" prefix:").append(prefix);
+			data.append(" si:").append(Integer.toHexString(streamId.get()));
+			data.append(" ppl:").append(Integer.toHexString(pesPacketLength));
+			data.append(" mb:").append(markerBits);
+			data.append(" sc:").append(scramblingControl);
+			data.append(" p:").append(priority);
+			data.append(" dai:").append(dataAlignmentIndicator);
+			data.append(" c:").append(copyright);
+			data.append(" of:").append(originFlg);
+			data.append(" pdi:").append(ptsDtsIndicator);
+			data.append(" ef:").append(escrFlag);
+			data.append(" erf:").append(esRateFlag);
+			data.append(" dtmf:").append(DSMTrickModeFlag);
+			data.append(" acif:").append(additionalCopyInfoFlag);
+			data.append(" cf:").append(CRCFlag);
+			data.append(" ef:").append(extensionFlag);
+			data.append(" phl:").append(Integer.toHexString(PESHeaederLength.get()));
+			if(pts != null) {
+				data.append(pts);
+			}
+			if(dts != null) {
+				data.append(dts);
+			}
+		}
 		return data.toString();
 //		StringBuilder dump = new StringBuilder();
 //		dump.append("Pes:");

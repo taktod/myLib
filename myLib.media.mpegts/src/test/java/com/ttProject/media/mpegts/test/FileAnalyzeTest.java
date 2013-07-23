@@ -5,6 +5,7 @@ import org.junit.Test;
 import com.ttProject.media.mpegts.IPacketAnalyzer;
 import com.ttProject.media.mpegts.Packet;
 import com.ttProject.media.mpegts.PacketAnalyzer;
+import com.ttProject.media.mpegts.packet.Pes;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -20,12 +21,14 @@ public class FileAnalyzeTest {
 	@Test
 	public void fixedFileTest() throws Exception {
 		IReadChannel source = FileReadChannel.openFileReadChannel(
-				Thread.currentThread().getContextClassLoader().getResource("mario.ts")
+				"/Users/todatakahiko/tmp/mario.nosound.ts"
 		);
 		IPacketAnalyzer analyzer = new PacketAnalyzer();
 		Packet packet = null;
 		while((packet = analyzer.analyze(source)) != null) {
-			System.out.println(packet);
+			if(packet instanceof Pes) {
+				System.out.println(packet);
+			}
 		}
 		source.close();
 	}

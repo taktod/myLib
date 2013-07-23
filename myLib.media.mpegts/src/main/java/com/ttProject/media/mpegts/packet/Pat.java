@@ -40,6 +40,9 @@ public class Pat extends ProgramPacket {
 		analyzeHeader(new ByteReadChannel(new byte[]{
 			0x47, 0x40, 0x00, 0x10, 0x00, 0x00, (byte)0xB0, 0x0D, 0x00, 0x01, (byte)0xC1, 0x00, 0x00
 		}), counter ++);
+		if(counter > 0x0F) {
+			counter = 0;
+		}
 		programNum = 1;
 		reserved = new Bit3(0x07);
 		programPid = (short)0x1000;

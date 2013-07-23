@@ -55,6 +55,9 @@ public class Pmt extends ProgramPacket {
 		analyzeHeader(new ByteReadChannel(new byte[]{
 				0x47, b1, b2, 0x10, 0x00, 0x02, (byte)0xB0, 0x0D, 0x00, 0x01, (byte)0xC1, 0x00, 0x00
 		}), counter ++);
+		if(counter > 0x0F) {
+			counter = 0;
+		}
 		reserved1 = new Bit3(0x07);
 		pcrPid = 0x0100; // トラックは0x0100〜はじめるとして、一番目が固定でpcrになるようにしておく。
 		reserved2 = new Bit4(0x0F);
