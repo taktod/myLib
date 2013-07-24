@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit8;
-import com.ttProject.media.mpegts.Crc32;
 import com.ttProject.media.mpegts.ProgramPacket;
 import com.ttProject.media.mpegts.descriptor.Descriptor;
 import com.ttProject.media.mpegts.descriptor.ServiceDescriptor;
@@ -60,10 +59,7 @@ public class Sdt extends ProgramPacket {
 		analyzeHeader(new ByteReadChannel(new byte[]{
 			0x47, 0x40, 0x11, 0x10, // payloadだけフラグたててある。
 			0x00, 0x42, (byte)0xF0, 0x24, 0x00, 0x01, (byte)0xC1, 0x00, 0x00
-		}), counter ++);
-		if(counter > 0x0F) {
-			counter = 0;
-		}
+		}));
 		originalNetworkId = 1;
 		reservedFutureUse2 = new Bit8(0xFF);
 		// serviceFieldの中身はあとで決める必要あり
@@ -122,10 +118,7 @@ public class Sdt extends ProgramPacket {
 	@Override
 	public void analyze(IReadChannel ch) throws Exception {
 		// 先頭の部分解析しておく。
-		analyzeHeader(ch, counter ++);
-		if(counter > 0x0F) {
-			counter = 0;
-		}
+		analyzeHeader(ch);
 		Bit8 originalNetworkId_1 = new Bit8();
 		Bit8 originalNetworkId_2 = new Bit8();
 		reservedFutureUse2 = new Bit8();
@@ -143,6 +136,11 @@ public class Sdt extends ProgramPacket {
 		return;
 	}
 	@Override
+	public ByteBuffer getBuffer() throws Exception {
+		setContinuityCounter(counter ++);
+		return super.getBuffer();
+	}
+	@Override
 	public List<Bit> getBits() {
 		List<Bit> list = super.getBits();
 		list.add(new Bit8(originalNetworkId >>> 8));
@@ -152,24 +150,6 @@ public class Sdt extends ProgramPacket {
 			list.addAll(ssfield.getBits());
 		}
 		return list;
-	}
-	@Override
-	public ByteBuffer getBuffer() throws Exception {
-		// 情報をbit配列に戻して応答する。
-		List<Bit> bitsList = getBits();
-		ByteBuffer buffer = Bit.bitConnector(bitsList.toArray(new Bit[]{}));
-		// あとはcrc32を計算するだけ。
-		buffer.position(5);
-		Crc32 crc32 = new Crc32();
-		while(buffer.remaining() > 0) {
-			crc32.update(buffer.get());
-		}
-		int crc32Val = (int)crc32.getValue();
-		bitsList.add(new Bit8(crc32Val >>> 24));
-		bitsList.add(new Bit8(crc32Val >>> 16));
-		bitsList.add(new Bit8(crc32Val >>> 8));
-		bitsList.add(new Bit8(crc32Val));
-		return Bit.bitConnector(bitsList.toArray(new Bit[]{}));
 	}
 	@Override
 	public String toString() {

@@ -35,6 +35,17 @@ public class AdaptationField {
 	private Bit6 opcrPadding;
 	private short opcrExtension; // 9bit 27MHz
 
+	public AdaptationField() {
+		adaptationFieldLength = new Bit8(0);
+		discontinuityIndicator = new Bit1(0);
+		randomAccessIndicator = new Bit1(0);
+		elementaryStreamPriorityIndicator = new Bit1(0);
+		pcrFlag = new Bit1(0);
+		opcrFlag = new Bit1(0);
+		splicingPointFlag = new Bit1(0);
+		transportPrivateDataFlag = new Bit1(0);
+		adaptationFieldExtensionFlag = new Bit1(0);
+	}
 	public void setPcrBase(long base) {
 		pcrBase = base;
 	}
@@ -113,8 +124,16 @@ public class AdaptationField {
 			channel.position(channel.position() + size); // あいている部分はスキップしてやる必要あり。
 		}
 	}
+	/**
+	 * 長さを変更する。
+	 * @param length
+	 */
+	public void setLength(int length) {
+		adaptationFieldLength = new Bit8(length);
+	}
 	public List<Bit> getBits() {
 		List<Bit> list = new ArrayList<Bit>();
+		int length = adaptationFieldLength.get();
 		list.add(adaptationFieldLength);
 		list.add(discontinuityIndicator);
 		list.add(randomAccessIndicator);
@@ -124,6 +143,7 @@ public class AdaptationField {
 		list.add(splicingPointFlag);
 		list.add(transportPrivateDataFlag);
 		list.add(adaptationFieldExtensionFlag);
+		length --;
 		if(pcrFlag.get() != 0x00) {
 			list.add(new Bit1((int)(pcrBase >>> 32)));
 			list.add(new Bit8((int)(pcrBase >>> 24)));
@@ -133,6 +153,7 @@ public class AdaptationField {
 			list.add(pcrPadding);
 			list.add(new Bit1(pcrExtension >>> 8));
 			list.add(new Bit8(pcrExtension));
+			length -= 6;
 		}
 		if(opcrFlag.get() != 0x00) {
 			list.add(new Bit1((int)(opcrBase >>> 32)));
@@ -143,6 +164,7 @@ public class AdaptationField {
 			list.add(opcrPadding);
 			list.add(new Bit1(opcrExtension >>> 8));
 			list.add(new Bit8(opcrExtension));
+			length -= 6;
 		}
 		return list;
 	}

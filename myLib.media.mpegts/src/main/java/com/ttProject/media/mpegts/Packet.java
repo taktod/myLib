@@ -52,14 +52,23 @@ public abstract class Packet extends Unit {
 	public boolean isPayloadUnitStart() {
 		return payloadUnitStartIndicator.get() != 0x00;
 	}
+	protected void setPayloadUnitStartIndicator(int flg) {
+		payloadUnitStartIndicator = new Bit1(flg);
+	}
+	protected void setAdaptationFieldExit(int flg) {
+		adaptationFieldExist = new Bit1(flg);
+	}
 	public short getPid() {
 		return pid;
+	}
+	protected void setContinuityCounter(int counter) {
+		continuityCounter = new Bit4(counter);
 	}
 	/**
 	 * header部の解析を実施しておく
 	 * @throws Exception
 	 */
-	protected void analyzeHeader(IReadChannel channel, byte counter) throws Exception {
+	protected void analyzeHeader(IReadChannel channel) throws Exception {
 		// headerを解析しておきます。
 		Bit8 syncByte = new Bit8();
 		transportErrorIndicator = new Bit1();
@@ -73,7 +82,6 @@ public abstract class Packet extends Unit {
 		continuityCounter = new Bit4();
 		Bit.bitLoader(channel, syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority,
 				pid_1, pid_2, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
-		continuityCounter = new Bit4(counter);
 		if(syncByte.get() != this.syncByte) {
 			throw new Exception("syncByteがおかしいです。");
 		}

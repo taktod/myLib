@@ -1,5 +1,6 @@
 package com.ttProject.media.mpegts;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 
 import com.ttProject.media.extra.Bit;
@@ -38,8 +39,8 @@ public abstract class ProgramPacket extends Packet {
 	/**
 	 * ヘッダー部分の解析補助補助
 	 */
-	protected void analyzeHeader(IReadChannel channel, byte counter) throws Exception {
-		super.analyzeHeader(channel, counter);
+	protected void analyzeHeader(IReadChannel channel) throws Exception {
+		super.analyzeHeader(channel);
 		pointerField = new Bit8();
 		tableId = new Bit8();
 		sectionSyntaxIndicator = new Bit1();
@@ -66,6 +67,35 @@ public abstract class ProgramPacket extends Packet {
 	// TODO setSectionLengthを呼び出して内容がかわったときに、データをただしくする動作がぬけているので、やっておく。
 	public void setSectionLength(short length) {
 		sectionLength = length;
+	}
+	/**
+	 * ファイルに書き出す場合のBufferデータを応答する
+	 */
+	@Override
+	public ByteBuffer getBuffer() throws Exception {
+		// TODO counterの書き込みの部分は、データを作成したときに管理するのではなくて、データの書き出しを実施するときに管理した方がよさそう・・・
+		ByteBuffer result = ByteBuffer.allocate(188);
+		// 情報をbit配列に戻して応答する。
+		List<Bit> bitsList = getBits();
+		ByteBuffer buffer = Bit.bitConnector(bitsList.toArray(new Bit[]{}));
+		Crc32 crc32 = new Crc32();
+		while(buffer.remaining() > 0) {
+			byte data = buffer.get();
+			if(buffer.position() > 5) { // crc32は6バイト目から計算にいれる。
+				crc32.update(data);
+			}
+			result.put(data);
+		}
+		int crc32Val = (int)crc32.getValue();
+		result.put((byte)((crc32Val >>> 24) & 0xFF));
+		result.put((byte)((crc32Val >>> 16) & 0xFF));
+		result.put((byte)((crc32Val >>> 8) & 0xFF));
+		result.put((byte)(crc32Val & 0xFF));
+		while(result.position() != result.limit()) {
+			result.put((byte)0xFF);
+		}
+		result.flip();
+		return result;
 	}
 	@Override
 	public List<Bit> getBits() {

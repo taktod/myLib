@@ -9,7 +9,6 @@ import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit8;
-import com.ttProject.media.mpegts.Crc32;
 import com.ttProject.media.mpegts.ProgramPacket;
 import com.ttProject.media.mpegts.field.PmtElementaryField;
 import com.ttProject.nio.channels.ByteReadChannel;
@@ -54,10 +53,7 @@ public class Pmt extends ProgramPacket {
 		byte b2 = (byte)(pmtPid & 0xFF);
 		analyzeHeader(new ByteReadChannel(new byte[]{
 				0x47, b1, b2, 0x10, 0x00, 0x02, (byte)0xB0, 0x0D, 0x00, 0x01, (byte)0xC1, 0x00, 0x00
-		}), counter ++);
-		if(counter > 0x0F) {
-			counter = 0;
-		}
+		}));
 		reserved1 = new Bit3(0x07);
 		pcrPid = 0x0100; // トラックは0x0100〜はじめるとして、一番目が固定でpcrになるようにしておく。
 		reserved2 = new Bit4(0x0F);
@@ -97,30 +93,9 @@ public class Pmt extends ProgramPacket {
 		}
 	}
 	@Override
-	public ByteBuffer getBuffer() throws Exception {
-		// 情報をbit配列に戻して応答する。
-		List<Bit> bitsList = getBits();
-		ByteBuffer buffer = Bit.bitConnector(bitsList.toArray(new Bit[]{}));
-		// あとはcrc32を計算するだけ。
-		buffer.position(5);
-		Crc32 crc32 = new Crc32();
-		while(buffer.remaining() > 0) {
-			crc32.update(buffer.get());
-		}
-		int crc32Val = (int)crc32.getValue();
-		bitsList.add(new Bit8(crc32Val >>> 24));
-		bitsList.add(new Bit8(crc32Val >>> 16));
-		bitsList.add(new Bit8(crc32Val >>> 8));
-		bitsList.add(new Bit8(crc32Val));
-		return Bit.bitConnector(bitsList.toArray(new Bit[]{}));
-	}
-	@Override
 	public void analyze(IReadChannel ch) throws Exception {
-		analyzeHeader(ch, counter ++);
+		analyzeHeader(ch);
 		pmtPid = getPid();
-		if(counter > 0x0F) {
-			counter = 0;
-		}
 		int size = getSectionLength() - 5; // 残りの読み込むべきデータ量
 		// 自分のデータを読み込む
 		reserved1 = new Bit3();
@@ -147,6 +122,11 @@ public class Pmt extends ProgramPacket {
 	}
 	public List<PmtElementaryField> getFields() {
 		return new ArrayList<PmtElementaryField>(fields);
+	}
+	@Override
+	public ByteBuffer getBuffer() throws Exception {
+		setContinuityCounter(counter ++);
+		return super.getBuffer();
 	}
 	@Override
 	public String toString() {
