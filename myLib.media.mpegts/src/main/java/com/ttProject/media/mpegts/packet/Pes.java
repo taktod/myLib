@@ -10,6 +10,7 @@ import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit8;
 import com.ttProject.media.mpegts.CodecType;
 import com.ttProject.media.mpegts.Packet;
+import com.ttProject.media.mpegts.field.AdaptationField;
 import com.ttProject.media.mpegts.field.DtsField;
 import com.ttProject.media.mpegts.field.PtsField;
 import com.ttProject.nio.channels.ByteReadChannel;
@@ -42,10 +43,6 @@ import com.ttProject.nio.channels.IReadChannel;
  * 
  * @see http://en.wikipedia.org/wiki/Packetized_elementary_stream
  * @see http://en.wikipedia.org/wiki/Elementary_stream
- * 
- * 
- * TODO こちらのpacketでは、188バイトを超える本当のchunkデータを保持して管理しておきたいとおもいます。
- * ただ、量が大量になるとデータが死んでしまいそうです・・・
  * 
  * getBuffer()を実行すると、前から順にpacketデータが取り出せていって・・・というのがよさそうです。
  * 
@@ -120,18 +117,57 @@ public class Pes extends Packet {
 	 * @param pcrFlg pcrであるかのフラグ
 	 * @param pid packetIdの値
 	 * @param rawData 内部で保持する生データ
-	 * @param endTimestamp このパケットの終端位置でのtimestamp値
 	 * @throws Exception
 	 */
-	public Pes(CodecType codec, boolean pcrFlg, short pid, ByteBuffer rawData, long endTimestamp) throws Exception {
+	public Pes(CodecType codec, boolean pcrFlg, short pid, ByteBuffer rawData) throws Exception {
+		this(codec, pcrFlg, pid, rawData, -1, -1);
+	}
+	/**
+	 * コンストラクタ
+	 * @param codec コーデック情報
+	 * @param pcrFlg pcrであるかのフラグ
+	 * @param pid packetIdの値
+	 * @param rawData 内部で保持する生データ
+	 * @param presentationTimestamp pts
+	 * @throws Exception
+	 */
+	public Pes(CodecType codec, boolean pcrFlg, short pid, ByteBuffer rawData, long presentationTimestamp) throws Exception {
+		this(codec, pcrFlg, pid, rawData, presentationTimestamp, -1);
+	}
+	/**
+	 * 
+	 * @param codec コーデック情報
+	 * @param pcrFlg pcrであるかフラグ
+	 * @param pid packetIdの値
+	 * @param rawData 内部で保持する生データ
+	 * @param presentationTimestamp pts
+	 * @param decodeTimestamp dts
+	 * @throws Exception
+	 */
+	public Pes(CodecType codec, boolean pcrFlg, short pid, ByteBuffer rawData, long presentationTimestamp, long decodeTimestamp) throws Exception {
 		super(0);
 		this.codec = codec;
 		this.pcrFlg = pcrFlg;
 		setupDefault(pid); // デフォルトを設定しておく。
 		this.rawData = rawData.duplicate(); // コピーでデータを保持しておく。
 		setPesPacketLength((short)rawData.remaining());
-		if(pcrFlg) {
-			getAdaptationField().setPcrBase(endTimestamp);
+		// pts
+		if(presentationTimestamp != -1) {
+			PtsField pts = new PtsField();
+			pts.setPts(presentationTimestamp);
+			setPts(pts);
+			PESHeaederLength.set(PESHeaederLength.get() + 5); // pts分データ量が増える
+			// dts
+			if(decodeTimestamp != -1) {
+				ptsDtsIndicator = new Bit2(3);
+				DtsField dts = new DtsField();
+				dts.setDts(decodeTimestamp);
+				setDts(dts);
+				PESHeaederLength.set(PESHeaederLength.get() + 5); // dts分データ量が増える
+			}
+			else {
+				ptsDtsIndicator = new Bit2(2);
+			}
 		}
 	}
 	/**
@@ -181,22 +217,30 @@ public class Pes extends Packet {
 		byte b2 = (byte)(pid & 0xFF);
 		// 47 41 00 30 07 50 00 00 6F 51 7E 00 00 00 01 E0 06 01 80 C0 0A 31 00 07 D8 61 11 00 07 A9 75
 		// adaptation fieldも追加しときたいけど、adaptationFieldのデータにpcrはいっていて、このデータがパケット依存なので、やるとしたら
-		analyzeHeader(new ByteReadChannel(new byte[]{
-				0x47, b1, b2, 0x30, 0x07, 0x50, 0x00, 0x00, 0x00, 0x00, 0x7E, 0x00
-		}));
-		// adaptationFieldの内容はあとでなんとかしておく。
+		// デフォルトとして、pcr付きのデータということにしておきます。
+		if(isPcr()) {
+			// pcrがある場合はadaptationField(pcr付きということにしておく)
+			analyzeHeader(new ByteReadChannel(new byte[]{
+					0x47, b1, b2, 0x30, 0x07, 0x50, 0x00, 0x00, 0x00, 0x00, 0x7E, 0x00
+			}));
+		}
+		else {
+			// pcrがない場合はなにもなしとしておく。
+			analyzeHeader(new ByteReadChannel(new byte[]{
+					0x47, b1, b2, 0x30
+			}));
+		}
 		prefix = 0x000001;
 		// コーデック情報をベースに動作をきめていく。
 		// 複数トラックがある場合は、incrementする必要があるわけだが・・・まぁおいとく。
-		if(codec == CodecType.AUDIO_AAC) {
+		if(codec == CodecType.AUDIO_AAC || codec == CodecType.AUDIO_MPEG1) {
 			streamId = new Bit8(0xC0);
 		}
 		else if(codec == CodecType.VIDEO_H264) {
 			streamId = new Bit8(0xE0);
 		}
 		// packetLengthはmpegtsのパケットを超えたデータ量全体になる。
-		// あとで決める項目だと思う。
-		// TODO このデータがあるため、ある程度でデータ量はくくってしまう必要がある。(きまらないとmpegtsがつくれない)
+		// このデータがあるため、pesのデータはpesを構築する前に決定している必要がある。
 		pesPacketLength = 0x0000;
 		markerBits = new Bit2(2);
 		scramblingControl = new Bit2(0);
@@ -205,7 +249,6 @@ public class Pes extends Packet {
 		copyright = new Bit1(0);
 		originFlg = new Bit1(0); // originalをなのっておく。
 
-		// TODO ここなにをいれればいいかちょっとわからない。
 		ptsDtsIndicator = new Bit2(2);
 		escrFlag = new Bit1(0);
 		esRateFlag = new Bit1(0);
@@ -213,13 +256,12 @@ public class Pes extends Packet {
 		additionalCopyInfoFlag = new Bit1(0);
 		CRCFlag = new Bit1(0);
 		extensionFlag = new Bit1(0);
-		// TODO このタイミングでPESHeaderLengthを入れる必要がある。
 		// ptsが設定されているので、PTSFIeldを書き込む必要があるはず。
-		// 126000 / 90000 = 1.4
-		PESHeaederLength = new Bit8(5);
+		PESHeaederLength = new Bit8(0);
 	}
 	@Override
 	public void setupDefault() throws Exception {
+		throw new Exception("こちら側のdefaultはつかいません。");
 	}
 	/**
 	 * 動作をリセットしてみる。(たぶんつかわない。)
@@ -308,7 +350,7 @@ public class Pes extends Packet {
 		if(length != 0) {
 			throw new Exception("読み込みできていないデータがあるみたいです。");
 		}
-		// TODO このあたりでデータの読み込みを実行する必要ありか？rawData
+		// 本来はこのあとデータを読み込む作業がでてくるはず。(順にデータパケットを流し込むと生成される的な感じでしょうか)
 	}
 	@Override
 	public List<Bit> getBits() {
@@ -358,60 +400,87 @@ public class Pes extends Packet {
 	 */
 	@Override
 	public ByteBuffer getBuffer() throws Exception {
-/*		if(rawData.position() == 0) {
-			// 先頭データの応答
-			// payloadの開始位置とする。
-			setPayloadUnitStartIndicator(1);
-			// もしadaptationFieldがもともとないなら・・・必要ない項目になります。
-			setAdaptationFieldExit(1); // adaptationFieldも必要なはず。(pcrとして書き込んでおく必要があるかは不明)
-			// rawDataの中身を確認して1パケットを作成するのに足りるデータ量であるか確認する必要がある。
-			// 先頭の部分が4バイト, adaptationfieldの大きさは勝手に考慮されるので、どうでもいい。
-			// 4 + 2 + 1 + 1 + PESHeaderLength (1) ptsがあれば+5 dtsがあればさらに+5となる。
-			int dataLength = 188 - 4;
-			dataLength -= 9;
-			if(pts != null) {
-				dataLength -= 5;
-			}
-			if(dts != null) {
-				dataLength -= 5;
-			}
-			// dataLength // これが現時点で書き込み可能なデータ量
-			// あとはほっとくとadaptationFieldが書き込むデータ量にも気をつける必要あり。
-			// とりあえずadaptationFieldは最低10バイト書き込む領域がないとだめであるとしておこうと思う。
+		if(rawData == null) {
+			throw new Exception("メディアデータの設定がなされていません。");
 		}
-		else {
-			// 中途データの応答
-		}*/
+		// 動作カウンターを上げる
+		if(rawData.remaining() == 0) {
+			return null;
+		}
 		setContinuityCounter(counter ++);
-		if(counter > 0x0F) {
-			counter = 0;
-		}
-		List<Bit> bitsList = getBits();
-		ByteBuffer buffer = Bit.bitConnector(bitsList.toArray(new Bit[]{}));
-		return buffer;
-	}
-	// メディアデータの中途に挟むmpegtsのpacket用のデータをつくる。
-	public ByteBuffer getSubHeaderBuffer(boolean last) throws Exception {
-		// できたらこの部分のデータはpacketに準拠しておきたいところ・・・
-		ByteBuffer buffer = ByteBuffer.allocate(4);
-		byte b1 = (byte)(getPid() >>> 8);
-		byte b2 = (byte)(getPid() & 0xFF);
-		buffer.put((byte)0x47);
-		buffer.put(b1);
-		buffer.put(b2);
-		byte b3 = 0;
-		if(last) {
-			b3 = (byte)(0x30 | counter ++);
+		if(rawData.position() == 0) {
+			// 初めてのアクセスの場合
+			setPayloadUnitStartIndicator(1); // payloadの開始フラグをたてておく。
+			ByteBuffer buffer = ByteBuffer.allocate(188);
+			List<Bit> bitsList = getBits();
+			buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
+			int left = buffer.limit() - buffer.position();
+			if(left > rawData.remaining()) {
+				// rawDataのサイズが小さくて1パケットうまらない場合
+				buffer = ByteBuffer.allocate(188);
+				getAdaptationField().setLength(getAdaptationField().getLength() + left - rawData.remaining());
+				bitsList = getBits();
+				buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
+				left = buffer.limit() - buffer.position();
+			}
+			byte[] data = new byte[left];
+			rawData.get(data);
+			buffer.put(data);
+			buffer.flip();
+			return buffer;
 		}
 		else {
-			b3 = (byte)(0x10 | counter ++);
+			// payloadの開始位置ではないので、offにしとく
+			ByteBuffer buffer = ByteBuffer.allocate(188);
+			setPayloadUnitStartIndicator(0);
+			// 中途アクセスの場合
+			if(rawData.remaining() < 183) {
+				// 今回で完結できる場合
+				AdaptationField afield = getAdaptationField();
+				AdaptationField dummy = new AdaptationField();
+				dummy.setLength(183 - rawData.remaining());
+				setAdaptationField(dummy);
+				setAdaptationFieldExist(1);
+				List<Bit> bitsList = super.getBits();
+				buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
+				// データをつくる
+				buffer.put(rawData);
+				buffer.flip();
+				// おわったらfieldを戻しておく。
+				setAdaptationField(afield);
+				return buffer;
+			}
+			else if(rawData.remaining() == 183) {
+				System.out.println("183バイトぴったりの場合、未検証");
+				// 今回で完結できないけど、adaptationFieldの設定が必要な場合
+				AdaptationField afield = getAdaptationField();
+				AdaptationField dummy = new AdaptationField();
+				dummy.setLength(2);
+				setAdaptationField(dummy);
+				setAdaptationFieldExist(1);
+				// データをつくる
+				// 182バイトデータが書き込めるはず。
+				byte[] data = new byte[182];
+				rawData.get(data);
+				buffer.put(data);
+				// おわったらfieldを戻しておく。
+				setAdaptationField(afield);
+			}
+			else {
+				// そのままデータがはいっていればよい場合
+				// adaptationFieldもないとします。
+				setAdaptationFieldExist(0);
+				List<Bit> bitsList = super.getBits();
+				buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
+				// 残りのデータを書き込んでおく。
+				byte[] data = new byte[184];
+				rawData.get(data);
+				buffer.put(data);
+				buffer.flip();
+				return buffer;
+			}
+			return null;
 		}
-		if(counter > 0x0F) {
-			counter = 0;
-		}
-		buffer.put(b3);
-		buffer.flip();
-		return buffer;
 	}
 	public void setPesPacketLength(short length) {
 		pesPacketLength = length;
