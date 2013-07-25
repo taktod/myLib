@@ -18,7 +18,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Mp3 extends Frame {
-	private final short syncBit = (short)0xFFE0;
+	private final short syncBit = (short)0x07FF;
 	private Bit2 mpegVersion;
 	private Bit2 layer;
 	private Bit1 protectionBit;
@@ -54,11 +54,11 @@ public class Mp3 extends Frame {
 		{22.05f,  24.0f, 16.0f}, // mpeg 2
 		{44.1f,   48.0f, 32.0f}  // mpeg 1
 	};
-	private float getSamplingRate() {
+	public float getSamplingRate() {
 		return sampleRateTable[mpegVersion.get()][samplingRateIndex.get()];
 	}
-	private int getBitrate() {
-		if(mpegVersion.get() == 0 || mpegVersion.get() == 1) { // 2.5と2の場合
+	public int getBitrate() {
+		if(mpegVersion.get() == 0 || mpegVersion.get() == 2) { // 2.5と2の場合
 			if(layer.get() == 3) { // layer1
 				return bitrateIndexV2L1[bitrateIndex.get()];
 			}
@@ -80,13 +80,13 @@ public class Mp3 extends Frame {
 		return -1;
 	}
 	private int getRealSize() {
-		if(layer.get() == 0) { // layer1
+		if(layer.get() == 3) { // layer1
 			return (int)Math.floor((12 * getBitrate() / getSamplingRate() + paddingBit.get()) * 4);
 		}
-		else if(layer.get() == 1) { // layer2
+		else if(layer.get() == 2) { // layer2
 			return (int)Math.floor(144 * getBitrate() / getSamplingRate() + paddingBit.get());
 		}
-		else if(layer.get() == 2) { // layer3
+		else if(layer.get() == 1) { // layer3
 			if(mpegVersion.get() == 3) {
 				return (int)Math.floor(144 * getBitrate() / getSamplingRate() + paddingBit.get());
 			}
@@ -128,7 +128,7 @@ public class Mp3 extends Frame {
 	public ByteBuffer getBuffer() throws Exception {
 		ByteBuffer buffer = ByteBuffer.allocate(getSize());
 		buffer.put(Bit.bitConnector(
-				new Bit3((byte)(syncBit >>> 8)), new Bit8((byte)(syncBit & 0xFF)),
+				new Bit3((byte)(syncBit >>> 8)), new Bit8((byte)(syncBit)),
 				mpegVersion, layer, protectionBit, bitrateIndex, samplingRateIndex, paddingBit,
 				privateBit, channelMode, modeExtension, copyRight, originalFlg, emphasis));
 		buffer.put(data);
@@ -139,7 +139,7 @@ public class Mp3 extends Frame {
 	public void analyze(IReadChannel ch, IFrameAnalyzer analyzer)
 			throws Exception {
 		ch.position(getPosition() + 4);
-		BufferUtil.safeRead(ch, getSize() - 4);
+		data = BufferUtil.safeRead(ch, getSize() - 4);
 	}
 	@Override
 	public String toString() {

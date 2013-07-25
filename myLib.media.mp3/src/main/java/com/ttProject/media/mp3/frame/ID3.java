@@ -1,5 +1,7 @@
 package com.ttProject.media.mp3.frame;
 
+import java.nio.ByteBuffer;
+
 import com.ttProject.media.mp3.Frame;
 import com.ttProject.media.mp3.IFrameAnalyzer;
 import com.ttProject.nio.channels.IReadChannel;
@@ -24,5 +26,9 @@ public class ID3 extends Frame {
 			throws Exception {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public ByteBuffer getBuffer() throws Exception {
+		return null;
 	}
 }
