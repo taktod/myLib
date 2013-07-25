@@ -196,6 +196,9 @@ public class Aac extends Frame {
 	public ByteBuffer getDataBuffer() {
 		return data.duplicate();
 	}
+	public float getSamplingRate() {
+		return sampleRateTable[samplingFrequenceIndex.get()];
+	}
 	/**
 	 * {@inheritDoc}
 	 */
