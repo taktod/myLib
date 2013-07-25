@@ -55,8 +55,11 @@ public abstract class Packet extends Unit {
 	protected void setPayloadUnitStartIndicator(int flg) {
 		payloadUnitStartIndicator = new Bit1(flg);
 	}
-	protected void setAdaptationFieldExit(int flg) {
+	protected void setAdaptationFieldExist(int flg) {
 		adaptationFieldExist = new Bit1(flg);
+	}
+	public boolean isAdaptationFieldExist() {
+		return adaptationFieldExist.get() != 0x00;
 	}
 	public short getPid() {
 		return pid;
@@ -86,14 +89,17 @@ public abstract class Packet extends Unit {
 			throw new Exception("syncByteがおかしいです。");
 		}
 		pid = (short)((pid_1.get() << 8) + pid_2.get());
+		adaptationField = new AdaptationField();
 		if(adaptationFieldExist.get() != 0x00) {
 			// adaptationFieldがある場合
-			adaptationField = new AdaptationField();
 			adaptationField.analyze(channel);
 		}
 	}
 	public AdaptationField getAdaptationField() {
 		return adaptationField;
+	}
+	public void setAdaptationField(AdaptationField field) {
+		adaptationField = field;
 	}
 	/**
 	 * デフォルトの設定をつくっておく。
@@ -112,7 +118,7 @@ public abstract class Packet extends Unit {
 		list.add(adaptationFieldExist);
 		list.add(payloadFieldExist);
 		list.add(continuityCounter);
-		if(adaptationField != null) {
+		if(adaptationFieldExist.get() != 0x00) {
 			list.addAll(adaptationField.getBits());
 		}
 		return list;
