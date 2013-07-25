@@ -131,6 +131,13 @@ public class AdaptationField {
 	public void setLength(int length) {
 		adaptationFieldLength = new Bit8(length);
 	}
+	/**
+	 * 長さを参照する。
+	 * @return
+	 */
+	public int getLength() {
+		return adaptationFieldLength.get();
+	}
 	public List<Bit> getBits() {
 		List<Bit> list = new ArrayList<Bit>();
 		int length = adaptationFieldLength.get();
@@ -165,6 +172,9 @@ public class AdaptationField {
 			list.add(new Bit1(opcrExtension >>> 8));
 			list.add(new Bit8(opcrExtension));
 			length -= 6;
+		}
+		for(int i = 0;i < length;i ++) {
+			list.add(new Bit8((byte)0xFF));
 		}
 		return list;
 	}
