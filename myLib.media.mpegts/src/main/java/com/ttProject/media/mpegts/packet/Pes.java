@@ -527,10 +527,5 @@ public class Pes extends Packet {
 			}
 		}
 		return data.toString();
-//		StringBuilder dump = new StringBuilder();
-//		dump.append("Pes:");
-//		dump.append(" codec:").append(codec);
-//		dump.append(" pcr:").append(pcrFlg);
-//		return dump.toString();
 	}
 }
