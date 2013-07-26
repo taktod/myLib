@@ -407,15 +407,15 @@ public class Pes extends Packet {
 		if(rawData.remaining() == 0) {
 			return null;
 		}
+		ByteBuffer buffer = ByteBuffer.allocate(188);
 		setContinuityCounter(counter ++);
 		if(rawData.position() == 0) {
 			// 初めてのアクセスの場合
 			setPayloadUnitStartIndicator(1); // payloadの開始フラグをたてておく。
-			ByteBuffer buffer = ByteBuffer.allocate(188);
 			List<Bit> bitsList = getBits();
 			buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
 			int left = buffer.limit() - buffer.position();
-			if(left > rawData.remaining()) {
+			if(left > rawData.remaining()) { // データが足りなさそうな場合はやり直す。
 				// rawDataのサイズが小さくて1パケットうまらない場合
 				buffer = ByteBuffer.allocate(188);
 				getAdaptationField().setLength(getAdaptationField().getLength() + left - rawData.remaining());
@@ -431,41 +431,34 @@ public class Pes extends Packet {
 		}
 		else {
 			// payloadの開始位置ではないので、offにしとく
-			ByteBuffer buffer = ByteBuffer.allocate(188);
 			setPayloadUnitStartIndicator(0);
 			// 中途アクセスの場合
-			if(rawData.remaining() < 183) {
+			if(rawData.remaining() <= 183) {
 				// 今回で完結できる場合
 				AdaptationField afield = getAdaptationField();
 				AdaptationField dummy = new AdaptationField();
-				dummy.setLength(183 - rawData.remaining());
 				setAdaptationField(dummy);
 				setAdaptationFieldExist(1);
-				List<Bit> bitsList = super.getBits();
-				buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
-				// データをつくる
-				buffer.put(rawData);
+				if(rawData.remaining() == 183) {
+					// 今回で完結できないけど、adaptationFieldの設定が必要な場合
+					dummy.setLength(1);
+					// データをつくる
+					List<Bit> bitsList = super.getBits();
+					buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
+					// 182バイトデータが書き込めるはず。
+					byte[] data = new byte[182];
+					rawData.get(data);
+					buffer.put(data);
+				}
+				else {
+					dummy.setLength(183 - rawData.remaining());
+					List<Bit> bitsList = super.getBits();
+					buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
+					// データをつくる
+					buffer.put(rawData);
+				}
+				// おわったらfieldを戻しておく
 				buffer.flip();
-				// おわったらfieldを戻しておく。
-				setAdaptationField(afield);
-				return buffer;
-			}
-			else if(rawData.remaining() == 183) {
-				// 今回で完結できないけど、adaptationFieldの設定が必要な場合
-				AdaptationField afield = getAdaptationField();
-				AdaptationField dummy = new AdaptationField();
-				dummy.setLength(1);
-				setAdaptationField(dummy);
-				setAdaptationFieldExist(1);
-				// データをつくる
-				List<Bit> bitsList = super.getBits();
-				buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
-				// 182バイトデータが書き込めるはず。
-				byte[] data = new byte[182];
-				rawData.get(data);
-				buffer.put(data);
-				buffer.flip();
-				// おわったらfieldを戻しておく。
 				setAdaptationField(afield);
 				return buffer;
 			}
