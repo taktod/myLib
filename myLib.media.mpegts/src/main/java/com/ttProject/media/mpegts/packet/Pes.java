@@ -451,20 +451,23 @@ public class Pes extends Packet {
 				return buffer;
 			}
 			else if(rawData.remaining() == 183) {
-				System.out.println("183バイトぴったりの場合、未検証");
 				// 今回で完結できないけど、adaptationFieldの設定が必要な場合
 				AdaptationField afield = getAdaptationField();
 				AdaptationField dummy = new AdaptationField();
-				dummy.setLength(2);
+				dummy.setLength(1);
 				setAdaptationField(dummy);
 				setAdaptationFieldExist(1);
 				// データをつくる
+				List<Bit> bitsList = super.getBits();
+				buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
 				// 182バイトデータが書き込めるはず。
 				byte[] data = new byte[182];
 				rawData.get(data);
 				buffer.put(data);
+				buffer.flip();
 				// おわったらfieldを戻しておく。
 				setAdaptationField(afield);
+				return buffer;
 			}
 			else {
 				// そのままデータがはいっていればよい場合
@@ -479,7 +482,6 @@ public class Pes extends Packet {
 				buffer.flip();
 				return buffer;
 			}
-			return null;
 		}
 	}
 	public void setPesPacketLength(short length) {
