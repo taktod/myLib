@@ -48,7 +48,7 @@ public class FileAnalyzeTest {
 							List<Frame> frames = configData.getNals(configChannel);
 							for(Frame frame : frames) {
 								// spsとppsがとれているはず。
-								System.out.println(HexUtil.toHex(frame.getData(), 0, 5, true));
+								System.out.println(HexUtil.toHex(frame.getData(), 0, 3, true));
 							}
 						}
 						else {
