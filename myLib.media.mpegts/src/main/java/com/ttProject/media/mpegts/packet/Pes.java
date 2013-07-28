@@ -227,7 +227,7 @@ public class Pes extends Packet {
 		else {
 			// pcrがない場合はなにもなしとしておく。
 			analyzeHeader(new ByteReadChannel(new byte[]{
-					0x47, b1, b2, 0x30
+					0x47, b1, b2, 0x10
 			}));
 		}
 		prefix = 0x000001;
@@ -417,11 +417,22 @@ public class Pes extends Packet {
 			int left = buffer.limit() - buffer.position();
 			if(left > rawData.remaining()) { // データが足りなさそうな場合はやり直す。
 				// rawDataのサイズが小さくて1パケットうまらない場合
+				// adaptationFieldが設定されていないはずのデータである可能性もあるので、その場合は調整する必要がある。
+				boolean isAdaptationFieldExist = isAdaptationFieldExist();
+				if(!isAdaptationFieldExist) {
+					AdaptationField dummy = new AdaptationField();
+					setAdaptationField(dummy);
+					setAdaptationFieldExist(1);
+				}
 				buffer = ByteBuffer.allocate(188);
 				getAdaptationField().setLength(getAdaptationField().getLength() + left - rawData.remaining());
 				bitsList = getBits();
 				buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
 				left = buffer.limit() - buffer.position();
+				// もともとadaptationFieldがなければとりさっておく。
+				if(!isAdaptationFieldExist) {
+					setAdaptationFieldExist(0);
+				}
 			}
 			byte[] data = new byte[left];
 			rawData.get(data);
