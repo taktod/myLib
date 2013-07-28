@@ -62,6 +62,9 @@ public abstract class Frame extends Unit {
 	public ByteBuffer getBuffer() {
 		return buffer;
 	}
+	protected void setBuffer(ByteBuffer buffer) {
+		this.buffer = buffer.duplicate();
+	}
 	public ByteBuffer getData() throws Exception {
 		ByteBuffer data = ByteBuffer.allocate(buffer.remaining() + 1);
 		data.put(Bit.bitConnector(forbiddenZeroBit, nalRefIdc, type));
