@@ -1,18 +1,17 @@
-package com.ttProject.media.h264.nal;
+package com.ttProject.media.h264.frame;
 
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
 import com.ttProject.media.extra.Bit8;
-import com.ttProject.media.h264.INalAnalyzer;
-import com.ttProject.media.h264.Nal;
-import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.media.h264.Frame;
 
 /**
  * SequenceParameterSet
  * profileとかlevelとか、その他の細かい設定とかがはいっているみたい。
  * @author taktod
  */
-public class SequenceParameterSet extends Nal {
+public class SequenceParameterSet extends Frame {
+	// 先頭の３バイトからこのデータが取得可能
 	private Bit8 profile;
 	private Bit1 constraintSet0;
 	private Bit1 constraintSet1;
@@ -24,13 +23,10 @@ public class SequenceParameterSet extends Nal {
 	private Bit8 level;
 	// このあとにもデータはあるけど、flvのmediaSequenceHeaderでは特に考慮せずにつらねてるだけっぽい。
 	// 実質はつかっているbframeとかの情報があるのだろうか？
-	public SequenceParameterSet() {
-		super(0, 0);
+	public SequenceParameterSet(int size, byte frameTypeData) {
+		super(size, frameTypeData);
 	}
-	@Override
-	public void analyze(IReadChannel ch, INalAnalyzer analyzer)
-			throws Exception {
-		// TODO Auto-generated method stub
-		
+	public SequenceParameterSet(byte frameTypeData) {
+		this(0, frameTypeData);
 	}
 }
