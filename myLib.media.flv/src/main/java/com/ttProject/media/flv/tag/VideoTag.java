@@ -134,8 +134,11 @@ public class VideoTag extends Tag {
 	 * データを登録しておく
 	 * @param buffer
 	 */
-	public void setData(ByteBuffer buffer) {
+	public void setRawData(ByteBuffer buffer) {
 		data = buffer.duplicate();
+	}
+	public ByteBuffer getRawData() {
+		return data.duplicate();
 	}
 	/**
 	 * キーフレームであるか応答する。
@@ -164,11 +167,21 @@ public class VideoTag extends Tag {
 		int dataSize = getSize() - 16;
 		// h.264の場合はさらに4バイト読み込む必要あり。
 		if(codec == CodecType.AVC) {
-			isMediaSequenceHeader = (BufferUtil.safeRead(ch, 1).get() != 0x01);
-			// 続く３バイトは0x00であることが予想されているべきだが、ほっとく。
+			byte sequenceHeaderTag = BufferUtil.safeRead(ch, 1).get();
+			switch (sequenceHeaderTag) {
+			case 0x00:
+				isMediaSequenceHeader = true;
+				break;
+			case 0x01:
+				isMediaSequenceHeader = false;
+				break;
+			default:
+				throw new Exception("未定義: mshFlg:" + sequenceHeaderTag);
+			}
+			// 続く３バイトは0x00であることが予想されているべきだが、ほっとく。(つづく３バイトはbframeがある場合にdtsのデータがはいっているみたい。)
 			dataSize --;
 		}
-		setData(BufferUtil.safeRead(ch, dataSize));
+		setRawData(BufferUtil.safeRead(ch, dataSize));
 		// tailを読み込む
 		if(BufferUtil.safeRead(ch, 4).getInt() != getSize() - 4) {
 			throw new Exception("tailByteの長さが狂ってます");

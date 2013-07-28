@@ -137,7 +137,7 @@ public class MessageManager {
 		ByteBuffer buffer = ByteBuffer.allocate(data.readableBytes());
 		buffer.put(data.toByteBuffer());
 		buffer.flip();
-		tag.setData(buffer);
+		tag.setRawData(buffer);
 		return tag;
 	}
 	/**
@@ -165,7 +165,7 @@ public class MessageManager {
 		ByteBuffer buffer = ByteBuffer.allocate(data.readableBytes());
 		buffer.put(data.toByteBuffer());
 		buffer.flip();
-		tag.setData(buffer);
+		tag.setRawData(buffer);
 		return tag;
 	}
 }

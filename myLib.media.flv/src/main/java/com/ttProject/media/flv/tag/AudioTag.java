@@ -116,8 +116,11 @@ public class AudioTag extends Tag {
 	 * データを登録しておく(メディアデータの本当の部分のみ)
 	 * @param buffer
 	 */
-	public void setData(ByteBuffer buffer) {
+	public void setRawData(ByteBuffer buffer) {
 		data = buffer.duplicate();
+	}
+	public ByteBuffer getRawData() {
+		return data.duplicate();
 	}
 	/**
 	 * {@inheritDoc}
