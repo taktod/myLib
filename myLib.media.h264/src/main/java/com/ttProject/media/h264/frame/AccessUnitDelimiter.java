@@ -1,5 +1,7 @@
 package com.ttProject.media.h264.frame;
 
+import java.nio.ByteBuffer;
+
 import com.ttProject.media.h264.Frame;
 
 /**
@@ -17,6 +19,7 @@ public class AccessUnitDelimiter extends Frame {
 		super(size, frameTypeData);
 	}
 	public AccessUnitDelimiter() {
-		this(0, (byte)0x09);
+		this(2, (byte)0x09);
+		setBuffer(ByteBuffer.wrap(new byte[]{(byte)0xF0}));
 	}
 }
