@@ -184,6 +184,7 @@ public class Aac extends Frame {
 				privateBit, channelConfiguration, originalFlg, home,
 				copyrightIdentificationBit, copyrightIdentificationStart, new Bit5((frameSize >>> 8)), new Bit8((frameSize & 0xFF)),
 				new Bit3((adtsBufferFullness >>> 8)), new Bit8((adtsBufferFullness & 0xFF)), noRawDataBlocksInFrame));
+		data.position(0); // もどしておく？
 		// 実データ部をつくっておく。
 		buffer.put(data);
 		buffer.flip();
