@@ -60,4 +60,15 @@ public class DecoderSpecificInfo {
 		data.append(" ef:").append(extensionFlag);
 		return data.toString();
 	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder("decoderSpecificInfo:");
+		data.append(" ot:").append(objectType1);
+		data.append(" fi:").append(frequencyIndex);
+		data.append(" cc:").append(channelConfiguration);
+		data.append(" flf:").append(frameLengthFlag);
+		data.append(" docc").append(dependsOnCoreCoder);
+		data.append(" ef:").append(extensionFlag);
+		return data.toString();
+	}
 }
