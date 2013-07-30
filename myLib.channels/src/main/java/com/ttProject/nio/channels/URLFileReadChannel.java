@@ -156,6 +156,8 @@ public class URLFileReadChannel implements IFileReadChannel {
 	}
 	/**
 	 * {@inheritDoc}
+	 * memo このsizeの部分ですが、アクセス先のサイトがサイズを返さない可能性もあります。
+	 * その場合は、-1になってしまいます。
 	 */
 	public int size() {
 		return size;
