@@ -1,7 +1,9 @@
 package com.ttProject.media.mpegts.packet;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
@@ -55,7 +57,7 @@ import com.ttProject.nio.channels.IReadChannel;
  */
 public class Pes extends Packet {
 	/** 巡回データカウンター */
-	private static byte counter = 0;
+	private static Map<Integer, Integer> counterMap = new HashMap<Integer, Integer>();
 	private int prefix; // 3バイト 0x000001固定
 	private Bit8 streamId; // audioなら0xC0 - 0xDF videoなら0xE0 - 0xEF通常は0xC0もしくは0xE0(トラックが１つずつしかないため)
 	private short pesPacketLength; // 2バイト
@@ -408,7 +410,12 @@ public class Pes extends Packet {
 			return null;
 		}
 		ByteBuffer buffer = ByteBuffer.allocate(188);
+		Integer counter = counterMap.get((int)getPid());
+		if(counter == null) {
+			counter = 0;
+		}
 		setContinuityCounter(counter ++);
+		counterMap.put((int)getPid(), counter);
 		if(rawData.position() == 0) {
 			// 初めてのアクセスの場合
 			setPayloadUnitStartIndicator(1); // payloadの開始フラグをたてておく。
