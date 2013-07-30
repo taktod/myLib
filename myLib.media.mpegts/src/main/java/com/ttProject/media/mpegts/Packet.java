@@ -55,7 +55,7 @@ public abstract class Packet extends Unit {
 	protected void setPayloadUnitStartIndicator(int flg) {
 		payloadUnitStartIndicator = new Bit1(flg);
 	}
-	protected void setAdaptationFieldExist(int flg) {
+	public void setAdaptationFieldExist(int flg) {
 		adaptationFieldExist = new Bit1(flg);
 	}
 	public boolean isAdaptationFieldExist() {

@@ -49,6 +49,9 @@ public class AdaptationField {
 	public void setPcrBase(long base) {
 		pcrBase = base;
 	}
+	public void setRandomAccessIndicator(int flg) {
+		randomAccessIndicator = new Bit1(flg);
+	}
 	// pcr opcr spliceCountdown stuffingBytes等々・・・
 	public void analyze(IReadChannel channel) throws Exception {
 		// とりあえずlengthをみておく。
