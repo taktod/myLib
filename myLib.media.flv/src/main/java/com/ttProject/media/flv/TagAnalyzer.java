@@ -1,15 +1,19 @@
 package com.ttProject.media.flv;
 
+import com.ttProject.media.flv.tag.MetaTag;
 import com.ttProject.nio.channels.IReadChannel;
 
 public class TagAnalyzer implements ITagAnalyzer {
 	private final FlvManager manager = new FlvManager();
 	@Override
 	public Tag analyze(IReadChannel ch) throws Exception {
-		Tag tag = manager.getUnit(ch);
-		if(tag == null) {
-			return null;
-		}
+		Tag tag;
+		do {
+			tag = manager.getUnit(ch);
+			if(tag == null) {
+				return null;
+			}
+		} while(!(tag instanceof MetaTag) && tag.getSize() <= 15); // メディアデータなのに、内容がない場合は合っても仕方ないので捨てます。
 		// tagデータの実データ部のみ、読み込みさせる。(Tag.getTagを実行すると、fileのpointerが先頭部分だけすすんでいるため。)
 		tag.analyze(ch, false);
 		ch.position(tag.getPosition() + tag.getSize());
