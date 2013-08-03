@@ -185,7 +185,6 @@ public class ConvertTest {
 		coder.setProperty("level", "30");
 		coder.setProperty("coder", "0");
 		coder.setProperty("qmin", "10");
-//		coder.setProperty("async", "4");
 		coder.setProperty("bf", "0");
 		coder.setProperty("wprefp", "0");
 		coder.setProperty("cmp", "+chroma");

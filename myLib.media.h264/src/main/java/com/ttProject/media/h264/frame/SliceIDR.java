@@ -9,7 +9,7 @@ import com.ttProject.media.h264.Frame;
  */
 public class SliceIDR extends Frame {
 	public SliceIDR(int size, byte frameTypeData) {
-		super(0, frameTypeData);
+		super(size, frameTypeData);
 	}
 	public SliceIDR(byte frameTypeData) {
 		this(0, frameTypeData);

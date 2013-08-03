@@ -9,7 +9,7 @@ import com.ttProject.media.h264.Frame;
  */
 public class Slice extends Frame {
 	public Slice(int size, byte frameTypeData) {
-		super(0, frameTypeData);
+		super(size, frameTypeData);
 	}
 	public Slice(byte frameTypeData) {
 		this(0, frameTypeData);
