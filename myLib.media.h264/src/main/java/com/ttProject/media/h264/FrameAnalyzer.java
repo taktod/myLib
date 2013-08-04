@@ -4,6 +4,7 @@ import com.ttProject.media.h264.frame.PictureParameterSet;
 import com.ttProject.media.h264.frame.SequenceParameterSet;
 import com.ttProject.media.h264.frame.Slice;
 import com.ttProject.media.h264.frame.SliceIDR;
+import com.ttProject.media.h264.frame.SupplementalEnhancementInformation;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
@@ -30,6 +31,8 @@ public class FrameAnalyzer implements IFrameAnalyzer {
 			return new SequenceParameterSet(frameTypeData);
 		case PictureParameterSet:
 			return new PictureParameterSet(frameTypeData);
+		case SupplementalEnhancementInformation:
+			return new SupplementalEnhancementInformation(frameTypeData);
 //		case AccessUnitDelimiter:
 //			break;
 		default:

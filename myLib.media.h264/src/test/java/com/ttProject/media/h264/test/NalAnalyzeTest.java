@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 import org.junit.Test;
 
+import com.ttProject.media.h264.Frame;
 import com.ttProject.media.h264.NalAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -24,7 +25,9 @@ public class NalAnalyzeTest {
 		// 読み込みモードでh264Frameができあがっている。あとはここから、nalに分解してデータを取得するだけ。
 		IReadChannel dataChannel = new ByteReadChannel(h264Frame);
 		NalAnalyzer analyzer = new NalAnalyzer();
-		analyzer.analyze(dataChannel);
-//		System.out.println(h264F);
+		Frame frame = null;
+		while((frame = analyzer.analyze(dataChannel)) != null) {
+			System.out.println(frame);
+		}
 	}
 }
