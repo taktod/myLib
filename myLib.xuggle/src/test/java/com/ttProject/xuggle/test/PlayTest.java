@@ -2,7 +2,6 @@ package com.ttProject.xuggle.test;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
@@ -24,7 +23,8 @@ import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IStreamCoder;
 import com.xuggle.xuggler.IVideoPicture;
 import com.xuggle.xuggler.IVideoResampler;
-import com.xuggle.xuggler.Utils;
+import com.xuggle.xuggler.video.ConverterFactory;
+import com.xuggle.xuggler.video.IConverter;
 
 /**
  * xuggleで動画の再生を実行してみるテスト
@@ -134,7 +134,7 @@ public class PlayTest {
 	 * @throws Exception
 	 */
 	private boolean running = true;
-//	@Test
+	@Test
 	public void playTest3() throws Exception {
 		// つうかこれ、swingを使わないとどうにもならんだろ・・・
 		TestFrame frame = new TestFrame();
@@ -235,9 +235,8 @@ public class PlayTest {
 								Thread.sleep(milliSecondsToSleep);
 							}
 						}
-						BufferedImage javaImage = Utils.videoPictureToImage(newPic);
-						
-						frame.getVideoComponent().setImage(javaImage);
+						IConverter converter = ConverterFactory.createConverter("XUGGLER-BGR-24", newPic);
+						frame.getVideoComponent().setImage(converter.toImage(newPic));
 					}
 				}
 			}
