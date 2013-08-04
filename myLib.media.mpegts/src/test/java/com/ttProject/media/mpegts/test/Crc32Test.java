@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.ttProject.media.mpegts.Crc32;
+import com.ttProject.media.mpegts.Crc32_;
 import com.ttProject.util.HexUtil;
 
 /**
@@ -19,7 +19,7 @@ public class Crc32Test {
 	 */
 	@Test
 	public void test() throws Exception {
-		Crc32 crc32 = new Crc32();
+		Crc32_ crc32 = new Crc32_();
 		// Patのサンプル474000100000B00D0001C100000001F0002AB104B2
 		// 000B00D0001C100000001F000の部分が計算して2AB104B2になればよい
 		ByteBuffer buffer = HexUtil.makeBuffer("00B00D0001C100000001F000");
