@@ -78,7 +78,7 @@ public abstract class ProgramPacket extends Packet {
 		// 情報をbit配列に戻して応答する。
 		List<Bit> bitsList = getBits();
 		ByteBuffer buffer = Bit.bitConnector(bitsList.toArray(new Bit[]{}));
-		Crc32_ crc32 = new Crc32_();
+		Crc32 crc32 = new Crc32();
 		while(buffer.remaining() > 0) {
 			byte data = buffer.get();
 			if(buffer.position() > 5) { // crc32は6バイト目から計算にいれる。
