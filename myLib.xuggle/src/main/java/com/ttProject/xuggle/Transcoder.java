@@ -29,6 +29,7 @@ import com.xuggle.xuggler.SimpleMediaFile;
  * 
  * @author taktod
  */
+@SuppressWarnings("deprecation")
 public class Transcoder implements Runnable {
 	/** ロガー */
 	private final Logger logger = LoggerFactory.getLogger(Transcoder.class);
