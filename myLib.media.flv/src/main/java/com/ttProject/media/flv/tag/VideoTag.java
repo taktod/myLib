@@ -36,8 +36,8 @@ public class VideoTag extends Tag {
 		Inner,
 		Disposable
 	}
-	/** avc(h.264)のmediaSequenceHeaderであるかどうか */
-	private boolean isMediaSequenceHeader = false;
+	/** avcのframeType 0:avcSequenceHeader 1:data 2:endOfSequence */
+	private byte avcFrameType = 0x01; // avcである場合のframeTypeデータ
 	/** データ本体 */
 	private ByteBuffer data;
 	/**
@@ -108,7 +108,12 @@ public class VideoTag extends Tag {
 	 * @param flg
 	 */
 	public void setMSHFlg(boolean flg) {
-		isMediaSequenceHeader = flg;
+		if(flg) {
+			avcFrameType = 0x00;
+		}
+		else {
+			avcFrameType = 0x01;
+		}
 	}
 	/**
 	 * データを登録しておく
@@ -167,17 +172,7 @@ public class VideoTag extends Tag {
 		int dataSize = getSize() - 16;
 		// h.264の場合はさらに4バイト読み込む必要あり。
 		if(codec == CodecType.AVC) {
-			byte sequenceHeaderTag = BufferUtil.safeRead(ch, 1).get();
-			switch (sequenceHeaderTag) {
-			case 0x00:
-				isMediaSequenceHeader = true;
-				break;
-			case 0x01:
-				isMediaSequenceHeader = false;
-				break;
-			default:
-				throw new Exception("未定義: mshFlg:" + sequenceHeaderTag);
-			}
+			avcFrameType = BufferUtil.safeRead(ch, 1).get();
 			// 続く３バイトは0x00であることが予想されているべきだが、ほっとく。(つづく３バイトはbframeがある場合にdtsのデータがはいっているみたい。)
 			dataSize --;
 		}
@@ -231,12 +226,7 @@ public class VideoTag extends Tag {
 		buffer.put(tagByte);
 		// avcの場合はmsh判定が必要
 		if(codec == CodecType.AVC) {
-			if(isMediaSequenceHeader) {
-				buffer.put((byte)0x00);
-			}
-			else {
-				buffer.put((byte)0x01);
-			}
+			buffer.put(avcFrameType);
 		}
 		// 実データ
 		buffer.put(data);
@@ -251,7 +241,7 @@ public class VideoTag extends Tag {
 	 * @return
 	 */
 	public boolean isMediaSequenceHeader() {
-		return isMediaSequenceHeader;
+		return avcFrameType == 0x00;
 	}
 	/**
 	 * {@inheritDoc}
