@@ -16,7 +16,7 @@ public class FileAnalyzeTest {
 	@Test
 	public void fixedFileTest() throws Exception {
 		IReadChannel source = FileReadChannel.openFileReadChannel(
-				Thread.currentThread().getContextClassLoader().getResource("mario.aac")
+				Thread.currentThread().getContextClassLoader().getResource("25-1.aac")
 		);
 		IFrameAnalyzer analyzer = new FrameAnalyzer();
 		int counter = 0;
@@ -25,7 +25,7 @@ public class FileAnalyzeTest {
 			System.out.println(frame);
 			counter ++;
 		}
-		System.out.println((counter / 44.1f));
+		System.out.println((counter *1.024/ 44.1f));
 		source.close();
 	}
 }
