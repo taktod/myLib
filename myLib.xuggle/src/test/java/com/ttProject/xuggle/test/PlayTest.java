@@ -134,7 +134,7 @@ public class PlayTest {
 	 * @throws Exception
 	 */
 	private boolean running = true;
-	@Test
+//	@Test
 	public void playTest3() throws Exception {
 		// つうかこれ、swingを使わないとどうにもならんだろ・・・
 		TestFrame frame = new TestFrame();
@@ -252,5 +252,171 @@ public class PlayTest {
 		while(running) {
 			Thread.sleep(100);
 		}
+	}
+	/**
+	 * 映像と音声を同時に処理するやりかた。
+	 * とりあえずこれで同期も大丈夫。
+	 * @throws Exception
+	 */
+	@Test
+	public void playTest4() throws Exception {
+		// つうかこれ、swingを使わないとどうにもならんだろ・・・
+		TestFrame frame = new TestFrame();
+		SourceDataLine audioLine = null;
+		// TODO このexit on closeはテスト動作では、有効にならないみたいです。
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+		frame.addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				running = false;
+			}
+		});
+		// xuggleをつかって動画データを読み込んでみる。
+		if(!IVideoResampler.isSupported(IVideoResampler.Feature.FEATURE_COLORSPACECONVERSION)) {
+			throw new Exception("問題の動作をさせたいんですが、サンプリング動作がサポートされていません。GPLバージョンのxugglerをいれなきゃいけないらしい。");
+		}
+		IContainer container = IContainer.make();
+		if(container.open("mario.mp4", IContainer.Type.READ, null) < 0) {
+			throw new Exception("ファイルを開くことができませんでした。");
+		}
+		int numStreams = container.getNumStreams();
+		int videoStreamId = -1;
+		int audioStreamId = -1;
+		IStreamCoder videoCoder = null;
+		IStreamCoder audioCoder = null;
+		for(int i = 0;i < numStreams;i ++) {
+			IStream stream = container.getStream(i);
+			IStreamCoder coder = stream.getStreamCoder();
+			if(coder.getCodecType() == ICodec.Type.CODEC_TYPE_VIDEO) {
+				videoStreamId = i;
+				videoCoder = coder;
+			}
+			if(coder.getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO) {
+				audioStreamId = i;
+				audioCoder = coder;
+			}
+		}
+		if(videoStreamId == -1) {
+			throw new Exception("映像用のトラックがありませんでした。");
+		}
+		if(videoCoder.open(null, null) < 0) {
+			throw new Exception("映像用のデコーダーが開けませんでした。");
+		}
+		if(audioStreamId == -1) {
+			throw new Exception("音声用のトラックがありませんでした。");
+		}
+		if(audioCoder.open(null, null) < 0) {
+			throw new Exception("音声用のデコーダーが開けませんでした。");
+		}
+		AudioFormat audioFormat = new AudioFormat(audioCoder.getSampleRate(),
+				(int)IAudioSamples.findSampleBitDepth(audioCoder.getSampleFormat()),
+				audioCoder.getChannels(), true /* 16bit samples */, false);
+		DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+		try {
+			audioLine = (SourceDataLine)AudioSystem.getLine(info);
+			audioLine.open(audioFormat);
+			audioLine.start();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("audioLineが開けませんでした。");
+		}
+		IVideoResampler resampler = null;
+		if(videoCoder.getPixelType() != IPixelFormat.Type.BGR24) {
+			// BGR24じゃなかったらpixelの書き換えが必須。
+			resampler = IVideoResampler.make(videoCoder.getWidth(), videoCoder.getHeight(), IPixelFormat.Type.BGR24, videoCoder.getWidth(), videoCoder.getHeight(), videoCoder.getPixelType());
+			if(resampler == null) {
+				throw new Exception("pixelリサンプラーが取得できませんでした。");
+			}
+		}
+		
+		IPacket packet = IPacket.make();
+		long firstTimestampInStream = Global.NO_PTS;
+		long systemClockStartTime = 0;
+		while(container.readNextPacket(packet) >= 0 && running) {
+			// パケットデータが読み込めた場合
+			if(packet.getStreamIndex() == videoStreamId) {
+				// 動画データの場合
+				IVideoPicture picture = IVideoPicture.make(videoCoder.getPixelType(), videoCoder.getWidth(), videoCoder.getHeight());
+				int offset = 0;
+				while(offset < packet.getSize()) {
+					int bytesDecoded = videoCoder.decodeVideo(picture, packet, offset);
+					if(bytesDecoded < 0) {
+						throw new Exception("デコード中に問題が発生しました。");
+					}
+					offset += bytesDecoded;
+					if(picture.isComplete()) {
+						IVideoPicture newPic = picture;
+						if(resampler != null) {
+							// リサンプルが必要な場合
+							newPic = IVideoPicture.make(resampler.getOutputPixelFormat(), picture.getWidth(), picture.getHeight());
+							if(resampler.resample(newPic, picture) < 0) {
+								throw new Exception("リサンプル失敗");
+							}
+						}
+						if(newPic.getPixelType() != IPixelFormat.Type.BGR24) {
+							throw new Exception("動画データがRGB24bitでない");
+						}
+						IConverter converter = ConverterFactory.createConverter("XUGGLER-BGR-24", newPic);
+						frame.getVideoComponent().setImage(converter.toImage(newPic));
+						// この動画を表示させる時間を調べる。
+						if(firstTimestampInStream == Global.NO_PTS) {
+							firstTimestampInStream = picture.getTimeStamp();
+							systemClockStartTime = System.currentTimeMillis();
+						}
+						else {
+							long systemClockCurrentTime = System.currentTimeMillis();
+							long millisecondsClockTimeSinceStartOfVideo = systemClockCurrentTime - systemClockStartTime;
+							long millisecondsStreamTimeSinceStartOfVideo = (picture.getTimeStamp() - firstTimestampInStream) / 1000;
+							final long milliSecondsTolerance = 50;
+							final long milliSecondsToSleep = 
+								millisecondsStreamTimeSinceStartOfVideo - (millisecondsClockTimeSinceStartOfVideo + milliSecondsTolerance);
+							// sleepを先にいれたからだめなのか・・・
+							if(milliSecondsToSleep > 0) {
+								Thread.sleep(milliSecondsToSleep);
+							}
+						}
+					}
+				}
+			}
+			else if(packet.getStreamIndex() == audioStreamId) {
+				// audioデータの場合
+				IAudioSamples samples = IAudioSamples.make(1024, audioCoder.getChannels());
+				int offset = 0;
+				while(offset < packet.getSize()) {
+					int bytesDecoded = audioCoder.decodeAudio(samples, packet, offset);
+					if(bytesDecoded < 0) {
+						throw new Exception("デコード中にエラーが発生");
+					}
+					offset += bytesDecoded;
+					if(samples.isComplete()) {
+						// 再生にまわす。
+						byte[] rawBytes = samples.getData().getByteArray(0, samples.getSize());
+						audioLine.write(rawBytes, 0, samples.getSize());
+					}
+				}
+			}
+		}
+		if(videoCoder != null) {
+			videoCoder.close();
+			videoCoder = null;
+		}
+		if(audioLine != null) {
+			audioLine.drain();
+			audioLine.close();
+			audioLine = null;
+		}
+		if(audioCoder != null) {
+			audioCoder.close();
+			audioCoder = null;
+		}
+		if(container != null) {
+			container.close();
+			container = null;
+		}
+		while(running) {
+			Thread.sleep(100);
+		}		
 	}
 }
