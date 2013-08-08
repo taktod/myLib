@@ -15,6 +15,10 @@ import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
 
+/**
+ * bitやりとりの動作確認テスト
+ * @author taktod
+ */
 public class BitTest {
 	@Test
 	public void test() throws Exception {

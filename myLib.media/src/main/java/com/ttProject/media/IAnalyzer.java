@@ -5,7 +5,6 @@ import com.ttProject.nio.channels.IReadChannel;
 /**
  * unitの解析処理
  * @author taktod
- *
  */
 public interface IAnalyzer<U> {
 	/**
