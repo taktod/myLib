@@ -105,4 +105,11 @@ public class MetadataAmf3 implements RtmpMessage {
 	public Map<String, Object> getData() {
 		return data;
 	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder("MetadataAmf3");
+		data.append(" name:").append(getName());
+		data.append(" data:").append(getData());
+		return data.toString();
+	}
 }
