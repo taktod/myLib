@@ -1,5 +1,8 @@
 package com.ttProject.media.aac;
 
+import java.nio.ByteBuffer;
+
+import com.ttProject.media.aac.frame.Aac;
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit4;
@@ -20,14 +23,15 @@ public class DecoderSpecificInfo {
 	private Bit1 frameLengthFlag; // 0:each packetcontains 1024 samples 1:960 samples
 	private Bit1 dependsOnCoreCoder;
 	private Bit1 extensionFlag;
-	public DecoderSpecificInfo(IReadChannel channel) throws Exception {
-		// どうしようこれ・・・
-		objectType1 = new Bit5();
+	public DecoderSpecificInfo() {
+		objectType1 = new Bit5(1); // デフォルトmainにしておく、一応・・・
 		frequencyIndex = new Bit4();
 		channelConfiguration = new Bit4();
 		frameLengthFlag = new Bit1();
 		dependsOnCoreCoder = new Bit1();
 		extensionFlag = new Bit1();
+	}
+	public void analyze(IReadChannel channel) throws Exception {
 		Bit.bitLoader(channel, objectType1, frequencyIndex, channelConfiguration,
 				frameLengthFlag, dependsOnCoreCoder, extensionFlag);
 		if(objectType1.get() == 0x1F) {
@@ -41,6 +45,15 @@ public class DecoderSpecificInfo {
 			throw new Exception("frequencyが別途読み込みになっていて処理できません。");
 		}
 	}
+	public void analyze(Aac frame) {
+		objectType1 = new Bit5(frame.getProfile());
+		frequencyIndex = new Bit4(frame.getSamplingFrequenceIndex());
+		channelConfiguration = new Bit4(frame.getChannelConfiguration());
+	}
+	public ByteBuffer getInfoBuffer() throws Exception {
+		return Bit.bitConnector(objectType1, frequencyIndex, channelConfiguration,
+				frameLengthFlag, dependsOnCoreCoder, extensionFlag);
+	}
 	public int getObjectType() {
 		return objectType1.get();
 	}
@@ -49,16 +62,6 @@ public class DecoderSpecificInfo {
 	}
 	public int getChannelConfiguration() {
 		return channelConfiguration.get();
-	}
-	public String dump() {
-		StringBuilder data = new StringBuilder("decoderSpecificInfo:");
-		data.append(" ot:").append(objectType1);
-		data.append(" fi:").append(frequencyIndex);
-		data.append(" cc:").append(channelConfiguration);
-		data.append(" flf:").append(frameLengthFlag);
-		data.append(" docc").append(dependsOnCoreCoder);
-		data.append(" ef:").append(extensionFlag);
-		return data.toString();
 	}
 	@Override
 	public String toString() {

@@ -43,7 +43,9 @@ public class Aac extends Frame {
 	private Bit1 id;
 	private Bit2 layer;
 	private Bit1 protectionAbsent;
-	private Bit2 profile;
+	// @see http://wiki.multimedia.cx/index.php?title=ADTS
+	// profile, the MPEG-4 Audio Object Type minus 1
+	private Bit2 profile; // -1した値がはいっているみたい。
 	private Bit4 samplingFrequenceIndex;
 	private Bit1 privateBit;
 	private Bit3 channelConfiguration;
@@ -105,9 +107,18 @@ public class Aac extends Frame {
 	 */
 	public Aac(int size, DecoderSpecificInfo specificInfo) {
 		this(size);
-		profile = new Bit2(specificInfo.getObjectType());
+		profile = new Bit2(specificInfo.getObjectType() - 1);
 		samplingFrequenceIndex = new Bit4(specificInfo.getFrequenctIndex());
 		channelConfiguration = new Bit3(specificInfo.getChannelConfiguration());
+	}
+	public int getProfile() {
+		return profile.get() + 1;
+	}
+	public int getSamplingFrequenceIndex() {
+		return samplingFrequenceIndex.get();
+	}
+	public int getChannelConfiguration() {
+		return channelConfiguration.get();
 	}
 	/**
 	 * コンストラクタwith細かい情報
