@@ -29,5 +29,23 @@
     <version>0.0.2-SNAPSHOT</version>
     <scope>test</scope>
   </dependency>
+  <dependency>
+    <groupId>com.ttProject</groupId>
+    <artifactId>myLib.media.mp4</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>com.ttProject</groupId>
+    <artifactId>myLib.media.extra</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+    <scope>test</scope>
+  </dependency>
+  <dependency>
+    <groupId>com.ttProject</groupId>
+    <artifactId>myLib.media.h264</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+    <scope>test</scope>
+  </dependency>
  </dependencies>
 </project>
