@@ -13,14 +13,17 @@ import com.ttProject.media.extra.mp4.IndexFileCreator;
 import com.ttProject.media.flv.Tag;
 import com.ttProject.media.flv.tag.VideoTag;
 import com.ttProject.media.h264.ConfigData;
+import com.ttProject.media.h264.DataNalAnalyzer;
 import com.ttProject.media.h264.Frame;
 import com.ttProject.media.h264.frame.PictureParameterSet;
 import com.ttProject.media.h264.frame.SequenceParameterSet;
+import com.ttProject.media.h264.frame.SliceIDR;
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.atom.Moov;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.util.HexUtil;
 import com.ttProject.xuggle.test.swing.TestFrame;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.Global;
@@ -59,7 +62,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 		SequenceParameterSet sps = null;
 		PictureParameterSet pps = null;
 		// とりあえず、myLibのデータで動画データを読み込んでみる。
-		IReadChannel fc = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.mp4");
+		IReadChannel fc = FileReadChannel.openFileReadChannel("http://49.212.39.17/rtype.mp4");
 		IndexFileCreator analyzer = new IndexFileCreator(new File("mario.tmp"));
 		Atom atom = null;
 		while((atom = analyzer.analyze(fc)) != null) {
@@ -106,8 +109,8 @@ public class MakePacketFromMyLibMediaFlvTest {
 								pps = (PictureParameterSet)nal;
 							}
 						}
-//						System.out.println(sps);
-//						System.out.println(pps);
+						System.out.println(sps);
+						System.out.println(pps);
 //						System.out.println(HexUtil.toHex(sps.getData(), true));
 //						System.out.println(HexUtil.toHex(pps.getData(), true));
 //					throw new Exception("end");	
@@ -116,22 +119,34 @@ public class MakePacketFromMyLibMediaFlvTest {
 					ByteBuffer rawData = vTag.getRawData();
 					rawData.position(7);
 					int size = rawData.remaining();
+					// このデータは複数のフレームを保持している可能性があるので、DataNalAnalyzerできちんと解析してフレームの部分だけ取り出しておきたい。
 					IBuffer bufData = null;
 					if(vTag.isKeyFrame()) {
+						DataNalAnalyzer dataAnalyzer = new DataNalAnalyzer();
+						rawData.position(3);
+						IReadChannel rawDataChannel = new ByteReadChannel(rawData);
+						Frame h264Frame = null;
+						while((h264Frame = dataAnalyzer.analyze(rawDataChannel)) != null) {
+							if(h264Frame instanceof SliceIDR) {
+								// keyFrameの部分だけ抜き出したい。
+								break;
+							}
+						}
 						System.out.println("keyframe");
 						packet.setKeyPacket(true);
 						// keyFrameの場合はspsとppsも追加する必要あり。
 						ByteBuffer spsData = sps.getData();
 						ByteBuffer ppsData = pps.getData();
-						ByteBuffer buffer = ByteBuffer.allocate(rawData.remaining() + 4 + spsData.remaining() + 4 + ppsData.remaining() + 4);
+						ByteBuffer sliceIDRData = h264Frame.getData();
+						ByteBuffer buffer = ByteBuffer.allocate(sliceIDRData.remaining() + 4 + spsData.remaining() + 4 + ppsData.remaining() + 4);
 						buffer.putInt(1);
 						buffer.put(spsData);
 						buffer.putInt(1);
 						buffer.put(ppsData);
 						buffer.putInt(1);
-						buffer.put(rawData.array(), 7, size);
+						buffer.put(sliceIDRData);
 						buffer.flip();
-
+//						System.out.println(HexUtil.toHex(buffer.duplicate(), true));
 						size = buffer.remaining();
 						bufData = IBuffer.make(null, buffer.array(), 0, buffer.remaining());
 					}
