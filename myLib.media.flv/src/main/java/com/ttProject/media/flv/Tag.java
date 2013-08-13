@@ -15,6 +15,8 @@ import com.ttProject.util.BufferUtil;
 public abstract class Tag extends Unit {
 	/** timestamp */
 	private int timestamp;
+	/** size指定:はじめにファイルから読み込んだときに指定したサイズ */
+	private int initSize;
 	/**
 	 * コンストラクタ
 	 */
@@ -30,6 +32,7 @@ public abstract class Tag extends Unit {
 	public Tag(final int position, final int size, final int timestamp) {
 		// ここで保持しているサイズはタグの中身のサイズになっているので、調整が必要。
 		super(position, size);
+		initSize = size;
 		this.timestamp = timestamp;
 	}
 	/**
@@ -47,9 +50,6 @@ public abstract class Tag extends Unit {
 			// サイズとか読み込んで利用しておく
 			ByteBuffer buffer = BufferUtil.safeRead(ch, 11);
 			byte type = buffer.get();
-//			int innerSize = analyzeInnerSize(buffer);
-//			int timestasmp = analyzeTimestamp(buffer);
-//			int trackId = analyzeTrackId(buffer);
 		}
 	}
 	public void analyze(IReadChannel ch, IAnalyzer<?> analyzer)
@@ -65,11 +65,6 @@ public abstract class Tag extends Unit {
 		analyze(ch, true);
 	}
 	/**
-	 * 実際のflvのデータサイズ
-	 * @return
-	 */
-//	public abstract int getRealSize() throws Exception;
-	/**
 	 * 書き出しを実行します
 	 * @param target
 	 * @throws Exception
@@ -79,6 +74,13 @@ public abstract class Tag extends Unit {
 	 * 内部データをByteBufferの形で取り出します
 	 */
 	public abstract ByteBuffer getBuffer() throws Exception;
+	/**
+	 * 当初設定されていた、サイズデータを応答します。(解析により、サイズがかわるタグが存在するため。)
+	 * @return
+	 */
+	public int getInitSize() {
+		return initSize;
+	}
 	/**
 	 * タイムスタンプ参照
 	 * @return

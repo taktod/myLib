@@ -11,7 +11,7 @@ public class TagAnalyzer implements ITagAnalyzer {
 		Tag tag = null;
 		do {
 			if(tag != null) {
-				ch.position(tag.getPosition() + tag.getSize());
+				ch.position(tag.getPosition() + tag.getInitSize());
 			}
 			tag = manager.getUnit(ch);
 			if(tag == null) {
@@ -20,7 +20,7 @@ public class TagAnalyzer implements ITagAnalyzer {
 		} while((tag instanceof VideoTag || tag instanceof AudioTag) && tag.getSize() <= 15); // メディアデータなのに、内容がない場合は合っても仕方ないので捨てます。
 		// tagデータの実データ部のみ、読み込みさせる。(Tag.getTagを実行すると、fileのpointerが先頭部分だけすすんでいるため。)
 		tag.analyze(ch, false);
-		ch.position(tag.getPosition() + tag.getSize());
+		ch.position(tag.getPosition() + tag.getInitSize());
 		return tag;
 	}
 }

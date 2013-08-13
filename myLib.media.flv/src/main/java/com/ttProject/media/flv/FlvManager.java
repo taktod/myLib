@@ -93,7 +93,7 @@ public class FlvManager extends Manager<Tag> {
 		case Meta:
 			return new MetaTag(position, innerSize + 15, timestamp);
 		default:
-			throw new RuntimeException("解析不能なflvデータタグを受けとりました。");
+			throw new RuntimeException("解析不能なflvデータタグを受けとりました。:" + type);
 		}
 	}
 	private int analyzeInnerSize(ByteBuffer buffer) {
