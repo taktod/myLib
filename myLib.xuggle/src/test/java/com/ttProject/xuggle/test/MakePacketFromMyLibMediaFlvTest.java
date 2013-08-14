@@ -233,7 +233,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 	 * とりあえずaacとmp3やっときたい。
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void playTest2() throws Exception {
 		SourceDataLine audioLine = null;
 		// aacの場合はaacのヘッダー部のデータをつくる必要がありそうだ。
@@ -281,8 +281,6 @@ public class MakePacketFromMyLibMediaFlvTest {
 		List<Tag> tagList;
 		DecoderSpecificInfo dsi = null;
 		IPacket packet = IPacket.make();
-		int aacCount = 0;
-		int pos = 0;
 		while((tagList = orderModel.nextTagList(fc)) != null) {
 			for(Tag tag : tagList) {
 				if(tag instanceof AudioTag) {
@@ -301,22 +299,10 @@ public class MakePacketFromMyLibMediaFlvTest {
 					aac.setData(rawData);
 					ByteBuffer buffer = aac.getBuffer();
 					outputTest.write(buffer.duplicate());
-//					System.out.println(HexUtil.toHex(buffer.duplicate(), true));
 					size = buffer.remaining();
 					IBuffer bufData = IBuffer.make(null, buffer.array(), 0, size);
 					packet.setData(bufData);
-					packet.setKeyPacket(true);
-					packet.setFlags(1);
-					packet.setStreamIndex(1);
-					packet.setDts((int)(aacCount * 1024));
-					packet.setPts((int)(aacCount * 1024));
-					packet.setPosition(pos);
-					pos += size;
-					packet.setTimeBase(IRational.make(1, (int)(aac.getSamplingRate() * 1000)));
-					aacCount ++;
-					packet.setDuration(1024);
 					packet.setComplete(true, size);
-					System.out.println(packet);
 
 					IAudioSamples samples = IAudioSamples.make(1024, coder.getChannels());
 					int offset = 0;
@@ -351,7 +337,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 			outputTest = null;
 		}
 	}
-	@Test
+//	@Test
 	public void playTest3() throws Exception {
 		SourceDataLine audioLine = null;
 		// aacの場合はaacのヘッダー部のデータをつくる必要がありそうだ。
@@ -398,8 +384,6 @@ public class MakePacketFromMyLibMediaFlvTest {
 		List<Tag> tagList;
 		DecoderSpecificInfo dsi = null;
 		IPacket packet = IPacket.make();
-		int aacCount = 0;
-		int pos = 0;
 		while((tagList = orderModel.nextTagList(fc)) != null) {
 			for(Tag tag : tagList) {
 				if(tag instanceof AudioTag) {
@@ -411,25 +395,9 @@ public class MakePacketFromMyLibMediaFlvTest {
 					}
 					ByteBuffer rawData = aTag.getRawData();
 					int size = rawData.remaining();
-//					Aac aac = new Aac(size, dsi);
-//					aac.setData(rawData);
-//					ByteBuffer buffer = aac.getBuffer();
-//					System.out.println(HexUtil.toHex(buffer.duplicate(), true));
-//					size = buffer.remaining();
 					IBuffer bufData = IBuffer.make(null, rawData.array(), 0, size);
 					packet.setData(bufData);
-					packet.setKeyPacket(true);
-					packet.setFlags(1);
-					packet.setStreamIndex(1);
-					packet.setDts((int)(aacCount * 1024));
-					packet.setPts((int)(aacCount * 1024));
-					packet.setPosition(pos);
-					pos += size;
-					packet.setTimeBase(IRational.make(1, (int)(44100)));
-					aacCount ++;
-					packet.setDuration(1024);
 					packet.setComplete(true, size);
-					System.out.println(packet);
 
 					IAudioSamples samples = IAudioSamples.make(1024, coder.getChannels());
 					int offset = 0;
