@@ -233,12 +233,12 @@ public class MakePacketFromMyLibMediaFlvTest {
 	 * とりあえずaacとmp3やっときたい。
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void playTest2() throws Exception {
 		SourceDataLine audioLine = null;
 		// aacの場合はaacのヘッダー部のデータをつくる必要がありそうだ。
 		// とりあえず、myLibのデータで動画データを読み込んでみる。
-		IReadChannel fc = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.mp4");
+		IReadChannel fc = FileReadChannel.openFileReadChannel("http://49.212.39.17/rtype.mp4");
 		IndexFileCreator analyzer = new IndexFileCreator(new File("mario.tmp"));
 		Atom atom = null;
 		while((atom = analyzer.analyze(fc)) != null) {
@@ -349,6 +349,115 @@ public class MakePacketFromMyLibMediaFlvTest {
 		if(outputTest != null) {
 			outputTest.close();
 			outputTest = null;
+		}
+	}
+	@Test
+	public void playTest3() throws Exception {
+		SourceDataLine audioLine = null;
+		// aacの場合はaacのヘッダー部のデータをつくる必要がありそうだ。
+		// とりあえず、myLibのデータで動画データを読み込んでみる。
+		IReadChannel fc = FileReadChannel.openFileReadChannel("mario.mp3.mp4");
+		IndexFileCreator analyzer = new IndexFileCreator(new File("mario.tmp"));
+		Atom atom = null;
+		while((atom = analyzer.analyze(fc)) != null) {
+			if(atom instanceof Moov) {
+				break;
+			}
+		}
+		analyzer.updatePrevTag();
+		analyzer.checkDataSize();
+		analyzer.close();
+
+		// 初期データの解析おわり。
+		IReadChannel tmp = FileReadChannel.openFileReadChannel(new File("mario.tmp").getAbsolutePath());
+		FlvOrderModel orderModel = new FlvOrderModel(tmp, false, true, 0); // 初めからデータを読み込んでいくことにする。
+		// ここから先実データが取得可能になりますので、ここからコンバートかけてやれば問題なし。
+		IStreamCoder coder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_MP3);
+		System.out.println(coder.getCodecType());
+		// TODO このあたりの情報をいれておかないと動作できないらしい。
+		coder.setSampleRate(44100);
+		coder.setTimeBase(IRational.make(1, 44100));
+		coder.setChannels(2);
+		if(coder.open(null, null) < 0) {
+			throw new Exception("streamCoderを開くのに失敗しました。");
+		}
+		System.out.println(coder);
+		AudioFormat audioFormat = new AudioFormat(coder.getSampleRate(),
+				(int)IAudioSamples.findSampleBitDepth(coder.getSampleFormat()),
+				coder.getChannels(), true /* 16bit samples */, false);
+		DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+		try {
+			audioLine = (SourceDataLine)AudioSystem.getLine(info);
+			audioLine.open(audioFormat);
+			audioLine.start();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("audioLineが開けませんでした。");
+		}
+		List<Tag> tagList;
+		DecoderSpecificInfo dsi = null;
+		IPacket packet = IPacket.make();
+		int aacCount = 0;
+		int pos = 0;
+		while((tagList = orderModel.nextTagList(fc)) != null) {
+			for(Tag tag : tagList) {
+				if(tag instanceof AudioTag) {
+					AudioTag aTag = (AudioTag)tag;
+					if(aTag.isMediaSequenceHeader()) {
+						dsi = new DecoderSpecificInfo();
+						dsi.analyze(new ByteReadChannel(aTag.getRawData()));
+						continue;
+					}
+					ByteBuffer rawData = aTag.getRawData();
+					int size = rawData.remaining();
+//					Aac aac = new Aac(size, dsi);
+//					aac.setData(rawData);
+//					ByteBuffer buffer = aac.getBuffer();
+//					System.out.println(HexUtil.toHex(buffer.duplicate(), true));
+//					size = buffer.remaining();
+					IBuffer bufData = IBuffer.make(null, rawData.array(), 0, size);
+					packet.setData(bufData);
+					packet.setKeyPacket(true);
+					packet.setFlags(1);
+					packet.setStreamIndex(1);
+					packet.setDts((int)(aacCount * 1024));
+					packet.setPts((int)(aacCount * 1024));
+					packet.setPosition(pos);
+					pos += size;
+					packet.setTimeBase(IRational.make(1, (int)(44100)));
+					aacCount ++;
+					packet.setDuration(1024);
+					packet.setComplete(true, size);
+					System.out.println(packet);
+
+					IAudioSamples samples = IAudioSamples.make(1024, coder.getChannels());
+					int offset = 0;
+					while(offset < packet.getSize()) {
+						System.out.println("decodeのトライします。");
+						int bytesDecoded = coder.decodeAudio(samples, packet, offset);
+						if(bytesDecoded < 0) {
+							throw new Exception("デコード中にエラーが発生");
+						}
+						offset += bytesDecoded;
+						if(samples.isComplete()) {
+							// 再生にまわす。
+							System.out.println("completeできた。");
+							byte[] rawBytes = samples.getData().getByteArray(0, samples.getSize());
+							audioLine.write(rawBytes, 0, samples.getSize());
+						}
+					}
+				}
+			}
+		}
+		if(audioLine != null) {
+			audioLine.drain();
+			audioLine.close();
+			audioLine = null;
+		}
+		if(coder != null) {
+			coder.close();
+			coder = null;
 		}
 	}
 }
