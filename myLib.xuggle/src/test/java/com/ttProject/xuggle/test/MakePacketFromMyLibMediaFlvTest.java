@@ -5,12 +5,14 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 import java.util.List;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 
 import org.junit.Test;
@@ -99,7 +101,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 		IPacket packet = IPacket.make();
 		while((tagList = orderModel.nextTagList(fc)) != null) {
 			for(Tag tag : tagList) {
-				System.out.println(tag);
+//				System.out.println(tag);
 				// データタグ
 				// ここでパケットをつくる。
 				if(tag instanceof VideoTag) {
@@ -174,7 +176,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 					// bufDataはnalにしちゃおう。
 					packet.setData(bufData);
 					packet.setFlags(1);
-					packet.setStreamIndex(0);
+//					packet.setStreamIndex(0);
 					packet.setDts(vTag.getTimestamp());
 					packet.setPts(vTag.getTimestamp());
 					packet.setTimeBase(IRational.make(1, 1000));
@@ -184,7 +186,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 					IVideoPicture picture = IVideoPicture.make(coder.getPixelType(), coder.getWidth(), coder.getHeight());
 					int offset = 0;
 					while(offset < packet.getSize()) {
-						System.out.println("フレームデコード開始");
+//						System.out.println("フレームデコード開始");
 						int bytesDecoded = coder.decodeVideo(picture, packet, offset);
 						// このタイミングで勝手にcoderのサイズの変更もされるし、pictureのサイズもリサイズされるみたいです。
 						if(bytesDecoded < 0) {
@@ -192,7 +194,8 @@ public class MakePacketFromMyLibMediaFlvTest {
 						}
 						offset += bytesDecoded;
 						if(picture.isComplete()) {
-							System.out.println("pictureの読み込みおわり。");
+							System.out.println(picture);
+//							System.out.println("pictureの読み込みおわり。");
 							IVideoPicture newPic = picture;
 							if(picture.getPixelType() != IPixelFormat.Type.BGR24) {
 								IVideoResampler resampler = IVideoResampler.make(coder.getWidth(), coder.getHeight(), IPixelFormat.Type.BGR24, coder.getWidth(), coder.getHeight(), coder.getPixelType());
@@ -233,7 +236,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 	 * とりあえずaacとmp3やっときたい。
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void playTest2() throws Exception {
 		SourceDataLine audioLine = null;
 		// aacの場合はaacのヘッダー部のデータをつくる必要がありそうだ。
@@ -269,6 +272,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 				(int)IAudioSamples.findSampleBitDepth(coder.getSampleFormat()),
 				coder.getChannels(), true /* 16bit samples */, false);
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+		System.out.println(info);
 		try {
 			audioLine = (SourceDataLine)AudioSystem.getLine(info);
 			audioLine.open(audioFormat);
@@ -314,6 +318,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 						}
 						offset += bytesDecoded;
 						if(samples.isComplete()) {
+							System.out.println(samples);
 							// 再生にまわす。
 							System.out.println("completeできた。");
 							byte[] rawBytes = samples.getData().getByteArray(0, samples.getSize());
@@ -426,6 +431,141 @@ public class MakePacketFromMyLibMediaFlvTest {
 		if(coder != null) {
 			coder.close();
 			coder = null;
+		}
+	}
+//	@Test
+	public void test() {
+		for(Mixer.Info info : AudioSystem.getMixerInfo()) {
+			System.out.println(info);
+		}
+	}
+	/**
+	 * 音声動作にbeep音をmixしてみる。可能だったら別の音声をまじぇまじぇするプログラムもかきたいですね。
+	 * @throws Exception
+	 */
+	@Test
+	public void playTest4() throws Exception {
+		SourceDataLine audioLine = null;
+		// ラの音(440hz)をまじぇまじぇしてみる。
+		int tone = 440;
+		double rad;
+		double max = (1 << 14) - 1;
+		// aacの場合はaacのヘッダー部のデータをつくる必要がありそうだ。
+		// とりあえず、myLibのデータで動画データを読み込んでみる。
+		IReadChannel fc = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.mp4");
+		IndexFileCreator analyzer = new IndexFileCreator(new File("mario.tmp"));
+		Atom atom = null;
+		while((atom = analyzer.analyze(fc)) != null) {
+			if(atom instanceof Moov) {
+				break;
+			}
+		}
+		analyzer.updatePrevTag();
+		analyzer.checkDataSize();
+		analyzer.close();
+
+		// 初期データの解析おわり。
+		FileChannel outputTest = new FileOutputStream("mario.aac").getChannel();
+		IReadChannel tmp = FileReadChannel.openFileReadChannel(new File("mario.tmp").getAbsolutePath());
+		FlvOrderModel orderModel = new FlvOrderModel(tmp, false, true, 0); // 初めからデータを読み込んでいくことにする。
+		// ここから先実データが取得可能になりますので、ここからコンバートかけてやれば問題なし。
+		IStreamCoder coder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_AAC);
+		System.out.println(coder.getCodecType());
+		// TODO このあたりの情報をいれておかないと動作できないらしい。
+		rad = tone * 2 * Math.PI / 44100;
+		coder.setSampleRate(44100);
+		coder.setTimeBase(IRational.make(1, 44100));
+		coder.setChannels(2);
+		if(coder.open(null, null) < 0) {
+			throw new Exception("streamCoderを開くのに失敗しました。");
+		}
+		System.out.println(coder);
+		System.out.println(IAudioSamples.findSampleBitDepth(coder.getSampleFormat()));
+		AudioFormat audioFormat = new AudioFormat(coder.getSampleRate(),
+				(int)IAudioSamples.findSampleBitDepth(coder.getSampleFormat()),
+				coder.getChannels(), true /* 16bit samples */, true); // bigEndianをつかうように変更。
+		DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+		System.out.println(info);
+		try {
+			audioLine = (SourceDataLine)AudioSystem.getLine(info);
+			audioLine.open(audioFormat);
+			audioLine.start();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			throw new Exception("audioLineが開けませんでした。");
+		}
+		List<Tag> tagList;
+		DecoderSpecificInfo dsi = null;
+		IPacket packet = IPacket.make();
+		int i = 0;
+		while((tagList = orderModel.nextTagList(fc)) != null) {
+			for(Tag tag : tagList) {
+				if(tag instanceof AudioTag) {
+					AudioTag aTag = (AudioTag)tag;
+					if(aTag.isMediaSequenceHeader()) {
+						dsi = new DecoderSpecificInfo();
+						dsi.analyze(new ByteReadChannel(aTag.getRawData()));
+						continue;
+					}
+					if(dsi == null) {
+						throw new RuntimeException("decoderSpecificInfoが決定していません。");
+					}
+					ByteBuffer rawData = aTag.getRawData();
+					int size = rawData.remaining();
+					Aac aac = new Aac(size, dsi);
+					aac.setData(rawData);
+					ByteBuffer buffer = aac.getBuffer();
+					outputTest.write(buffer.duplicate());
+					size = buffer.remaining();
+					IBuffer bufData = IBuffer.make(null, buffer.array(), 0, size);
+					packet.setData(bufData);
+					packet.setComplete(true, size);
+
+					IAudioSamples samples = IAudioSamples.make(1024, coder.getChannels());
+					int offset = 0;
+					while(offset < packet.getSize()) {
+						System.out.println("decodeのトライします。");
+						int bytesDecoded = coder.decodeAudio(samples, packet, offset);
+						if(bytesDecoded < 0) {
+							throw new Exception("デコード中にエラーが発生");
+						}
+						offset += bytesDecoded;
+						if(samples.isComplete()) {
+							System.out.println(samples);
+							// 再生にまわす。
+							System.out.println("completeできた。");
+							byte[] rawBytes = samples.getData().getByteArray(0, samples.getSize());
+							ByteBuffer buf = ByteBuffer.allocate(rawBytes.length);
+							buf.order(ByteOrder.LITTLE_ENDIAN); // リトルエンディアンでデータが入ることを想定
+							buf.put(rawBytes);
+							buf.flip();
+							ByteBuffer result = ByteBuffer.allocate(buf.remaining());
+							while(buf.remaining() > 0) {
+								short data = (short)(Math.sin(rad * i) * max); // リトルエンディアンにしなきゃだめ。
+								i ++;
+								result.putShort((short)(buf.getShort() + data));
+								result.putShort((short)(buf.getShort() + data));
+							}
+							result.flip();
+							audioLine.write(result.array(), 0, samples.getSize());
+						}
+					}
+				}
+			}
+		}
+		if(audioLine != null) {
+			audioLine.drain();
+			audioLine.close();
+			audioLine = null;
+		}
+		if(coder != null) {
+			coder.close();
+			coder = null;
+		}
+		if(outputTest != null) {
+			outputTest.close();
+			outputTest = null;
 		}
 	}
 }
