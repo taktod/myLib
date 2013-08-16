@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 
 import org.junit.Test;
@@ -15,6 +16,8 @@ import com.ttProject.media.flv.FlvHeader;
 import com.ttProject.media.flv.tag.VideoTag;
 import com.ttProject.util.DateUtil;
 import com.ttProject.util.HexUtil;
+import com.xuggle.xuggler.IAudioSamples;
+import com.xuggle.xuggler.IAudioSamples.Format;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IPixelFormat;
@@ -168,7 +171,7 @@ public class ConvertTest {
 	 * avc(h264)の変換テスト
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void avc() throws Exception {
 		IStreamCoder coder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_H264);
 		IRational frameRate = IRational.make(15, 1); // 15fps
@@ -317,6 +320,7 @@ public class ConvertTest {
 				if(packet.isComplete()) {
 					// flvデータをつくってみる。
 					VideoTag videoTag = new VideoTag();
+					// TODO codecTypeの設定まちがってない？
 					videoTag.setCodec(CodecType.H263);
 					// キーフレーム判定
 					videoTag.setFrameType(packet.isKey());
@@ -356,5 +360,89 @@ public class ConvertTest {
 		g.drawString(message, 100, 100);
 		g.dispose();
 		return base;
+	}
+	/**
+	 * 生音からmp3をつくる動作テスト
+	 * @throws Exception
+	 */
+	@Test
+	public void mp3() throws Exception {
+		// FMT_S16Pというのもあるんだが・・・こちらはbigendianだったりしないかなぁ
+//		IAudioSamples samples = IAudioSamples.make(1024, 2, Format.FMT_S16); // 1024サンプルを２チャンネルでもっておく。
+		FileChannel outputMp3 = new FileOutputStream("output.mp3").getChannel();
+		// TODO なんかサンプル数がおかしいけど、おいといて、とりあえず変換してみよう。
+		IStreamCoder coder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_MP3);
+		coder.setSampleRate(44100);
+		coder.setChannels(2);
+		coder.setBitRate(96000);
+		if(coder.open(null, null) < 0) {
+			throw new Exception("変換コーダーが開けませんでした。");
+		}
+		// 直接データをつくってsamplesに書き込めばいいのかな・・・
+		int samplingRate = 44100;
+		int length = 10; // 1秒分
+		int tone = 440; // ラの音
+		int bit = 16; // FMT_S16なので16ビット
+		ByteBuffer buffer = ByteBuffer.allocate((int)(1024 * bit * 2 / 8));
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		double rad = tone * 2 * Math.PI / samplingRate;
+		double max = (1 << (bit - 2)) - 1;
+		IPacket packet = IPacket.make();
+		for(int i = 0;i < samplingRate * length;i ++) {
+			short data = (short)((Math.sin(rad * i) * max));
+			buffer.putShort(data); // 左右同じデータにしてやる
+			buffer.putShort(data); // 左右同じデータにしてやる
+			if(buffer.limit() == buffer.position()) {
+				// 最後までいったら今回のbufferはたまったことになる。
+				buffer.flip();
+//				System.out.println(buffer.remaining());
+//				System.out.println(buffer.array().length);
+				IAudioSamples samples = IAudioSamples.make(1024, 2, Format.FMT_S16);
+				byte[] ddd = buffer.array();
+				System.out.println(ddd.length);
+				System.out.println(samples.getData());
+				samples.getData().put(buffer.array(), 0, 0, buffer.remaining());
+//				IBuffer bufff = IBuffer.make(null, Type.IBUFFER_SINT16, 1024, false);
+//				IBuffer bufff = IBuffer.make(null, buffer.array(), 0, 5000); // 大きめを設定しておくときちんと動作できるのだろうか
+//				System.out.println("こっち？:" + bufff);
+//				samples.setData(bufff);
+//				System.out.println("ここか？:" + samples.getData());
+				// 1/1000000の状態で音声用のtimestampがはいっていないとだめ
+				// 1024 / 44100が時間になるのか・・・
+				samples.setComplete(true, 1024, samplingRate, 2, Format.FMT_S16, 0);
+				System.out.println(samples);
+				int samplesConsumed = 0;
+				while(samplesConsumed < samples.getNumSamples()) {
+					System.out.println(samples.getNumSamples() - samplesConsumed);
+					int retval = coder.encodeAudio(packet, samples, samplesConsumed);
+					if(retval < 0) {
+						throw new Exception("変換失敗");
+					}
+					samplesConsumed += retval;
+					if(packet.isComplete()) {
+						System.out.println(packet);
+//						System.out.println(packet.getSize());
+//						System.out.println(HexUtil.toHex(packet.getData().getByteArray(0, packet.getSize()), true));
+						outputMp3.write(packet.getData().getByteBuffer(0, packet.getSize()));
+					}
+				}
+				buffer = ByteBuffer.allocate((int)(1024 * bit * 2 / 8));
+				buffer.order(ByteOrder.LITTLE_ENDIAN);
+			}
+		}
+		if(coder != null) {
+			coder.close();
+			coder = null;
+		}
+		if(outputMp3 != null) {
+			outputMp3.close();
+			outputMp3 = null;
+		}
+//		buffer.flip();
+//		IAudioSamples samples = IAudioSamples.make(IBuffer.make(null, buffer.array(), 0, buffer.remaining()), 2, Format.FMT_S16);
+//		samples.setComplete(true, numSamples, sampleRate, channels, format, pts)
+//		System.out.println(samples);
+//		samples.setComplete(complete, numSamples, sampleRate, channels, format, pts)
+		// あとlittleEndianに注意かも
 	}
 }
