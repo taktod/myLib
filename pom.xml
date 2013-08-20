@@ -39,6 +39,7 @@
     <module>myLib.media.aac</module>
     <module>myLib.media.h264</module>
     <module>myLib.media.extra</module>
+    <module>myLib.swing</module>
   </modules>
   <scm>
   	<url>scm:git:git@github.com:taktod/myLib.git</url>
