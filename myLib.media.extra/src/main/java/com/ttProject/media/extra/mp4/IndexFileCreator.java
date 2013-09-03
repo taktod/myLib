@@ -289,7 +289,7 @@ public class IndexFileCreator implements IAtomAnalyzer {
 		if(meta != null) {
 			// metaデータを書き込んでおく。
 			meta.writeIndex(idx);
-			meta = null;
+//			meta = null;
 		}
 	}
 	/**
@@ -366,6 +366,9 @@ public class IndexFileCreator implements IAtomAnalyzer {
 			}
 		}
 		tmp.close();
+	}
+	public Meta getMeta() {
+		return meta;
 	}
 	public void close() {
 		if(idx != null) {
