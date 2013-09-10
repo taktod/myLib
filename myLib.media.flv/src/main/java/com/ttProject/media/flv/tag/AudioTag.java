@@ -91,11 +91,25 @@ public class AudioTag extends Tag {
 		sampleRate = rate;
 	}
 	/**
+	 * サンプルレートを参照
+	 * @return
+	 */
+	public int getSampleRate() {
+		return sampleRate;
+	}
+	/**
 	 * 音声チャンネル数を設定
 	 * @param channels
 	 */
 	public void setChannels(byte channels) {
 		this.channels = channels;
+	}
+	/**
+	 * チャンネル数を参照
+	 * @return
+	 */
+	public byte getChannels() {
+		return channels;
 	}
 	/**
 	 * mshであるか設定する
