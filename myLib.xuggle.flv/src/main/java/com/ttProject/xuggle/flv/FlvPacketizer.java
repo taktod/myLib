@@ -2,6 +2,8 @@ package com.ttProject.xuggle.flv;
 
 import java.nio.ByteBuffer;
 
+import com.ttProject.media.aac.DecoderSpecificInfo;
+import com.ttProject.media.aac.frame.Aac;
 import com.ttProject.media.flv.Tag;
 import com.ttProject.media.flv.tag.AudioTag;
 import com.ttProject.media.flv.tag.VideoTag;
@@ -30,7 +32,9 @@ public class FlvPacketizer {
 	private VideoTag lastVideoTag;
 	private SequenceParameterSet sps = null;
 	private PictureParameterSet pps = null;
+
 	private AudioTag lastAudioTag;
+	private DecoderSpecificInfo dsi = null;
 	/**
 	 * tagからIPacketを取り出す
 	 * @param tag
@@ -72,6 +76,31 @@ public class FlvPacketizer {
 		}
 		else if(tag instanceof AudioTag) {
 			lastAudioTag = (AudioTag) tag;
+			switch(lastAudioTag.getCodec()) {
+			case AAC:
+				return getAACPacket(lastAudioTag);
+			case MP3:
+				return getMp3Packet(lastAudioTag);
+			case SPEEX:
+				dsi = null;
+			case NELLY_16:
+				dsi = null;
+			case NELLY_8:
+				dsi = null;
+			case NELLY:
+				dsi = null;
+			case PCM:
+			case ADPCM:
+			case G711_A:
+			case G711_U:
+			case RESERVED:
+			case MP3_8:
+			case DEVICE_SPECIFIC:
+				dsi = null;
+				throw new RuntimeException(lastAudioTag.getCodec() + "の変換は未実装です。");
+			default:
+				return null;
+			}
 		}
 		return null;
 	}
@@ -140,6 +169,9 @@ public class FlvPacketizer {
 		}
 		if(tag.isEndOfSequence()) {
 			return null;
+		}
+		if(sps == null || pps == null) {
+			throw new RuntimeException("spsもしくはppsが決定していません。");
 		}
 		// mshではないので、実データである。
 		IPacket packet = IPacket.make();
@@ -224,18 +256,88 @@ public class FlvPacketizer {
 			decoder.setTimeBase(IRational.make(1, 1000));
 			break;
 		default:
-			break;
+			return null;
 		}
 		if(decoder.open(null, null) < 0) {
 			throw new Exception("デコーダーが開けませんでした。");
 		}
 		return decoder;
 	}
+	private IPacket getMp3Packet(AudioTag tag) throws Exception {
+		IPacket packet = IPacket.make();
+		ByteBuffer rawData = tag.getRawData();
+		int size = rawData.remaining();
+		IBuffer bufData = IBuffer.make(null, rawData.array(), 0, size);
+		packet.setData(bufData);
+		packet.setComplete(true, size);
+		return packet;
+	}
+	/**
+	 * aac用のIPacketを生成します。
+	 * @param tag
+	 * @return
+	 */
+	private IPacket getAACPacket(AudioTag tag) throws Exception {
+		IPacket packet = IPacket.make();
+		if(tag.isMediaSequenceHeader()) {
+			dsi = new DecoderSpecificInfo();
+			dsi.analyze(new ByteReadChannel(tag.getRawData()));
+			return null;
+		}
+		if(dsi == null) {
+			throw new RuntimeException("decoderSpecificInfoが決定していません");
+		}
+		ByteBuffer rawData = tag.getRawData();
+		int size = rawData.remaining();
+		Aac aac = new Aac(size, dsi);
+		aac.setData(rawData);
+		ByteBuffer buffer = aac.getBuffer();
+		size = buffer.remaining();
+		IBuffer bufData = IBuffer.make(null, buffer.array(), 0, size);
+		packet.setData(bufData);
+		packet.setComplete(true, size);
+		return packet;
+	}
 	/**
 	 * 最後に応答したpacketに対応する音声coderを作成し応答する。
 	 * @return
 	 */
-	public IStreamCoder createAudioDecoder() {
-		return null;
+	public IStreamCoder createAudioDecoder() throws Exception {
+		if(lastAudioTag == null) {
+			return null;
+		}
+		IStreamCoder decoder = null;
+		switch(lastAudioTag.getCodec()) {
+		case AAC:
+			decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_AAC);
+			decoder.setSampleRate(lastAudioTag.getSampleRate());
+			decoder.setTimeBase(IRational.make(1, lastAudioTag.getSampleRate()));
+			decoder.setChannels(lastAudioTag.getChannels());
+			break;
+		case MP3:
+			decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_MP3);
+			decoder.setSampleRate(lastAudioTag.getSampleRate());
+			decoder.setTimeBase(IRational.make(1, lastAudioTag.getSampleRate()));
+			decoder.setChannels(lastAudioTag.getChannels());
+			break;
+		case SPEEX:
+		case NELLY_16:
+		case NELLY_8:
+		case NELLY:
+		case PCM:
+		case ADPCM:
+		case G711_A:
+		case G711_U:
+		case RESERVED:
+		case MP3_8:
+		case DEVICE_SPECIFIC:
+			throw new RuntimeException(lastAudioTag.getCodec() + "の変換は未実装です。");
+		default:
+			return null;
+		}
+		if(decoder.open(null, null) < 0) {
+			throw new Exception("デコーダーが開けませんでした。");
+		}
+		return decoder;
 	}
 }
