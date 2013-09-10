@@ -40,6 +40,7 @@
     <module>myLib.media.h264</module>
     <module>myLib.media.extra</module>
     <module>myLib.swing</module>
+    <module>myLib.xuggle.flv</module>
   </modules>
   <scm>
   	<url>scm:git:git@github.com:taktod/myLib.git</url>
