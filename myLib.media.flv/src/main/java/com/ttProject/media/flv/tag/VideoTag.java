@@ -243,6 +243,9 @@ public class VideoTag extends Tag {
 	public boolean isMediaSequenceHeader() {
 		return avcFrameType == 0x00;
 	}
+	public boolean isEndOfSequence() {
+		return avcFrameType == 0x02;
+	}
 	/**
 	 * {@inheritDoc}
 	 */
