@@ -130,4 +130,21 @@ public class BufferUtil {
 		buffer.flip();
 		target.write(buffer);
 	}
+	/**
+	 * ２つのbufferが一致するか確認する。
+	 * @param src
+	 * @param dst
+	 * @return true:一致する false:一致しない
+	 */
+	public static boolean isSame(ByteBuffer src, ByteBuffer dst) {
+		// 長さが一致しなければ一致しない。
+		if(src.remaining() != dst.remaining()) {
+			return false;
+		}
+		// 一致したらループをまわしておく。
+		while(src.remaining() > 0 && src.get() == dst.get()) {
+			;
+		}
+		return src.remaining() == 0; // 最後まで読み込みできたなら一致
+	}
 }
