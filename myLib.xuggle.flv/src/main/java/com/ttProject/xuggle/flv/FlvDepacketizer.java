@@ -129,6 +129,7 @@ public class FlvDepacketizer {
 				videoTag.setCodec(CodecType.AVC);
 				videoTag.setFrameType(true);
 				videoTag.setMSHFlg(true);
+				videoTag.setTimestamp((int)(packet.getTimeStamp() * packet.getTimeBase().getDouble() * 1000));
 				ByteBuffer buffer = configData.makeConfigData(sps, pps);
 				videoTag.setSize(12 + 4 + 4 + buffer.remaining());
 				videoTag.setData(new ByteReadChannel(buffer), buffer.remaining());
@@ -142,7 +143,8 @@ public class FlvDepacketizer {
 				videoTag.setCodec(CodecType.AVC);
 				videoTag.setFrameType(true);
 				videoTag.setMSHFlg(false);
-				ByteBuffer buffer = sliceIdr.getBuffer();
+				videoTag.setTimestamp((int)(packet.getTimeStamp() * packet.getTimeBase().getDouble() * 1000));
+				ByteBuffer buffer = sliceIdr.getData();
 				videoTag.setSize(12 + 4 + 4 + 4 + buffer.remaining());
 				ByteBuffer buf = ByteBuffer.allocate(7 + buffer.remaining());
 				buf.put((byte)0);
@@ -160,7 +162,8 @@ public class FlvDepacketizer {
 				videoTag.setCodec(CodecType.AVC);
 				videoTag.setFrameType(false);
 				videoTag.setMSHFlg(false);
-				ByteBuffer buffer = slice.getBuffer();
+				videoTag.setTimestamp((int)(packet.getTimeStamp() * packet.getTimeBase().getDouble() * 1000));
+				ByteBuffer buffer = slice.getData();
 				videoTag.setSize(12 + 4 + 4 + 4 + buffer.remaining());
 				ByteBuffer buf = ByteBuffer.allocate(7 + buffer.remaining());
 				buf.put((byte)0);
