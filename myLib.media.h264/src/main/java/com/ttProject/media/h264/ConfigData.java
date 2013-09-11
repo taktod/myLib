@@ -62,4 +62,24 @@ public class ConfigData {
 		list.add(pps);
 		return list;
 	}
+	public ByteBuffer makeConfigData(SequenceParameterSet sps, PictureParameterSet pps) {
+		ByteBuffer spsBuffer = sps.getBuffer();
+		ByteBuffer ppsBuffer = pps.getBuffer();
+		ByteBuffer data = ByteBuffer.allocate(9 + spsBuffer.remaining() + ppsBuffer.remaining());
+		data.put((byte)1);
+		spsBuffer.position(1);
+		data.put(spsBuffer.get());
+		data.put(spsBuffer.get());
+		data.put(spsBuffer.get());
+		spsBuffer.position(0);
+		data.put((byte)0xFF);
+		data.put((byte)0xE1);
+		data.putShort((short)spsBuffer.remaining());
+		data.put(spsBuffer);
+		data.put((byte)1);
+		data.putShort((short)ppsBuffer.remaining());
+		data.put(ppsBuffer);
+		data.flip();
+		return data;
+	}
 }

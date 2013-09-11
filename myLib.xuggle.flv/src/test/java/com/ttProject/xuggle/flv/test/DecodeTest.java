@@ -85,13 +85,20 @@ public class DecodeTest {
 	public void mp3Test() {
 //		audioDecodeTest("/home/xxx/mp3.flv");
 	}
+	@Test
+	public void nellyTest() {
+//		audioDecodeTest("/home/xxx/nelly.flv");
+	}
+	@Test
+	public void speexTest() {
+//		audioDecodeTest("/home/xxx/speex.flv");
+	}
 	@SuppressWarnings("unused")
 	private void audioDecodeTest(String target) {
 		try {
 			IFileReadChannel source = FileReadChannel.openFileReadChannel(target);
 			FlvHeader flvheader = new FlvHeader();
 			flvheader.analyze(source);
-			System.out.println(flvheader);
 			ITagAnalyzer analyzer = new TagAnalyzer();
 			// sourceをそのまま解析する。
 			FlvPacketizer packetizer = new FlvPacketizer();

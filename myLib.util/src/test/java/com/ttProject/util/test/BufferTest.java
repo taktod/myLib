@@ -28,6 +28,8 @@ public class BufferTest {
 		// なぜかhashCodeが一致する
 		System.out.println(src.hashCode());
 		System.out.println(dst.hashCode());
+		System.out.println(src);
+		System.out.println(dst);
 		System.out.println(BufferUtil.isSame(src, dst));
 	}
 }

@@ -79,22 +79,23 @@ public class FlvPacketizer {
 			switch(lastAudioTag.getCodec()) {
 			case AAC:
 				return getAACPacket(lastAudioTag);
+			case MP3_8:
 			case MP3:
+				dsi = null;
 				return getMp3Packet(lastAudioTag);
-			case SPEEX:
-				dsi = null;
 			case NELLY_16:
-				dsi = null;
 			case NELLY_8:
-				dsi = null;
 			case NELLY:
 				dsi = null;
+				return getNellyPacket(lastAudioTag);
+			case SPEEX:
+				dsi = null;
+				return getSpeexPacket(lastAudioTag);
 			case PCM:
 			case ADPCM:
 			case G711_A:
 			case G711_U:
 			case RESERVED:
-			case MP3_8:
 			case DEVICE_SPECIFIC:
 				dsi = null;
 				throw new RuntimeException(lastAudioTag.getCodec() + "の変換は未実装です。");
@@ -272,6 +273,24 @@ public class FlvPacketizer {
 		packet.setComplete(true, size);
 		return packet;
 	}
+	private IPacket getNellyPacket(AudioTag tag) throws Exception {
+		IPacket packet = IPacket.make();
+		ByteBuffer rawData = tag.getRawData();
+		int size = rawData.remaining();
+		IBuffer bufData = IBuffer.make(null, rawData.array(), 0, size);
+		packet.setData(bufData);
+		packet.setComplete(true, size);
+		return packet;
+	}
+	private IPacket getSpeexPacket(AudioTag tag) throws Exception {
+		IPacket packet = IPacket.make();
+		ByteBuffer rawData = tag.getRawData();
+		int size = rawData.remaining();
+		IBuffer bufData = IBuffer.make(null, rawData.array(), 0, size);
+		packet.setData(bufData);
+		packet.setComplete(true, size);
+		return packet;
+	}
 	/**
 	 * aac用のIPacketを生成します。
 	 * @param tag
@@ -320,16 +339,42 @@ public class FlvPacketizer {
 			decoder.setTimeBase(IRational.make(1, lastAudioTag.getSampleRate()));
 			decoder.setChannels(lastAudioTag.getChannels());
 			break;
-		case SPEEX:
-		case NELLY_16:
-		case NELLY_8:
+		case MP3_8:
+			decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_MP3);
+			decoder.setSampleRate(8000);
+			decoder.setTimeBase(IRational.make(1, lastAudioTag.getSampleRate()));
+			decoder.setChannels(lastAudioTag.getChannels());
+			break;
 		case NELLY:
+			decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_NELLYMOSER);
+			decoder.setSampleRate(lastAudioTag.getSampleRate());
+			decoder.setTimeBase(IRational.make(1, lastAudioTag.getSampleRate()));
+			decoder.setChannels(lastAudioTag.getChannels());
+			break;
+		case NELLY_8:
+			decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_NELLYMOSER);
+			decoder.setSampleRate(8000);
+			decoder.setTimeBase(IRational.make(1, lastAudioTag.getSampleRate()));
+			decoder.setChannels(lastAudioTag.getChannels());
+			break;
+		case NELLY_16: // TODO 未チェック
+			decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_NELLYMOSER);
+			decoder.setSampleRate(16000);
+			decoder.setTimeBase(IRational.make(1, lastAudioTag.getSampleRate()));
+			decoder.setChannels(lastAudioTag.getChannels());
+			break;
+		case SPEEX:
+			// FLVのspeexは16000hz + 1Channelのみになってる。
+			decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_SPEEX);
+			decoder.setSampleRate(16000);
+			decoder.setTimeBase(IRational.make(1, lastAudioTag.getSampleRate()));
+			decoder.setChannels(1);
+			break;
 		case PCM:
 		case ADPCM:
 		case G711_A:
 		case G711_U:
 		case RESERVED:
-		case MP3_8:
 		case DEVICE_SPECIFIC:
 			throw new RuntimeException(lastAudioTag.getCodec() + "の変換は未実装です。");
 		default:
