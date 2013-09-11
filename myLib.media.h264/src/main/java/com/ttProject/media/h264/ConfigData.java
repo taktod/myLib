@@ -62,10 +62,10 @@ public class ConfigData {
 		list.add(pps);
 		return list;
 	}
-	public ByteBuffer makeConfigData(SequenceParameterSet sps, PictureParameterSet pps) {
-		ByteBuffer spsBuffer = sps.getBuffer();
-		ByteBuffer ppsBuffer = pps.getBuffer();
-		ByteBuffer data = ByteBuffer.allocate(9 + spsBuffer.remaining() + ppsBuffer.remaining());
+	public ByteBuffer makeConfigData(SequenceParameterSet sps, PictureParameterSet pps) throws Exception {
+		ByteBuffer spsBuffer = sps.getData();
+		ByteBuffer ppsBuffer = pps.getData();
+		ByteBuffer data = ByteBuffer.allocate(11 + spsBuffer.remaining() + ppsBuffer.remaining());
 		data.put((byte)1);
 		spsBuffer.position(1);
 		data.put(spsBuffer.get());
