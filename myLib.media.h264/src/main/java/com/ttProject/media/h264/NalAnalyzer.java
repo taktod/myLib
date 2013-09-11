@@ -58,7 +58,9 @@ public class NalAnalyzer extends FrameAnalyzer {
 					}
 					else {
 						// nal分岐ではなかったその１
-						buf.putShort(lastData);
+						if(lastData != null) {
+							buf.putShort(lastData);
+						}
 						buf.putShort(data);
 						buf.put(firstByte);
 						buf.put(secondByte);
@@ -66,13 +68,25 @@ public class NalAnalyzer extends FrameAnalyzer {
 				}
 				else {
 					// nal分岐ではなかった、その２
-					buf.putShort(lastData);
+					if(lastData != null) {
+						buf.putShort(lastData);
+					}
 					buf.putShort(data);
 					buf.put(firstByte);
 				}
 				lastData = null;
 			}
 			else {
+				if(lastData != null && data == 1 && (lastData & 0x00FF) == 0) {
+					checkLastData(buf, lastData);
+					buf.flip();
+					if(buf.remaining() == 0) {
+						// データがない場合は解析する必要なし。
+						buf = ByteBuffer.allocate(ch.size() - ch.position());
+						continue;
+					}
+					return setupFrame(buf);
+				}
 				setLastData(buf, lastData);
 				lastData = data;
 			}
