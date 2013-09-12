@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ttProject.media.aac.DecoderSpecificInfo;
+import com.ttProject.media.aac.FrameAnalyzer;
+import com.ttProject.media.aac.frame.Aac;
 import com.ttProject.media.flv.CodecType;
 import com.ttProject.media.flv.Tag;
+import com.ttProject.media.flv.tag.AudioTag;
 import com.ttProject.media.flv.tag.VideoTag;
 import com.ttProject.media.h264.ConfigData;
 import com.ttProject.media.h264.Frame;
@@ -22,6 +25,8 @@ import com.xuggle.xuggler.IStreamCoder;
 
 /**
  * IPacketをflvTagに戻す処理
+ * 変換を戻す場合はそれぞれのメディアトラック用のおDepacketizerをつくらないとだめ。
+ * avcで複数出力するといった場合に出力できないことがありえる。
  * @author taktod
  */
 public class FlvDepacketizer {
@@ -50,15 +55,14 @@ public class FlvDepacketizer {
 			return getAVCTag(packet);
 		case CODEC_ID_AAC:
 			// aacの場合
-			break;
+			return getAacTag(packet);
 		case CODEC_ID_MP3:
 			dsi = null;
 			// mp3の場合
-			break;
+			return getMp3Tag(encoder, packet);
 		default:
 			throw new RuntimeException(encoder.getCodecID() + "のflvTag化は未実装です。");
 		}
-		return null;
 	}
 	/**
 	 * h263のtagに変換します。
@@ -71,7 +75,6 @@ public class FlvDepacketizer {
 		videoTag.setCodec(CodecType.H263);
 		videoTag.setFrameType(packet.isKey());
 		ByteBuffer buffer = packet.getByteBuffer();
-		videoTag.setSize(12 + 4 + buffer.remaining());
 		// これどうするかな(timestampはipacketのデータからつくれそう。ただし、音声の場合はframeからカウントしないとだめっぽい。)
 		videoTag.setTimestamp((int)(packet.getTimeStamp() * packet.getTimeBase().getDouble() * 1000));
 		videoTag.setRawData(buffer);
@@ -79,7 +82,7 @@ public class FlvDepacketizer {
 		return tagList;
 	}
 	/**
-	 * aacのtagに変換します。
+	 * avcのtagに変換します。
 	 * TODO ついでにmshタグについて確認して、前のデータと一致する場合は応答しないようにしておく。
 	 * @param packet
 	 * @return
@@ -131,7 +134,6 @@ public class FlvDepacketizer {
 				videoTag.setMSHFlg(true);
 				videoTag.setTimestamp((int)(packet.getTimeStamp() * packet.getTimeBase().getDouble() * 1000));
 				ByteBuffer buffer = configData.makeConfigData(sps, pps);
-				videoTag.setSize(12 + 4 + 4 + buffer.remaining());
 				videoTag.setData(new ByteReadChannel(buffer), buffer.remaining());
 				tagList.add(videoTag);
 			}
@@ -145,7 +147,6 @@ public class FlvDepacketizer {
 				videoTag.setMSHFlg(false);
 				videoTag.setTimestamp((int)(packet.getTimeStamp() * packet.getTimeBase().getDouble() * 1000));
 				ByteBuffer buffer = sliceIdr.getData();
-				videoTag.setSize(12 + 4 + 4 + 4 + buffer.remaining());
 				ByteBuffer buf = ByteBuffer.allocate(7 + buffer.remaining());
 				buf.put((byte)0);
 				buf.put((byte)0);
@@ -164,7 +165,6 @@ public class FlvDepacketizer {
 				videoTag.setMSHFlg(false);
 				videoTag.setTimestamp((int)(packet.getTimeStamp() * packet.getTimeBase().getDouble() * 1000));
 				ByteBuffer buffer = slice.getData();
-				videoTag.setSize(12 + 4 + 4 + 4 + buffer.remaining());
 				ByteBuffer buf = ByteBuffer.allocate(7 + buffer.remaining());
 				buf.put((byte)0);
 				buf.put((byte)0);
@@ -176,6 +176,111 @@ public class FlvDepacketizer {
 				tagList.add(videoTag);
 			}
 		}
+		return tagList;
+	}
+	/**
+	 * mp3のtagに変換します。
+	 * @param encoder
+	 * @param packet
+	 * @return
+	 * @throws Exception
+	 */
+	private List<Tag> getMp3Tag(IStreamCoder encoder, IPacket packet) throws Exception {
+		List<Tag> tagList = new ArrayList<Tag>();
+		AudioTag audioTag = new AudioTag();
+		switch(encoder.getSampleRate()) {
+		case 8000:
+			audioTag.setCodec(CodecType.MP3_8);
+			break;
+		case 44100:
+		case 22050:
+		case 11025:
+			audioTag.setCodec(CodecType.MP3);
+			break;
+		default:
+			throw new RuntimeException("知らないmp3のフォーマットでした。");
+		}
+		switch(encoder.getChannels()) {
+		case 1:
+			audioTag.setChannels((byte)1);
+			break;
+		case 2:
+			audioTag.setChannels((byte)2);
+			break;
+		default:
+			throw new RuntimeException("チャンネル数が不正です。:" + encoder.getChannels());
+		}
+		audioTag.setSampleRate(encoder.getSampleRate());
+		ByteBuffer buffer = packet.getByteBuffer();
+		audioTag.setTimestamp((int)(packet.getTimeStamp() * packet.getTimeBase().getDouble() * 1000));
+		audioTag.setRawData(buffer);
+		tagList.add(audioTag);
+		return tagList;
+	}
+	/**
+	 * aacのTagに変換します。
+	 * @param packet
+	 * @return
+	 * @throws Exception
+	 */
+	private List<Tag> getAacTag(IPacket packet) throws Exception {
+		List<Tag> tagList = new ArrayList<Tag>();
+		//packetデータからAacをとりあえずつくる。
+		FrameAnalyzer analyzer = new FrameAnalyzer();
+		Object aacFrame = analyzer.analyze(new ByteReadChannel(packet.getByteBuffer()));
+		if(!(aacFrame instanceof Aac)) {
+			throw new RuntimeException("不正なデータでした。");
+		}
+		Aac aac = (Aac) aacFrame;
+		DecoderSpecificInfo dsi = new DecoderSpecificInfo();
+		dsi.analyze(aac);
+		// いままでのdsiと一致するか確認する必要あり。
+		boolean dsiUpdate = false;
+		if(this.dsi == null) {
+			this.dsi = dsi;
+			dsiUpdate = true;
+		}
+		else if(this.dsi.getInfoBuffer().hashCode() != dsi.getInfoBuffer().hashCode()){
+			this.dsi = dsi;
+			dsiUpdate = true;
+		}
+		if(dsiUpdate) {
+			// mshをつくる必要あり。
+			AudioTag audioMshTag = new AudioTag();
+			audioMshTag.setCodec(CodecType.AAC);
+			switch(aac.getChannelConfiguration()) {
+			case 1:
+				audioMshTag.setChannels((byte)1);
+				break;
+			case 2:
+				audioMshTag.setChannels((byte)2);
+				break;
+			default:
+				throw new RuntimeException("対応していないチャンネル数です。");
+			}
+			audioMshTag.setSampleRate((int)(aac.getSamplingRate() * 1000));
+			audioMshTag.setMSHFlg(true);
+			audioMshTag.setRawData(dsi.getInfoBuffer());
+			tagList.add(audioMshTag);
+		}
+		AudioTag audioTag = new AudioTag();
+		audioTag.setCodec(CodecType.AAC);
+		switch(aac.getChannelConfiguration()) {
+		case 1:
+			audioTag.setChannels((byte)1);
+			break;
+		case 2:
+			audioTag.setChannels((byte)2);
+			break;
+		default:
+			throw new RuntimeException("対応していないチャンネル数です。");
+		}
+		audioTag.setSampleRate((int)(aac.getSamplingRate() * 1000));
+		audioTag.setMSHFlg(false);
+		audioTag.setTimestamp((int)(packet.getTimeStamp() * packet.getTimeBase().getDouble() * 1000));
+		audioTag.setRawData(aac.getDataBuffer());
+		tagList.add(audioTag);
+		// タグを応答すればOK
 		return tagList;
 	}
 }

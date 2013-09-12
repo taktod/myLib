@@ -33,6 +33,11 @@
       <artifactId>myLib.media.aac</artifactId>
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.xuggle.raw</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
   </dependencies>
   <name>myLib.xuggle.flv</name>
   <description>flvTagとxuggleとの連携を実行するための動作
