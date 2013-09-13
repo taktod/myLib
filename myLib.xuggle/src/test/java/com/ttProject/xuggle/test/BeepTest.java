@@ -14,7 +14,7 @@ import org.junit.Test;
  * @author taktod
  */
 public class BeepTest {
-	@Test
+//	@Test
 	public void test() throws Exception {
 		SourceDataLine audioLine = null;
 		int samplingRate = 44100; // 8kHz
