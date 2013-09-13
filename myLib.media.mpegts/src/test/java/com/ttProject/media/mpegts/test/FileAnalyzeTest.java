@@ -21,7 +21,7 @@ public class FileAnalyzeTest {
 //	@Test
 	public void fixedFileTest() throws Exception {
 		IReadChannel source = FileReadChannel.openFileReadChannel(
-				"/Users/todatakahiko/tmp/mario.nosound.ts"
+				"file.ts"
 		);
 		IPacketAnalyzer analyzer = new PacketAnalyzer();
 		Packet packet = null;
