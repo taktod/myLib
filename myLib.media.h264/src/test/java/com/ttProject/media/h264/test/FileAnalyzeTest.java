@@ -20,7 +20,7 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
 
 public class FileAnalyzeTest {
-	@Test
+//	@Test
 	public void test() throws Exception {
 		// h264データの読み込みテストを実施します。
 		// ただしh264を読み込む適当なフォーマットがないので、flvからデータを読み込むことにします。
