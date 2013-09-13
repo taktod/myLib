@@ -18,7 +18,7 @@ public class FileAnalyzeTest {
 	/**
 	 * 固定ファイル用
 	 */
-	@Test
+//	@Test
 	public void fixedFileTest() throws Exception {
 		IReadChannel source = FileReadChannel.openFileReadChannel(
 				"/Users/todatakahiko/tmp/mario.nosound.ts"
