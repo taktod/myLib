@@ -270,6 +270,9 @@ public class FlvPacketizer {
 		int size = rawData.remaining();
 		IBuffer bufData = IBuffer.make(null, rawData.array(), 0, size);
 		packet.setData(bufData);
+		packet.setDts(tag.getTimestamp());
+		packet.setPts(tag.getTimestamp());
+		packet.setTimeBase(IRational.make(1, 1000));
 		packet.setComplete(true, size);
 		return packet;
 	}
@@ -279,6 +282,9 @@ public class FlvPacketizer {
 		int size = rawData.remaining();
 		IBuffer bufData = IBuffer.make(null, rawData.array(), 0, size);
 		packet.setData(bufData);
+		packet.setDts(tag.getTimestamp());
+		packet.setPts(tag.getTimestamp());
+		packet.setTimeBase(IRational.make(1, 1000));
 		packet.setComplete(true, size);
 		return packet;
 	}
@@ -288,6 +294,9 @@ public class FlvPacketizer {
 		int size = rawData.remaining();
 		IBuffer bufData = IBuffer.make(null, rawData.array(), 0, size);
 		packet.setData(bufData);
+		packet.setDts(tag.getTimestamp());
+		packet.setPts(tag.getTimestamp());
+		packet.setTimeBase(IRational.make(1, 1000));
 		packet.setComplete(true, size);
 		return packet;
 	}
@@ -314,6 +323,9 @@ public class FlvPacketizer {
 		size = buffer.remaining();
 		IBuffer bufData = IBuffer.make(null, buffer.array(), 0, size);
 		packet.setData(bufData);
+		packet.setDts(tag.getTimestamp());
+		packet.setPts(tag.getTimestamp());
+		packet.setTimeBase(IRational.make(1, 1000));
 		packet.setComplete(true, size);
 		return packet;
 	}
