@@ -229,7 +229,7 @@ public class VideoTag extends Tag {
 			buffer.put(avcFrameType);
 		}
 		// 実データ
-		buffer.put(data);
+		buffer.put(data.duplicate());
 		// 終端処理
 		buffer.put(getTailBuffer());
 		// 読み込みモードにする。

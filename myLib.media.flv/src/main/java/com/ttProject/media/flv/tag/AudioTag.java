@@ -239,7 +239,7 @@ public class AudioTag extends Tag {
 			}
 		}
 		// 実データ
-		buffer.put(data);
+		buffer.put(data.duplicate());
 		// 終端データ
 		buffer.put(getTailBuffer());
 		// 読み込みモードに変更
