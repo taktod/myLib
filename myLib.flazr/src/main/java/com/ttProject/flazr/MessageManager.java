@@ -76,7 +76,7 @@ public class MessageManager {
 				aTag.add(tag);
 			}
 		}
-		if(aTag.getSize() == 0) {
+		if(aTag.size() == 0) {
 			return null;
 		}
 		else {
