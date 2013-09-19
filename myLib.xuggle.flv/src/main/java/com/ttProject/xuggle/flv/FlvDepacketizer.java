@@ -74,7 +74,7 @@ public class FlvDepacketizer {
 		VideoTag videoTag = new VideoTag();
 		videoTag.setCodec(CodecType.H263);
 		videoTag.setFrameType(packet.isKey());
-		ByteBuffer buffer = packet.getByteBuffer();
+		ByteBuffer buffer = ByteBuffer.wrap(packet.getData().getByteArray(0, packet.getSize()));
 		// これどうするかな(timestampはipacketのデータからつくれそう。ただし、音声の場合はframeからカウントしないとだめっぽい。)
 		videoTag.setTimestamp((int)(packet.getTimeStamp() * packet.getTimeBase().getDouble() * 1000));
 		videoTag.setRawData(buffer);
@@ -90,7 +90,7 @@ public class FlvDepacketizer {
 	private List<Tag> getAVCTag(IPacket packet) throws Exception {
 		List<Tag> tagList = new ArrayList<Tag>();
 		NalAnalyzer nalAnalyzer = new NalAnalyzer();
-		IReadChannel byteDataChannel = new ByteReadChannel(packet.getByteBuffer());
+		IReadChannel byteDataChannel = new ByteReadChannel(packet.getData().getByteArray(0, packet.getSize()));
 		// キーパケットである場合
 		Frame frame = null;
 		Boolean spsUpdated = null;
@@ -211,7 +211,7 @@ public class FlvDepacketizer {
 			throw new RuntimeException("チャンネル数が不正です。:" + encoder.getChannels());
 		}
 		audioTag.setSampleRate(encoder.getSampleRate());
-		ByteBuffer buffer = packet.getByteBuffer();
+		ByteBuffer buffer = ByteBuffer.wrap(packet.getData().getByteArray(0, packet.getSize()));
 		audioTag.setTimestamp((int)(packet.getTimeStamp() * packet.getTimeBase().getDouble() * 1000));
 		audioTag.setRawData(buffer);
 		tagList.add(audioTag);
@@ -227,7 +227,7 @@ public class FlvDepacketizer {
 		List<Tag> tagList = new ArrayList<Tag>();
 		//packetデータからAacをとりあえずつくる。
 		FrameAnalyzer analyzer = new FrameAnalyzer();
-		Object aacFrame = analyzer.analyze(new ByteReadChannel(packet.getByteBuffer()));
+		Object aacFrame = analyzer.analyze(new ByteReadChannel(packet.getData().getByteArray(0, packet.getSize())));
 		if(!(aacFrame instanceof Aac)) {
 			throw new RuntimeException("不正なデータでした。");
 		}
