@@ -661,7 +661,7 @@ public class MultiCoderTest {
 	/**
 	 * flvとavcの映像を作る動作
 	 */
-	@Test
+//	@Test
 	public void h263avcTest() {
 		FileChannel h263 = null;
 		FileChannel avc = null;
@@ -982,8 +982,8 @@ public class MultiCoderTest {
 		try {
 			final LinkedBlockingQueue<VideoData> h263VideoData = new LinkedBlockingQueue<VideoData>();
 			final LinkedBlockingQueue<VideoData> avcVideoData = new LinkedBlockingQueue<VideoData>();
-			h263 = new FileOutputStream("h263_c.flv").getChannel();
-			avc = new FileOutputStream("avc_c.flv").getChannel();
+			h263 = new FileOutputStream("h263_e.flv").getChannel();
+			avc = new FileOutputStream("avc_e.flv").getChannel();
 			FlvHeader flvHeader = new FlvHeader();
 			flvHeader.setVideoFlg(true);
 			flvHeader.setAudioFlg(false);
@@ -1117,11 +1117,18 @@ public class MultiCoderTest {
 				if(startTime == -1) {
 					startTime = now;
 				}
-				if(now - startTime > 3000) {
+				if(now - startTime > 5000) {
 					workingFlg = false;
 					break;
 				}
-				Thread.sleep(5);
+//				if(now - startTime > 2000) {
+//					System.out.println("100待ち");
+//					Thread.sleep(100);
+//				}
+//				else {
+					System.out.println("5待ち");
+					Thread.sleep(10);
+//				}
 				BufferedImage image = image();
 				h263VideoData.add(new VideoData(image, (now - startTime)));
 				avcVideoData.add(new VideoData(image, (now - startTime)));
