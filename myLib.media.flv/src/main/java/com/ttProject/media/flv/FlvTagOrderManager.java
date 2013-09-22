@@ -144,13 +144,19 @@ public class FlvTagOrderManager {
 	 * 映像データがもうないというフラグ設定
 	 */
 	public void setNomoreVideo() {
-		videoEndFlg = true;
+		setVideoEndFlg(true);
+	}
+	public void setVideoEndFlg(boolean flg) {
+		videoEndFlg = flg;
 	}
 	/**
 	 * 音声データがもうないというフラグ設定
 	 */
 	public void setNomoreAudio() {
-		audioEndFlg = true;
+		setAudioEndFlg(true);
+	}
+	public void setAudioEndFlg(boolean flg) {
+		audioEndFlg = flg;
 	}
 	/**
 	 * {@inheritDoc}
