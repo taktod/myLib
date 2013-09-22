@@ -21,6 +21,7 @@ import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IRational;
 import com.xuggle.xuggler.IStreamCoder;
+import com.xuggle.xuggler.ICodec.ID;
 import com.xuggle.xuggler.IStreamCoder.Direction;
 
 /**
@@ -396,5 +397,83 @@ public class FlvPacketizer {
 			throw new Exception("デコーダーが開けませんでした。");
 		}
 		return decoder;
+	}
+	public static boolean isSameCodec(VideoTag tag, IStreamCoder coder) {
+		switch(tag.getCodec()) {
+		case H263:
+			return coder.getCodecID() == ID.CODEC_ID_FLV1;
+		case ON2VP6:
+			return coder.getCodecID() == ID.CODEC_ID_VP6F;
+		case AVC:
+			return coder.getCodecID() == ID.CODEC_ID_H264;
+		case JPEG:
+		case SCREEN:
+		case ON2VP6_ALPHA:
+		case SCREEN_V2:
+			throw new RuntimeException(tag.getCodec() + "の変換は未実装です。");
+		default:
+			throw new RuntimeException("コーデックが識別できませんでした。");
+		}
+	}
+	public static boolean isSameCodec(AudioTag tag, IStreamCoder coder) {
+		switch (tag.getCodec()) {
+		case AAC:
+			if((int)(coder.getSampleRate() / 1000) != (int)(tag.getSampleRate() / 1000)) {
+				return false;
+			}
+			if(coder.getChannels() != tag.getChannels()) {
+				return false;
+			}
+			return coder.getCodecID() == ID.CODEC_ID_AAC;
+		case MP3:
+			if((int)(coder.getSampleRate() / 1000) != (int)(tag.getSampleRate() / 1000)) {
+				return false;
+			}
+			if(coder.getChannels() != tag.getChannels()) {
+				return false;
+			}
+			return coder.getCodecID() == ID.CODEC_ID_MP3;
+		case MP3_8:
+			if((int)(coder.getSampleRate() / 1000) != 8) {
+				return false;
+			}
+			if(coder.getChannels() != tag.getChannels()) {
+				return false;
+			}
+			return coder.getCodecID() == ID.CODEC_ID_MP3;
+		case NELLY:
+			if((int)(coder.getSampleRate() / 1000) != (int)(tag.getSampleRate() / 1000)) {
+				return false;
+			}
+			if(coder.getChannels() != tag.getChannels()) {
+				return false;
+			}
+			return coder.getCodecID() == ID.CODEC_ID_NELLYMOSER;
+		case NELLY_8:
+			if((int)(coder.getSampleRate() / 1000) != 8) {
+				return false;
+			}
+			if(coder.getChannels() != tag.getChannels()) {
+				return false;
+			}
+			return coder.getCodecID() == ID.CODEC_ID_NELLYMOSER;
+		case NELLY_16:
+			if((int)(coder.getSampleRate() / 1000) != 16) {
+				return false;
+			}
+			if(coder.getChannels() != tag.getChannels()) {
+				return false;
+			}
+			return coder.getCodecID() == ID.CODEC_ID_NELLYMOSER;
+		case PCM:
+		case ADPCM:
+		case G711_A:
+		case G711_U:
+		case RESERVED:
+		case DEVICE_SPECIFIC:
+			throw new RuntimeException(tag.getCodec() + "の変換は未実装です。");
+		default:
+			throw new RuntimeException("コーデックが識別できませんでした。");
+		}
 	}
 }
