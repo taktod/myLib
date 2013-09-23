@@ -32,7 +32,7 @@ import com.xuggle.xuggler.IStreamCoder;
 public class FlvDepacketizer {
 	private SequenceParameterSet sps = null;
 	private PictureParameterSet pps = null;
-	private DecoderSpecificInfo dsi;
+	private DecoderSpecificInfo dsi = null;
 	/**
 	 * packetからtagを取り出す。
 	 * @param encoder
