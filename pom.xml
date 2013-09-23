@@ -9,6 +9,7 @@
     <version>0.0.1</version>
   </parent>
   <modules>
+    <module>myLib.setup</module>
     <module>myLib.mp4</module>
     <module>myLib.channels</module>
     <module>myLib.util</module>
@@ -18,7 +19,6 @@
     <module>myLib.packet.mpegts</module>
     <module>myLib.packet.mp3</module>
     <module>myLib.xuggle.in.flv</module>
-    <module>myLib.xuggle</module>
     <module>myLib.xuggle.out.mpegts</module>
     <module>myLib.segment</module>
     <module>myLib.productHelper</module>
@@ -41,8 +41,9 @@
     <module>myLib.media.extra</module>
     <module>myLib.media.raw</module>
     <module>myLib.swing</module>
-    <module>myLib.xuggle.flv</module>
     <module>myLib.xuggle.raw</module>
+    <module>myLib.xuggle</module>
+    <module>myLib.xuggle.flv</module>
   </modules>
   <scm>
   	<url>scm:git:git@github.com:taktod/myLib.git</url>
