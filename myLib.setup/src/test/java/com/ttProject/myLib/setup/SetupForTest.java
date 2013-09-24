@@ -121,7 +121,6 @@ public class SetupForTest {
 				}
 			}
 		}
-		System.out.println(audioCounter);
 		if(container.writeTrailer() < 0) {
 			throw new Exception("tailer書き込み失敗");
 		}
@@ -283,7 +282,6 @@ public class SetupForTest {
 			counter ++;
 			IPacket packet = IPacket.make();
 			IVideoPicture picture = image();
-			System.out.println(picture);
 			if(coder.encodeVideo(packet, picture, 0) < 0) {
 				throw new Exception("変換失敗");
 			}
@@ -294,7 +292,6 @@ public class SetupForTest {
 			}
 			while(true) {
 				IAudioSamples samples = samples();
-				System.out.println(samples);
 				int samplesConsumed = 0;
 				while(samplesConsumed < samples.getNumSamples()) {
 					int retval = coder2.encodeAudio(packet, samples, samplesConsumed);
