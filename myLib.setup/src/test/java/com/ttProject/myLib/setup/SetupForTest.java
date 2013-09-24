@@ -88,6 +88,7 @@ public class SetupForTest {
 		videoCounter = 0;
 		// flvデータを作ります。
 		IContainer container = IContainer.make();
+		// TODO ここの動作では、パスのディレクトリがないとだめ。
 		if(container.open("test.mp3", IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
