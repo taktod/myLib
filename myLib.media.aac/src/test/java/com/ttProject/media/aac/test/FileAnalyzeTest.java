@@ -16,7 +16,7 @@ public class FileAnalyzeTest {
 	@Test
 	public void fixedFileTest() throws Exception {
 		IReadChannel source = FileReadChannel.openFileReadChannel(
-				Thread.currentThread().getContextClassLoader().getResource("25-1.aac")
+				Thread.currentThread().getContextClassLoader().getResource("test.aac")
 		);
 		IFrameAnalyzer analyzer = new FrameAnalyzer();
 		int counter = 0;
