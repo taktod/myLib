@@ -23,7 +23,7 @@ public class DecoderSpecificInfoTest {
 	@Test
 	public void make() throws Exception {
 		IReadChannel source = FileReadChannel.openFileReadChannel(
-				Thread.currentThread().getContextClassLoader().getResource("25-1.aac")
+				Thread.currentThread().getContextClassLoader().getResource("test.aac")
 		);
 		IFrameAnalyzer analyzer = new FrameAnalyzer();
 		DecoderSpecificInfo specificInfo = new DecoderSpecificInfo();
