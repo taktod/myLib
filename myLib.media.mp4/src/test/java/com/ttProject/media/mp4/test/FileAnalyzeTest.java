@@ -19,7 +19,9 @@ public class FileAnalyzeTest {
 	 */
 	@Test
 	public void fixedFileTest() throws Exception {
-		IReadChannel source = FileReadChannel.openFileReadChannel("http://www.gomplayer.jp/img/sample/mp4_h264_aac.mp4");
+		IReadChannel source = FileReadChannel.openFileReadChannel(
+				Thread.currentThread().getContextClassLoader().getResource("test.mp4")
+		);
 		IAtomAnalyzer analyzer = new AtomAnalyzer();
 		Atom atom = null;
 		while((atom = analyzer.analyze(source)) != null) {

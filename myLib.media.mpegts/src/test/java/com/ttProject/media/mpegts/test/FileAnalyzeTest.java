@@ -18,10 +18,10 @@ public class FileAnalyzeTest {
 	/**
 	 * 固定ファイル用
 	 */
-//	@Test
+	@Test
 	public void fixedFileTest() throws Exception {
 		IReadChannel source = FileReadChannel.openFileReadChannel(
-				"file.ts"
+				Thread.currentThread().getContextClassLoader().getResource("test.ts")
 		);
 		IPacketAnalyzer analyzer = new PacketAnalyzer();
 		Packet packet = null;

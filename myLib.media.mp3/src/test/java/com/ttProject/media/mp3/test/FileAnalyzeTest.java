@@ -20,10 +20,10 @@ public class FileAnalyzeTest {
 	/**
 	 * ファイルサイズが固定されている状態での動作テスト
 	 */
-//	@Test
+	@Test
 	public void fixedFileTest() throws Exception {
 		IReadChannel source = FileReadChannel.openFileReadChannel(
-				Thread.currentThread().getContextClassLoader().getResource("sample.mp3")
+				Thread.currentThread().getContextClassLoader().getResource("test.mp3")
 		);
 		IFrameAnalyzer analyzer = new FrameAnalyzer();
 		// sourceをそのまま解析します。
@@ -42,7 +42,7 @@ public class FileAnalyzeTest {
 	public void appendingBufferTest() throws Exception {
 		System.out.println("追記動作のテスト開始");
 		IReadChannel source = FileReadChannel.openFileReadChannel(
-				Thread.currentThread().getContextClassLoader().getResource("sample.mp3")
+				Thread.currentThread().getContextClassLoader().getResource("test.mp3")
 		);
 		// 適当な量ずつデータを取り出します。
 		ByteBuffer buffer = BufferUtil.safeRead(source, 2560);
