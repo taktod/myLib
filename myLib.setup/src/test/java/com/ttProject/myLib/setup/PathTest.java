@@ -2,18 +2,31 @@ package com.ttProject.myLib.setup;
 
 import java.io.File;
 
-import org.junit.Test;
-
 /**
  * テスト
  * @author taktod
  *
  */
 public class PathTest {
-	@Test
+//	@Test
 	public void test() {
-		File f = new File("test.flv");
-		File ff = new File(f.getAbsolutePath());
-		System.out.println(ff.getParentFile().getParentFile());
+		System.out.println(getTargetFile("a/b/c/d/test.flv"));
+	}
+	/**
+	 * 
+	 * @param path
+	 * @param file
+	 * @return
+	 */
+	public String getTargetFile(String file) {
+		String[] data = file.split("/");
+		File f = new File(".");
+		f = new File(f.getAbsolutePath());
+		f = f.getParentFile().getParentFile();
+		for(String path : data) {
+			f = new File(f.getAbsolutePath(), path);
+		}
+		f.getParentFile().mkdirs();
+		return f.getAbsolutePath();
 	}
 }
