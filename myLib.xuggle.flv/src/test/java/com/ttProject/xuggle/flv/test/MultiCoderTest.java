@@ -1017,7 +1017,6 @@ public class MultiCoderTest {
 						while(workingFlg || h263VideoData.size() > 0) {
 							VideoData vData = h263VideoData.take();
 							IVideoPicture picture = converter.toPicture(vData.getImage(), vData.getTimestamp() * 1000);
-							System.out.println("h263コンバート");
 							if(encoder.encodeVideo(packet, picture, 0) < 0) {
 								throw new Exception("エンコード失敗");
 							}
@@ -1091,7 +1090,6 @@ public class MultiCoderTest {
 								throw new Exception("エンコード失敗");
 							}
 							if(packet.isComplete()) {
-								System.out.println("packet complete");
 								for(Tag tag : depacketizer.getTag(encoder, packet)) {
 									avcChannel.write(tag.getBuffer());
 								}
@@ -1126,7 +1124,6 @@ public class MultiCoderTest {
 //					Thread.sleep(100);
 //				}
 //				else {
-					System.out.println("5待ち");
 					Thread.sleep(10);
 //				}
 				BufferedImage image = image();

@@ -5,8 +5,6 @@ import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import org.junit.Test;
-
 import com.ttProject.media.flv.FlvHeader;
 import com.ttProject.media.flv.ITagAnalyzer;
 import com.ttProject.media.flv.Tag;
@@ -36,7 +34,7 @@ import com.xuggle.xuggler.video.IConverter;
 public class FastEncodeTest {
 	boolean working = true;
 	private Tag sourceTag = null;
-	@Test
+//	@Test
 	public void test1() {
 		IFileReadChannel source = null;
 		IStreamCoder decoder = null;
