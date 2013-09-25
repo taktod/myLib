@@ -29,4 +29,14 @@
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
+  <name>myLib.convert.ffmpeg</name>
+  <description>外部プロセスに変換をさせることで動作する変換プログラム
+
+本家 -&gt;*1 子プロセス -&gt;*2 ffmpeg -&gt;*3 本家
+という通信動作になります。
+*1はnettyを利用したtcpソケット通信
+*2はunixのプロセスpipeline
+*3はprocessBuilderへの標準出力
+となります。
+実践投入もしているプログラムです。</description>
 </project>

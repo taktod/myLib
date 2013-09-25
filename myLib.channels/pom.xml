@@ -8,5 +8,7 @@
   <artifactId>myLib.channels</artifactId>
   <name>myLib.channels</name>
   <description>myLib内部で利用するデータ読み込みまわりのライブラリ
-http経由で外にあるファイルを読み込んで利用したりできます。</description>
+http経由で外にあるファイルを読み込んで利用したりできます。
+
+contentsSizeが固定されていることが前提になっているので、いまのところhtmlの読み込み等には向いていません。</description>
 </project>

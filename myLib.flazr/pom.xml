@@ -8,15 +8,20 @@
   </parent>
   <artifactId>myLib.flazr</artifactId>
   <dependencies>
-  	<dependency>
-  		<groupId>net.sourceforge.openutils</groupId>
-  		<artifactId>flazr</artifactId>
-  		<version>0.7-snv20100505</version>
-  	</dependency>
-  	<dependency>
-  	  <groupId>com.ttProject</groupId>
-  	  <artifactId>myLib.media.flv</artifactId>
-  	  <version>0.0.2-SNAPSHOT</version>
-  	</dependency>
+    <dependency>
+      <groupId>net.sourceforge.openutils</groupId>
+      <artifactId>flazr</artifactId>
+      <version>0.7-snv20100505</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.media.flv</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
   </dependencies>
+  <name>myLib.flazr</name>
+  <description>flazrのプログラムを使う上での動作補助
+
+myLib.media.flvのTag &lt;-&gt; flvAtom変換や
+wowzaでのamf3命令が混入するバグにも対応できるようになっています。</description>
 </project>
