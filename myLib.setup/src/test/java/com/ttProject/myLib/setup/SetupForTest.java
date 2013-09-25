@@ -106,6 +106,7 @@ public class SetupForTest {
 	 */
 	@Test
 	public void mp3Setup() throws Exception {
+		System.out.println("mp3のテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
@@ -156,6 +157,7 @@ public class SetupForTest {
 	 */
 	@Test
 	public void aacSetup() throws Exception {
+		System.out.println("aacのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
@@ -205,6 +207,7 @@ public class SetupForTest {
 	 */
 	@Test
 	public void h264Setup() throws Exception {
+		System.out.println("h264のテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
@@ -273,11 +276,12 @@ public class SetupForTest {
 		container.close();
 	}
 	/**
-	 * flvのテストデータを生成する
+	 * flvのテスト用データを生成する
 	 * @throws Exception
 	 */
 	@Test
 	public void flvSetup() throws Exception {
+		System.out.println("flvのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
@@ -359,6 +363,7 @@ public class SetupForTest {
 	 */
 	@Test
 	public void mpegtsSetup() throws Exception {
+		System.out.println("mpegtsのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
@@ -456,11 +461,12 @@ public class SetupForTest {
 		container.close();
 	}
 	/**
-	 * mp4のテストデータを生成する。
+	 * mp4のテスト用データを生成する。
 	 * @throws Exception
 	 */
 	@Test
 	public void mp4Setup() throws Exception {
+		System.out.println("mp4のテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
@@ -558,11 +564,12 @@ public class SetupForTest {
 		container.close();
 	}
 	/**
-	 * mkvのテストデータを生成する。
+	 * mkvのテスト用データを生成する。
 	 * @throws Exception
 	 */
 	@Test
 	public void mkvSetup() throws Exception {
+		System.out.println("mkvのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
