@@ -11,6 +11,9 @@ import com.ttProject.util.BufferUtil;
 public class DataNalAnalyzer extends FrameAnalyzer {
 	@Override
 	public Frame analyze(IReadChannel ch) throws Exception {
+		if(ch.size() < 4) {
+			throw new Exception("読み込みバッファ量がおかしいです。");
+		}
 		int size = BufferUtil.safeRead(ch, 4).getInt();
 		// 以降、このサイズがデータ
 		// 始めの1バイトを読み込んでどういうデータか確認する。

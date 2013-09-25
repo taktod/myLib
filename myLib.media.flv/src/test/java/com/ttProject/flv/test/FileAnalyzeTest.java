@@ -23,7 +23,9 @@ public class FileAnalyzeTest {
 	 */
 	@Test
 	public void fixedFileTest() throws Exception {
-		IFileReadChannel source = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.flv");
+		IFileReadChannel source = FileReadChannel.openFileReadChannel(
+				Thread.currentThread().getContextClassLoader().getResource("test.flv")
+		);
 		FlvHeader flvheader = new FlvHeader();
 		flvheader.analyze(source);
 		System.out.println(flvheader);
@@ -40,7 +42,9 @@ public class FileAnalyzeTest {
 	 */
 	@Test
 	public void appendingBufferTest() throws Exception {
-		IFileReadChannel source = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.flv");
+		IFileReadChannel source = FileReadChannel.openFileReadChannel(
+				Thread.currentThread().getContextClassLoader().getResource("test.flv")
+		);
 		FlvHeader flvheader = new FlvHeader();
 		flvheader.analyze(source);
 		System.out.println(flvheader);

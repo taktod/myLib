@@ -20,12 +20,12 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
 
 public class FileAnalyzeTest {
-//	@Test
+	@Test
 	public void test() throws Exception {
 		// h264データの読み込みテストを実施します。
 		// ただしh264を読み込む適当なフォーマットがないので、flvからデータを読み込むことにします。
 		IFileReadChannel source = FileReadChannel.openFileReadChannel(
-				Thread.currentThread().getContextClassLoader().getResource("mario.nosound.flv")
+				Thread.currentThread().getContextClassLoader().getResource("test.flv")
 		);
 		FlvHeader flvHeader = new FlvHeader();
 		flvHeader.analyze(source);
@@ -38,6 +38,10 @@ public class FileAnalyzeTest {
 				if(tag instanceof VideoTag) {
 					VideoTag vTag = (VideoTag) tag;
 					if(vTag.getCodec() == CodecType.AVC) {
+						if(vTag.isEndOfSequence()) {
+							// シーケンス終了時の場合
+							break;
+						}
 						// h.264だったら読み込んでやっておく。
 						if(vTag.isMediaSequenceHeader()) {
 							// mshの場合はデータがmshになっているはずなので、解析する必要がある。
