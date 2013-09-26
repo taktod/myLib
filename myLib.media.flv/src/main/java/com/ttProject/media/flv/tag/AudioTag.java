@@ -260,4 +260,16 @@ public class AudioTag extends Tag {
 	public String toString() {
 		return "audioTag:" + getTimestamp();
 	}
+	/**
+	 * 同じタグを作成して応答します
+	 */
+	public AudioTag clone() {
+		AudioTag aTag = new AudioTag(0, getInitSize(), getTimestamp());
+		aTag.channels = channels;
+		aTag.codec = codec;
+		aTag.data = data;
+		aTag.isMediaSequenceHeader = isMediaSequenceHeader;
+		aTag.sampleRate = sampleRate;
+		return aTag;
+	}
 }

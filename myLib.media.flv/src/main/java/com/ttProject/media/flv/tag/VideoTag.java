@@ -253,4 +253,15 @@ public class VideoTag extends Tag {
 	public String toString() {
 		return "videoTag:" + getTimestamp();
 	}
+	/**
+	 * 同じタグを作成して応答します。
+	 */
+	public VideoTag clone() {
+		VideoTag vTag = new VideoTag(0, getInitSize(), getTimestamp());
+		vTag.avcFrameType = avcFrameType;
+		vTag.codec = codec;
+		vTag.data = data;
+		vTag.frame = frame;
+		return vTag;
+	}
 }
