@@ -147,4 +147,10 @@ public class BufferUtil {
 		}
 		return src.remaining() == 0; // 最後まで読み込みできたなら一致
 	}
+	public static byte[] toByteArray(ByteBuffer src) {
+		int size = src.remaining();
+		byte[] data = new byte[size];
+		src.get(data);
+		return data;
+	}
 }
