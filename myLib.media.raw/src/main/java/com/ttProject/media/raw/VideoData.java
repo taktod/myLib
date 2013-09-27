@@ -40,4 +40,7 @@ public class VideoData {
 	public String toString() {
 		return "" + timestamp;
 	}
+	public VideoData clone() {
+		return new VideoData(image, timestamp);
+	}
 }

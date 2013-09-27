@@ -46,7 +46,7 @@ public class AudioData {
 	 * @return
 	 */
 	public ByteBuffer getBuffer() {
-		return buffer;
+		return buffer.duplicate();
 	}
 	/**
 	 * タイムスタンプ参照
@@ -54,5 +54,8 @@ public class AudioData {
 	 */
 	public long getTimestamp() {
 		return timestamp;
+	}
+	public AudioData clone() {
+		return new AudioData(format, buffer, timestamp);
 	}
 }
