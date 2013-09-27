@@ -8,8 +8,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 
-import org.junit.Test;
-
 import com.ttProject.util.HexUtil;
 import com.ttProject.xuggle.test.swing.TestFrame;
 import com.xuggle.mediatool.IMediaReader;

@@ -15,14 +15,11 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 
-import org.junit.Test;
-
 import com.ttProject.media.aac.DecoderSpecificInfo;
 import com.ttProject.media.aac.frame.Aac;
 import com.ttProject.media.extra.flv.FlvOrderModel;
 import com.ttProject.media.extra.mp4.IndexFileCreator;
 import com.ttProject.media.flv.FlvHeader;
-import com.ttProject.media.flv.FlvTagOrderManager;
 import com.ttProject.media.flv.ITagAnalyzer;
 import com.ttProject.media.flv.Tag;
 import com.ttProject.media.flv.TagAnalyzer;
@@ -43,7 +40,6 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
 import com.ttProject.xuggle.test.swing.TestFrame;
 import com.xuggle.ferry.IBuffer;
-import com.xuggle.ferry.RefCounted;
 import com.xuggle.xuggler.Global;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec;
