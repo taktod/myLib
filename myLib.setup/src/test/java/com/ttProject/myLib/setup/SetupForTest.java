@@ -50,7 +50,7 @@ public class SetupForTest {
 		double rad = tone * 2 * Math.PI / samplingRate; // 各deltaごとの回転数
 		double max = (1 << (bit - 2)) - 1; // 振幅の大きさ(音の大きさ)
 		buffer.order(ByteOrder.LITTLE_ENDIAN); // xuggleで利用するデータはlittleEndianなのでlittleEndianを使うようにする。
-		long startPos = 1024 * audioCounter / 44100 * 1000;
+		long startPos = 1000 * audioCounter / 44100 * 1000;
 		for(int i = 0;i < samplesNum / 8;i ++, audioCounter ++) {
 			short data = (short)(Math.sin(rad * audioCounter) * max);
 			for(int j = 0;j < channels;j ++) {
@@ -63,6 +63,7 @@ public class SetupForTest {
 		samples.getData().put(buffer.array(), 0, 0, buffer.remaining());
 		samples.setComplete(true, snum, samplingRate, channels, Format.FMT_S16P, 0);
 		samples.setTimeStamp(startPos);
+		samples.setPts(startPos);
 		return samples;
 	}
 	/**
@@ -80,6 +81,7 @@ public class SetupForTest {
 		g.dispose();
 		IConverter converter = ConverterFactory.createConverter(base, IPixelFormat.Type.YUV420P);
 		IVideoPicture picture = converter.toPicture(base, 25000 * videoCounter);
+		picture.setPts(25000 * videoCounter);
 		videoCounter ++;
 		return picture;
 	}
@@ -126,9 +128,7 @@ public class SetupForTest {
 		if(container.writeHeader() < 0) {
 			throw new Exception("header書き込み失敗");
 		}
-		int counter = 0;
-		while(counter < 400) {
-			counter ++;
+		while(true) {
 			IPacket packet = IPacket.make();
 			IAudioSamples samples = samples();
 			int samplesConsumed = 0;
@@ -143,6 +143,9 @@ public class SetupForTest {
 						throw new Exception("コンテナ書き込み失敗");
 					}
 				}
+			}
+			if(samples.getPts() > 1000000) {
+				break;
 			}
 		}
 		if(container.writeTrailer() < 0) {
@@ -176,9 +179,7 @@ public class SetupForTest {
 		if(container.writeHeader() < 0) {
 			throw new Exception("header書き込み失敗");
 		}
-		int counter = 0;
-		while(counter < 400) {
-			counter ++;
+		while(true) {
 			IPacket packet = IPacket.make();
 			IAudioSamples samples = samples();
 			int samplesConsumed = 0;
@@ -193,6 +194,9 @@ public class SetupForTest {
 						throw new Exception("コンテナ書き込み失敗");
 					}
 				}
+			}
+			if(samples.getPts() > 1000000) {
+				break;
 			}
 		}
 		if(container.writeTrailer() < 0) {
@@ -246,6 +250,7 @@ public class SetupForTest {
 		coder.setProperty("qmax", "30");
 		coder.setProperty("qdiff", "4");
 		coder.setProperty("directpred", "0");
+		coder.setProperty("profile", "main");
 		coder.setProperty("cqp", "0");
 		coder.setFlag(Flags.FLAG_LOOP_FILTER, true);
 		coder.setFlag(Flags.FLAG_CLOSED_GOP, true);
@@ -255,9 +260,7 @@ public class SetupForTest {
 		if(container.writeHeader() < 0) {
 			throw new Exception("header書き込み失敗");
 		}
-		int counter = 0;
-		while(counter < 50) {
-			counter ++;
+		while(true) {
 			IPacket packet = IPacket.make();
 			IVideoPicture picture = image();
 			if(coder.encodeVideo(packet, picture, 0) < 0) {
@@ -267,6 +270,9 @@ public class SetupForTest {
 				if(container.writePacket(packet) < 0) {
 					throw new Exception("コンテナ書き込み失敗");
 				}
+			}
+			if(picture.getPts() > 1000000) {
+				break;
 			}
 		}
 		if(container.writeTrailer() < 0) {
@@ -289,7 +295,7 @@ public class SetupForTest {
 		if(container.open(getTargetFile("myLib.media.flv/src/test/resources/test.flv"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
-		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_FLV1);
+		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_H264);
 		IStreamCoder coder = stream.getStreamCoder();
 		IRational frameRate = IRational.make(15, 1); // 15fps
 		coder.setNumPicturesInGroupOfPictures(5); // gopを30にしておく。keyframeが30枚ごとになる。
@@ -302,10 +308,32 @@ public class SetupForTest {
 		coder.setGlobalQuality(10);
 		coder.setFrameRate(frameRate);
 		coder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
+		coder.setProperty("level", "30");
+		coder.setProperty("coder", "0");
+		coder.setProperty("qmin", "10");
+		coder.setProperty("bf", "0");
+		coder.setProperty("wprefp", "0");
+		coder.setProperty("cmp", "+chroma");
+		coder.setProperty("partitions", "-parti8x8+parti4x4+partp8x8+partp4x4-partb8x8");
+		coder.setProperty("me_method", "hex");
+		coder.setProperty("subq", "5");
+		coder.setProperty("me_range", "16");
+		coder.setProperty("keyint_min", "25");
+		coder.setProperty("sc_threshold", "40");
+		coder.setProperty("i_qfactor", "0.71");
+		coder.setProperty("b_strategy", "0");
+		coder.setProperty("qcomp", "0.6");
+		coder.setProperty("qmax", "30");
+		coder.setProperty("qdiff", "4");
+		coder.setProperty("directpred", "0");
+		coder.setProperty("profile", "main");
+		coder.setProperty("cqp", "0");
+		coder.setFlag(Flags.FLAG_LOOP_FILTER, true);
+		coder.setFlag(Flags.FLAG_CLOSED_GOP, true);
 		if(coder.open(null, null) < 0) {
 			throw new Exception("エンコーダーが開けませんでした");
 		}
-		stream = container.addNewStream(ICodec.ID.CODEC_ID_MP3);
+		stream = container.addNewStream(ICodec.ID.CODEC_ID_AAC);
 		IStreamCoder coder2 = stream.getStreamCoder();
 		coder2.setSampleRate(44100);
 		coder2.setChannels(2);
@@ -316,9 +344,7 @@ public class SetupForTest {
 		if(container.writeHeader() < 0) {
 			throw new Exception("header書き込み失敗");
 		}
-		int counter = 0;
-		while(counter < 50) {
-			counter ++;
+		while(true) {
 			IPacket packet = IPacket.make();
 			IVideoPicture picture = image();
 			if(coder.encodeVideo(packet, picture, 0) < 0) {
@@ -344,10 +370,12 @@ public class SetupForTest {
 						}
 					}
 				}
-				//		long startPos = 1024 * audioCounter / 44100 * 1000;
-				if(1024 * audioCounter / 44100 * 1000 > videoCounter * 25000) {
+				if(samples.getPts() > picture.getPts()) {
 					break;
 				}
+			}
+			if(picture.getPts() > 1000000) {
+				break;
 			}
 		}
 		if(container.writeTrailer() < 0) {
@@ -402,6 +430,7 @@ public class SetupForTest {
 		coder.setProperty("qmax", "30");
 		coder.setProperty("qdiff", "4");
 		coder.setProperty("directpred", "0");
+		coder.setProperty("profile", "main");
 		coder.setProperty("cqp", "0");
 		coder.setFlag(Flags.FLAG_LOOP_FILTER, true);
 		coder.setFlag(Flags.FLAG_CLOSED_GOP, true);
@@ -419,9 +448,7 @@ public class SetupForTest {
 		if(container.writeHeader() < 0) {
 			throw new Exception("header書き込み失敗");
 		}
-		int counter = 0;
-		while(counter < 50) {
-			counter ++;
+		while(true) {
 			IPacket packet = IPacket.make();
 			IVideoPicture picture = image();
 			if(coder.encodeVideo(packet, picture, 0) < 0) {
@@ -447,10 +474,12 @@ public class SetupForTest {
 						}
 					}
 				}
-				//		long startPos = 1024 * audioCounter / 44100 * 1000;
-				if(1024 * audioCounter / 44100 * 1000 > videoCounter * 25000) {
+				if(samples.getPts() > picture.getPts()) {
 					break;
 				}
+			}
+			if(picture.getPts() > 1000000) {
+				break;
 			}
 		}
 		if(container.writeTrailer() < 0) {
@@ -505,6 +534,7 @@ public class SetupForTest {
 		coder.setProperty("qmax", "30");
 		coder.setProperty("qdiff", "4");
 		coder.setProperty("directpred", "0");
+		coder.setProperty("profile", "main");
 		coder.setProperty("cqp", "0");
 		coder.setFlag(Flags.FLAG_LOOP_FILTER, true);
 		coder.setFlag(Flags.FLAG_CLOSED_GOP, true);
@@ -522,9 +552,7 @@ public class SetupForTest {
 		if(container.writeHeader() < 0) {
 			throw new Exception("header書き込み失敗");
 		}
-		int counter = 0;
-		while(counter < 50) {
-			counter ++;
+		while(true) {
 			IPacket packet = IPacket.make();
 			IVideoPicture picture = image();
 			if(coder.encodeVideo(packet, picture, 0) < 0) {
@@ -550,10 +578,12 @@ public class SetupForTest {
 						}
 					}
 				}
-				//		long startPos = 1024 * audioCounter / 44100 * 1000;
-				if(1024 * audioCounter / 44100 * 1000 > videoCounter * 25000) {
+				if(samples.getPts() > picture.getPts()) {
 					break;
 				}
+			}
+			if(picture.getPts() > 1000000) {
+				break;
 			}
 		}
 		if(container.writeTrailer() < 0) {
@@ -604,9 +634,7 @@ public class SetupForTest {
 		if(container.writeHeader() < 0) {
 			throw new Exception("header書き込み失敗");
 		}
-		int counter = 0;
-		while(counter < 50) {
-			counter ++;
+		while(true) {
 			IPacket packet = IPacket.make();
 			IVideoPicture picture = image();
 			if(coder.encodeVideo(packet, picture, 0) < 0) {
@@ -632,10 +660,12 @@ public class SetupForTest {
 						}
 					}
 				}
-				//		long startPos = 1024 * audioCounter / 44100 * 1000;
-				if(1024 * audioCounter / 44100 * 1000 > videoCounter * 25000) {
+				if(samples.getPts() > picture.getPts()) {
 					break;
 				}
+			}
+			if(picture.getPts() > 1000000) {
+				break;
 			}
 		}
 		if(container.writeTrailer() < 0) {
