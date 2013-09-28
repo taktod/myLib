@@ -62,7 +62,9 @@ public class SetupForTest {
 		IAudioSamples samples = IAudioSamples.make(snum, channels, Format.FMT_S16P);
 		samples.getData().put(buffer.array(), 0, 0, buffer.remaining());
 		samples.setComplete(true, snum, samplingRate, channels, Format.FMT_S16P, 0);
+		// このtimestampの設定は必要っぽい
 		samples.setTimeStamp(startPos);
+		// こっちはいらないっぽい。ただし別の関数っぽいので、やっとくに超したことはなさそうな・・・
 		samples.setPts(startPos);
 		return samples;
 	}
@@ -81,6 +83,7 @@ public class SetupForTest {
 		g.dispose();
 		IConverter converter = ConverterFactory.createConverter(base, IPixelFormat.Type.YUV420P);
 		IVideoPicture picture = converter.toPicture(base, 25000 * videoCounter);
+		// この時点ですでにtimestampは入力済みっぽいので、setPtsする必要はなさそう。
 		picture.setPts(25000 * videoCounter);
 		videoCounter ++;
 		return picture;
