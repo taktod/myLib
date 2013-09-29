@@ -69,6 +69,55 @@ public class AudioTag extends Tag {
 		codec = CodecType.getAudioCodecType(tagByte);
 		return (codec == CodecType.AAC);
 	}
+	public byte getTagByte() throws Exception {
+		byte tagByte = 0x00;
+		// codec判定
+		switch(codec) {
+//		case PCM: tagByte = 0x00;
+		case ADPCM:				tagByte = (byte)0x12;break;
+		case MP3: 				tagByte = (byte)0x22;break;
+		case PCM: 				tagByte = (byte)0x32;break; // pcmの場合は2がはいっているのはおかしいかも？
+		case NELLY_16: 			tagByte = (byte)0x42;break;
+		case NELLY_8: 			tagByte = (byte)0x52;break;
+		case NELLY: 			tagByte = (byte)0x62;break;
+		case G711_A: 			tagByte = (byte)0x72;break;
+		case G711_U: 			tagByte = (byte)0x82;break;
+		case RESERVED: 			tagByte = (byte)0x92;break;
+		case SPEEX: 			tagByte = (byte)0xB2;break;
+		case MP3_8: 			tagByte = (byte)0xE2;break;
+		case DEVICE_SPECIFIC:	tagByte = (byte)0xF2;break;
+
+		case AAC: 				tagByte = (byte)0xA2;
+			setSize(data.remaining() + 2 + 15); // aacの場合はサイズがちょっとかわるので、上書きしておく。
+			break;
+
+//		case 12: // 不明
+//		case 13: // 未定義
+		default:
+			throw new RuntimeException("判定不能なコーデック");
+		}
+		// サンプリングレート
+		switch((int)(sampleRate / 1000)) {
+		case 44:
+			tagByte |= 0x0C;
+			break;
+		case 22:
+			tagByte |= 0x08;
+			break;
+		case 11:
+			tagByte |= 0x04;
+			break;
+		case 5:
+			break;
+		default:
+			throw new Exception("sampleRateが不正です。");
+		}
+		// サウンドチャンネル指定
+		if(channels == 2) {
+			tagByte |= 1;
+		}
+		return tagByte;
+	}
 	/**
 	 * コーデックを設定
 	 * @param codec
@@ -175,11 +224,11 @@ public class AudioTag extends Tag {
 		// データのベース位置を更新します。
 		data.position(0);
 		// tagを作成します。
-		byte tagByte = 0x00;
+//		byte tagByte = 0x00;
 		// デフォルトサイズの更新
 		setSize(data.remaining() + 1 + 15);
 		// codec判定
-		switch(codec) {
+/*		switch(codec) {
 //		case PCM: tagByte = 0x00;
 		case ADPCM:				tagByte = (byte)0x12;break;
 		case MP3: 				tagByte = (byte)0x22;break;
@@ -222,13 +271,14 @@ public class AudioTag extends Tag {
 		// サウンドチャンネル指定
 		if(channels == 2) {
 			tagByte |= 1;
-		}
+		}*/
 		// データの作成
 		ByteBuffer buffer = ByteBuffer.allocate(getSize());
 		// header
 		buffer.put(getHeaderBuffer((byte)0x08));
 		// tag
-		buffer.put(tagByte);
+//		buffer.put(tagByte);
+		buffer.put(getTagByte());
 		// aacの場合はmshの判定処理が必要
 		if(codec == CodecType.AAC) {
 			if(isMediaSequenceHeader) {
