@@ -25,7 +25,7 @@ public class CacheBuffer {
 	 * @throws Exception
 	 */
 	public CacheBuffer(IReadChannel source) throws Exception {
-		this(source, source.size());
+		this(source, source.size() - source.position());
 	}
 	/**
 	 * コンストラクタ
@@ -131,5 +131,12 @@ public class CacheBuffer {
 			return remaining;
 		}
 		return remaining + buffer.remaining();
+	}
+	/**
+	 * 読み込み位置を応答する。
+	 * @return
+	 */
+	public int position() {
+		return position - buffer.remaining();
 	}
 }
