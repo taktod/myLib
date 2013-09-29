@@ -80,4 +80,24 @@ public enum CodecType {
 			throw new RuntimeException("判定不能なコーデック");
 		}
 	}
+	/**
+	 * コーデックデータから映像のtagByte用の数値を応答します。
+	 * @param codec
+	 * @return
+	 * @throws Exception
+	 */
+	public static byte getVideoByte(CodecType codec) throws Exception {
+		switch(codec) {
+		case JPEG:         return 1;
+		case H263:         return 2;
+		case SCREEN:       return 3;
+		case ON2VP6:       return 4;
+		case ON2VP6_ALPHA: return 5;
+		case SCREEN_V2:    return 6;
+		case AVC:          return 7;
+		case NONE:         return 0;
+		default:
+			throw new Exception("映像コーデックではありません。");
+		}
+	}
 }
