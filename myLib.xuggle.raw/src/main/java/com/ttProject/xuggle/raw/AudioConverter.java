@@ -5,6 +5,7 @@ import javax.sound.sampled.AudioFormat;
 import com.ttProject.media.raw.AudioData;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.IAudioSamples.Format;
+import com.xuggle.xuggler.IRational;
 
 /**
  * AudioDataをIAudioSamplesに変換するコンバーター
@@ -39,7 +40,11 @@ public class AudioConverter {
 		}
 		IAudioSamples samples = IAudioSamples.make(sampleNum, channels, xformat);
 		samples.getData().put(audioData.getBuffer().array(), 0, 0, audioData.getBuffer().remaining());
-		samples.setComplete(true, sampleNum, (int)format.getSampleRate(), channels, xformat, 0); // 時刻はこちらで計算しなければいけないか？
+		samples.setComplete(true, sampleNum, (int)format.getSampleRate(), channels, xformat, 0);
+		samples.setTimeBase(IRational.make(1000000, 1));
+		samples.setTimeStamp(audioData.getTimestamp());
+		// TODO ここのtimestampは0がはいっていることがあり得るのでその場合はsample数から計算して値を出してやった方がよさそう。
+		samples.setPts(audioData.getTimestamp());
 		return samples;
 	}
 }
