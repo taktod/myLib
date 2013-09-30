@@ -10,7 +10,6 @@ import com.ttProject.media.flv.FlvHeader;
 import com.ttProject.media.flv.Tag;
 import com.ttProject.media.flv.tag.AudioTag;
 import com.ttProject.media.flv.tag.VideoTag;
-import com.ttProject.nio.CacheBuffer;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.util.BufferUtil;
@@ -177,7 +176,7 @@ public class IndexFileCreator {
 	 * データにアクセスします。
 	 * この動作はFlvOrderModelに引き継ぐべき。
 	 * @throws Exception
-	 */
+	 * /
 	public void access(long timestamp) throws Exception {
 		// 0:とりあえずtimestampから開始位置の推定を実行する
 		int position = (int)(timestamp * size / duration);

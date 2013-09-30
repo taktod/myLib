@@ -1,6 +1,7 @@
 package com.ttProject.media.flv.model;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ttProject.media.flv.CodecType;
@@ -90,16 +91,16 @@ public class FlvOrderModel {
 				source.position(position);
 				tag = analyzer.analyze(source);
 				videoMshTag = (VideoTag) tag;
-				break;
+				continue;
 			case 2: // audioMsh
 				source.position(position);
 				tag = analyzer.analyze(source);
 				audioMshTag = (AudioTag) tag;
-				break;
+				continue;
 			default:
 				throw new Exception("解析不能なデータを受け取りました。");
 			}
-			if(timestamp > startMilliSecond) {
+			if(timestamp >= startMilliSecond) {
 				// 読み込みを実行する位置
 				source.position();
 				this.position = position;
@@ -148,6 +149,7 @@ public class FlvOrderModel {
 	 * @throws Exception
 	 */
 	public List<Tag> nextTagList(IReadChannel source) throws Exception {
+		List<Tag> result = new ArrayList<Tag>();
 		if(position == -1) {
 			// 始めのデータの場合はindexファイルのデータを確認して、自分の欲しいtimestampデータがない場合
 			// 推定でアクセスして、そのデータにアクセスするようにしておく。
@@ -160,7 +162,6 @@ public class FlvOrderModel {
 			// ここから読み込んでいく。shortで0がでたら、そこがあやしい。
 			CacheBuffer cacheBuffer = new CacheBuffer(source);
 			// shortで取得していって中身を見たいがあとで巻き戻す動作が若干必要。
-			boolean isVideoTag = false;
 			while(cacheBuffer.remaining() > 1) {
 				if(cacheBuffer.getShort() == 0) {
 					// ここで取得できるpositionは00 00 [XX
@@ -187,7 +188,6 @@ public class FlvOrderModel {
 						break;
 					}
 					else if((b & 0x0F) == CodecType.getVideoByte(videoCodec)) {
-						isVideoTag = true;
 						System.out.println("タグをみつけたと思われる。");
 						// 12バイト前のデータを見てみる。
 						source.position(pos);
@@ -208,11 +208,15 @@ public class FlvOrderModel {
 				if(!videoFlg || videoCodec == CodecType.NONE) {
 					// 音声タグをみつけたらそこから実行させる。
 					if(tag instanceof AudioTag) {
-						System.out.print("開始タグ:");
-						System.out.println(tag);
-						System.out.print("開始位置:");
-						System.out.println(Integer.toHexString(tag.getPosition()));
-						break;
+						AudioTag aTag = (AudioTag) tag;
+						aTag.analyze(source);
+						position = tag.getPosition();
+						if(audioMshTag != null) {
+							audioMshTag.setTimestamp(aTag.getTimestamp());
+							result.add(audioMshTag);
+						}
+						result.add(aTag);
+						return result;
 					}
 				}
 				else {
@@ -223,14 +227,38 @@ public class FlvOrderModel {
 							System.out.println(tag);
 							System.out.print("開始位置:");
 							System.out.println(Integer.toHexString(tag.getPosition()));
-							break;
+							vTag.analyze(source);
+							position = tag.getPosition();
+							if(videoMshTag != null) {
+								videoMshTag.setTimestamp(vTag.getTimestamp());
+								result.add(videoMshTag);
+							}
+							if(audioMshTag != null) {
+								audioMshTag.setTimestamp(vTag.getTimestamp());
+								result.add(audioMshTag);
+							}
+							result.add(vTag);
+							return result;
 						}
 					}
 				}
 			}
 		}
-		
-		return null;
+		boolean firstFlg = position == source.position();
+		// このタイミングで続きの動作を実行します。
+		Tag tag = analyzer.analyze(source);
+		if(firstFlg) {
+			if(audioMshTag != null) {
+				audioMshTag.setTimestamp(tag.getTimestamp());
+				result.add(audioMshTag);
+			}
+			if(videoMshTag != null) {
+				videoMshTag.setTimestamp(tag.getTimestamp());
+				result.add(videoMshTag);
+			}
+		}
+		result.add(tag);
+		return result;
 	}
 	public void close() {
 		if(idx != null) {

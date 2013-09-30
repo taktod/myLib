@@ -2,7 +2,6 @@ package com.ttProject.media.flv.model;
 
 import java.nio.ByteBuffer;
 
-import com.ttProject.media.flv.CodecType;
 import com.ttProject.media.flv.FlvManager;
 import com.ttProject.media.flv.ITagAnalyzer;
 import com.ttProject.media.flv.Tag;
@@ -10,7 +9,6 @@ import com.ttProject.media.flv.tag.AudioTag;
 import com.ttProject.media.flv.tag.VideoTag;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtil;
 
 /**
  * FLVの内容解析、ただしデータの読み込みは実行しない。
