@@ -1,6 +1,8 @@
 package com.ttProject.nio.test;
 
+import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 import org.junit.Test;
 
@@ -43,5 +45,14 @@ public class BufferTest {
 		while(buffer.remaining() != 0) {
 			System.out.println(Integer.toHexString(buffer.get() & 0xFF));
 		}
+		target.close();
+	}
+	@Test
+	public void test4() throws Exception {
+		FileOutputStream fos = new FileOutputStream("test");
+		FileChannel channel = fos.getChannel();
+		System.out.println(channel.isOpen());
+		fos.close();
+		System.out.println(channel.isOpen());
 	}
 }
