@@ -14,3 +14,10 @@
 *.class
 *.log
 *.tmp
+*.flv
+*.aac
+*.mp3
+*.mp4
+*.mkv
+*.webm
+*.ts
