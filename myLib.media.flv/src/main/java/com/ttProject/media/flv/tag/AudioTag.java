@@ -226,7 +226,12 @@ public class AudioTag extends Tag {
 		// tagを作成します。
 //		byte tagByte = 0x00;
 		// デフォルトサイズの更新
-		setSize(data.remaining() + 1 + 15);
+		if(codec == CodecType.AAC) {
+			setSize(data.remaining() + 2 + 15);
+		}
+		else {
+			setSize(data.remaining() + 1 + 15);
+		}
 		// codec判定
 /*		switch(codec) {
 //		case PCM: tagByte = 0x00;
