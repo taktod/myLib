@@ -35,6 +35,7 @@ public class Mp4Manager extends Manager<Atom> {
 			return (Atom)construct.newInstance(new Object[]{position, size});
 		}
 		catch (Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}

@@ -1,5 +1,7 @@
 package com.ttProject.jmx.test;
 
+import org.junit.Assert;
+
 import com.ttProject.jmx.JMXFactory;
 
 /**
@@ -24,6 +26,7 @@ public class JMXTest {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			Assert.fail("例外が発生しました。");
 		}
 	}
 }

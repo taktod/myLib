@@ -2,6 +2,7 @@ package com.ttProject.media.h264.test;
 
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.ttProject.media.flv.CodecType;
@@ -69,6 +70,7 @@ public class FileAnalyzeTest {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			Assert.fail("例外が発生しました。");
 		}
 		source.close();
 	}

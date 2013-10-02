@@ -1,5 +1,6 @@
 package com.ttProject.xuggle.flv.test;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.ttProject.media.flv.FlvHeader;
@@ -75,6 +76,7 @@ public class DecodeTest {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			Assert.fail("例外が発生しました。");
 		}
 	}
 	@Test
@@ -139,6 +141,7 @@ public class DecodeTest {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			Assert.fail("例外が発生しました。");
 		}
 	}
 }

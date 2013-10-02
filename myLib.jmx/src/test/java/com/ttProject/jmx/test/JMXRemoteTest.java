@@ -1,5 +1,7 @@
 package com.ttProject.jmx.test;
 
+import org.junit.Assert;
+
 import com.ttProject.jmx.JMXFactory;
 import com.ttProject.jmx.JMXServerFactory;
 
@@ -27,6 +29,7 @@ public class JMXRemoteTest {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			Assert.fail("例外が発生しました。");
 		}
 	}
 }

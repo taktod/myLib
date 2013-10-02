@@ -11,6 +11,7 @@ import java.nio.channels.FileChannel;
 
 import javax.sound.sampled.AudioFormat;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.ttProject.media.flv.FlvHeader;
@@ -47,7 +48,9 @@ public class EncodeTest {
 			output.write(flvHeader.getBuffer());
 
 			IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_FLV1);
-			IRational frameRate = IRational.make(15, 1); // 15fps
+			IRational frameRate = IRational.make(15, 1); // 15fps(この値ではなく、入力値できまるっぽい。なんでだろう・・・)
+			// デコード側にfps設定をいれても無駄っぽいです。都合のよいプログラムはなさそうですね。
+			// 逆にいうとデータがきたらその分だけきちんと変換することで対応できるっぽいので、いいかもしれない
 			encoder.setNumPicturesInGroupOfPictures(30); // gopを30にしておく。keyframeが30枚ごとになる。
 			encoder.setBitRate(250000); // 250kbps
 			encoder.setBitRateTolerance(9000);
@@ -75,8 +78,8 @@ public class EncodeTest {
 					startTime = now;
 				}
 				BufferedImage image = image();
-				IVideoPicture picture = converter.toPicture(image, 1000 * (now - startTime));
-				
+				IVideoPicture picture = converter.toPicture(image, index * 166);
+				picture.setPts(index * 66000);
 				if(encoder.encodeVideo(packet, picture, 0) < 0) {
 					throw new Exception("変換失敗");
 				}
@@ -90,6 +93,7 @@ public class EncodeTest {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			Assert.fail("例外が発生しました。");
 		}
 		if(output != null) {
 			try {
@@ -133,13 +137,14 @@ public class EncodeTest {
 			encoder.setProperty("subq", "5");
 			encoder.setProperty("me_range", "16");
 			encoder.setProperty("keyint_min", "25");
-			encoder.setProperty("sc_threshold", "40");
+			encoder.setProperty("sc_threshold", "0");
 			encoder.setProperty("i_qfactor", "0.71");
 			encoder.setProperty("b_strategy", "0");
 			encoder.setProperty("qcomp", "0.6");
 			encoder.setProperty("qmax", "30");
 			encoder.setProperty("qdiff", "4");
 			encoder.setProperty("directpred", "0");
+			encoder.setProperty("profile", "main");
 			encoder.setProperty("cqp", "0");
 			encoder.setFlag(Flags.FLAG_LOOP_FILTER, true);
 			encoder.setFlag(Flags.FLAG_CLOSED_GOP, true);
@@ -161,14 +166,14 @@ public class EncodeTest {
 					startTime = now;
 				}
 				BufferedImage image = image();
-				IVideoPicture picture = converter.toPicture(image, 1000 * (now - startTime));
-				
+				IVideoPicture picture = converter.toPicture(image, index * 66000);
+				picture.setPts(index * 66000);
+
 				if(encoder.encodeVideo(packet, picture, 0) < 0) {
 					throw new Exception("変換失敗");
 				}
 				if(packet.isComplete()) {
 					for(Tag tag : depacketizer.getTag(encoder, packet)) {
-						System.out.println(tag);
 						output.write(tag.getBuffer());
 					}
 				}
@@ -176,6 +181,7 @@ public class EncodeTest {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			Assert.fail("例外が発生しました。");
 		}
 		if(output != null) {
 			try {
@@ -201,7 +207,7 @@ public class EncodeTest {
 		return base;
 	}
 	private int audioCounter = 0; // audioの進捗カウンター
-	@Test
+//	@Test
 	public void mp3Test() {
 		audioCounter = 0;
 		FileChannel output = null;
@@ -248,6 +254,7 @@ public class EncodeTest {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			Assert.fail("例外が発生しました。");
 		}
 		if(output != null) {
 			try {
@@ -258,7 +265,7 @@ public class EncodeTest {
 			output = null;
 		}
 	}
-	@Test
+//	@Test
 	public void aacTest() {
 		audioCounter = 0;
 		FileChannel output = null;
@@ -304,6 +311,7 @@ public class EncodeTest {
 			}
 		}
 		catch (Exception e) {
+			Assert.fail("例外が発生しました。");
 			e.printStackTrace();
 		}
 		if(output != null) {

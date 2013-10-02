@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.ttProject.media.flv.CodecType;
@@ -156,6 +157,8 @@ public class ConvertTest {
 			}
 		}
 		catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail("例外が発生しました。");
 		}
 		finally {
 			if(output != null) {
@@ -336,6 +339,8 @@ public class ConvertTest {
 			}
 		}
 		catch (Exception e) {
+			e.printStackTrace();
+			Assert.fail("例外が発生しました。");
 		}
 		finally {
 			if(output != null) {

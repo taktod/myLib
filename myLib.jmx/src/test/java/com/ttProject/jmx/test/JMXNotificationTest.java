@@ -2,6 +2,8 @@ package com.ttProject.jmx.test;
 
 import javax.management.Notification;
 
+import org.junit.Assert;
+
 import com.ttProject.jmx.JMXFactory;
 import com.ttProject.jmx.JMXServerFactory;
 
@@ -32,6 +34,7 @@ public class JMXNotificationTest {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			Assert.fail("例外が発生しました。");
 		}
 	}
 }

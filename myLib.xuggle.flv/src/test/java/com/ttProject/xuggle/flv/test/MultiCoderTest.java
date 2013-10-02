@@ -12,6 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.sound.sampled.AudioFormat;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.ttProject.media.flv.FlvHeader;
@@ -624,6 +625,7 @@ public class MultiCoderTest {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			Assert.fail("例外が発生しました。");
 		}
 		finally{
 			if(mp3stereo != null) {
@@ -765,6 +767,7 @@ public class MultiCoderTest {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			Assert.fail("例外が発生しました。");
 		}
 		finally {
 			if(h263Encoder != null) {
@@ -953,6 +956,7 @@ public class MultiCoderTest {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			Assert.fail("例外が発生しました。");
 		}
 		finally {
 			if(h263 != null) {
@@ -1138,6 +1142,7 @@ public class MultiCoderTest {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
+			Assert.fail("例外が発生しました。");
 		}
 		finally {
 			if(h263 != null) {
