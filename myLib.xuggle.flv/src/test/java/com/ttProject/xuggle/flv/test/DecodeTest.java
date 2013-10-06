@@ -90,7 +90,7 @@ public class DecodeTest {
 		 * 
 		 * どうやらdecoderを２つつくって１つ目をdummyにしてしまえば大丈夫っぽいです。
 		 */
-		audioDecodeTest("/home/xxx/aac.flv");
+//		audioDecodeTest("/home/xxx/aac.flv");
 	}
 	@Test
 	public void mp3Test() {
