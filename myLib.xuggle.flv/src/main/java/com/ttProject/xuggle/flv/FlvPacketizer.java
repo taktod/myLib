@@ -41,7 +41,7 @@ public class FlvPacketizer {
 	 * @param tag
 	 * @return
 	 */
-	public IPacket getPacket(Tag tag) throws Exception {
+	public IPacket getPacket(Tag tag, IPacket packet) throws Exception {
 		if(tag instanceof VideoTag) {
 			lastVideoTag = (VideoTag) tag;
 			switch(lastVideoTag.getCodec()) {
@@ -52,7 +52,7 @@ public class FlvPacketizer {
 			case H263:
 				sps = null;
 				pps = null;
-				return getH263Packet(lastVideoTag);
+				return getH263Packet(lastVideoTag, packet);
 			case SCREEN:
 				sps = null;
 				pps = null;
@@ -60,7 +60,7 @@ public class FlvPacketizer {
 			case ON2VP6:
 				sps = null;
 				pps = null;
-				return getVP6Packet(lastVideoTag);
+				return getVP6Packet(lastVideoTag, packet);
 			case ON2VP6_ALPHA:
 				sps = null;
 				pps = null;
@@ -70,7 +70,7 @@ public class FlvPacketizer {
 				pps = null;
 				throw new RuntimeException("Screen V2の変換は未実装です。");
 			case AVC:
-				return getAVCPacket(lastVideoTag);
+				return getAVCPacket(lastVideoTag, packet);
 			default:
 				break;
 			}
@@ -79,19 +79,19 @@ public class FlvPacketizer {
 			lastAudioTag = (AudioTag) tag;
 			switch(lastAudioTag.getCodec()) {
 			case AAC:
-				return getAACPacket(lastAudioTag);
+				return getAACPacket(lastAudioTag, packet);
 			case MP3_8:
 			case MP3:
 				dsi = null;
-				return getMp3Packet(lastAudioTag);
+				return getMp3Packet(lastAudioTag, packet);
 			case NELLY_16:
 			case NELLY_8:
 			case NELLY:
 				dsi = null;
-				return getNellyPacket(lastAudioTag);
+				return getNellyPacket(lastAudioTag, packet);
 			case SPEEX:
 				dsi = null;
-				return getSpeexPacket(lastAudioTag);
+				return getSpeexPacket(lastAudioTag, packet);
 			case PCM:
 			case ADPCM:
 			case G711_A:
@@ -111,8 +111,10 @@ public class FlvPacketizer {
 	 * @param tag
 	 * @return
 	 */
-	private IPacket getH263Packet(VideoTag tag) {
-		IPacket packet = IPacket.make();
+	private IPacket getH263Packet(VideoTag tag, IPacket packet) {
+		if(packet == null) {
+			packet = IPacket.make();
+		}
 		ByteBuffer buffer = tag.getRawData();
 		int size = buffer.remaining();
 		IBuffer bufData = IBuffer.make(null, buffer.array(), 0, size);
@@ -130,8 +132,10 @@ public class FlvPacketizer {
 	 * @param tag
 	 * @return
 	 */
-	private IPacket getVP6Packet(VideoTag tag) {
-		IPacket packet = IPacket.make();
+	private IPacket getVP6Packet(VideoTag tag, IPacket packet) {
+		if(packet == null) {
+			packet = IPacket.make();
+		}
 		ByteBuffer buffer = tag.getRawData();
 		int size = buffer.remaining();
 		byte first = buffer.get();
@@ -153,7 +157,7 @@ public class FlvPacketizer {
 	 * @param tag
 	 * @return
 	 */
-	private IPacket getAVCPacket(VideoTag tag) throws Exception {
+	private IPacket getAVCPacket(VideoTag tag, IPacket packet) throws Exception {
 		if(tag.isMediaSequenceHeader()) {
 			// spsとppsを抜き出す。
 			ConfigData configData = new ConfigData();
@@ -176,7 +180,9 @@ public class FlvPacketizer {
 			throw new RuntimeException("spsもしくはppsが決定していません。");
 		}
 		// mshではないので、実データである。
-		IPacket packet = IPacket.make();
+		if(packet == null) {
+			packet = IPacket.make();
+		}
 		ByteBuffer rawData = tag.getRawData();
 		rawData.position(3); // ３の位置に移動(ここからDataNalAnalyzerにいれるとnalが取り出せる)
 		DataNalAnalyzer dataAnalyzer = new DataNalAnalyzer();
@@ -265,8 +271,10 @@ public class FlvPacketizer {
 		}
 		return decoder;
 	}
-	private IPacket getMp3Packet(AudioTag tag) throws Exception {
-		IPacket packet = IPacket.make();
+	private IPacket getMp3Packet(AudioTag tag, IPacket packet) throws Exception {
+		if(packet == null) {
+			packet = IPacket.make();
+		}
 		ByteBuffer rawData = tag.getRawData();
 		int size = rawData.remaining();
 		IBuffer bufData = IBuffer.make(null, rawData.array(), 0, size);
@@ -277,8 +285,10 @@ public class FlvPacketizer {
 		packet.setComplete(true, size);
 		return packet;
 	}
-	private IPacket getNellyPacket(AudioTag tag) throws Exception {
-		IPacket packet = IPacket.make();
+	private IPacket getNellyPacket(AudioTag tag, IPacket packet) throws Exception {
+		if(packet == null) {
+			packet = IPacket.make();
+		}
 		ByteBuffer rawData = tag.getRawData();
 		int size = rawData.remaining();
 		IBuffer bufData = IBuffer.make(null, rawData.array(), 0, size);
@@ -289,8 +299,10 @@ public class FlvPacketizer {
 		packet.setComplete(true, size);
 		return packet;
 	}
-	private IPacket getSpeexPacket(AudioTag tag) throws Exception {
-		IPacket packet = IPacket.make();
+	private IPacket getSpeexPacket(AudioTag tag, IPacket packet) throws Exception {
+		if(packet == null) {
+			packet = IPacket.make();
+		}
 		ByteBuffer rawData = tag.getRawData();
 		int size = rawData.remaining();
 		IBuffer bufData = IBuffer.make(null, rawData.array(), 0, size);
@@ -306,8 +318,7 @@ public class FlvPacketizer {
 	 * @param tag
 	 * @return
 	 */
-	private IPacket getAACPacket(AudioTag tag) throws Exception {
-		IPacket packet = IPacket.make();
+	private IPacket getAACPacket(AudioTag tag, IPacket packet) throws Exception {
 		if(tag.isMediaSequenceHeader()) {
 			dsi = new DecoderSpecificInfo();
 			dsi.analyze(new ByteReadChannel(tag.getRawData()));
@@ -315,6 +326,9 @@ public class FlvPacketizer {
 		}
 		if(dsi == null) {
 			throw new RuntimeException("decoderSpecificInfoが決定していません");
+		}
+		if(packet == null) {
+			packet = IPacket.make();
 		}
 		ByteBuffer rawData = tag.getRawData();
 		int size = rawData.remaining();
@@ -341,7 +355,10 @@ public class FlvPacketizer {
 		IStreamCoder decoder = null;
 		switch(lastAudioTag.getCodec()) {
 		case AAC:
+			// 単に２重にするだけでも動作するっぽいなんだこれ？
 			decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_AAC);
+			decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_AAC);
+//			decoder = AacDecoder.make();
 			decoder.setSampleRate(lastAudioTag.getSampleRate());
 			decoder.setTimeBase(IRational.make(1, lastAudioTag.getSampleRate()));
 			decoder.setChannels(lastAudioTag.getChannels());
