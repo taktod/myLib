@@ -82,7 +82,7 @@ public class DecodeEncodeTest {
 						for(Tag tag : depacketizer.getTag(encoder1, packet)) {
 							System.out.println(tag);
 							// ここからこのデータをデコードする
-							IPacket pkt = packetizer.getPacket(tag);
+							IPacket pkt = packetizer.getPacket(tag, null);
 							if(pkt == null) {
 								continue;
 							}

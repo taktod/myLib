@@ -197,7 +197,8 @@ public class EncodeTest {
 	 * @return
 	 */
 	private BufferedImage image() {
-		BufferedImage base = new BufferedImage(320, 240, BufferedImage.TYPE_3BYTE_BGR);
+		BufferedImage base = new BufferedImage(320, 240,
+				BufferedImage.TYPE_3BYTE_BGR);
 		String message = DateUtil.makeDateTime();
 		Graphics g = base.getGraphics();
 		g.setColor(Color.white);
@@ -207,7 +208,7 @@ public class EncodeTest {
 		return base;
 	}
 	private int audioCounter = 0; // audioの進捗カウンター
-//	@Test
+	@Test
 	public void mp3Test() {
 		audioCounter = 0;
 		FileChannel output = null;
@@ -218,54 +219,54 @@ public class EncodeTest {
 			flvHeader.setVideoFlg(false);
 			flvHeader.setAudioFlg(true);
 			output.write(flvHeader.getBuffer());
-			
-			IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_MP3);
+
+			IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING,
+					ICodec.ID.CODEC_ID_MP3);
 			encoder.setSampleRate(44100);
 			encoder.setChannels(2);
 			encoder.setBitRate(96000);
-			if(encoder.open(null, null) < 0) {
+			if (encoder.open(null, null) < 0) {
 				throw new Exception("変換コーダーが開けませんでした。");
 			}
 			int index = 0;
 			FlvDepacketizer depacketizer = new FlvDepacketizer();
-			while(index < 2000) {
-				index ++;
+			while (index < 2000) {
+				index++;
 				AudioData audioData = audioData();
 				IAudioSamples samples = converter.makeSamples(audioData);
 				IPacket packet = IPacket.make();
 				int samplesConsumed = 0;
-				while(samplesConsumed < samples.getNumSamples()) {
-					int retval = encoder.encodeAudio(packet, samples, samplesConsumed);
-					if(retval < 0) {
+				while (samplesConsumed < samples.getNumSamples()) {
+					int retval = encoder.encodeAudio(packet, samples,
+							samplesConsumed);
+					if (retval < 0) {
 						throw new Exception("変換失敗");
 					}
 					samplesConsumed += retval;
-					if(packet.isComplete()) {
-						for(Tag tag : depacketizer.getTag(encoder, packet)) {
+					if (packet.isComplete()) {
+						for (Tag tag : depacketizer.getTag(encoder, packet)) {
 							output.write(tag.getBuffer());
 						}
 					}
 				}
 			}
-			if(encoder != null) {
+			if (encoder != null) {
 				encoder.close();
 				encoder = null;
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			Assert.fail("例外が発生しました。");
 		}
-		if(output != null) {
+		if (output != null) {
 			try {
 				output.close();
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 			}
 			output = null;
 		}
 	}
-//	@Test
+	@Test
 	public void aacTest() {
 		audioCounter = 0;
 		FileChannel output = null;
@@ -276,55 +277,57 @@ public class EncodeTest {
 			flvHeader.setVideoFlg(false);
 			flvHeader.setAudioFlg(true);
 			output.write(flvHeader.getBuffer());
-			
-			IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_AAC);
+
+			IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING,
+					ICodec.ID.CODEC_ID_AAC);
 			encoder.setSampleRate(44100);
 			encoder.setChannels(2);
 			encoder.setBitRate(96000);
-			if(encoder.open(null, null) < 0) {
+			if (encoder.open(null, null) < 0) {
 				throw new Exception("変換コーダーが開けませんでした。");
 			}
 			int index = 0;
 			FlvDepacketizer depacketizer = new FlvDepacketizer();
-			while(index < 2000) {
-				index ++;
+			while (index < 2000) {
+				index++;
 				AudioData audioData = audioData();
 				IAudioSamples samples = converter.makeSamples(audioData);
 				IPacket packet = IPacket.make();
 				int samplesConsumed = 0;
-				while(samplesConsumed < samples.getNumSamples()) {
-					int retval = encoder.encodeAudio(packet, samples, samplesConsumed);
-					if(retval < 0) {
+				while (samplesConsumed < samples.getNumSamples()) {
+					int retval = encoder.encodeAudio(packet, samples,
+							samplesConsumed);
+					if (retval < 0) {
 						throw new Exception("変換失敗");
 					}
 					samplesConsumed += retval;
-					if(packet.isComplete()) {
-						for(Tag tag : depacketizer.getTag(encoder, packet)) {
+					if (packet.isComplete()) {
+						for (Tag tag : depacketizer.getTag(encoder, packet)) {
 							output.write(tag.getBuffer());
 						}
 					}
 				}
 			}
-			if(encoder != null) {
+			if (encoder != null) {
 				encoder.close();
 				encoder = null;
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			Assert.fail("例外が発生しました。");
 			e.printStackTrace();
 		}
-		if(output != null) {
+		if (output != null) {
 			try {
 				output.close();
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 			}
 			output = null;
 		}
 	}
+
 	/**
 	 * ラの音のaudioデータをつくって応答する。
+	 * 
 	 * @return
 	 */
 	public AudioData audioData() {
@@ -335,17 +338,19 @@ public class EncodeTest {
 		int channels = 2;
 		int samplesNum = 1024;
 		// 1024サンプル + 16bit + 2channels / (byte化)
-		ByteBuffer buffer = ByteBuffer.allocate((int)samplesNum * bit * channels / 8);
+		ByteBuffer buffer = ByteBuffer.allocate((int) samplesNum * bit
+				* channels / 8);
 		double rad = tone * 2 * Math.PI / samplingRate; // 各deltaごとの回転数
 		double max = (1 << (bit - 2)) - 1; // 振幅の大きさ(音の大きさ)
 		buffer.order(ByteOrder.LITTLE_ENDIAN); // xuggleで利用するデータはlittleEndianなのでlittleEndianを使うようにする。
-		for(int i = 0;i < samplesNum / 8;i ++, audioCounter ++) {
-			short data = (short)(Math.sin(rad * audioCounter) * max);
-			for(int j = 0;j < channels;j ++) {
+		for (int i = 0; i < samplesNum / 8; i++, audioCounter++) {
+			short data = (short) (Math.sin(rad * audioCounter) * max);
+			for (int j = 0; j < channels; j++) {
 				buffer.putShort(data);
 			}
 		}
 		buffer.flip();
-		return new AudioData(new AudioFormat(44100, bit, channels, true, false), buffer);
+		return new AudioData(
+				new AudioFormat(44100, bit, channels, true, false), buffer);
 	}
 }

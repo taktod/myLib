@@ -123,7 +123,7 @@ public class FastEncodeTest {
 						System.out.println("tag:" + tag.getTimestamp() + " sleepTime:" + (tag.getTimestamp() - current));
 						Thread.sleep(tag.getTimestamp() - current);
 					}
-					packet = packetizer.getPacket(tag);
+					packet = packetizer.getPacket(tag, null);
 					if(packet == null) {
 						continue;
 					}

@@ -50,7 +50,7 @@ public class DecodeTest {
 			Tag tag = null;
 			while((tag = analyzer.analyze(source)) != null) {
 				if(tag instanceof VideoTag) {
-					packet = packetizer.getPacket(tag);
+					packet = packetizer.getPacket(tag, null);
 					if(packet == null) {
 						continue;
 					}
@@ -81,7 +81,16 @@ public class DecodeTest {
 	}
 	@Test
 	public void aacTest() {
-//		audioDecodeTest("/home/xxx/aac.flv");
+		/*　TODO いつか直したところ
+		 * いろいろ試したけど。やっぱりwindows8では、aacのデコードのみそのままだときちんと動作しないみたいです。
+		 * で、動作させるにはですが・・・
+		 * いったん別のデコーダーに大きなバッファをいれてエンコード成功させて閉じてしまうか
+		 * 別のデコーダーに大きなバッファをいれてエンコード失敗させたまま放置しておいとくかのどちらかでしか動作可能にできない模様です。
+		 * 失敗した場合はデコーダーを閉じてしまうとだめみたいです。
+		 * 
+		 * どうやらdecoderを２つつくって１つ目をdummyにしてしまえば大丈夫っぽいです。
+		 */
+		audioDecodeTest("/home/xxx/aac.flv");
 	}
 	@Test
 	public void mp3Test() {
@@ -109,7 +118,7 @@ public class DecodeTest {
 			Tag tag = null;
 			while((tag = analyzer.analyze(source)) != null) {
 				if(tag instanceof AudioTag) {
-					packet = packetizer.getPacket(tag);
+					packet = packetizer.getPacket(tag, null);
 					if(packet == null) {
 						continue;
 					}
