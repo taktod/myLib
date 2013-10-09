@@ -357,6 +357,10 @@ public class FlvPacketizer {
 		case AAC:
 			// 単に２重にするだけでも動作するっぽいなんだこれ？
 			decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_AAC);
+			decoder.setSampleRate(lastAudioTag.getSampleRate());
+			decoder.setTimeBase(IRational.make(1, lastAudioTag.getSampleRate()));
+			decoder.setChannels(lastAudioTag.getChannels());
+			
 			decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_AAC);
 //			decoder = AacDecoder.make();
 			decoder.setSampleRate(lastAudioTag.getSampleRate());
