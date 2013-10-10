@@ -16,6 +16,7 @@ import com.ttProject.media.h264.frame.Slice;
 import com.ttProject.media.h264.frame.SliceIDR;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.util.BufferUtil;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IPacket;
@@ -336,7 +337,7 @@ public class FlvPacketizer {
 		aac.setData(rawData);
 		ByteBuffer buffer = aac.getBuffer();
 		size = buffer.remaining();
-		IBuffer bufData = IBuffer.make(null, buffer.array(), 0, size);
+		IBuffer bufData = IBuffer.make(null, BufferUtil.toByteArray(buffer), 0, size);
 		packet.setData(bufData);
 		packet.setDts(tag.getTimestamp());
 		packet.setPts(tag.getTimestamp());
@@ -357,12 +358,6 @@ public class FlvPacketizer {
 		case AAC:
 			// 単に２重にするだけでも動作するっぽいなんだこれ？
 			decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_AAC);
-			decoder.setSampleRate(lastAudioTag.getSampleRate());
-			decoder.setTimeBase(IRational.make(1, lastAudioTag.getSampleRate()));
-			decoder.setChannels(lastAudioTag.getChannels());
-			
-			decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_AAC);
-//			decoder = AacDecoder.make();
 			decoder.setSampleRate(lastAudioTag.getSampleRate());
 			decoder.setTimeBase(IRational.make(1, lastAudioTag.getSampleRate()));
 			decoder.setChannels(lastAudioTag.getChannels());
