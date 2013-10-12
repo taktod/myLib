@@ -37,7 +37,7 @@ public class PlayTest {
 	 */
 //	@Test
 	public void playTest() throws Exception {
-		IMediaReader mediaReader = ToolFactory.makeReader("mario.mp4");
+		IMediaReader mediaReader = ToolFactory.makeReader("sample.flv");
 		mediaReader.addListener(ToolFactory.makeViewer());
 		while(mediaReader.readPacket() == null) {
 			;
