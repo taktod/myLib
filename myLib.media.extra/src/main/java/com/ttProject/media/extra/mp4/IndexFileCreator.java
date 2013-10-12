@@ -3,7 +3,6 @@ package com.ttProject.media.extra.mp4;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
@@ -38,7 +37,8 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class IndexFileCreator implements IAtomAnalyzer {
-	private FileChannel idx; // 書き込み対象ファイル
+//	private FileChannel idx; // 書き込み対象ファイル
+	private FileOutputStream idx;
 	private final File targetFile;
 	private int trakStartPos; // トラックの開始位置
 	private CurrentType type = null; // 現在の処理trakタイプ
@@ -60,7 +60,7 @@ public class IndexFileCreator implements IAtomAnalyzer {
 	 */
 	public IndexFileCreator(File targetFile) throws Exception {
 		this.targetFile = targetFile;
-		idx = new FileOutputStream(targetFile).getChannel();
+		idx = new FileOutputStream(targetFile);
 	}
 	@Override
 	public Atom analyze(IReadChannel ch) throws Exception {
@@ -101,7 +101,7 @@ public class IndexFileCreator implements IAtomAnalyzer {
 			updatePrevTag();
 			this.type = null;
 			// trakの開始位置を調べる。
-			this.trakStartPos = (int)idx.position();
+			this.trakStartPos = (int)idx.getChannel().position();
 			Trak trak = new Trak(position, size);
 			trak.analyze(ch, this);
 			ch.position(position + size);
@@ -140,7 +140,7 @@ public class IndexFileCreator implements IAtomAnalyzer {
 			this.type = CurrentType.VIDEO;
 			this.vdeo = new Vdeo(this.trakStartPos, 0);
 			this.vdeo.setTimescale(mdhd.getTimescale());
-			this.vdeo.writeIndex(idx);
+			this.vdeo.writeIndex(idx.getChannel());
 			Vmhd vmhd = new Vmhd(position, size);
 			ch.position(position + size);
 			return vmhd;
@@ -148,7 +148,7 @@ public class IndexFileCreator implements IAtomAnalyzer {
 			this.type = CurrentType.AUDIO;
 			this.sond = new Sond(this.trakStartPos, 0);
 			this.sond.setTimescale(mdhd.getTimescale());
-			this.sond.writeIndex(idx);
+			this.sond.writeIndex(idx.getChannel());
 			Smhd smhd = new Smhd(position, size);
 			ch.position(position + size);
 			return smhd;
@@ -175,9 +175,9 @@ public class IndexFileCreator implements IAtomAnalyzer {
 						buffer.putInt(avcc.getSize());
 						buffer.put("msh ".getBytes());
 						buffer.flip();
-						idx.write(buffer);
+						idx.getChannel().write(buffer);
 						ch.position(avcc.getPosition() + 8);
-						BufferUtil.quickCopy(ch, idx, avcc.getSize() - 8);
+						BufferUtil.quickCopy(ch, idx.getChannel(), avcc.getSize() - 8);
 					}
 					else if(record instanceof Aac) {
 						// どうやらavconvでmp3に変換したらrecordタグはmp4aになるみたい。
@@ -187,14 +187,14 @@ public class IndexFileCreator implements IAtomAnalyzer {
 						// このタイミングでsondの中にデータをいれておく。
 						System.out.println("sampleRate:" + aac.getSampleRate());
 						System.out.println("channels:" + aac.getChannelCount());
-						long prevPos = idx.position();
-						idx.position(sond.getPosition() + 24);
+						long prevPos = idx.getChannel().position();
+						idx.getChannel().position(sond.getPosition() + 24);
 						buffer = ByteBuffer.allocate(5);
 						buffer.putInt(aac.getSampleRate());
 						buffer.put((byte)aac.getChannelCount());
 						buffer.flip();
-						idx.write(buffer);
-						idx.position(prevPos);
+						idx.getChannel().write(buffer);
+						idx.getChannel().position(prevPos);
 						byte[] data = aac.getEsds().getSequenceHeader();
 						if(data != null) {
 							buffer = ByteBuffer.allocate(8 + data.length);
@@ -202,7 +202,7 @@ public class IndexFileCreator implements IAtomAnalyzer {
 							buffer.put("msh ".getBytes());
 							buffer.put(data);
 							buffer.flip();
-							idx.write(buffer);
+							idx.getChannel().write(buffer);
 						}
 					}
 				}
@@ -211,8 +211,8 @@ public class IndexFileCreator implements IAtomAnalyzer {
 				this.type = null;
 				e.printStackTrace();
 				// 適合していない場合は開始位置までfileを削っておく
-				idx.truncate(trakStartPos);
-				idx.position(trakStartPos);
+				idx.getChannel().truncate(trakStartPos);
+				idx.getChannel().position(trakStartPos);
 				return null;
 			}
 			ch.position(position + size);
@@ -220,42 +220,42 @@ public class IndexFileCreator implements IAtomAnalyzer {
 		case Stts:
 			Stts stts = new Stts(position, size);
 			buffer.position(0);
-			idx.write(buffer);
-			BufferUtil.quickCopy(ch, idx, size - 8);
+			idx.getChannel().write(buffer);
+			BufferUtil.quickCopy(ch, idx.getChannel(), size - 8);
 			ch.position(position + size);
 			return stts;
 		case Stss: // keyFrameのデータになる必須
 			// 映像の場合はkeyFrame指示になるっぽい
 			Stss stss = new Stss(position, size);
 			buffer.position(0);
-			idx.write(buffer);
-			BufferUtil.quickCopy(ch, idx, size - 8);
+			idx.getChannel().write(buffer);
+			BufferUtil.quickCopy(ch, idx.getChannel(), size - 8);
 			ch.position(position + size);
 			return stss;
 		case Stsc:
 			// 各チャンクのサンプル量
 			Stsc stsc = new Stsc(position, size);
 			buffer.position(0);
-			idx.write(buffer);
-			BufferUtil.quickCopy(ch, idx, size - 8);
+			idx.getChannel().write(buffer);
+			BufferUtil.quickCopy(ch, idx.getChannel(), size - 8);
 			ch.position(position + size);
 			return stsc;
 		case Stsz:
 			// サンプルのサイズ量
 			Stsz stsz = new Stsz(position, size);
 			buffer.position(0);
-			idx.write(buffer);
+			idx.getChannel().write(buffer);
 			// この処理の部分を書き換えてサイズの計算を実施しておくべき。
 			// コピーしつつサイズの合計を調べておく。
-			BufferUtil.quickCopy(ch, idx, size - 8);
+			BufferUtil.quickCopy(ch, idx.getChannel(), size - 8);
 			ch.position(position + size);
 			return stsz;
 		case Stco:
 			// 各チャンクの開始位置
 			Stco stco = new Stco(position, size);
 			buffer.position(0);
-			idx.write(buffer);
-			BufferUtil.quickCopy(ch, idx, size - 8);
+			idx.getChannel().write(buffer);
+			BufferUtil.quickCopy(ch, idx.getChannel(), size - 8);
 			ch.position(position + size);
 			return stco;
 /*		case Mdat:
@@ -263,6 +263,8 @@ public class IndexFileCreator implements IAtomAnalyzer {
 			// mdatの位置を考えることでmoovが後ろにあるmp4でも対応できるようになる。(ただし処理がおそくなる)
 			ch.position(position + size);
 			return mdat;*/
+		default:
+			break;
 		}
 		ch.position(position + size);
 		return new Atom(tag, position, size) {
@@ -277,18 +279,18 @@ public class IndexFileCreator implements IAtomAnalyzer {
 		if(this.type == CurrentType.AUDIO
 		|| this.type == CurrentType.VIDEO) {
 			// いままでよんできたデータが正しいtagだった場合
-			int prevPosition = (int)idx.position();
+			int prevPosition = (int)idx.getChannel().position();
 			int prevSize = prevPosition - this.trakStartPos;
 			ByteBuffer buf = ByteBuffer.allocate(4);
 			buf.putInt(prevSize);
 			buf.flip();
-			idx.position(trakStartPos);
-			idx.write(buf);
-			idx.position(prevPosition);
+			idx.getChannel().position(trakStartPos);
+			idx.getChannel().write(buf);
+			idx.getChannel().position(prevPosition);
 		}
 		if(meta != null) {
 			// metaデータを書き込んでおく。
-			meta.writeIndex(idx);
+			meta.writeIndex(idx.getChannel());
 //			meta = null;
 		}
 	}
@@ -327,9 +329,9 @@ public class IndexFileCreator implements IAtomAnalyzer {
 						}
 					}
 				}
-				idx.position(vdeo.getPosition() + 12);
-				BufferUtil.writeInt(idx, sampleCount);
-				BufferUtil.writeInt(idx, totalSize);
+				idx.getChannel().position(vdeo.getPosition() + 12);
+				BufferUtil.writeInt(idx.getChannel(), sampleCount);
+				BufferUtil.writeInt(idx.getChannel(), totalSize);
 				tmp.position(position + size);
 			}
 			else if("sond".equals(tag)) {
@@ -356,9 +358,9 @@ public class IndexFileCreator implements IAtomAnalyzer {
 						}
 					}
 				}
-				idx.position(sond.getPosition() + 12);
-				BufferUtil.writeInt(idx, sampleCount);
-				BufferUtil.writeInt(idx, totalSize);
+				idx.getChannel().position(sond.getPosition() + 12);
+				BufferUtil.writeInt(idx.getChannel(), sampleCount);
+				BufferUtil.writeInt(idx.getChannel(), totalSize);
 				tmp.position(position + size);
 			}
 			else {
