@@ -6,17 +6,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 
 /**
  * ローカルファイル読み込み
  * @author taktod
  */
 public class FileReadChannel implements IFileReadChannel {
-	/** 動作ファイルチャンネル */
-	private FileChannel channel;
 	/** 動作パス */
 	private final String path;
+	/** 動作ストリーム */
+	private FileInputStream stream = null;
 	/**
 	 * コンストラクタ
 	 * @param target
@@ -33,7 +32,7 @@ public class FileReadChannel implements IFileReadChannel {
 	public FileReadChannel(String fileString, int position) throws IOException {
 		path = fileString;
 		File file = new File(fileString);
-		channel = new FileInputStream(file).getChannel();
+		stream = new FileInputStream(file);
 		position(position);
 	}
 	/**
@@ -53,26 +52,26 @@ public class FileReadChannel implements IFileReadChannel {
 	 */
 	public FileReadChannel(File file, int position) throws IOException {
 		path = file.getAbsolutePath();
-		channel = new FileInputStream(file).getChannel();
+		stream = new FileInputStream(file);
 		position(position);
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	public void close() throws IOException {
-		channel.close();
+		stream.close();
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	public boolean isOpen() {
-		return channel.isOpen();
+		return stream.getChannel().isOpen();
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	public int read(ByteBuffer dst) throws IOException {
-		return channel.read(dst);
+		return stream.getChannel().read(dst);
 	}
 	/**
 	 * {@inheritDoc}
@@ -81,7 +80,7 @@ public class FileReadChannel implements IFileReadChannel {
 		if(!isOpen()) {
 			throw new IOException("file is closed.");
 		}
-		return (int)channel.position();
+		return (int)stream.getChannel().position();
 	}
 	/**
 	 * {@inheritDoc}
@@ -90,14 +89,14 @@ public class FileReadChannel implements IFileReadChannel {
 		if(!isOpen()) {
 			throw new IOException("file is closed.");
 		}
-		channel.position(newPosition);
+		stream.getChannel().position(newPosition);
 		return this;
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	public int size() throws IOException {
-		return (int)channel.size();
+		return (int)stream.getChannel().size();
 	}
 	/**
 	 * {@inheritDoc}
