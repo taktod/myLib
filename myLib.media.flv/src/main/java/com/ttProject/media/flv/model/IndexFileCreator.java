@@ -3,7 +3,6 @@ package com.ttProject.media.flv.model;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 
 import com.ttProject.media.flv.CodecType;
 import com.ttProject.media.flv.FlvHeader;
@@ -55,7 +54,7 @@ import com.ttProject.util.BufferUtil;
  */
 public class IndexFileCreator {
 	private final File targetFile;
-	private FileChannel idx; // 書き込み対象
+	private FileOutputStream idx; // 書き込み対象
 	
 	private long startTime;
 	private long lastFoundTime;
@@ -72,7 +71,7 @@ public class IndexFileCreator {
 	 */
 	public IndexFileCreator(File targetFile, IFileReadChannel source) throws Exception {
 		this.targetFile = targetFile;
-		idx = new FileOutputStream(targetFile).getChannel();
+		idx = new FileOutputStream(targetFile);
 		startTime = System.currentTimeMillis();
 		lastFoundTime = startTime;
 		// オブジェクトはコピーにしておく。
@@ -141,7 +140,7 @@ public class IndexFileCreator {
 					buffer.putInt(aTag.getPosition());
 					buffer.putInt(aTag.getTimestamp());
 					buffer.flip();
-					idx.write(buffer);
+					idx.getChannel().write(buffer);
 					lastFoundTime = now;
 				}
 			}
@@ -161,7 +160,7 @@ public class IndexFileCreator {
 					buffer.putInt(vTag.getPosition());
 					buffer.putInt(vTag.getTimestamp());
 					buffer.flip();
-					idx.write(buffer);
+					idx.getChannel().write(buffer);
 
 					System.out.println(tag.getPosition());
 					long now = System.currentTimeMillis();
