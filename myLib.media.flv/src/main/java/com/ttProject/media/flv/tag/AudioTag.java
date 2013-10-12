@@ -88,7 +88,9 @@ public class AudioTag extends Tag {
 		case DEVICE_SPECIFIC:	tagByte = (byte)0xF2;break;
 
 		case AAC: 				tagByte = (byte)0xA2;
-			setSize(data.remaining() + 2 + 15); // aacの場合はサイズがちょっとかわるので、上書きしておく。
+			if(data != null) {
+				setSize(data.remaining() + 2 + 15); // aacの場合はサイズがちょっとかわるので、上書きしておく。
+			}
 			break;
 
 //		case 12: // 不明
