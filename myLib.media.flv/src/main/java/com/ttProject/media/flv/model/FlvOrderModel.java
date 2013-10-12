@@ -28,6 +28,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class FlvOrderModel {
+	private boolean isMshSended;
 	private int duration = 0;
 	private IFileReadChannel idx;
 	private CodecType videoCodec = null;
@@ -75,6 +76,7 @@ public class FlvOrderModel {
 	 * 仕方ないのでpublic化した。始めに呼び出す必要あり。
 	 */
 	public void initialize(IFileReadChannel source) throws Exception {
+		isMshSended = false;
 		position = -1;
 		while(idx.position() < idx.size()) {
 			ByteBuffer buffer = BufferUtil.safeRead(idx, 9);
@@ -88,11 +90,13 @@ public class FlvOrderModel {
 			case 0: // keyFrame
 				break;
 			case 1: // videoMsh
+				System.out.println("初期化でvideoMsh発見");
 				source.position(position);
 				tag = analyzer.analyze(source);
 				videoMshTag = (VideoTag) tag;
 				continue;
 			case 2: // audioMsh
+				System.out.println("初期化でaudioMsh発見");
 				source.position(position);
 				tag = analyzer.analyze(source);
 				audioMshTag = (AudioTag) tag;
@@ -102,8 +106,9 @@ public class FlvOrderModel {
 			}
 			if(timestamp >= startMilliSecond) {
 				// 読み込みを実行する位置
-				source.position();
+				source.position(position);
 				this.position = position;
+				// 位置が決定した場合は、mshを応答してやらないとだめなんだが・・・
 				break;
 			}
 		}
@@ -151,6 +156,7 @@ public class FlvOrderModel {
 	public List<Tag> nextTagList(IReadChannel source) throws Exception {
 		List<Tag> result = new ArrayList<Tag>();
 		if(position == -1) {
+			System.out.println("初アクセスなので初期化する");
 			// 始めのデータの場合はindexファイルのデータを確認して、自分の欲しいtimestampデータがない場合
 			// 推定でアクセスして、そのデータにアクセスするようにしておく。
 
@@ -201,12 +207,14 @@ public class FlvOrderModel {
 					}
 				}
 			}
+			System.out.println("タグ発見まできました。");
 			// tagを見つけたので、あとはkeyFrameの開始位置までスキップさせる。
 			Tag tag = null;
 			TagPositionAnalyzer analyzer = new TagPositionAnalyzer();
 			while((tag = analyzer.analyze(source)) != null) {
 				if(!videoFlg || videoCodec == CodecType.NONE) {
 					// 音声タグをみつけたらそこから実行させる。
+					System.out.println("audioのみのデータっぽい。");
 					if(tag instanceof AudioTag) {
 						AudioTag aTag = (AudioTag) tag;
 						aTag.analyze(source);
@@ -220,6 +228,7 @@ public class FlvOrderModel {
 					}
 				}
 				else {
+					System.out.println("映像も音声もあるデータっぽい");
 					if(tag instanceof VideoTag) {
 						VideoTag vTag = (VideoTag) tag;
 						if(vTag.isKeyFrame()) {
@@ -243,11 +252,21 @@ public class FlvOrderModel {
 					}
 				}
 			}
+			System.out.println("ループぬけた");
 		}
-		boolean firstFlg = position == source.position();
 		// このタイミングで続きの動作を実行します。
 		Tag tag = analyzer.analyze(source);
-		if(firstFlg) {
+		if(tag == null) {
+			if(source.position() == source.size()) {
+				System.out.println("終端？");
+			}
+			else {
+				System.out.println("まだ");
+			}
+			// 終端までいったのかが問題。
+			return null;
+		}
+		if(!isMshSended) {
 			if(audioMshTag != null) {
 				audioMshTag.setTimestamp(tag.getTimestamp());
 				result.add(audioMshTag);
@@ -256,6 +275,7 @@ public class FlvOrderModel {
 				videoMshTag.setTimestamp(tag.getTimestamp());
 				result.add(videoMshTag);
 			}
+			isMshSended = true;
 		}
 		result.add(tag);
 		return result;
