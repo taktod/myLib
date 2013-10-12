@@ -48,7 +48,7 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 			ChannelBuffer in, DecoderState state) throws Exception {
 		switch(state) {
 		case GET_HEADER:
-			header = new RtmpHeader(in, incompleteHeaders);
+			header = new RtmpHeaderEx(in, incompleteHeaders);
 			channelId = header.getChannelId();
 			if(incompletePayloads[channelId] == null) {
 				incompleteHeaders[channelId] = header;

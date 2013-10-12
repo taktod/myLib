@@ -28,6 +28,7 @@ public class RtmpClientEntry {
 			return;
 		}
 		if(options.getLoad() == 1 && options.getClientOptionsList() == null) {
+			options.setWriterToSave(new DlWriter());
 			connect(options);
 			return;
 		}
