@@ -23,7 +23,8 @@ public class ConvertTest {
 		// データ元
 		IReadChannel fc1 = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.mp4");
 		// 保存先
-		final FileChannel fc2 = new FileOutputStream("output.flv").getChannel();
+		final FileOutputStream fos = new FileOutputStream("output.flv");
+//		final FileChannel fc2 = new FileOutputStream("output.flv").getChannel();
 		// 変換マネージャー
 		FfmpegConvertManager manager = new FfmpegConvertManager();
 		// 変換動作プロセス取得
@@ -35,7 +36,7 @@ public class ConvertTest {
 				try {
 					// 応答をうけとったらファイルに書き出す。
 					System.out.println("応答をうけとりました。");
-					fc2.write(buffer);
+					fos.getChannel().write(buffer);
 				}
 				catch (Exception e) {
 					e.printStackTrace();
@@ -65,6 +66,6 @@ public class ConvertTest {
 		Thread.sleep(2000);
 		// 後処理
 		fc1.close();
-		fc2.close();
+		fos.close();
 	}
 }
