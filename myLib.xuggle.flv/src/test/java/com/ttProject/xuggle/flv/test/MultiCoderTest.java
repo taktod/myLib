@@ -12,6 +12,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import javax.sound.sampled.AudioFormat;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -39,6 +40,7 @@ import com.xuggle.xuggler.video.IConverter;
  * @author taktod
  */
 public class MultiCoderTest {
+	private Logger logger = Logger.getLogger(MultiCoderTest.class);
 	private int audioCounter = 0;
 	private int audioCounter2 = 0;
 	/**
@@ -838,7 +840,7 @@ public class MultiCoderTest {
 						IPacket packet = IPacket.make();
 						FlvDepacketizer depacketizer = new FlvDepacketizer();
 						while(workingFlg || h263Pictures.size() > 0) {
-							System.out.println("h263コンバート");
+							logger.info("h263コンバート");
 							if(encoder.encodeVideo(packet, h263Pictures.take(), 0) < 0) {
 								throw new Exception("エンコード失敗");
 							}
@@ -906,12 +908,12 @@ public class MultiCoderTest {
 						IPacket packet = IPacket.make();
 						FlvDepacketizer depacketizer = new FlvDepacketizer();
 						while(workingFlg || avcPictures.size() > 0) {
-							System.out.println("avcコンバート");
+							logger.info("avcコンバート");
 							if(encoder.encodeVideo(packet, avcPictures.take(), 0) < 0) {
 								throw new Exception("エンコード失敗");
 							}
 							if(packet.isComplete()) {
-								System.out.println("packet complete");
+								logger.info("packet complete");
 								for(Tag tag : depacketizer.getTag(encoder, packet)) {
 									avcChannel.write(tag.getBuffer());
 								}
@@ -948,7 +950,7 @@ public class MultiCoderTest {
 				picture = converter.toPicture(image, 1000 * (now - startTime));
 				h263Pictures.add(picture);
 			}
-			System.out.println("処理おわり、thread完了待ち");
+			logger.info("処理おわり、thread完了待ち");
 			h263Thread.interrupt();
 			avcThread.interrupt();
 //			h263Thread.join();
@@ -1124,7 +1126,7 @@ public class MultiCoderTest {
 					break;
 				}
 //				if(now - startTime > 2000) {
-//					System.out.println("100待ち");
+//					logger.info("100待ち");
 //					Thread.sleep(100);
 //				}
 //				else {
@@ -1134,7 +1136,7 @@ public class MultiCoderTest {
 				h263VideoData.add(new VideoData(image, (now - startTime)));
 				avcVideoData.add(new VideoData(image, (now - startTime)));
 			}
-			System.out.println("処理おわり、thread完了待ち");
+			logger.info("処理おわり、thread完了待ち");
 //			h263Thread.interrupt();
 //			avcThread.interrupt();
 			h263Thread.join();

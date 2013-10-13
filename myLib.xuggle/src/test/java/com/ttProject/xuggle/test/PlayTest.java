@@ -8,6 +8,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.util.HexUtil;
 import com.ttProject.xuggle.test.swing.TestFrame;
 import com.xuggle.mediatool.IMediaReader;
@@ -30,6 +32,7 @@ import com.xuggle.xuggler.video.IConverter;
  * @author taktod
  */
 public class PlayTest {
+	private Logger logger = Logger.getLogger(PlayTest.class);
 	/**
 	 * 一番簡単にできるやりかたはコレ
 	 * xuggleに付いている一番楽な方法で再生するだけ。
@@ -103,12 +106,12 @@ public class PlayTest {
 					}
 					offset += bytesDecoded;
 					if(samples.isComplete()) {
-//						System.out.println(samples);
+//						logger.info(samples);
 						// 再生にまわす。
 						byte[] rawBytes = samples.getData().getByteArray(0, samples.getSize());
 //						ByteBuffer buffer = ByteBuffer.wrap(rawBytes);
 //						while(buffer.remaining() > 0) {
-//							System.out.println(buffer.getShort() + "," + buffer.getShort());
+//							logger.info(buffer.getShort() + "," + buffer.getShort());
 //						}
 						audioLine.write(rawBytes, 0, samples.getSize());
 					}
@@ -462,7 +465,7 @@ public class PlayTest {
 		if(videoCoder.open(null, null) < 0) {
 			throw new Exception("映像用のデコーダーが開けませんでした。");
 		}
-		System.out.println(videoCoder);
+		logger.info(videoCoder);
 		IVideoResampler resampler = null;
 		if(videoCoder.getPixelType() != IPixelFormat.Type.BGR24) {
 			// BGR24じゃなかったらpixelの書き換えが必須。
@@ -479,11 +482,11 @@ public class PlayTest {
 			// パケットデータが読み込めた場合
 			if(packet.getStreamIndex() == videoStreamId) {
 				int bufSize = packet.getData().getBufferSize();
-				System.out.println(packet);
-				System.out.println(bufSize);
-				System.out.println(packet.isKey());
-				System.out.println(HexUtil.toHex(packet.getData().getByteBuffer(0, bufSize)));
-				System.out.println(packet.getData().hashCode());
+				logger.info(packet);
+				logger.info(bufSize);
+				logger.info(packet.isKey());
+				logger.info(HexUtil.toHex(packet.getData().getByteBuffer(0, bufSize)));
+				logger.info(packet.getData().hashCode());
 				Thread.sleep(500);
 				// 動画データの場合
 				IVideoPicture picture = IVideoPicture.make(videoCoder.getPixelType(), videoCoder.getWidth(), videoCoder.getHeight());

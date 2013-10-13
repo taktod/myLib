@@ -2,6 +2,7 @@ package com.ttProject.media.extra.test;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.media.extra.Bit;
@@ -20,6 +21,7 @@ import com.ttProject.util.HexUtil;
  * @author taktod
  */
 public class BitTest {
+	private Logger logger = Logger.getLogger(BitTest.class);
 	@Test
 	public void test() throws Exception {
 		IReadChannel channel = new ByteReadChannel(new byte[] {
@@ -55,6 +57,6 @@ public class BitTest {
 				privateBit, channelConfiguration, originalFlg, home,
 				copyrightIdentificationBit, copyrightIdentificationStart, frameSize1, frameSize2,
 				adtsBufferFullness1, adtsBufferFullness2, noRawDataBlocksInFrame);
-		System.out.println(HexUtil.toHex(buffer.array(), true));
+		logger.info(HexUtil.toHex(buffer.array(), true));
 	}
 }

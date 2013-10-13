@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.flv.CodecType;
 import com.ttProject.media.flv.FlvHeader;
 import com.ttProject.media.flv.ITagAnalyzer;
@@ -28,6 +30,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class FlvOrderModel {
+	private Logger logger = Logger.getLogger(FlvOrderModel.class);
 	private boolean isMshSended;
 	private int duration = 0;
 	private IFileReadChannel idx;
@@ -90,13 +93,13 @@ public class FlvOrderModel {
 			case 0: // keyFrame
 				break;
 			case 1: // videoMsh
-				System.out.println("初期化でvideoMsh発見");
+				logger.info("初期化でvideoMsh発見");
 				source.position(position);
 				tag = analyzer.analyze(source);
 				videoMshTag = (VideoTag) tag;
 				continue;
 			case 2: // audioMsh
-				System.out.println("初期化でaudioMsh発見");
+				logger.info("初期化でaudioMsh発見");
 				source.position(position);
 				tag = analyzer.analyze(source);
 				audioMshTag = (AudioTag) tag;
@@ -156,13 +159,13 @@ public class FlvOrderModel {
 	public List<Tag> nextTagList(IReadChannel source) throws Exception {
 		List<Tag> result = new ArrayList<Tag>();
 		if(position == -1) {
-			System.out.println("初アクセスなので初期化する");
+			logger.info("初アクセスなので初期化する");
 			// 始めのデータの場合はindexファイルのデータを確認して、自分の欲しいtimestampデータがない場合
 			// 推定でアクセスして、そのデータにアクセスするようにしておく。
 
 			// positionが-1の場合は位置が決定しなかったので、推測する。
 			position = (int)((long)startMilliSecond * size / duration);
-			System.out.println("startPos:" + Integer.toHexString(position));
+			logger.info("startPos:" + Integer.toHexString(position));
 			// 1:アクセスがきたら00 00 00 XXもしくは 00 00 00 00 XXの位置のデータをみつける。
 			source.position(position);
 			// ここから読み込んでいく。shortで0がでたら、そこがあやしい。
@@ -177,29 +180,29 @@ public class FlvOrderModel {
 					while((b = cacheBuffer.get()) == 0) {
 						;
 					}
-					System.out.println("position:" + Integer.toHexString(cacheBuffer.position()));
-					System.out.println(Integer.toHexString(b));
+					logger.info("position:" + Integer.toHexString(cacheBuffer.position()));
+					logger.info(Integer.toHexString(b));
 					// bの値がaudioのtagByteか
 					int pos = cacheBuffer.position() - 12;
 					if(b == audioByte) {
-						System.out.println("タグをみつけたと思われる。");
+						logger.info("タグをみつけたと思われる。");
 						// 12バイト前のデータを見てみる。
 						source.position(pos);
 						cacheBuffer = new CacheBuffer(source);
 						if(cacheBuffer.get() != 0x08) {
-							System.out.println("音声タグではなかったのでやり直し");
+							logger.info("音声タグではなかったのでやり直し");
 							continue;
 						}
 						source.position(pos);
 						break;
 					}
 					else if((b & 0x0F) == CodecType.getVideoByte(videoCodec)) {
-						System.out.println("タグをみつけたと思われる。");
+						logger.info("タグをみつけたと思われる。");
 						// 12バイト前のデータを見てみる。
 						source.position(pos);
 						cacheBuffer = new CacheBuffer(source);
 						if(cacheBuffer.get() != 0x09) {
-							System.out.println("映像タグではなかったのでやり直し");
+							logger.info("映像タグではなかったのでやり直し");
 							continue;
 						}
 						source.position(pos);
@@ -207,14 +210,12 @@ public class FlvOrderModel {
 					}
 				}
 			}
-			System.out.println("タグ発見まできました。");
 			// tagを見つけたので、あとはkeyFrameの開始位置までスキップさせる。
 			Tag tag = null;
 			TagPositionAnalyzer analyzer = new TagPositionAnalyzer();
 			while((tag = analyzer.analyze(source)) != null) {
 				if(!videoFlg || videoCodec == CodecType.NONE) {
 					// 音声タグをみつけたらそこから実行させる。
-					System.out.println("audioのみのデータっぽい。");
 					if(tag instanceof AudioTag) {
 						AudioTag aTag = (AudioTag) tag;
 						aTag.analyze(source);
@@ -228,14 +229,9 @@ public class FlvOrderModel {
 					}
 				}
 				else {
-					System.out.println("映像も音声もあるデータっぽい");
 					if(tag instanceof VideoTag) {
 						VideoTag vTag = (VideoTag) tag;
 						if(vTag.isKeyFrame()) {
-							System.out.print("開始タグ:");
-							System.out.println(tag);
-							System.out.print("開始位置:");
-							System.out.println(Integer.toHexString(tag.getPosition()));
 							vTag.analyze(source);
 							position = tag.getPosition();
 							if(videoMshTag != null) {
@@ -252,16 +248,16 @@ public class FlvOrderModel {
 					}
 				}
 			}
-			System.out.println("ループぬけた");
+			logger.info("ループぬけた");
 		}
 		// このタイミングで続きの動作を実行します。
 		Tag tag = analyzer.analyze(source);
 		if(tag == null) {
 			if(source.position() == source.size()) {
-				System.out.println("終端？");
+				logger.info("終端？");
 			}
 			else {
-				System.out.println("まだ");
+				logger.info("まだ");
 			}
 			// 終端までいったのかが問題。
 			return null;

@@ -2,6 +2,7 @@ package com.ttProject.util.test;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.util.BufferUtil;
@@ -13,6 +14,7 @@ import com.ttProject.util.HexUtil;
  *
  */
 public class BufferTest {
+	private Logger logger = Logger.getLogger(BufferTest.class);
 	@Test
 	public void test() {
 		ByteBuffer src = HexUtil.makeBuffer("000102030405");
@@ -26,10 +28,10 @@ public class BufferTest {
 		dst.put((byte)5);
 		dst.flip();
 		// なぜかhashCodeが一致する
-		System.out.println(src.hashCode());
-		System.out.println(dst.hashCode());
-		System.out.println(src);
-		System.out.println(dst);
-		System.out.println(BufferUtil.isSame(src, dst));
+		logger.info(src.hashCode());
+		logger.info(dst.hashCode());
+		logger.info(src);
+		logger.info(dst);
+		logger.info(BufferUtil.isSame(src, dst));
 	}
 }

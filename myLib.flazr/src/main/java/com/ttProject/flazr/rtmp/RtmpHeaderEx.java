@@ -1,13 +1,15 @@
 package com.ttProject.flazr.rtmp;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.flazr.rtmp.RtmpHeader;
 import com.flazr.rtmp.message.MessageType;
 import com.flazr.util.Utils;
 
 public class RtmpHeaderEx extends RtmpHeader {
-
+	private Logger logger = LoggerFactory.getLogger(RtmpHeaderEx.class);
 	private Type headerType;
 	private int channelId;
 	private int deltaTime;
@@ -22,20 +24,20 @@ public class RtmpHeaderEx extends RtmpHeader {
 		final int typeAndChannel;
 		final int headerTypeInt;
 		if((firstByteInt & 0x3F) == 0) {
-			System.out.println("typeA");
+			logger.info("typeA");
 			typeAndChannel = (firstByteInt & 0xFF) << 8 | (in.readByte() & 0xFF);
 			channelId = 64 + (typeAndChannel & 0xFF);
 			headerTypeInt = typeAndChannel >> 14;
 		}
 		else if((firstByteInt & 0x3F) == 1) {
-			System.out.println("typeB");
+			logger.info("typeB");
 			typeAndChannel = (firstByteInt & 0xFF) << 16 | (in.readByte() & 0xFF) << 8 | (in.readByte() & 0xFF);
 			channelId = 64 + ((typeAndChannel >> 8) & 0xFF) + ((typeAndChannel & 0xFF) << 8);
 			headerTypeInt = typeAndChannel >> 22;
 		}
 		else {
-			System.out.print("typeC:");
-			System.out.println(Integer.toHexString(firstByteInt));
+			logger.info("typeC:");
+			logger.info(Integer.toHexString(firstByteInt));
 			typeAndChannel = firstByteInt & 0xFF;
 			channelId = (typeAndChannel & 0x3F);
 			headerTypeInt = typeAndChannel >> 6;
@@ -210,7 +212,7 @@ public class RtmpHeaderEx extends RtmpHeader {
 		}
 		final boolean extendedTime;
 		if(headerType == Type.LARGE) {
-			extendedTime = time >= MAX_NORMAL_HEADER_TIME;             
+			extendedTime = time >= MAX_NORMAL_HEADER_TIME;
 		}
 		else {
 			extendedTime = deltaTime >= MAX_NORMAL_HEADER_TIME;
@@ -223,30 +225,30 @@ public class RtmpHeaderEx extends RtmpHeader {
 		}
 		if(headerType != Type.SMALL) {
 			out.writeMedium(size);                      // LARGE / MEDIUM
-            out.writeByte((byte) messageType.intValue());     // LARGE / MEDIUM
-            if(headerType == Type.LARGE) {
-                Utils.writeInt32Reverse(out, streamId); // LARGE
-            }
-        }
-        if(extendedTime) {
-            out.writeInt(headerType == Type.LARGE ? time : deltaTime);
-        }
-    }
-
-    public byte[] getTinyHeader() {
-        return encodeHeaderTypeAndChannel(Type.TINY.intValue(), channelId);
-    }
-
-    private static byte[] encodeHeaderTypeAndChannel(final int headerType, final int channelId) {
-        if (channelId <= 63) {
-            return new byte[] {(byte) ((headerType << 6) + channelId)};
-        } else if (channelId <= 320) {
-            return new byte[] {(byte) (headerType << 6), (byte) (channelId - 64)};
-        } else {
-            return new byte[] {(byte) ((headerType << 6) | 1),
-                (byte) ((channelId - 64) & 0xff), (byte) ((channelId - 64) >> 8)};
-        }
-    }
+			out.writeByte((byte) messageType.intValue());     // LARGE / MEDIUM
+			if(headerType == Type.LARGE) {
+				Utils.writeInt32Reverse(out, streamId); // LARGE
+			}
+		}
+		if(extendedTime) {
+			out.writeInt(headerType == Type.LARGE ? time : deltaTime);
+		}
+	}
+	public byte[] getTinyHeader() {
+		return encodeHeaderTypeAndChannel(Type.TINY.intValue(), channelId);
+	}
+	private static byte[] encodeHeaderTypeAndChannel(final int headerType, final int channelId) {
+		if (channelId <= 63) {
+			return new byte[] {(byte) ((headerType << 6) + channelId)};
+		}
+		else if (channelId <= 320) {
+			return new byte[] {(byte) (headerType << 6), (byte) (channelId - 64)};
+		}
+		else {
+			return new byte[] {(byte) ((headerType << 6) | 1),
+				(byte) ((channelId - 64) & 0xff), (byte) ((channelId - 64) >> 8)};
+		}
+	}
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

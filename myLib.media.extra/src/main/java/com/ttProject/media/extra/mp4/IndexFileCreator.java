@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.IAtomAnalyzer;
 import com.ttProject.media.mp4.Type;
@@ -37,6 +39,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class IndexFileCreator implements IAtomAnalyzer {
+	private Logger logger = Logger.getLogger(IndexFileCreator.class);
 //	private FileChannel idx; // 書き込み対象ファイル
 	private FileOutputStream idx;
 	private final File targetFile;
@@ -185,8 +188,8 @@ public class IndexFileCreator implements IAtomAnalyzer {
 						Aac aac = (Aac)record;
 						// TODO この上書きの部分が少々気に入らない
 						// このタイミングでsondの中にデータをいれておく。
-						System.out.println("sampleRate:" + aac.getSampleRate());
-						System.out.println("channels:" + aac.getChannelCount());
+						logger.info("sampleRate:" + aac.getSampleRate());
+						logger.info("channels:" + aac.getChannelCount());
 						long prevPos = idx.getChannel().position();
 						idx.getChannel().position(sond.getPosition() + 24);
 						buffer = ByteBuffer.allocate(5);

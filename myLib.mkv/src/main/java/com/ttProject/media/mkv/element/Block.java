@@ -2,6 +2,8 @@ package com.ttProject.media.mkv.element;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.mkv.Element;
 import com.ttProject.media.mkv.IElementAnalyzer;
 import com.ttProject.media.mkv.Type;
@@ -22,6 +24,7 @@ import com.ttProject.util.BufferUtil;
  *
  */
 public class Block extends Element {
+	private Logger logger = Logger.getLogger(Block.class);
 	public Block(long position, long size, long dataPosition) {
 		super(Type.Block, position, size, dataPosition);
 	}
@@ -42,11 +45,11 @@ public class Block extends Element {
 		byte lacingType = (byte)((flg >> 1) & 0x03);
 		switch(lacingType) {
 		case 0:
-			System.out.println("no lacing");
+			logger.info("no lacing");
 			break;
 		case 1:
 			{
-				System.out.println("Xiph lacing");
+				logger.info("Xiph lacing");
 				int laceCount = BufferUtil.safeRead(ch, 1).get();
 				for(int i = 0;i < laceCount;i ++) {
 					int size = 0;
@@ -55,29 +58,29 @@ public class Block extends Element {
 						size += 0xFF;
 					}
 					size += newDat;
-					System.out.println(Integer.toHexString(size));
+					logger.info(Integer.toHexString(size));
 				}
 			}
 			break;
 		case 2:
 			{
-				System.out.println("fixed-size lacing");
+				logger.info("fixed-size lacing");
 				int laceCount = BufferUtil.safeRead(ch, 1).get();
 				int totalSize = (int)(getSize() - ch.position() + getDataPosition());
 				int laceSize = totalSize / (laceCount + 1);
 				for(int i = 0;i < laceCount;i ++) {
-					System.out.println(Integer.toHexString(laceSize));
+					logger.info(Integer.toHexString(laceSize));
 				}
 			}
 			break;
 		case 3:
 			{
-				System.out.println("ebml lacing");
+				logger.info("ebml lacing");
 				// 次の１バイトがいくつlacingしているか示している。
 				int laceCount = BufferUtil.safeRead(ch, 1).get();
-				System.out.println(laceCount);
+				logger.info(laceCount);
 				int laceSize = (int)getEbmlNumber(ch);
-				System.out.println(Integer.toHexString(laceSize));
+				logger.info(Integer.toHexString(laceSize));
 				laceCount --;
 				while(laceCount > 0) {
 					int nextLaceDiff = (int)getEbmlNumber(ch);
@@ -93,14 +96,14 @@ public class Block extends Element {
 					else if(nextLaceDiff <= 0x0FFFFFFF) {
 						laceSize += nextLaceDiff - 0x07FFFFFF;
 					}
-					System.out.println(Integer.toHexString(laceSize));
+					logger.info(Integer.toHexString(laceSize));
 					laceCount --;
 				}
 			}
 			break;
 		}
-		System.out.println(flg);
-		System.out.println(trackId);
+		logger.info(flg);
+		logger.info(trackId);
 	}
 	@Override
 	public String toString() {

@@ -2,6 +2,9 @@ package com.ttProject.flazr.test;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.flazr.io.flv.FlvAtom;
 import com.flazr.rtmp.RtmpMessage;
 import com.flazr.rtmp.RtmpReader;
@@ -16,6 +19,7 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
 public class FlvTestReader implements RtmpReader {
+	private Logger logger = LoggerFactory.getLogger(FlvTestReader.class);
 	private final LinkedBlockingQueue<FlvAtom> dataQueue = new LinkedBlockingQueue<FlvAtom>();
 	private Metadata metadata;
 	private int aggregateDuration;
@@ -25,7 +29,7 @@ public class FlvTestReader implements RtmpReader {
 			@Override
 			public void run() {
 				// flvデータの読み込みを実施してデータを送り込む
-				System.out.println("読み込み処理開始");
+				logger.info("読み込み処理開始");
 				try {
 					IReadChannel channel = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.flv");
 					FlvHeader header = new FlvHeader();
@@ -36,7 +40,7 @@ public class FlvTestReader implements RtmpReader {
 					while((tag = analyzer.analyze(channel)) != null) {
 						FlvAtom atom = manager.getAtom(tag);
 						dataQueue.add(atom);
-						System.out.println(tag);
+						logger.info(tag.toString());
 					}
 				}
 				catch (Exception e) {

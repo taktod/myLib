@@ -5,6 +5,7 @@ import java.nio.ByteOrder;
 
 import javax.sound.sampled.AudioFormat;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.media.flv.Tag;
@@ -23,6 +24,7 @@ import com.xuggle.xuggler.IStreamCoder.Direction;
  * @author taktod
  */
 public class DecodeEncodeTest {
+	private Logger logger = Logger.getLogger(DecodeEncodeTest.class);
 	private int audioCounter = 0;
 	/**
 	 * ラの音のaudioデータをつくって応答する。
@@ -80,7 +82,7 @@ public class DecodeEncodeTest {
 					// ここまででpacketができている。
 					if(packet.isComplete()) {
 						for(Tag tag : depacketizer.getTag(encoder1, packet)) {
-							System.out.println(tag);
+							logger.info(tag);
 							// ここからこのデータをデコードする
 							IPacket pkt = packetizer.getPacket(tag, null);
 							if(pkt == null) {
@@ -98,7 +100,7 @@ public class DecodeEncodeTest {
 								}
 								offset += bytesDecoded;
 								if(samples.isComplete()) {
-									System.out.println(samples);
+									logger.info(samples);
 								}
 							}
 						}

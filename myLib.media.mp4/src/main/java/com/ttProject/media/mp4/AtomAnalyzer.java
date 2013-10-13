@@ -1,10 +1,13 @@
 package com.ttProject.media.mp4;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.mp4.atom.Stsd;
 import com.ttProject.media.mp4.atom.stsd.RecordAnalyzer;
 import com.ttProject.nio.channels.IReadChannel;
 
 public class AtomAnalyzer implements IAtomAnalyzer {
+	private Logger logger = Logger.getLogger(AtomAnalyzer.class);
 	private final Mp4Manager manager = new Mp4Manager();
 	@Override
 	public Atom analyze(IReadChannel ch) throws Exception {
@@ -17,7 +20,7 @@ public class AtomAnalyzer implements IAtomAnalyzer {
 				atom.analyze(ch, new RecordAnalyzer());
 			}
 			catch (Exception e) {
-				System.out.println("flvに適合しないコーデックタグをみつけました。:" + e.getMessage());
+				logger.error("flvに適合しないデータを発見しました。", e);
 			}
 		}
 		else {

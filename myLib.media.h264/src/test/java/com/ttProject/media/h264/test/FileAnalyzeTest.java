@@ -2,6 +2,7 @@ package com.ttProject.media.h264.test;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -21,6 +22,7 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
 
 public class FileAnalyzeTest {
+	private Logger logger = Logger.getLogger(FileAnalyzeTest.class);
 	@Test
 	public void test() throws Exception {
 		// h264データの読み込みテストを実施します。
@@ -30,7 +32,7 @@ public class FileAnalyzeTest {
 		);
 		FlvHeader flvHeader = new FlvHeader();
 		flvHeader.analyze(source);
-		System.out.println(flvHeader);
+		logger.info(flvHeader);
 		ITagAnalyzer analyzer = new TagAnalyzer();
 		// sourceを解析していく
 		Tag tag = null;
@@ -53,7 +55,7 @@ public class FileAnalyzeTest {
 							List<Frame> frames = configData.getNals(configChannel);
 							for(Frame frame : frames) {
 								// spsとppsがとれているはず。
-								System.out.println(HexUtil.toHex(frame.getData(), 0, 3, true));
+								logger.info(HexUtil.toHex(frame.getData(), 0, 3, true));
 							}
 						}
 						else {
@@ -62,7 +64,7 @@ public class FileAnalyzeTest {
 							IReadChannel dataChannel = new ByteReadChannel(vTag.getRawData());
 							dataChannel.position(3);
 							Frame frame = dataNalAnalyzer.analyze(dataChannel);
-							System.out.println(HexUtil.toHex(frame.getData(), 0, 5, true));
+							logger.info(HexUtil.toHex(frame.getData(), 0, 5, true));
 						}
 					}
 				}

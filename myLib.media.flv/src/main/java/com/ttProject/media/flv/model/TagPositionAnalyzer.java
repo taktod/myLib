@@ -43,7 +43,6 @@ public class TagPositionAnalyzer implements ITagAnalyzer {
 			ByteBuffer checkBuffer = BufferUtil.safeRead(ch, 2);
 			// keyframeかしっておきたいので、この方法はまずい
 			byte check = checkBuffer.get();
-//			System.out.println(check);
 			if(vTag.analyzeTagByte(check)) {
 				// avcなのでmshの判定が必要
 				vTag.setMSHFlg(checkBuffer.get() == 0x00);

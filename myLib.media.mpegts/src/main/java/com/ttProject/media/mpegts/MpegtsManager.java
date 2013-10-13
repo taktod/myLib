@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.Manager;
 import com.ttProject.media.mpegts.field.PmtElementaryField;
 import com.ttProject.media.mpegts.packet.Pes;
@@ -22,6 +24,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class MpegtsManager extends Manager<Packet> {
+	private Logger logger = Logger.getLogger(MpegtsManager.class);
 	/** PatID(テーブルの基本情報) */
 	private final int patId = 0x0000;
 	/** SdtID(情報) */
@@ -90,8 +93,8 @@ public class MpegtsManager extends Manager<Packet> {
 		}
 		else {
 			// しらないデータ、これがきた場合は、なんとかしておかないとだめ
-			System.out.print("unknownデータ:");
-			System.out.println(pid);
+			logger.warn("unknownデータ");
+			logger.warn(pid);
 			return null;
 		}
 	}

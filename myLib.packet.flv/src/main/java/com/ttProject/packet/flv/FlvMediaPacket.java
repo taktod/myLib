@@ -5,10 +5,13 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.WritableByteChannel;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.flv.CodecType;
 import com.ttProject.util.HexUtil;
 
 public class FlvMediaPacket extends FlvPacket {
+	private Logger logger = Logger.getLogger(FlvMediaPacket.class);
 	private final FlvHeaderPacket headerPacket;
 	private final long startPos;
 	public FlvMediaPacket(FlvPacketManager manager, FlvHeaderPacket headerPacket) {
@@ -41,11 +44,11 @@ public class FlvMediaPacket extends FlvPacket {
 				result = analizeFlvHeader(buffer);
 				break;
 			default:
-				System.out.println("解析不能なデータがきました。");
+				logger.warn("解析不能なデータがきました。");
 				byte[] data = new byte[buffer.remaining()];
 				buffer.get(data);
-				System.out.println("position:" + position);
-				System.out.println(HexUtil.toHex(data, true));
+				logger.warn("position:" + position);
+				logger.warn(HexUtil.toHex(data, true));
 				throw new RuntimeException("解析不能なデータがきました。" + header);
 			}
 			if(result != null) {

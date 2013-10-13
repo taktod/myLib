@@ -111,7 +111,6 @@ public enum Type {
 				return t;
 			}
 		}
-		System.out.println(Integer.toHexString(value));
 		return Unknown;
 	}
 }

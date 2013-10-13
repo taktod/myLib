@@ -1,5 +1,6 @@
 package com.ttProject.media.aac.test;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.media.aac.Frame;
@@ -13,6 +14,7 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class FileAnalyzeTest {
+	private Logger logger = Logger.getLogger(FileAnalyzeTest.class);
 	@Test
 	public void fixedFileTest() throws Exception {
 		IReadChannel source = FileReadChannel.openFileReadChannel(
@@ -22,10 +24,10 @@ public class FileAnalyzeTest {
 		int counter = 0;
 		Frame frame = null;
 		while((frame = analyzer.analyze(source)) != null) {
-			System.out.println(frame);
+			logger.info(frame);
 			counter ++;
 		}
-		System.out.println((counter *1.024/ 44.1f));
+		logger.info((counter *1.024/ 44.1f));
 		source.close();
 	}
 }

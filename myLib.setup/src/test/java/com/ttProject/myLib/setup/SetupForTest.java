@@ -8,6 +8,7 @@ import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.xuggle.xuggler.IAudioSamples;
@@ -32,6 +33,7 @@ import com.xuggle.xuggler.video.IConverter;
  *
  */
 public class SetupForTest {
+	private Logger logger = Logger.getLogger(SetupForTest.class);
 	private int audioCounter = 0;
 	private int videoCounter = 0;
 
@@ -111,7 +113,7 @@ public class SetupForTest {
 	 */
 	@Test
 	public void mp3Setup() throws Exception {
-		System.out.println("mp3のテスト用データを作成する。");
+		logger.info("mp3のテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
@@ -163,7 +165,7 @@ public class SetupForTest {
 	 */
 	@Test
 	public void aacSetup() throws Exception {
-		System.out.println("aacのテスト用データを作成する。");
+		logger.info("aacのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
@@ -214,7 +216,7 @@ public class SetupForTest {
 	 */
 	@Test
 	public void h264Setup() throws Exception {
-		System.out.println("h264のテスト用データを作成する。");
+		logger.info("h264のテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
@@ -290,7 +292,7 @@ public class SetupForTest {
 	 */
 	@Test
 	public void flvSetup() throws Exception {
-		System.out.println("flvのテスト用データを作成する。");
+		logger.info("flvのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
@@ -394,7 +396,7 @@ public class SetupForTest {
 	 */
 	@Test
 	public void mpegtsSetup() throws Exception {
-		System.out.println("mpegtsのテスト用データを作成する。");
+		logger.info("mpegtsのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
@@ -498,7 +500,7 @@ public class SetupForTest {
 	 */
 	@Test
 	public void mp4Setup() throws Exception {
-		System.out.println("mp4のテスト用データを作成する。");
+		logger.info("mp4のテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
@@ -602,7 +604,7 @@ public class SetupForTest {
 	 */
 	@Test
 	public void mkvSetup() throws Exception {
-		System.out.println("mkvのテスト用データを作成する。");
+		logger.info("mkvのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。

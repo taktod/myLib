@@ -70,11 +70,9 @@ public abstract class VideoRecord extends Record {
 				avcc = new Avcc(position, size);
 				avcc.analyze(ch);
 			}
-//			System.out.println(tag);
 			// tagがavccなら読み込んでおきたいところ。
 			// avccだったら中身すべてがmediaSequenceHeaderなので保持しておく必要あり(flvにするため)
 			// とりあえずavccだけ解析するふりをしておく。(解析もなにも中身すべてが対象のデータ)
-//			System.out.println("position:" + Integer.toHexString(position) + " size:" + Integer.toHexString(size) + " tag:" + tag);
 			ch.position(position + size);
 		}
 	}

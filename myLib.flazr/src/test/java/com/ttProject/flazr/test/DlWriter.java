@@ -1,5 +1,8 @@
 package com.ttProject.flazr.test;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.flazr.rtmp.RtmpMessage;
 import com.flazr.rtmp.RtmpWriter;
 import com.ttProject.flazr.MessageManager;
@@ -14,7 +17,7 @@ import com.ttProject.util.HexUtil;
  * @author taktod
  */
 public class DlWriter implements RtmpWriter {
-
+	private Logger logger = LoggerFactory.getLogger(DlWriter.class);
 	@Override
 	public void close() {
 
@@ -38,12 +41,12 @@ public class DlWriter implements RtmpWriter {
 	public void check(Tag tag) {
 		if(tag instanceof AudioTag) {
 			AudioTag aTag = (AudioTag) tag;
-			System.out.print(aTag);
-			System.out.print(" : ");
-			System.out.println(aTag.getCodec());
+			logger.info("{}", aTag);
+			logger.info(" : ");
+			logger.info("{}", aTag.getCodec());
 			if(aTag.getCodec() == CodecType.MP3) {
 				try {
-					System.out.println(HexUtil.toHex(aTag.getBuffer(), 0, 30, true));
+					logger.info(HexUtil.toHex(aTag.getBuffer(), 0, 30, true));
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -54,7 +57,7 @@ public class DlWriter implements RtmpWriter {
 			}
 		}
 		else {
-			System.out.println(tag);
+			logger.info(tag.toString());
 		}
 	}
 

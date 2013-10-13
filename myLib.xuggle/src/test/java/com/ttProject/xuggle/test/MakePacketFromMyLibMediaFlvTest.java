@@ -15,6 +15,8 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.aac.DecoderSpecificInfo;
 import com.ttProject.media.aac.frame.Aac;
 import com.ttProject.media.extra.flv.FlvOrderModel;
@@ -58,6 +60,7 @@ import com.xuggle.xuggler.video.IConverter;
  * @author taktod
  */
 public class MakePacketFromMyLibMediaFlvTest {
+	private Logger logger = Logger.getLogger(MakePacketFromMyLibMediaFlvTest.class);
 	/**
 	 * 再生動作のテストをやってみる。
 	 * とりあえず、h264のデータであることを前提にしてます。
@@ -104,7 +107,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 		IPacket packet = IPacket.make();
 		while((tagList = orderModel.nextTagList(fc)) != null) {
 			for(Tag tag : tagList) {
-//				System.out.println(tag);
+//				logger.info(tag);
 				// データタグ
 				// ここでパケットをつくる。
 				if(tag instanceof VideoTag) {
@@ -124,10 +127,10 @@ public class MakePacketFromMyLibMediaFlvTest {
 								pps = (PictureParameterSet)nal;
 							}
 						}
-						System.out.println(sps);
-						System.out.println(pps);
-//						System.out.println(HexUtil.toHex(sps.getData(), true));
-//						System.out.println(HexUtil.toHex(pps.getData(), true));
+						logger.info(sps);
+						logger.info(pps);
+//						logger.info(HexUtil.toHex(sps.getData(), true));
+//						logger.info(HexUtil.toHex(pps.getData(), true));
 //					throw new Exception("end");	
 						continue;
 					}
@@ -147,7 +150,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 								break;
 							}
 						}
-						System.out.println("keyframe");
+						logger.info("keyframe");
 						packet.setKeyPacket(true);
 						// keyFrameの場合はspsとppsも追加する必要あり。
 						ByteBuffer spsData = sps.getData();
@@ -161,12 +164,12 @@ public class MakePacketFromMyLibMediaFlvTest {
 						buffer.putInt(1);
 						buffer.put(sliceIDRData);
 						buffer.flip();
-//						System.out.println(HexUtil.toHex(buffer.duplicate(), true));
+//						logger.info(HexUtil.toHex(buffer.duplicate(), true));
 						size = buffer.remaining();
 						bufData = IBuffer.make(null, buffer.array(), 0, size);
 					}
 					else {
-						System.out.println("innerframe");
+						logger.info("innerframe");
 						// nalにすればそのままでOK
 						packet.setKeyPacket(false);
 						ByteBuffer buffer = ByteBuffer.allocate(rawData.remaining() + 4);
@@ -189,7 +192,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 					IVideoPicture picture = IVideoPicture.make(coder.getPixelType(), coder.getWidth(), coder.getHeight());
 					int offset = 0;
 					while(offset < packet.getSize()) {
-//						System.out.println("フレームデコード開始");
+//						logger.info("フレームデコード開始");
 						int bytesDecoded = coder.decodeVideo(picture, packet, offset);
 						// このタイミングで勝手にcoderのサイズの変更もされるし、pictureのサイズもリサイズされるみたいです。
 						if(bytesDecoded < 0) {
@@ -197,8 +200,8 @@ public class MakePacketFromMyLibMediaFlvTest {
 						}
 						offset += bytesDecoded;
 						if(picture.isComplete()) {
-							System.out.println(picture);
-//							System.out.println("pictureの読み込みおわり。");
+							logger.info(picture);
+//							logger.info("pictureの読み込みおわり。");
 							IVideoPicture newPic = picture;
 							if(picture.getPixelType() != IPixelFormat.Type.BGR24) {
 								IVideoResampler resampler = IVideoResampler.make(coder.getWidth(), coder.getHeight(), IPixelFormat.Type.BGR24, coder.getWidth(), coder.getHeight(), coder.getPixelType());
@@ -262,7 +265,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 		FlvOrderModel orderModel = new FlvOrderModel(tmp, false, true, 0); // 初めからデータを読み込んでいくことにする。
 		// ここから先実データが取得可能になりますので、ここからコンバートかけてやれば問題なし。
 		IStreamCoder coder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_AAC);
-		System.out.println(coder.getCodecType());
+		logger.info(coder.getCodecType());
 		// TODO このあたりの情報をいれておかないと動作できないらしい。
 		coder.setSampleRate(44100);
 		coder.setTimeBase(IRational.make(1, 44100));
@@ -270,12 +273,12 @@ public class MakePacketFromMyLibMediaFlvTest {
 		if(coder.open(null, null) < 0) {
 			throw new Exception("streamCoderを開くのに失敗しました。");
 		}
-		System.out.println(coder);
+		logger.info(coder);
 		AudioFormat audioFormat = new AudioFormat(coder.getSampleRate(),
 				(int)IAudioSamples.findSampleBitDepth(coder.getSampleFormat()),
 				coder.getChannels(), true /* 16bit samples */, false);
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
-		System.out.println(info);
+		logger.info(info);
 		try {
 			audioLine = (SourceDataLine)AudioSystem.getLine(info);
 			audioLine.open(audioFormat);
@@ -314,16 +317,16 @@ public class MakePacketFromMyLibMediaFlvTest {
 					IAudioSamples samples = IAudioSamples.make(1024, coder.getChannels());
 					int offset = 0;
 					while(offset < packet.getSize()) {
-						System.out.println("decodeのトライします。");
+						logger.info("decodeのトライします。");
 						int bytesDecoded = coder.decodeAudio(samples, packet, offset);
 						if(bytesDecoded < 0) {
 							throw new Exception("デコード中にエラーが発生");
 						}
 						offset += bytesDecoded;
 						if(samples.isComplete()) {
-							System.out.println(samples);
+							logger.info(samples);
 							// 再生にまわす。
-							System.out.println("completeできた。");
+							logger.info("completeできた。");
 							byte[] rawBytes = samples.getData().getByteArray(0, samples.getSize());
 							audioLine.write(rawBytes, 0, samples.getSize());
 						}
@@ -367,7 +370,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 		FlvOrderModel orderModel = new FlvOrderModel(tmp, false, true, 0); // 初めからデータを読み込んでいくことにする。
 		// ここから先実データが取得可能になりますので、ここからコンバートかけてやれば問題なし。
 		IStreamCoder coder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_MP3);
-		System.out.println(coder.getCodecType());
+		logger.info(coder.getCodecType());
 		// TODO このあたりの情報をいれておかないと動作できないらしい。
 		coder.setSampleRate(44100);
 		coder.setTimeBase(IRational.make(1, 44100));
@@ -375,7 +378,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 		if(coder.open(null, null) < 0) {
 			throw new Exception("streamCoderを開くのに失敗しました。");
 		}
-		System.out.println(coder);
+		logger.info(coder);
 		AudioFormat audioFormat = new AudioFormat(coder.getSampleRate(),
 				(int)IAudioSamples.findSampleBitDepth(coder.getSampleFormat()),
 				coder.getChannels(), true /* 16bit samples */, false);
@@ -410,7 +413,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 					IAudioSamples samples = IAudioSamples.make(1024, coder.getChannels());
 					int offset = 0;
 					while(offset < packet.getSize()) {
-						System.out.println("decodeのトライします。");
+						logger.info("decodeのトライします。");
 						int bytesDecoded = coder.decodeAudio(samples, packet, offset);
 						if(bytesDecoded < 0) {
 							throw new Exception("デコード中にエラーが発生");
@@ -418,7 +421,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 						offset += bytesDecoded;
 						if(samples.isComplete()) {
 							// 再生にまわす。
-							System.out.println("completeできた。");
+							logger.info("completeできた。");
 							byte[] rawBytes = samples.getData().getByteArray(0, samples.getSize());
 							audioLine.write(rawBytes, 0, samples.getSize());
 						}
@@ -439,7 +442,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 //	@Test
 	public void test() {
 		for(Mixer.Info info : AudioSystem.getMixerInfo()) {
-			System.out.println(info);
+			logger.info(info);
 		}
 	}
 	/**
@@ -473,7 +476,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 		FlvOrderModel orderModel = new FlvOrderModel(tmp, false, true, 0); // 初めからデータを読み込んでいくことにする。
 		// ここから先実データが取得可能になりますので、ここからコンバートかけてやれば問題なし。
 		IStreamCoder coder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_AAC);
-		System.out.println(coder.getCodecType());
+		logger.info(coder.getCodecType());
 		// TODO このあたりの情報をいれておかないと動作できないらしい。
 		rad = tone * 2 * Math.PI / 44100;
 		coder.setSampleRate(44100);
@@ -482,13 +485,13 @@ public class MakePacketFromMyLibMediaFlvTest {
 		if(coder.open(null, null) < 0) {
 			throw new Exception("streamCoderを開くのに失敗しました。");
 		}
-		System.out.println(coder);
-		System.out.println(IAudioSamples.findSampleBitDepth(coder.getSampleFormat()));
+		logger.info(coder);
+		logger.info(IAudioSamples.findSampleBitDepth(coder.getSampleFormat()));
 		AudioFormat audioFormat = new AudioFormat(coder.getSampleRate(),
 				(int)IAudioSamples.findSampleBitDepth(coder.getSampleFormat()),
 				coder.getChannels(), true /* 16bit samples */, true); // bigEndianをつかうように変更。
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
-		System.out.println(info);
+		logger.info(info);
 		try {
 			audioLine = (SourceDataLine)AudioSystem.getLine(info);
 			audioLine.open(audioFormat);
@@ -528,16 +531,16 @@ public class MakePacketFromMyLibMediaFlvTest {
 					IAudioSamples samples = IAudioSamples.make(1024, coder.getChannels());
 					int offset = 0;
 					while(offset < packet.getSize()) {
-						System.out.println("decodeのトライします。");
+						logger.info("decodeのトライします。");
 						int bytesDecoded = coder.decodeAudio(samples, packet, offset);
 						if(bytesDecoded < 0) {
 							throw new Exception("デコード中にエラーが発生");
 						}
 						offset += bytesDecoded;
 						if(samples.isComplete()) {
-							System.out.println(samples);
+							logger.info(samples);
 							// 再生にまわす。
-							System.out.println("completeできた。");
+							logger.info("completeできた。");
 							byte[] rawBytes = samples.getData().getByteArray(0, samples.getSize());
 							ByteBuffer buf = ByteBuffer.allocate(rawBytes.length);
 							buf.order(ByteOrder.LITTLE_ENDIAN); // リトルエンディアンでデータが入ることを想定
@@ -593,7 +596,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 		if(coder.open(null, null) < 0) {
 			throw new Exception("デコーダーが開けませんでした");
 		}
-		System.out.println(coder);	
+		logger.info(coder);	
 		IPacket packet = IPacket.make();
 		long firstTimestampInStream = Global.NO_PTS;
 		long systemClockStartTime = 0;
@@ -610,7 +613,7 @@ public class MakePacketFromMyLibMediaFlvTest {
 				rawData.get(data);
 				data[data.length - 1] = 0;
 				IBuffer buf = IBuffer.make(null, data, 0, size);
-				System.out.println(vTag.isKeyFrame());
+				logger.info(vTag.isKeyFrame());
 				packet.setData(buf);
 				packet.setFlags(0);
 //				packet.setPosition(vTag.getPosition() + 12);
@@ -619,13 +622,13 @@ public class MakePacketFromMyLibMediaFlvTest {
 				packet.setTimeBase(IRational.make(1, 1000));
 				packet.setComplete(true, size);
 				packet.setKeyPacket(vTag.isKeyFrame());
-				System.out.println(packet);
-				System.out.println(HexUtil.toHex(packet.getData().getByteBuffer(0, size)));
+				logger.info(packet);
+				logger.info(HexUtil.toHex(packet.getData().getByteBuffer(0, size)));
 				Thread.sleep(500);
 				IVideoPicture picture = IVideoPicture.make(coder.getPixelType(), coder.getWidth(), coder.getHeight());
 				int offset = 0;
 				while(offset < packet.getSize()) {
-					System.out.println("デコード");
+					logger.info("デコード");
 					int bytesDecoded = coder.decodeVideo(picture, packet, offset);
 					if(bytesDecoded < 0) {
 						throw new Exception("デコード中に問題が発生しました。");

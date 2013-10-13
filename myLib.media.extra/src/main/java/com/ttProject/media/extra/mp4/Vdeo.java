@@ -70,7 +70,6 @@ public class Vdeo extends Atom implements IIndexAtom {
 		}
 	}
 	public void setTimescale(int timescale) {
-		System.out.println("timescale:" + timescale);
 		this.timescale = timescale;
 	}
 	public int getTimescale() {

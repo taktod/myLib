@@ -1,5 +1,6 @@
 package com.ttProject.jmx.test;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 
 import com.ttProject.jmx.JMXFactory;
@@ -9,12 +10,13 @@ import com.ttProject.jmx.JMXFactory;
  * @author taktod
  */
 public class JMXTest {
+	private static Logger logger = Logger.getLogger(JMXTest.class);
 	/**
 	 * エントリー
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		System.out.println("動作開始");
+		logger.info("動作開始");
 		TestMXBean mxBean = new TestMXBean();
 		JMXFactory.registerMBean("control", mxBean);
 		try {

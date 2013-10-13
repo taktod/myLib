@@ -11,6 +11,7 @@ import java.nio.channels.FileChannel;
 
 import javax.sound.sampled.AudioFormat;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -37,6 +38,7 @@ import com.xuggle.xuggler.video.IConverter;
  * @author taktod
  */
 public class EncodeTest {
+	private Logger logger = Logger.getLogger(EncodeTest.class);
 	@Test
 	public void h263Test() {
 		FileChannel output = null;
@@ -85,7 +87,7 @@ public class EncodeTest {
 				}
 				if(packet.isComplete()) {
 					for(Tag tag : depacketizer.getTag(encoder, packet)) {
-						System.out.println(tag);
+						logger.info(tag);
 						output.write(tag.getBuffer());
 					}
 				}

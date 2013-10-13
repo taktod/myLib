@@ -2,16 +2,18 @@ package com.ttProject.media.mkv;
 
 import java.lang.reflect.Constructor;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.nio.channels.IReadChannel;
 
 public class ElementAnalyzer implements IElementAnalyzer {
+	private Logger logger = Logger.getLogger(ElementAnalyzer.class);
 	@Override
 	public Element analyze(IReadChannel ch) throws Exception {
 		if(ch.size() == ch.position()) {
 			return null;
 		}
 		Type tag = Element.getTag(ch);
-//		System.out.println(tag);
 		try {
 			Class<?> cls = Thread.currentThread().getContextClassLoader().loadClass(getClassName(tag));
 			Element element = null;
@@ -24,8 +26,8 @@ public class ElementAnalyzer implements IElementAnalyzer {
 			return element;
 		}
 		catch (Exception e) {
-			System.out.println(tag);
-//			System.exit(0);
+			logger.warn("クラス解析中に知らないtagを発見しました。", e);
+			logger.warn(tag);
 			return null;
 		}
 	}

@@ -2,6 +2,7 @@ package com.ttProject.flv.test;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.media.flv.FlvHeader;
@@ -18,6 +19,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class FileAnalyzeTest {
+	private Logger logger = Logger.getLogger(FileAnalyzeTest.class);
 	/**
 	 * ファイル全体を解析するテスト
 	 */
@@ -28,12 +30,12 @@ public class FileAnalyzeTest {
 		);
 		FlvHeader flvheader = new FlvHeader();
 		flvheader.analyze(source);
-		System.out.println(flvheader);
+		logger.info(flvheader);
 		ITagAnalyzer analyzer = new TagAnalyzer();
 		// sourceをそのまま解析する。
 		Tag tag = null;
 		while((tag = analyzer.analyze(source)) != null) {
-			System.out.println(tag);
+			logger.info(tag);
 		}
 		source.close();
 	}
@@ -47,15 +49,15 @@ public class FileAnalyzeTest {
 		);
 		FlvHeader flvheader = new FlvHeader();
 		flvheader.analyze(source);
-		System.out.println(flvheader);
+		logger.info(flvheader);
 		ByteBuffer buffer = BufferUtil.safeRead(source, 2560);
 		FlvManager manager = new FlvManager();
 		for(Tag tag : manager.getUnits(buffer)) {
-			System.out.println(tag);
+			logger.info(tag);
 		}
 		buffer = BufferUtil.safeRead(source, 2560);
 		for(Tag tag : manager.getUnits(buffer)) {
-			System.out.println(tag);
+			logger.info(tag);
 		}
 		source.close();
 	}

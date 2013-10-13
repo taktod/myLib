@@ -6,6 +6,8 @@ import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.jmx.bean.IMXBeanBase;
 import com.ttProject.jmx.bean.MXBeanBase;
 
@@ -14,6 +16,7 @@ import com.ttProject.jmx.bean.MXBeanBase;
  * @author taktod
  */
 public class JMXFactory {
+	private static Logger logger = Logger.getLogger(JMXFactory.class);
 	/**
 	 * 動作ドメイン(jmxのmxBeanの欄の一覧の名称になります。)
 	 */
@@ -94,8 +97,7 @@ public class JMXFactory {
 			return registerMBean(obj, objectName);
 		}
 		catch (Exception e) {
-			System.out.println("Could not register the " + obj.getClass().getName());
-			e.printStackTrace();
+			logger.error("Could not register the " + obj.getClass().getName(), e);
 			return null;
 		}
 	}
@@ -118,8 +120,7 @@ public class JMXFactory {
 			return objectName;
 		}
 		catch (Exception e) {
-			System.out.println("Could not register the MXBean");
-			e.printStackTrace();
+			logger.error("Could not register the MXBean", e);
 			return null;
 		}
 	}
@@ -143,8 +144,7 @@ public class JMXFactory {
 			unregisterMBean(objectName);
 		}
 		catch (Exception e) {
-			System.out.println("Could not unregister the ");
-			e.printStackTrace();
+			logger.error("Could not unregister the MXBean", e);
 		}
 	}
 	/**
@@ -158,8 +158,7 @@ public class JMXFactory {
 			}
 		}
 		catch (Exception e) {
-			System.out.println("Could not unregister the MXBean");
-			e.printStackTrace();
+			logger.error("Could not unregister the MXBean", e);
 		}
 	}
 }

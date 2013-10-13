@@ -5,6 +5,8 @@ import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.flv.FlvHeader;
 import com.ttProject.media.flv.ITagAnalyzer;
 import com.ttProject.media.flv.Tag;
@@ -32,6 +34,7 @@ import com.xuggle.xuggler.video.IConverter;
  * @author taktod
  */
 public class FastEncodeTest {
+	private Logger logger = Logger.getLogger(FastEncodeTest.class);
 	boolean working = true;
 	private Tag sourceTag = null;
 //	@Test
@@ -89,7 +92,7 @@ public class FastEncodeTest {
 									destTag = tag;
 								}
 								if(sourceTag != null) {
-									System.out.println("ずれ：" + (sourceTag.getTimestamp() - destTag.getTimestamp()));
+									logger.info("ずれ：" + (sourceTag.getTimestamp() - destTag.getTimestamp()));
 								}
 							}
 						}
@@ -120,7 +123,7 @@ public class FastEncodeTest {
 					// 現在時刻
 					long current = now - startTime;
 					if(tag.getTimestamp() > current) {
-						System.out.println("tag:" + tag.getTimestamp() + " sleepTime:" + (tag.getTimestamp() - current));
+						logger.info("tag:" + tag.getTimestamp() + " sleepTime:" + (tag.getTimestamp() - current));
 						Thread.sleep(tag.getTimestamp() - current);
 					}
 					packet = packetizer.getPacket(tag, null);

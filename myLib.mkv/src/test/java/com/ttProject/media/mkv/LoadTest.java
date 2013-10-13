@@ -1,5 +1,6 @@
 package com.ttProject.media.mkv;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.nio.channels.FileReadChannel;
@@ -12,6 +13,7 @@ import com.ttProject.nio.channels.IReadChannel;
  *
  */
 public class LoadTest {
+	private Logger logger = Logger.getLogger(LoadTest.class);
 	@Test
 	public void test() throws Exception {
 		IReadChannel channel = FileReadChannel.openFileReadChannel(
@@ -21,6 +23,6 @@ public class LoadTest {
 		// とりあえず中身をしる必要があるので、しっていく
 		while(analyzer.analyze(channel) != null) {
 		}
-		System.out.println("おしまい");
+		logger.info("終了");
 	}
 }

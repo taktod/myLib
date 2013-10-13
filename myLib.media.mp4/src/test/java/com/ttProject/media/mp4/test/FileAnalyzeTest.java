@@ -1,5 +1,6 @@
 package com.ttProject.media.mp4.test;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.media.mp4.Atom;
@@ -14,6 +15,7 @@ import com.ttProject.nio.channels.IReadChannel;
  *
  */
 public class FileAnalyzeTest {
+	private Logger logger = Logger.getLogger(FileAnalyzeTest.class);
 	/**
 	 * 固定ファイルの読み込みテスト
 	 */
@@ -25,7 +27,7 @@ public class FileAnalyzeTest {
 		IAtomAnalyzer analyzer = new AtomAnalyzer();
 		Atom atom = null;
 		while((atom = analyzer.analyze(source)) != null) {
-			System.out.println(atom);
+			logger.info(atom);
 		}
 		source.close();
 	}
@@ -34,6 +36,6 @@ public class FileAnalyzeTest {
 	 */
 	@Test
 	public void appendingBufferTest() throws Exception {
-		
+		logger.error("mp4に関しては追記動作がありえないので、このテストはなしです。");
 	}
 }

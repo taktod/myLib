@@ -58,7 +58,6 @@ public class AdaptationField {
 		adaptationFieldLength = new Bit8();
 		Bit.bitLoader(channel, adaptationFieldLength);
 		if(adaptationFieldLength.get() == 0x00) {
-//			System.out.println("adaptationFieldの設定がなかった。");
 			return;
 		}
 		int size = adaptationFieldLength.get();

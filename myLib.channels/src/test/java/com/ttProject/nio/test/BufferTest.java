@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.nio.CacheBuffer;
@@ -12,6 +13,7 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
 public class BufferTest {
+	private Logger logger = Logger.getLogger(BufferTest.class);
 //	@Test
 	public void test() throws Exception {
 		IReadChannel target = FileReadChannel.openFileReadChannel(
@@ -19,7 +21,7 @@ public class BufferTest {
 		);
 		CacheBuffer buffer = new CacheBuffer(target, target.size());
 		while(buffer.remaining() != 0) {
-			System.out.println(buffer.getInt());
+			logger.info(buffer.getInt());
 		}
 	}
 //	@Test
@@ -31,19 +33,18 @@ public class BufferTest {
 			ByteBuffer buffer = ByteBuffer.allocate(4);
 			target.read(buffer);
 			buffer.flip();
-			System.out.println(buffer.getInt());
+			logger.info(buffer.getInt());
 		}
 	}
 	@Test
 	public void test3() throws Exception {
-		System.out.println("here");
 		IReadChannel target = new ByteReadChannel("test".getBytes());
 		ByteBuffer buffer = ByteBuffer.allocate(10);
 		target.read(buffer);
 		buffer.flip();
-		System.out.println(buffer.remaining());
+		logger.info(buffer.remaining());
 		while(buffer.remaining() != 0) {
-			System.out.println(Integer.toHexString(buffer.get() & 0xFF));
+			logger.info(Integer.toHexString(buffer.get() & 0xFF));
 		}
 		target.close();
 	}
@@ -51,8 +52,8 @@ public class BufferTest {
 	public void test4() throws Exception {
 		FileOutputStream fos = new FileOutputStream("test");
 		FileChannel channel = fos.getChannel();
-		System.out.println(channel.isOpen());
+		logger.info(channel.isOpen());
 		fos.close();
-		System.out.println(channel.isOpen());
+		logger.info(channel.isOpen());
 	}
 }

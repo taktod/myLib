@@ -2,6 +2,8 @@ package com.ttProject.media.mkv.element;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.mkv.Element;
 import com.ttProject.media.mkv.IElementAnalyzer;
 import com.ttProject.media.mkv.Type;
@@ -15,6 +17,7 @@ import com.ttProject.util.BufferUtil;
  *
  */
 public class SeekPosition extends Element {
+	private Logger logger = Logger.getLogger(SeekPosition.class);
 	private int pos;
 	public SeekPosition(long position, long size, long dataPosition) {
 		super(Type.SeekPosition, position, size, dataPosition);
@@ -31,7 +34,7 @@ public class SeekPosition extends Element {
 		while(buffer.remaining() != 0) {
 			pos = pos * 0x0100 + (buffer.get() & 0xFF);
 		}
-		System.out.println(Integer.toHexString(pos));
+		logger.info(Integer.toHexString(pos));
 	}
 	@Override
 	public String toString() {

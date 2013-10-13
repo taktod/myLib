@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.convert.IConvertListener;
@@ -18,13 +19,13 @@ import com.ttProject.nio.channels.IReadChannel;
  */
 @SuppressWarnings("unused")
 public class ConvertTest {
+	private Logger logger = Logger.getLogger(ConvertTest.class);
 //	@Test
 	public void test() throws Exception {
 		// データ元
 		IReadChannel fc1 = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.mp4");
 		// 保存先
 		final FileOutputStream fos = new FileOutputStream("output.flv");
-//		final FileChannel fc2 = new FileOutputStream("output.flv").getChannel();
 		// 変換マネージャー
 		FfmpegConvertManager manager = new FfmpegConvertManager();
 		// 変換動作プロセス取得
@@ -35,7 +36,7 @@ public class ConvertTest {
 			public void receiveData(ByteBuffer buffer) {
 				try {
 					// 応答をうけとったらファイルに書き出す。
-					System.out.println("応答をうけとりました。");
+					logger.info("応答をうけとりました。");
 					fos.getChannel().write(buffer);
 				}
 				catch (Exception e) {

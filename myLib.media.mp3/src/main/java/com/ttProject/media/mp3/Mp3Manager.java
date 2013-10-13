@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.Manager;
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
@@ -22,6 +24,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Mp3Manager extends Manager<Frame> {
+	private Logger logger = Logger.getLogger(Mp3Manager.class);
 	/**
 	 * {@inheritDoc}
 	 */
@@ -42,8 +45,8 @@ public class Mp3Manager extends Manager<Frame> {
 			}
 			frame.analyze(bufferChannel);
 			// TODO analyze動作の中身をつくっておきたいところ。
-			System.out.println(position);
-			System.out.println(frame.getSize());
+			logger.info(position);
+			logger.info(frame.getSize());
 			bufferChannel.position(position + frame.getSize());
 			result.add(frame);
 		}

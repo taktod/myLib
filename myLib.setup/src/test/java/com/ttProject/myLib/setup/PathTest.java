@@ -2,15 +2,18 @@ package com.ttProject.myLib.setup;
 
 import java.io.File;
 
+import org.apache.log4j.Logger;
+
 /**
  * テスト
  * @author taktod
  *
  */
 public class PathTest {
+	private Logger logger = Logger.getLogger(PathTest.class);
 //	@Test
 	public void test() {
-		System.out.println(getTargetFile("a/b/c/d/test.flv"));
+		logger.info(getTargetFile("a/b/c/d/test.flv"));
 	}
 	/**
 	 * 

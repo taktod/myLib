@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,6 +36,7 @@ import com.xuggle.xuggler.video.IConverter;
  * @author taktod
  */
 public class ConvertTest {
+	private Logger logger = Logger.getLogger(ConvertTest.class);
 	/**
 	 * h263のコンバート動作テスト とりあえず画像→h263をつくりたい。
 	 * @throws Exception
@@ -77,8 +79,8 @@ public class ConvertTest {
 				throw new Exception("変換失敗");
 			}
 			if(packet.isComplete()) {
-				System.out.println(packet);
-				System.out.println(HexUtil.toHex(packet.getByteBuffer(), true)); // flvに入るべきh263のデータ部分のみ入っています。
+				logger.info(packet);
+				logger.info(HexUtil.toHex(packet.getByteBuffer(), true)); // flvに入るべきh263のデータ部分のみ入っています。
 			}
 			Thread.sleep((long)(1000 / frameRate.getDouble()));
 		}
@@ -233,8 +235,8 @@ public class ConvertTest {
 				throw new Exception("変換失敗");
 			}
 			if(packet.isComplete()) {
-				System.out.println(packet);
-				System.out.println(HexUtil.toHex(packet.getByteBuffer(), true)); // flvに入るべきh263のデータ部分のみ入っています。
+				logger.info(packet);
+				logger.info(HexUtil.toHex(packet.getByteBuffer(), true)); // flvに入るべきh263のデータ部分のみ入っています。
 				/*
 				 * すべてnal構造で応答されることと、はじめのキーフレームデータにsps ppsがはいっているらしいので、単純には、flv化できないっぽい。
 00 00 00 01 67 64 00 1E AC B2 02 83 F4 20 00 00 03 00 20 00 00 FA 01 E2 C5 C9
@@ -400,34 +402,34 @@ public class ConvertTest {
 			if(buffer.limit() == buffer.position()) {
 				// 最後までいったら今回のbufferはたまったことになる。
 				buffer.flip();
-//				System.out.println(buffer.remaining());
-//				System.out.println(buffer.array().length);
+//				logger.info(buffer.remaining());
+//				logger.info(buffer.array().length);
 				IAudioSamples samples = IAudioSamples.make(1024, 2, Format.FMT_S16);
 				byte[] ddd = buffer.array();
-				System.out.println(ddd.length);
-				System.out.println(samples.getData());
+				logger.info(ddd.length);
+				logger.info(samples.getData());
 				samples.getData().put(buffer.array(), 0, 0, buffer.remaining());
 //				IBuffer bufff = IBuffer.make(null, Type.IBUFFER_SINT16, 1024, false);
 //				IBuffer bufff = IBuffer.make(null, buffer.array(), 0, 5000); // 大きめを設定しておくときちんと動作できるのだろうか
-//				System.out.println("こっち？:" + bufff);
+//				logger.info("こっち？:" + bufff);
 //				samples.setData(bufff);
-//				System.out.println("ここか？:" + samples.getData());
+//				logger.info("ここか？:" + samples.getData());
 				// 1/1000000の状態で音声用のtimestampがはいっていないとだめ
 				// 1024 / 44100が時間になるのか・・・
 				samples.setComplete(true, 1024, samplingRate, 2, Format.FMT_S16, 0);
-				System.out.println(samples);
+				logger.info(samples);
 				int samplesConsumed = 0;
 				while(samplesConsumed < samples.getNumSamples()) {
-					System.out.println(samples.getNumSamples() - samplesConsumed);
+					logger.info(samples.getNumSamples() - samplesConsumed);
 					int retval = coder.encodeAudio(packet, samples, samplesConsumed);
 					if(retval < 0) {
 						throw new Exception("変換失敗");
 					}
 					samplesConsumed += retval;
 					if(packet.isComplete()) {
-						System.out.println(packet);
-//						System.out.println(packet.getSize());
-//						System.out.println(HexUtil.toHex(packet.getData().getByteArray(0, packet.getSize()), true));
+						logger.info(packet);
+//						logger.info(packet.getSize());
+//						logger.info(HexUtil.toHex(packet.getData().getByteArray(0, packet.getSize()), true));
 						outputMp3.write(packet.getData().getByteBuffer(0, packet.getSize()));
 					}
 				}
@@ -446,7 +448,7 @@ public class ConvertTest {
 //		buffer.flip();
 //		IAudioSamples samples = IAudioSamples.make(IBuffer.make(null, buffer.array(), 0, buffer.remaining()), 2, Format.FMT_S16);
 //		samples.setComplete(true, numSamples, sampleRate, channels, format, pts)
-//		System.out.println(samples);
+//		logger.info(samples);
 //		samples.setComplete(complete, numSamples, sampleRate, channels, format, pts)
 		// あとlittleEndianに注意かも
 	}

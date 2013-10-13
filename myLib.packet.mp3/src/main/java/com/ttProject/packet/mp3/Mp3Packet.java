@@ -2,6 +2,8 @@ package com.ttProject.packet.mp3;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.packet.MediaPacket;
 
 /**
@@ -9,6 +11,7 @@ import com.ttProject.packet.MediaPacket;
  * @author taktod
  */
 public abstract class Mp3Packet extends MediaPacket {
+	private Logger logger = Logger.getLogger(Mp3Packet.class);
 	/** 書き込みする状態かどうかフラグ(id3v2のタグは、スキップするので、そのときにこのフラグを確認します。) */
 	private boolean writeMode = false;
 	/** 処理データ量 */
@@ -89,7 +92,7 @@ public abstract class Mp3Packet extends MediaPacket {
 					  && readData[1] == 'A'
 					  && readData[2] == 'G') {
 					// id3v1のタグの場合はファイルの終端である可能性が高いので、処理を終わらせます。
-//					System.out.println("id3v1タグ");
+//					logger.info("id3v1タグ");
 					// manager側にデータをおわった旨の登録が必要だと思われます。
 					// ここは例外ではなく、おわったという処理にすべきかも
 					throw new RuntimeException("終端が見えたので処理を中止します。");

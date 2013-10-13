@@ -39,7 +39,6 @@ public abstract class MpegtsPacket extends MediaPacket {
 		int position = buffer.position();
 		// 先頭を確認
 		if(buffer.get() != 0x47) {
-//			System.out.println("position:" + position);
 			throw new RuntimeException("先頭が0x47になっていないとmpegtsとして成立していない。");
 		}
 		// pid取得

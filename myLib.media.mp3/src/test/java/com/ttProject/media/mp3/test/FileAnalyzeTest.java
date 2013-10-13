@@ -2,6 +2,7 @@ package com.ttProject.media.mp3.test;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.media.mp3.Frame;
@@ -17,6 +18,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class FileAnalyzeTest {
+	private Logger logger = Logger.getLogger(FileAnalyzeTest.class);
 	/**
 	 * ファイルサイズが固定されている状態での動作テスト
 	 */
@@ -29,7 +31,7 @@ public class FileAnalyzeTest {
 		// sourceをそのまま解析します。
 		Frame frame = null;
 		while((frame = analyzer.analyze(source)) != null) {
-			System.out.println(frame);
+			logger.info(frame);
 		}
 		// 最後までいったらおわり
 		source.close();
@@ -40,7 +42,7 @@ public class FileAnalyzeTest {
 	 */
 	@Test
 	public void appendingBufferTest() throws Exception {
-		System.out.println("追記動作のテスト開始");
+		logger.info("追記動作のテスト開始");
 		IReadChannel source = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("test.mp3")
 		);
@@ -49,18 +51,18 @@ public class FileAnalyzeTest {
 		Mp3Manager manager = new Mp3Manager();
 		// 解析にまわす。
 		for(Frame tag : manager.getUnits(buffer)) {
-			System.out.println(tag);
+			logger.info(tag);
 		}
 		// 続きのデータを読み込む
 		buffer = BufferUtil.safeRead(source, 2560);
 		// 解析にまわす
 		for(Frame tag : manager.getUnits(buffer)) {
-			System.out.println(tag);
+			logger.info(tag);
 		}
 		// さらにつづける
 		buffer = BufferUtil.safeRead(source, 2560);
 		for(Frame tag : manager.getUnits(buffer)) {
-			System.out.println(tag);
+			logger.info(tag);
 		}
 		// 飽きたらやめる
 		source.close();

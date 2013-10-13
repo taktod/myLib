@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.extra.mp4.Meta;
 import com.ttProject.media.extra.mp4.Sond;
 import com.ttProject.media.extra.mp4.Vdeo;
@@ -27,6 +29,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class FlvOrderModel {
+	private Logger logger = Logger.getLogger(FlvOrderModel.class);
 	/** 終了イベントの取得動作用 */
 	private IFlvStartEventListener startEventListener = null;
 	/** 処理途上で捨てたデータのサイズ保持 */
@@ -224,7 +227,7 @@ public class FlvOrderModel {
 					List<Double> filepositions = new ArrayList<Double>();
 					// この部分がおおきすぎるとoverflowするらしい。こまったもんだ。
 					int delta = (int)(meta.getDuration() / divCount);
-					System.out.println("delta:" + delta);
+					logger.info("delta:" + delta);
 					for(int i = 0;i < meta.getDuration();i += delta) {
 						times.add(i * 0.001);
 						filepositions.add(i * 1.0);
@@ -279,7 +282,7 @@ public class FlvOrderModel {
 			int delta = vdeo.getStts().nextDuration();
 			if(delta == -1) {
 				// 最後まで読み込みが完了しているので、次のデータがとれない。
-				System.out.println("delta値を最後まで読み取ったのでおわりとします。");
+				logger.info("delta値を最後まで読み取ったのでおわりとします。");
 				break;
 			}
 			sourcePos += sampleSize;
@@ -287,7 +290,7 @@ public class FlvOrderModel {
 		}
 		// 一番最後まで処理して、データがもうない場合(stcoが切れた場合)vdeo = nullにしておく。
 		if(!vdeo.getStco().hasMore()) {
-			System.out.println("stcoのデータがこれ以上ないみたいです。");
+			logger.info("stcoのデータがこれ以上ないみたいです。");
 			orderManager.setNomoreVideo();
 			vdeo = null;
 		}

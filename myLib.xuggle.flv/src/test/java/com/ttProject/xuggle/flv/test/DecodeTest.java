@@ -1,5 +1,6 @@
 package com.ttProject.xuggle.flv.test;
 
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,6 +24,7 @@ import com.xuggle.xuggler.IVideoPicture;
  *
  */
 public class DecodeTest {
+	private Logger logger = Logger.getLogger(DecodeTest.class);
 	@Test
 	public void h263Test() {
 //		videoDecodeTest("/home/xxx/h263.flv");
@@ -41,7 +43,7 @@ public class DecodeTest {
 			IFileReadChannel source = FileReadChannel.openFileReadChannel(target);
 			FlvHeader flvheader = new FlvHeader();
 			flvheader.analyze(source);
-			System.out.println(flvheader);
+			logger.info(flvheader);
 			ITagAnalyzer analyzer = new TagAnalyzer();
 			// sourceをそのまま解析する。
 			FlvPacketizer packetizer = new FlvPacketizer();
@@ -66,7 +68,7 @@ public class DecodeTest {
 						}
 						offset += bytesDecoded;
 						if(picture.isComplete()) {
-							System.out.println(picture);
+							logger.info(picture);
 						}
 					}
 				}
@@ -134,7 +136,7 @@ public class DecodeTest {
 						}
 						offset += bytesDecoded;
 						if(samples.isComplete()) {
-							System.out.println(samples);
+							logger.info(samples);
 						}
 					}
 				}

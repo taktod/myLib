@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.flv.CodecType;
 import com.ttProject.media.flv.FlvHeader;
 import com.ttProject.media.flv.Tag;
@@ -53,6 +55,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class IndexFileCreator {
+	private Logger logger = Logger.getLogger(IndexFileCreator.class);
 	private final File targetFile;
 	private FileOutputStream idx; // 書き込み対象
 	
@@ -129,11 +132,11 @@ public class IndexFileCreator {
 				audioTagByte = aTag.getTagByte();
 				audioCodec = aTag.getCodec();
 				if(aTag.isMediaSequenceHeader()) {
-					System.out.print("msh発見:");
-					System.out.println(tag.getPosition());
+					logger.info("msh発見:");
+					logger.info(tag.getPosition());
 					long now = System.currentTimeMillis();
-					System.out.println((now - lastFoundTime));
-					System.out.println((now - startTime));
+					logger.info((now - lastFoundTime));
+					logger.info((now - startTime));
 
 					ByteBuffer buffer = ByteBuffer.allocate(9);
 					buffer.put((byte)0x02);
@@ -148,10 +151,10 @@ public class IndexFileCreator {
 				VideoTag vTag = (VideoTag) tag;
 				videoCodec = vTag.getCodec();
 				if(vTag.isKeyFrame()) {
-					System.out.print("keyFrame発見:");
+					logger.info("keyFrame発見:");
 					ByteBuffer buffer = ByteBuffer.allocate(9);
 					if(vTag.isMediaSequenceHeader()) {
-						System.out.print("msh発見:");
+						logger.info("msh発見:");
 						buffer.put((byte)0x01);
 					}
 					else {
@@ -162,108 +165,14 @@ public class IndexFileCreator {
 					buffer.flip();
 					idx.getChannel().write(buffer);
 
-					System.out.println(tag.getPosition());
+					logger.info(tag.getPosition());
 					long now = System.currentTimeMillis();
-					System.out.println((now - lastFoundTime));
-					System.out.println((now - startTime));
+					logger.info((now - lastFoundTime));
+					logger.info((now - startTime));
 					lastFoundTime = now;
 				}
 			}
 		}
-	}
-	/**
-	 * データにアクセスします。
-	 * この動作はFlvOrderModelに引き継ぐべき。
-	 * @throws Exception
-	 * /
-	public void access(long timestamp) throws Exception {
-		// 0:とりあえずtimestampから開始位置の推定を実行する
-		int position = (int)(timestamp * size / duration);
-		System.out.println("startPos:" + Integer.toHexString(position));
-		// 1:アクセスがきたら00 00 00 XXもしくは 00 00 00 00 XXの位置のデータをみつける。
-		IFileReadChannel tmpSource = FileReadChannel.openFileReadChannel(
-				source.getUri()
-		);
-		tmpSource.position(position);
-		// ここから読み込んでいく。shortで0がでたら、そこがあやしい。
-		CacheBuffer cacheBuffer = new CacheBuffer(tmpSource);
-		// shortで取得していって中身を見たいがあとで巻き戻す動作が若干必要。
-		boolean isVideoTag = false;
-		while(cacheBuffer.remaining() > 1) {
-			if(cacheBuffer.getShort() == 0) {
-				// ここで取得できるpositionは00 00 [XX
-				// 次のデータも確認して、00もしくは00 00ならtrackIDである可能性が高い
-				// 次以降のデータで0x00以外のデータがくるまで、読み込みつづける。
-				byte b = 0;
-				while((b = cacheBuffer.get()) == 0) {
-					;
-				}
-				System.out.println("position:" + Integer.toHexString(cacheBuffer.position()));
-				System.out.println(Integer.toHexString(b));
-				// bの値がaudioのtagByteか
-				int pos = cacheBuffer.position() - 12;
-				if(b == audioTagByte) {
-					System.out.println("タグをみつけたと思われる。");
-					// 12バイト前のデータを見てみる。
-					tmpSource.position(pos);
-					cacheBuffer = new CacheBuffer(tmpSource);
-					if(cacheBuffer.get() != 0x08) {
-						System.out.println("音声タグではなかったのでやり直し");
-						continue;
-					}
-					tmpSource.position(pos);
-					break;
-				}
-				else if((b & 0x0F) == CodecType.getVideoByte(videoCodec)) {
-					isVideoTag = true;
-					System.out.println("タグをみつけたと思われる。");
-					// 12バイト前のデータを見てみる。
-					tmpSource.position(pos);
-					cacheBuffer = new CacheBuffer(tmpSource);
-					if(cacheBuffer.get() != 0x09) {
-						System.out.println("映像タグではなかったのでやり直し");
-						continue;
-					}
-					tmpSource.position(pos);
-					break;
-				}
-			}
-		}
-		Tag tag = null;
-		TagPositionAnalyzer analyzer = new TagPositionAnalyzer();
-		while((tag = analyzer.analyze(tmpSource)) != null) {
-//			System.out.println(tag);
-			if(videoCodec == CodecType.NONE) {
-				// 音声タグをみつけたらそこから実行させる。
-				if(tag instanceof AudioTag) {
-					System.out.print("開始タグ:");
-					System.out.println(tag);
-					System.out.print("開始位置:");
-					System.out.println(Integer.toHexString(tag.getPosition()));
-					return;
-				}
-			}
-			else {
-				if(tag instanceof VideoTag) {
-					VideoTag vTag = (VideoTag) tag;
-					if(vTag.isKeyFrame()) {
-						System.out.print("開始タグ:");
-						System.out.println(tag);
-						System.out.print("開始位置:");
-						System.out.println(Integer.toHexString(tag.getPosition()));
-						return;
-					}
-				}
-			}
-		}
-		// XXの部分音声tagはずっと同じもの。
-		// 映像タグの場合は17 27みたいな３パターンしかない。
-		// よってパターンと一致するかを見ればだいたいわかる。
-		// 11バイトもどってtagの先頭を確認して、09もしくは08ならほぼあたり。
-		// tagとして読み込んで次のtagの位置がわかれば文句なしとする。
-		// 映像のkeyFrameにあたるまで読み込めばokとなりそう。
-		// 2:そこから11バイト前のデータをみて、tagの先頭位置とその内容を取得したい。
-		// 3:tagの終端位置を確認して、内容的に次のtagがきているなら、見つけたとみてOK
 	}
 	/**
 	 * 解析本家sourceの内容の解析の続きを請け負っておく。でいいはず
@@ -281,25 +190,25 @@ public class IndexFileCreator {
 				// msh判定のみほしい
 				AudioTag aTag = (AudioTag) tag;
 				if(aTag.isMediaSequenceHeader()) {
-					System.out.print("msh発見:");
-					System.out.println(tag.getPosition());
+					logger.info("msh発見:");
+					logger.info(tag.getPosition());
 					long now = System.currentTimeMillis();
-					System.out.println((now - lastFoundTime));
-					System.out.println((now - startTime));
+					logger.info((now - lastFoundTime));
+					logger.info((now - startTime));
 					lastFoundTime = now;
 				}
 			}
 			else if(tag instanceof VideoTag) {
 				VideoTag vTag = (VideoTag) tag;
 				if(vTag.isKeyFrame()) {
-					System.out.print("keyFrame発見:");
+					logger.info("keyFrame発見:");
 					if(vTag.isMediaSequenceHeader()) {
-						System.out.print("msh発見:");
+						logger.info("msh発見:");
 					}
-					System.out.println(tag.getPosition());
+					logger.info(tag.getPosition());
 					long now = System.currentTimeMillis();
-					System.out.println((now - lastFoundTime));
-					System.out.println((now - startTime));
+					logger.info((now - lastFoundTime));
+					logger.info((now - startTime));
 					lastFoundTime = now;
 				}
 			}
