@@ -37,7 +37,6 @@ public class RtmpEncoderEx extends SimpleChannelDownstreamHandler {
 	public void writeRequested(ChannelHandlerContext ctx, MessageEvent e)
 			throws Exception {
 		Channels.write(ctx, e.getFuture(), encode((RtmpMessage) e.getMessage()));
-		super.writeRequested(ctx, e);
 	}
 	public ChannelBuffer encode(final RtmpMessage message) {
 		final ChannelBuffer in = message.encode();
@@ -65,7 +64,7 @@ public class RtmpEncoderEx extends SimpleChannelDownstreamHandler {
 			else {
 				header.setHeaderType(RtmpHeader.Type.MEDIUM);
 			}
-			final int deltaTime = header.getTime();
+			final int deltaTime = header.getTime() - prevHeader.getTime();
 			if(deltaTime < 0) {
 				logger.warn("negative time: {}", header);
 				header.setDeltaTime(0);
