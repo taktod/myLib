@@ -58,7 +58,8 @@ public class RtmpEncoderEx extends SimpleChannelDownstreamHandler {
 		if(prevHeader != null // first stream message is always large
 				&& header.getStreamId() > 0 // all control messages always large
 				&& header.getTime() > 0) { // if time is zero. always large
-			if(header.getSize() == prevHeader.getSize()) {
+			if(header.getSize() == prevHeader.getSize()
+					&& header.getMessageType() == prevHeader.getMessageType()) {
 				header.setHeaderType(RtmpHeader.Type.SMALL);
 			}
 			else {
