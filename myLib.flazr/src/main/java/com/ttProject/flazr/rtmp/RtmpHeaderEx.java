@@ -9,6 +9,7 @@ import com.flazr.rtmp.message.MessageType;
 import com.flazr.util.Utils;
 
 public class RtmpHeaderEx extends RtmpHeader {
+	@SuppressWarnings("unused")
 	private Logger logger = LoggerFactory.getLogger(RtmpHeaderEx.class);
 	private Type headerType;
 	private int channelId;
@@ -24,20 +25,16 @@ public class RtmpHeaderEx extends RtmpHeader {
 		final int typeAndChannel;
 		final int headerTypeInt;
 		if((firstByteInt & 0x3F) == 0) {
-			logger.info("typeA");
 			typeAndChannel = (firstByteInt & 0xFF) << 8 | (in.readByte() & 0xFF);
 			channelId = 64 + (typeAndChannel & 0xFF);
 			headerTypeInt = typeAndChannel >> 14;
 		}
 		else if((firstByteInt & 0x3F) == 1) {
-			logger.info("typeB");
 			typeAndChannel = (firstByteInt & 0xFF) << 16 | (in.readByte() & 0xFF) << 8 | (in.readByte() & 0xFF);
 			channelId = 64 + ((typeAndChannel >> 8) & 0xFF) + ((typeAndChannel & 0xFF) << 8);
 			headerTypeInt = typeAndChannel >> 22;
 		}
 		else {
-			logger.info("typeC:");
-			logger.info(Integer.toHexString(firstByteInt));
 			typeAndChannel = firstByteInt & 0xFF;
 			channelId = (typeAndChannel & 0x3F);
 			headerTypeInt = typeAndChannel >> 6;
