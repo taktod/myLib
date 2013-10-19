@@ -41,21 +41,21 @@ public class FastEncodeTest {
 	public void test1() {
 		IFileReadChannel source = null;
 		IStreamCoder decoder = null;
-		FileChannel target = null;
+		FileOutputStream target = null;
 		try {
-			target = new FileOutputStream("mario_a.flv").getChannel();
+			target = new FileOutputStream("mario_a.flv");
 			source = FileReadChannel.openFileReadChannel("mario.flv");
 			FlvHeader flvHeader = new FlvHeader();
 			flvHeader.setVideoFlg(true);
 			flvHeader.setAudioFlg(false);
-			target.write(flvHeader.getBuffer());
+			target.getChannel().write(flvHeader.getBuffer());
 			flvHeader.analyze(source);
 			ITagAnalyzer analyzer = new TagAnalyzer();
 			FlvPacketizer packetizer = new FlvPacketizer();
 			IPacket packet = null;
 			Tag tag = null;
 			final LinkedBlockingQueue<VideoData> queue = new LinkedBlockingQueue<VideoData>();
-			final FileChannel ttarget = target;
+			final FileChannel ttarget = target.getChannel();
 			// 変換スレッドの準備
 			Thread encodeThread = new Thread(new Runnable() {
 				@Override

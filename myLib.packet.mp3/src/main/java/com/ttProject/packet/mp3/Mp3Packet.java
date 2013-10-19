@@ -11,6 +11,7 @@ import com.ttProject.packet.MediaPacket;
  * @author taktod
  */
 public abstract class Mp3Packet extends MediaPacket {
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Mp3Packet.class);
 	/** 書き込みする状態かどうかフラグ(id3v2のタグは、スキップするので、そのときにこのフラグを確認します。) */
 	private boolean writeMode = false;

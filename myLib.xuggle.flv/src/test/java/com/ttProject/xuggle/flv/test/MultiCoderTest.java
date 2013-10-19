@@ -102,19 +102,19 @@ public class MultiCoderTest {
 //	@Test
 	public void aacmp3Test() throws Exception {
 		audioCounter = 0;
-		FileChannel mp3stereo =null;
-		FileChannel aacstereo =null;
+		FileOutputStream mp3stereo =null;
+		FileOutputStream aacstereo =null;
 		AudioConverter converter = new AudioConverter();
 		IStreamCoder mp3stereoEncoder = null;
 		IStreamCoder aacstereoEncoder = null;
 		try {
-			mp3stereo = new FileOutputStream("mp3stereo.flv").getChannel();
-			aacstereo = new FileOutputStream("aacstereo.flv").getChannel();
+			mp3stereo = new FileOutputStream("mp3stereo.flv");
+			aacstereo = new FileOutputStream("aacstereo.flv");
 			FlvHeader flvHeader = new FlvHeader();
 			flvHeader.setVideoFlg(false);
 			flvHeader.setAudioFlg(true);
-			mp3stereo.write(flvHeader.getBuffer());
-			aacstereo.write(flvHeader.getBuffer());
+			mp3stereo.getChannel().write(flvHeader.getBuffer());
+			aacstereo.getChannel().write(flvHeader.getBuffer());
 			
 			mp3stereoEncoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_MP3);
 			mp3stereoEncoder.setSampleRate(44100);
@@ -147,7 +147,7 @@ public class MultiCoderTest {
 					samplesConsumed1 += retval;
 					if(packet.isComplete()) {
 						for(Tag tag : mp3depacketizer.getTag(mp3stereoEncoder, packet)) {
-							mp3stereo.write(tag.getBuffer());
+							mp3stereo.getChannel().write(tag.getBuffer());
 						}
 					}
 				}
@@ -160,7 +160,7 @@ public class MultiCoderTest {
 					samplesConsumed2 += retval;
 					if(packet.isComplete()) {
 						for(Tag tag : aacdepacketizer.getTag(aacstereoEncoder, packet)) {
-							aacstereo.write(tag.getBuffer());
+							aacstereo.getChannel().write(tag.getBuffer());
 						}
 					}
 				}
@@ -205,22 +205,22 @@ public class MultiCoderTest {
 	public void aacmp3MultiThreadTest() {
 		audioCounter = 0;
 		workingFlg = true;
-		FileChannel mp3stereo = null;
-		FileChannel aacstereo = null;
+		FileOutputStream mp3stereo = null;
+		FileOutputStream aacstereo = null;
 		AudioConverter converter = new AudioConverter();
 		try {
 			final LinkedBlockingQueue<IAudioSamples> aacSamples = new LinkedBlockingQueue<IAudioSamples>();
 			final LinkedBlockingQueue<IAudioSamples> mp3Samples = new LinkedBlockingQueue<IAudioSamples>();
-			mp3stereo = new FileOutputStream("mp3stereo2.flv").getChannel();
-			aacstereo = new FileOutputStream("aacstereo2.flv").getChannel();
+			mp3stereo = new FileOutputStream("mp3stereo2.flv");
+			aacstereo = new FileOutputStream("aacstereo2.flv");
 			FlvHeader flvHeader = new FlvHeader();
 			flvHeader.setVideoFlg(false);
 			flvHeader.setAudioFlg(true);
-			mp3stereo.write(flvHeader.getBuffer());
-			aacstereo.write(flvHeader.getBuffer());
+			mp3stereo.getChannel().write(flvHeader.getBuffer());
+			aacstereo.getChannel().write(flvHeader.getBuffer());
 
-			final FileChannel mp3Channel = mp3stereo;
-			final FileChannel aacChannel = aacstereo;
+			final FileChannel mp3Channel = mp3stereo.getChannel();
+			final FileChannel aacChannel = aacstereo.getChannel();
 			Thread mp3Thread = new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -360,20 +360,20 @@ public class MultiCoderTest {
 	public void aacmp3MultiThreadTest2() {
 		audioCounter = 0;
 		workingFlg = true;
-		FileChannel mp3stereo = null;
-		FileChannel aacstereo = null;
+		FileOutputStream mp3stereo = null;
+		FileOutputStream aacstereo = null;
 		final AudioConverter converter = new AudioConverter();
 		try {
-			mp3stereo = new FileOutputStream("mp3stereo3.flv").getChannel();
-			aacstereo = new FileOutputStream("aacstereo3.flv").getChannel();
+			mp3stereo = new FileOutputStream("mp3stereo3.flv");
+			aacstereo = new FileOutputStream("aacstereo3.flv");
 			FlvHeader flvHeader = new FlvHeader();
 			flvHeader.setVideoFlg(false);
 			flvHeader.setAudioFlg(true);
-			mp3stereo.write(flvHeader.getBuffer());
-			aacstereo.write(flvHeader.getBuffer());
+			mp3stereo.getChannel().write(flvHeader.getBuffer());
+			aacstereo.getChannel().write(flvHeader.getBuffer());
 
-			final FileChannel mp3Channel = mp3stereo;
-			final FileChannel aacChannel = aacstereo;
+			final FileChannel mp3Channel = mp3stereo.getChannel();
+			final FileChannel aacChannel = aacstereo.getChannel();
 			Thread mp3Thread = new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -504,22 +504,22 @@ public class MultiCoderTest {
 	public void aacmp3MultiThreadTest3() {
 		audioCounter = 0;
 		workingFlg = true;
-		FileChannel mp3stereo = null;
-		FileChannel aacstereo = null;
+		FileOutputStream mp3stereo = null;
+		FileOutputStream aacstereo = null;
 		final AudioConverter converter = new AudioConverter();
 		try {
 			final LinkedBlockingQueue<AudioData> aacData = new LinkedBlockingQueue<AudioData>();
 			final LinkedBlockingQueue<AudioData> mp3Data = new LinkedBlockingQueue<AudioData>();
-			mp3stereo = new FileOutputStream("mp3stereo4.flv").getChannel();
-			aacstereo = new FileOutputStream("aacstereo4.flv").getChannel();
+			mp3stereo = new FileOutputStream("mp3stereo4.flv");
+			aacstereo = new FileOutputStream("aacstereo4.flv");
 			FlvHeader flvHeader = new FlvHeader();
 			flvHeader.setVideoFlg(false);
 			flvHeader.setAudioFlg(true);
-			mp3stereo.write(flvHeader.getBuffer());
-			aacstereo.write(flvHeader.getBuffer());
+			mp3stereo.getChannel().write(flvHeader.getBuffer());
+			aacstereo.getChannel().write(flvHeader.getBuffer());
 
-			final FileChannel mp3Channel = mp3stereo;
-			final FileChannel aacChannel = aacstereo;
+			final FileChannel mp3Channel = mp3stereo.getChannel();
+			final FileChannel aacChannel = aacstereo.getChannel();
 			Thread mp3Thread = new Thread(new Runnable() {
 				@Override
 				public void run() {
@@ -667,19 +667,19 @@ public class MultiCoderTest {
 	 */
 //	@Test
 	public void h263avcTest() {
-		FileChannel h263 = null;
-		FileChannel avc = null;
+		FileOutputStream h263 = null;
+		FileOutputStream avc = null;
 		IStreamCoder h263Encoder = null;
 		IStreamCoder avcEncoder = null;
 		IConverter converter = ConverterFactory.createConverter(new BufferedImage(320, 240, BufferedImage.TYPE_3BYTE_BGR), IPixelFormat.Type.YUV420P);
 		try {
-			h263 = new FileOutputStream("h263_a.flv").getChannel();
-			avc = new FileOutputStream("avc_a.flv").getChannel();
+			h263 = new FileOutputStream("h263_a.flv");
+			avc = new FileOutputStream("avc_a.flv");
 			FlvHeader flvHeader = new FlvHeader();
 			flvHeader.setVideoFlg(true);
 			flvHeader.setAudioFlg(false);
-			h263.write(flvHeader.getBuffer());
-			avc.write(flvHeader.getBuffer());
+			h263.getChannel().write(flvHeader.getBuffer());
+			avc.getChannel().write(flvHeader.getBuffer());
 			IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_FLV1);
 			IRational frameRate = IRational.make(15, 1); // 15fps
 			encoder.setNumPicturesInGroupOfPictures(30); // gopを30にしておく。keyframeが30枚ごとになる。
@@ -734,12 +734,12 @@ public class MultiCoderTest {
 			avcEncoder = encoder;
 			// 画像データを変換可能なpixelデータに変換する。
 			IPacket packet = IPacket.make();
-			int index = 0;
+//			int index = 0;
 			long startTime = -1;
 			FlvDepacketizer h263Depacketizer = new FlvDepacketizer();
 			FlvDepacketizer avcDepacketizer = new FlvDepacketizer();
 			while(true) {
-				index ++;
+//				index ++;
 				long now = System.currentTimeMillis();
 				if(startTime == -1) {
 					startTime = now;
@@ -754,7 +754,7 @@ public class MultiCoderTest {
 				}
 				if(packet.isComplete()) {
 					for(Tag tag : h263Depacketizer.getTag(h263Encoder, packet)) {
-						h263.write(tag.getBuffer());
+						h263.getChannel().write(tag.getBuffer());
 					}
 				}
 				if(avcEncoder.encodeVideo(packet, picture, 0) < 0) {
@@ -762,7 +762,7 @@ public class MultiCoderTest {
 				}
 				if(packet.isComplete()) {
 					for(Tag tag : avcDepacketizer.getTag(avcEncoder, packet)) {
-						avc.write(tag.getBuffer());
+						avc.getChannel().write(tag.getBuffer());
 					}
 				}
 			}
@@ -801,22 +801,22 @@ public class MultiCoderTest {
 //	@Test
 	public void h263avcMultiThreadTest() {
 		workingFlg = true;
-		FileChannel h263 = null;
-		FileChannel avc = null;
+		FileOutputStream h263 = null;
+		FileOutputStream avc = null;
 		IConverter converter = ConverterFactory.createConverter(new BufferedImage(320, 240, BufferedImage.TYPE_3BYTE_BGR), IPixelFormat.Type.YUV420P);
 		try {
 			final LinkedBlockingQueue<IVideoPicture> h263Pictures = new LinkedBlockingQueue<IVideoPicture>();
 			final LinkedBlockingQueue<IVideoPicture> avcPictures = new LinkedBlockingQueue<IVideoPicture>();
-			h263 = new FileOutputStream("h263_b.flv").getChannel();
-			avc = new FileOutputStream("avc_b.flv").getChannel();
+			h263 = new FileOutputStream("h263_b.flv");
+			avc = new FileOutputStream("avc_b.flv");
 			FlvHeader flvHeader = new FlvHeader();
 			flvHeader.setVideoFlg(true);
 			flvHeader.setAudioFlg(false);
-			h263.write(flvHeader.getBuffer());
-			avc.write(flvHeader.getBuffer());
+			h263.getChannel().write(flvHeader.getBuffer());
+			avc.getChannel().write(flvHeader.getBuffer());
 			
-			final FileChannel h263Channel = h263;
-			final FileChannel avcChannel = avc;
+			final FileChannel h263Channel = h263.getChannel();
+			final FileChannel avcChannel = avc.getChannel();
 			Thread h263Thread = new Thread(new Runnable() {
 				
 				@Override
@@ -982,22 +982,22 @@ public class MultiCoderTest {
 	@Test
 	public void h263avcMultiThreadTest2() {
 		workingFlg = true;
-		FileChannel h263 = null;
-		FileChannel avc = null;
+		FileOutputStream h263 = null;
+		FileOutputStream avc = null;
 		final IConverter converter = ConverterFactory.createConverter(new BufferedImage(320, 240, BufferedImage.TYPE_3BYTE_BGR), IPixelFormat.Type.YUV420P);
 		try {
 			final LinkedBlockingQueue<VideoData> h263VideoData = new LinkedBlockingQueue<VideoData>();
 			final LinkedBlockingQueue<VideoData> avcVideoData = new LinkedBlockingQueue<VideoData>();
-			h263 = new FileOutputStream("h263_e.flv").getChannel();
-			avc = new FileOutputStream("avc_e.flv").getChannel();
+			h263 = new FileOutputStream("h263_e.flv");
+			avc = new FileOutputStream("avc_e.flv");
 			FlvHeader flvHeader = new FlvHeader();
 			flvHeader.setVideoFlg(true);
 			flvHeader.setAudioFlg(false);
-			h263.write(flvHeader.getBuffer());
-			avc.write(flvHeader.getBuffer());
+			h263.getChannel().write(flvHeader.getBuffer());
+			avc.getChannel().write(flvHeader.getBuffer());
 			
-			final FileChannel h263Channel = h263;
-			final FileChannel avcChannel = avc;
+			final FileChannel h263Channel = h263.getChannel();
+			final FileChannel avcChannel = avc.getChannel();
 			Thread h263Thread = new Thread(new Runnable() {
 				
 				@Override

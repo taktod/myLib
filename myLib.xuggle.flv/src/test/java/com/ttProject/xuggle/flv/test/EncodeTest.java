@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.channels.FileChannel;
 
 import javax.sound.sampled.AudioFormat;
 
@@ -41,13 +40,13 @@ public class EncodeTest {
 	private Logger logger = Logger.getLogger(EncodeTest.class);
 	@Test
 	public void h263Test() {
-		FileChannel output = null;
+		FileOutputStream output = null;
 		try {
-			output = new FileOutputStream("h263.flv").getChannel();
+			output = new FileOutputStream("h263.flv");
 			FlvHeader flvHeader = new FlvHeader();
 			flvHeader.setVideoFlg(true);
 			flvHeader.setAudioFlg(false);
-			output.write(flvHeader.getBuffer());
+			output.getChannel().write(flvHeader.getBuffer());
 
 			IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_FLV1);
 			IRational frameRate = IRational.make(15, 1); // 15fps(この値ではなく、入力値できまるっぽい。なんでだろう・・・)
@@ -88,7 +87,7 @@ public class EncodeTest {
 				if(packet.isComplete()) {
 					for(Tag tag : depacketizer.getTag(encoder, packet)) {
 						logger.info(tag);
-						output.write(tag.getBuffer());
+						output.getChannel().write(tag.getBuffer());
 					}
 				}
 			}
@@ -97,24 +96,26 @@ public class EncodeTest {
 			e.printStackTrace();
 			Assert.fail("例外が発生しました。");
 		}
-		if(output != null) {
-			try {
-				output.close();
+		finally {
+			if(output != null) {
+				try {
+					output.close();
+				}
+				catch (Exception e) {
+				}
+				output = null;
 			}
-			catch (Exception e) {
-			}
-			output = null;
 		}
 	}
 	@Test
 	public void avcTest() {
-		FileChannel output = null;
+		FileOutputStream output = null;
 		try {
-			output = new FileOutputStream("avc.flv").getChannel();
+			output = new FileOutputStream("avc.flv");
 			FlvHeader flvHeader = new FlvHeader();
 			flvHeader.setVideoFlg(true);
 			flvHeader.setAudioFlg(false);
-			output.write(flvHeader.getBuffer());
+			output.getChannel().write(flvHeader.getBuffer());
 
 			IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_H264);
 			IRational frameRate = IRational.make(15, 1); // 15fps
@@ -176,7 +177,7 @@ public class EncodeTest {
 				}
 				if(packet.isComplete()) {
 					for(Tag tag : depacketizer.getTag(encoder, packet)) {
-						output.write(tag.getBuffer());
+						output.getChannel().write(tag.getBuffer());
 					}
 				}
 			}
@@ -185,13 +186,15 @@ public class EncodeTest {
 			e.printStackTrace();
 			Assert.fail("例外が発生しました。");
 		}
-		if(output != null) {
-			try {
-				output.close();
+		finally {
+			if(output != null) {
+				try {
+					output.close();
+				}
+				catch (Exception e) {
+				}
+				output = null;
 			}
-			catch (Exception e) {
-			}
-			output = null;
 		}
 	}
 	/**
@@ -213,14 +216,14 @@ public class EncodeTest {
 	@Test
 	public void mp3Test() {
 		audioCounter = 0;
-		FileChannel output = null;
+		FileOutputStream output = null;
 		AudioConverter converter = new AudioConverter();
 		try {
-			output = new FileOutputStream("mp3.flv").getChannel();
+			output = new FileOutputStream("mp3.flv");
 			FlvHeader flvHeader = new FlvHeader();
 			flvHeader.setVideoFlg(false);
 			flvHeader.setAudioFlg(true);
-			output.write(flvHeader.getBuffer());
+			output.getChannel().write(flvHeader.getBuffer());
 
 			IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING,
 					ICodec.ID.CODEC_ID_MP3);
@@ -247,7 +250,7 @@ public class EncodeTest {
 					samplesConsumed += retval;
 					if (packet.isComplete()) {
 						for (Tag tag : depacketizer.getTag(encoder, packet)) {
-							output.write(tag.getBuffer());
+							output.getChannel().write(tag.getBuffer());
 						}
 					}
 				}
@@ -260,25 +263,28 @@ public class EncodeTest {
 			e.printStackTrace();
 			Assert.fail("例外が発生しました。");
 		}
-		if (output != null) {
-			try {
-				output.close();
-			} catch (Exception e) {
+		finally {
+			if (output != null) {
+				try {
+					output.close();
+				}
+				catch (Exception e) {
+				}
+				output = null;
 			}
-			output = null;
 		}
 	}
 	@Test
 	public void aacTest() {
 		audioCounter = 0;
-		FileChannel output = null;
+		FileOutputStream output = null;
 		AudioConverter converter = new AudioConverter();
 		try {
-			output = new FileOutputStream("aac.flv").getChannel();
+			output = new FileOutputStream("aac.flv");
 			FlvHeader flvHeader = new FlvHeader();
 			flvHeader.setVideoFlg(false);
 			flvHeader.setAudioFlg(true);
-			output.write(flvHeader.getBuffer());
+			output.getChannel().write(flvHeader.getBuffer());
 
 			IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING,
 					ICodec.ID.CODEC_ID_AAC);
@@ -305,7 +311,7 @@ public class EncodeTest {
 					samplesConsumed += retval;
 					if (packet.isComplete()) {
 						for (Tag tag : depacketizer.getTag(encoder, packet)) {
-							output.write(tag.getBuffer());
+							output.getChannel().write(tag.getBuffer());
 						}
 					}
 				}
@@ -318,12 +324,14 @@ public class EncodeTest {
 			Assert.fail("例外が発生しました。");
 			e.printStackTrace();
 		}
-		if (output != null) {
-			try {
-				output.close();
-			} catch (Exception e) {
+		finally {
+			if (output != null) {
+				try {
+					output.close();
+				} catch (Exception e) {
+				}
+				output = null;
 			}
-			output = null;
 		}
 	}
 
