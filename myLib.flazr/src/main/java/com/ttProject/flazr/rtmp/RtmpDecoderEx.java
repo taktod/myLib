@@ -76,7 +76,9 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 					return null;
 				}
 				final RtmpHeader prevHeader = completedHeaders[channelId];
-				
+//				if(header.isLarge()) {
+//					header.setTime(header.getTime() + 16777000);
+//				}
 				if(!header.isLarge()) {
 					header.setTime(prevHeader.getTime() + header.getDeltaTime());
 				}
