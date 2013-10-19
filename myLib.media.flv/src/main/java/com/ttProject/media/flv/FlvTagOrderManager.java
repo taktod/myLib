@@ -30,6 +30,7 @@ public class FlvTagOrderManager {
 	private final TagComparator tagSort = new TagComparator();
 	/** 比較に用いるindex値を設定、設定数のタグは無条件で保持になります */
 	private final int videoCompIndex = 5;
+	// TODO ここでのaudioの完了までの判定indexが大きすぎて、音がないデータになった場合にこまったことになる。
 	private final int audioCompIndex = 20; // ちょっと大きいけど、まぁconvertの遅延もあるし、いいだろw
 	/**
 	 * 全初期化する。
