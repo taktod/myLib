@@ -5,10 +5,12 @@ import java.util.Map.Entry;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-import com.flazr.io.flv.FlvAtom;
 import com.flazr.rtmp.RtmpHeader;
 import com.flazr.rtmp.RtmpMessage;
+import com.flazr.rtmp.message.Audio;
+import com.flazr.rtmp.message.MessageType;
 import com.flazr.rtmp.message.Metadata;
+import com.flazr.rtmp.message.Video;
 import com.ttProject.flazr.rtmp.message.MetadataAmf3;
 import com.ttProject.media.flv.Tag;
 import com.ttProject.media.flv.tag.AggregateTag;
@@ -33,10 +35,12 @@ public class MessageManager {
 			return convertToAggregateTag(message);
 		}
 		else if(header.isAudio()) {
-			return convertToAudioTag(new FlvAtom(header.getMessageType(), header.getTime(), message.encode()));
+			//TODO この部分でflvAtomを仲介しないようにしてしまえばtimestamp問題がなくなる模様ですね。
+			// ここでtimestampがおかしくなるので、なんとかしたいところ・・・
+			return convertToAudioTag((Audio)message);
 		}
 		else if(header.isVideo()) {
-			return convertToVideoTag(new FlvAtom(header.getMessageType(), header.getTime(), message.encode()));
+			return convertToVideoTag((Video)message);
 		}
 		else if(message instanceof MetadataAmf3) {
 			return convertToMetaTag((MetadataAmf3)message);
@@ -57,22 +61,27 @@ public class MessageManager {
 		int difference = -1;
 		final ChannelBuffer in = message.encode();
 		AggregateTag aTag = new AggregateTag();
+//		System.out.println("aTagのtimestamp:" + header.getTime());
 		while(in.readable()) {
-			final FlvAtom flvAtom = new FlvAtom(in);
-			final RtmpHeader subHeader = flvAtom.getHeader();
+			// messageTypeとsizeと時刻がほしい。
+			final MessageType messageType = MessageType.valueToEnum(in.readByte());
+			final int size = in.readMedium();
+			final int time = in.readMedium() + ((in.readByte() & 0xFF) << 24);
 			if(difference == -1) {
-				difference = subHeader.getTime() - header.getTime();
+				difference = time - header.getTime();
 			}
-			subHeader.setTime(subHeader.getTime() - difference);
+			final RtmpHeader subHeader = new RtmpHeader(messageType, time - difference, size);
+			in.skipBytes(3);
+			ChannelBuffer data = in.readBytes(size);
+			in.skipBytes(4);
 			Tag tag = null;
 			if(subHeader.isAudio()) {
-				tag = convertToAudioTag(flvAtom);
+				tag = convertToAudioTag(subHeader, data);
 			}
 			else if(subHeader.isVideo()) {
-				tag = convertToVideoTag(flvAtom);
+				tag = convertToVideoTag(subHeader, data);
 			}
 			if(tag != null) {
-				// データがある場合は追加しておく
 				aTag.add(tag);
 			}
 		}
@@ -111,22 +120,45 @@ public class MessageManager {
 		return metaTag;
 	}
 	/**
-	 * flvAtomからvideo用のタグに書き換えます。
-	 * @param atom
-	 * @return
+	 * Videoデータからvideo用のタグに書き換えます。
+	 * @param video
+	 * @return 変換できないもしくは変換する必要がないデータの場合はnullを応答する。
 	 */
-	private VideoTag convertToVideoTag(FlvAtom atom) {
-		RtmpHeader header = atom.getHeader();
-		ChannelBuffer data = atom.getData().duplicate();
-		if(!header.isVideo() || data.capacity() == 0) { // データに問題がある場合は動作しない
+	private VideoTag convertToVideoTag(Video video) {
+		RtmpHeader header = video.getHeader();
+		ChannelBuffer data = video.encode();
+		if(data.capacity() == 0) {
+			return null;
+		}
+		VideoTag tag = new VideoTag();
+		// 1バイト目を確認して種類等を確定しておく。
+		byte tagByte = data.readByte();
+		if(tag.analyzeTagByte(tagByte)) {
+			// mshが必要な場合
+			boolean mshFlg = data.readByte() == 0x00;
+			tag.setMSHFlg(mshFlg);
+		}
+		if(data.readableBytes() == 0) {
+			// 実態がない場合は処理してもしかたないので、捨てる
+			return null;
+		}
+		tag.setTimestamp(header.getTime());
+		ByteBuffer buffer = ByteBuffer.allocate(data.readableBytes());
+		buffer.put(data.toByteBuffer());
+		buffer.flip();
+		tag.setRawData(buffer);
+		return tag;
+	}
+	private VideoTag convertToVideoTag(RtmpHeader header, ChannelBuffer data) {
+		if(!header.isVideo() || data.capacity() == 0) {
 			return null;
 		}
 		VideoTag tag = new VideoTag();
 		byte tagByte = data.readByte();
 		if(tag.analyzeTagByte(tagByte)) {
 			// mshが必要な動作次の1バイトも読み込む必要あり。
-			byte mshFlg = data.readByte();
-			tag.setMSHFlg(mshFlg == 0x00);
+			boolean mshFlg = data.readByte() == 0x00;
+			tag.setMSHFlg(mshFlg);
 		}
 		if(data.readableBytes() == 0) {
 			return null;
@@ -142,20 +174,40 @@ public class MessageManager {
 	}
 	/**
 	 * flvAtomからaudio用のタグに書き換えます。
-	 * @param atom
+	 * @param audio
 	 * @return
 	 */
-	private AudioTag convertToAudioTag(FlvAtom atom) {
-		RtmpHeader header = atom.getHeader();
-		ChannelBuffer data = atom.getData().duplicate();
+	private AudioTag convertToAudioTag(Audio audio) {
+		RtmpHeader header = audio.getHeader();
+		ChannelBuffer data = audio.encode();
+		if(data.capacity() == 0) {
+			return null;
+		}
+		AudioTag tag = new AudioTag();
+		byte tagByte = data.readByte();
+		if(tag.analyzeTagByte(tagByte)) {
+			boolean mshFlg = data.readByte() == 0x00;
+			tag.setMSHFlg(mshFlg);
+		}
+		if(data.readableBytes() == 0) {
+			return null;
+		}
+		tag.setTimestamp(header.getTime());
+		ByteBuffer buffer = ByteBuffer.allocate(data.readableBytes());
+		buffer.put(data.toByteBuffer());
+		buffer.flip();
+		tag.setRawData(buffer);
+		return tag;
+	}
+	private AudioTag convertToAudioTag(RtmpHeader header, ChannelBuffer data) {
 		if(!header.isAudio() || data.capacity() == 0) {
 			return null;
 		}
 		AudioTag tag = new AudioTag();
 		byte tagByte = data.readByte();
 		if(tag.analyzeTagByte(tagByte)) {
-			byte mshFlg = data.readByte();
-			tag.setMSHFlg(mshFlg == 0x00);
+			boolean mshFlg = data.readByte() == 0x00;
+			tag.setMSHFlg(mshFlg);
 		}
 		if(data.readableBytes() == 0) {
 			return null;
