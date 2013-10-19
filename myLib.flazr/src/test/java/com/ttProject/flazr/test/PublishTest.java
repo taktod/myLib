@@ -13,10 +13,10 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
 import com.flazr.rtmp.RtmpDecoder;
-import com.flazr.rtmp.RtmpEncoder;
 import com.flazr.rtmp.client.ClientHandler;
 import com.flazr.rtmp.client.ClientHandshakeHandler;
 import com.flazr.rtmp.client.ClientOptions;
+import com.ttProject.flazr.rtmp.RtmpEncoderEx;
 
 public class PublishTest {
 	public static void main(String[] args) {
@@ -55,7 +55,7 @@ public class PublishTest {
 				ChannelPipeline pipeline = Channels.pipeline();
 				pipeline.addLast("handshaker", new ClientHandshakeHandler(options));
 				pipeline.addLast("decoder", new RtmpDecoder()); // amf3を使う理由もないので、通常のrtmpDecoderでOK
-				pipeline.addLast("encoder", new RtmpEncoder());
+				pipeline.addLast("encoder", new RtmpEncoderEx());
 				pipeline.addLast("handler", new ClientHandler(options));
 				return pipeline;
 			}
