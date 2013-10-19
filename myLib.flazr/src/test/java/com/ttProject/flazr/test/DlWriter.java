@@ -39,6 +39,9 @@ public class DlWriter implements RtmpWriter {
 		}
 	}
 	public void check(Tag tag) {
+		if(tag == null) {
+			return;
+		}
 		if(tag instanceof AudioTag) {
 			AudioTag aTag = (AudioTag) tag;
 			logger.info("{}", aTag);
