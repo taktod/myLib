@@ -27,7 +27,7 @@ public class AudioConverter {
 		Format xformat = null;
 		switch(bit) {
 		case 16:
-			xformat = Format.FMT_S16P;
+			xformat = Format.FMT_S16;
 			break;
 		case 8:
 //			xformat = Format.FMT_U8;
