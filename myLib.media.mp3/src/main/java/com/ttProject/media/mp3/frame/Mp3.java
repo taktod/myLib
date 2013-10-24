@@ -87,7 +87,7 @@ public class Mp3 extends Frame {
 			return (int)Math.floor(144 * getBitrate() / getSamplingRate() + paddingBit.get());
 		}
 		else if(layer.get() == 1) { // layer3
-			if(mpegVersion.get() == 3) {
+			if(mpegVersion.get() == 3) { // version1の場合
 				return (int)Math.floor(144 * getBitrate() / getSamplingRate() + paddingBit.get());
 			}
 			else {

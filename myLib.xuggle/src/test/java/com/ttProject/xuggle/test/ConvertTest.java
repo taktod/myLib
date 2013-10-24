@@ -374,7 +374,7 @@ public class ConvertTest {
 	 */
 	@Test
 	public void mp3() throws Exception {
-		// FMT_S16Pというのもあるんだが・・・こちらはbigendianだったりしないかなぁ
+		// FMT_S16というのもあるんだが・・・こちらはbigendianだったりしないかなぁ
 //		IAudioSamples samples = IAudioSamples.make(1024, 2, Format.FMT_S16); // 1024サンプルを２チャンネルでもっておく。
 		FileChannel outputMp3 = new FileOutputStream("output.mp3").getChannel();
 		// TODO なんかサンプル数がおかしいけど、おいといて、とりあえず変換してみよう。
