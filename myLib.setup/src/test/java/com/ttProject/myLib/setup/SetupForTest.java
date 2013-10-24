@@ -11,6 +11,7 @@ import java.nio.ByteOrder;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import com.xuggle.xuggler.IAudioResampler;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IContainer;
@@ -61,9 +62,9 @@ public class SetupForTest {
 		}
 		buffer.flip();
 		int snum = (int)(buffer.remaining() * 8/bit/channels);
-		IAudioSamples samples = IAudioSamples.make(snum, channels, Format.FMT_S16P);
+		IAudioSamples samples = IAudioSamples.make(snum, channels, Format.FMT_S16);
 		samples.getData().put(buffer.array(), 0, 0, buffer.remaining());
-		samples.setComplete(true, snum, samplingRate, channels, Format.FMT_S16P, 0);
+		samples.setComplete(true, snum, samplingRate, channels, Format.FMT_S16, 0);
 		// このtimestampの設定は必要っぽい
 		samples.setTimeStamp(startPos);
 		// こっちはいらないっぽい。ただし別の関数っぽいので、やっとくに超したことはなさそうな・・・
@@ -603,13 +604,14 @@ public class SetupForTest {
 	 * @throws Exception
 	 */
 	@Test
-	public void mkvSetup() throws Exception {
+	public void webmSetup() throws Exception {
 		logger.info("mkvのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
+		IAudioResampler resampler = null;
 		// flvデータを作ります。
 		IContainer container = IContainer.make();
-		if(container.open(getTargetFile("myLib.media.mkv/src/test/resources/test.mkv"), IContainer.Type.WRITE, null) < 0) {
+		if(container.open(getTargetFile("myLib.media.mkv/src/test/resources/test.webm"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_VP8);
@@ -628,11 +630,22 @@ public class SetupForTest {
 		if(coder.open(null, null) < 0) {
 			throw new Exception("エンコーダーが開けませんでした");
 		}
-		stream = container.addNewStream(ICodec.ID.CODEC_ID_MP3);
+		stream = container.addNewStream(ICodec.ID.CODEC_ID_VORBIS);
 		IStreamCoder coder2 = stream.getStreamCoder();
+		ICodec codec = coder2.getCodec();
+		Format format = null;
+		for(Format fmt : codec.getSupportedAudioSampleFormats()) {
+			// ここでformatを１つめに見つけたやつで入れた方がよさそうです。
+			format = fmt;
+			break;
+		}
+		if(format == null) {
+			throw new Exception("変換フォーマットが決定しませんでした。");
+		}
 		coder2.setSampleRate(44100);
 		coder2.setChannels(2);
 		coder2.setBitRate(96000);
+		coder2.setSampleFormat(format);
 		if(coder2.open(null, null) < 0) {
 			throw new Exception("エンコーダーが開けませんでした");
 		}
@@ -647,11 +660,30 @@ public class SetupForTest {
 			}
 			if(packet.isComplete()) {
 				if(container.writePacket(packet) < 0) {
+					System.out.println(packet);
+					packet.setDts(packet.getPts());
 					throw new Exception("コンテナ書き込み失敗");
 				}
 			}
 			while(true) {
 				IAudioSamples samples = samples();
+				if(samples.getSampleRate() != coder2.getSampleRate() 
+				|| samples.getFormat() != coder2.getSampleFormat()
+				|| samples.getChannels() != coder2.getChannels()) {
+					if(resampler == null) {
+						// resamplerを作る必要あり。
+						resampler = IAudioResampler.make(
+								coder2.getChannels(), samples.getChannels(),
+								coder2.getSampleRate(), samples.getSampleRate(),
+								coder2.getSampleFormat(), samples.getFormat());
+					}
+					IAudioSamples spl = IAudioSamples.make(1024, coder2.getChannels());
+					int retVal = resampler.resample(spl, samples, samples.getNumSamples());
+					if(retVal <= 0) {
+						throw new Exception("リサンプル失敗しました。");
+					}
+					samples = spl;
+				}
 				int samplesConsumed = 0;
 				while(samplesConsumed < samples.getNumSamples()) {
 					int retval = coder2.encodeAudio(packet, samples, samplesConsumed);
@@ -660,6 +692,8 @@ public class SetupForTest {
 					}
 					samplesConsumed +=  retval;
 					if(packet.isComplete()) {
+						System.out.println(packet);
+						packet.setDts(packet.getPts());
 						if(container.writePacket(packet) < 0) {
 							throw new Exception("コンテナ書き込み失敗");
 						}
