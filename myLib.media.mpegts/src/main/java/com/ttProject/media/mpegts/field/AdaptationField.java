@@ -17,7 +17,7 @@ import com.ttProject.nio.channels.IReadChannel;
 public class AdaptationField {
 	private Bit8 adaptationFieldLength;
 	private Bit1 discontinuityIndicator; // 0
-	private Bit1 randomAccessIndicator; // aacの先頭だけ、たってる？ (aacのみでも同様)
+	private Bit1 randomAccessIndicator; // aacの先頭だけ、たってる？ (aacのみでも同様)(h264のキーフレームもたってるっぽい)
 	private Bit1 elementaryStreamPriorityIndicator; // 0
 	private Bit1 pcrFlag;
 	private Bit1 opcrFlag; // originalPcr(コピーするときにつかうらしい。) // 0
@@ -179,6 +179,9 @@ public class AdaptationField {
 			list.add(new Bit8((byte)0xFF));
 		}
 		return list;
+	}
+	public int getRandomAccessIndicator() {
+		return randomAccessIndicator.get();
 	}
 	@Override
 	public String toString() {

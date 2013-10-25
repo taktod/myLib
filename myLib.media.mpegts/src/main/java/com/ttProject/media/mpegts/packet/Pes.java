@@ -504,6 +504,12 @@ public class Pes extends Packet {
 	public void setDts(DtsField dts) {
 		this.dts = dts;
 	}
+	public boolean hasPts() {
+		return pts != null;
+	}
+	public boolean hasDts() {
+		return dts != null;
+	}
 	public String dump3() {
 		StringBuilder data = new StringBuilder();
 		if(pts != null) {
@@ -517,7 +523,7 @@ public class Pes extends Packet {
 	@Override
 	public String toString() {
 		StringBuilder data = new StringBuilder();
-		data.append("Pes:");
+		data.append("Pes:").append(Integer.toHexString(getPid()));
 		data.append("\n").append(super.toString());
 		if(isPayloadUnitStart()) {
 			data.append(" prefix:").append(prefix);
