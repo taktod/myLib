@@ -3,6 +3,7 @@ package com.ttProject.media.h264;
 import java.nio.ByteBuffer;
 
 import com.ttProject.media.IAnalyzer;
+import com.ttProject.media.IVideoData;
 import com.ttProject.media.Unit;
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
@@ -38,7 +39,7 @@ import com.ttProject.util.BufferUtil;
   となっている模様
  * @author taktod
  */
-public abstract class Frame extends Unit {
+public abstract class Frame extends Unit implements IVideoData {
 	private Bit1 forbiddenZeroBit; // 0のみ?
 	private Bit2 nalRefIdc; // 0:ならなくてもいいやつ?数値のあるやつはdecodeに必須なnalなお0x09のadtはmpegtsには必要っぽい。
 	private Bit5 type; // typeで宣言している数値がはいるっぽい
@@ -89,5 +90,17 @@ public abstract class Frame extends Unit {
 			throw new Exception("読み込みに必要なデータがありません。");
 		}
 		buffer = BufferUtil.safeRead(ch, getSize() - 1);
+	}
+	public long getPts() {
+		return 0L;
+	}
+	public long getDts() {
+		return 0L;
+	}
+	public double getTimebase() {
+		return 0D;
+	}
+	public ByteBuffer getRawData() throws Exception {
+		return getData();
 	}
 }
