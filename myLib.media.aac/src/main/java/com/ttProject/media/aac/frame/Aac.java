@@ -2,6 +2,7 @@ package com.ttProject.media.aac.frame;
 
 import java.nio.ByteBuffer;
 
+import com.ttProject.media.IAudioData;
 import com.ttProject.media.aac.DecoderSpecificInfo;
 import com.ttProject.media.aac.Frame;
 import com.ttProject.media.aac.IFrameAnalyzer;
@@ -38,7 +39,7 @@ import com.ttProject.util.BufferUtil;
  * tailSize[4byte]
  * @author taktod
  */
-public class Aac extends Frame {
+public class Aac extends Frame implements IAudioData {
 	private final short syncWork = (short)0x0FFF;
 	private Bit1 id;
 	private Bit2 layer;
@@ -242,5 +243,29 @@ public class Aac extends Frame {
 		data.append(" size:");
 		data.append(Integer.toHexString(getSize()));
 		return data.toString();
+	}
+	@Override
+	public long getPts() {
+		return 0;
+	}
+	@Override
+	public long getDts() {
+		return 0;
+	}
+	@Override
+	public double getTimebase() {
+		return 0;
+	}
+	@Override
+	public ByteBuffer getRawData() throws Exception {
+		return getBuffer();
+	}
+	@Override
+	public int getSampleNum() {
+		return 1024;
+	}
+	@Override
+	public int getSampleRate() {
+		return (int)(getSamplingRate() * 1000);
 	}
 }

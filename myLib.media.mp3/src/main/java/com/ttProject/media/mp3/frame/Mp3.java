@@ -2,6 +2,7 @@ package com.ttProject.media.mp3.frame;
 
 import java.nio.ByteBuffer;
 
+import com.ttProject.media.IAudioData;
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
@@ -17,7 +18,7 @@ import com.ttProject.util.BufferUtil;
  * mp3のデータフレーム
  * @author taktod
  */
-public class Mp3 extends Frame {
+public class Mp3 extends Frame implements IAudioData {
 	private final short syncBit = (short)0x07FF;
 	private Bit2 mpegVersion;
 	private Bit2 layer;
@@ -54,8 +55,54 @@ public class Mp3 extends Frame {
 		{22.05f,  24.0f, 16.0f}, // mpeg 2
 		{44.1f,   48.0f, 32.0f}  // mpeg 1
 	};
+	/**
+	 * サンプリングレートを応答します。
+	 * @return
+	 */
 	public float getSamplingRate() {
 		return sampleRateTable[mpegVersion.get()][samplingRateIndex.get()];
+	}
+	@Override
+	public int getSampleRate() {
+		return (int)(getSamplingRate() *1000);
+	}
+	/**
+	 * フレームあたりのサンプル数を応答します。
+	 * @return
+	 */
+	@Override
+	public int getSampleNum() {
+		if(layer.get() == 3) { // layer1
+			return 384;
+		}
+		else if(layer.get() == 2) { // layer2
+			return 1152;
+		}
+		else if(layer.get() == 1) { // layer3
+			if(mpegVersion.get() == 3) { // version1
+				return 1152;
+			}
+			else {
+				return 576;
+			}
+		}
+		return 0;
+	}
+	@Override
+	public long getDts() {
+		return 0;
+	}
+	@Override
+	public long getPts() {
+		return 0;
+	}
+	@Override
+	public ByteBuffer getRawData() throws Exception {
+		return getBuffer();
+	}
+	@Override
+	public double getTimebase() {
+		return 0;
 	}
 	public int getBitrate() {
 		if(mpegVersion.get() == 0 || mpegVersion.get() == 2) { // 2.5と2の場合
