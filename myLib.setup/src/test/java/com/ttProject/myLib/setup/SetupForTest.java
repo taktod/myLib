@@ -23,6 +23,7 @@ import com.xuggle.xuggler.IAudioSamples.Format;
 import com.xuggle.xuggler.IStreamCoder.Flags;
 import com.xuggle.xuggler.IStreamCoder;
 import com.xuggle.xuggler.IVideoPicture;
+import com.xuggle.xuggler.IVideoResampler;
 import com.xuggle.xuggler.video.ConverterFactory;
 import com.xuggle.xuggler.video.IConverter;
 
@@ -618,7 +619,6 @@ public class SetupForTest {
 		IStreamCoder coder = stream.getStreamCoder();
 		IRational frameRate = IRational.make(15, 1); // 15fps
 		coder.setNumPicturesInGroupOfPictures(5); // gopを30にしておく。keyframeが30枚ごとになる。
-		
 		coder.setBitRate(650000); // 250kbps
 		coder.setBitRateTolerance(9000);
 		coder.setPixelType(IPixelFormat.Type.YUV420P);
@@ -627,9 +627,6 @@ public class SetupForTest {
 		coder.setGlobalQuality(10);
 		coder.setFrameRate(frameRate);
 		coder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
-		if(coder.open(null, null) < 0) {
-			throw new Exception("エンコーダーが開けませんでした");
-		}
 		stream = container.addNewStream(ICodec.ID.CODEC_ID_VORBIS);
 		IStreamCoder coder2 = stream.getStreamCoder();
 		ICodec codec = coder2.getCodec();
@@ -646,6 +643,9 @@ public class SetupForTest {
 		coder2.setChannels(2);
 		coder2.setBitRate(96000);
 		coder2.setSampleFormat(format);
+		if(coder.open(null, null) < 0) {
+			throw new Exception("エンコーダーが開けませんでした");
+		}
 		if(coder2.open(null, null) < 0) {
 			throw new Exception("エンコーダーが開けませんでした");
 		}
@@ -692,7 +692,6 @@ public class SetupForTest {
 					}
 					samplesConsumed +=  retval;
 					if(packet.isComplete()) {
-						System.out.println(packet);
 						packet.setDts(packet.getPts());
 						if(container.writePacket(packet) < 0) {
 							throw new Exception("コンテナ書き込み失敗");
@@ -713,5 +712,144 @@ public class SetupForTest {
 		coder2.close();
 		coder.close();
 		container.close();
+	}
+	/**
+	 * 変換の基幹部分を実行する動作
+	 * @param container
+	 * @param videoEncoder
+	 * @param audioEncoder
+	 */
+	public void processConvert(IContainer container, IStreamCoder videoEncoder, IStreamCoder audioEncoder) throws Exception {
+		IVideoResampler videoResampler = null;
+		IAudioResampler audioResampler = null;
+		if(videoEncoder != null) {
+			// 映像のpixelFormatを決定する。
+			ICodec codec = videoEncoder.getCodec();
+			// pixelFormatがYUV420Pに対応していなかったら別のを割り当てる。
+			IPixelFormat.Type findType = null;
+			for(IPixelFormat.Type type : codec.getSupportedVideoPixelFormats()) {
+				if(findType == null) {
+					findType = type;
+				}
+				if(type == IPixelFormat.Type.YUV420P) {
+					findType = type;
+					break;
+				}
+			}
+			if(findType == null) {
+				throw new Exception("対応している映像のPixelFormatが不明です。");
+			}
+			videoEncoder.setPixelType(findType);
+			// coderを開く
+			if(videoEncoder.open(null, null) < 0) {
+				throw new Exception("映像エンコーダーが開けませんでした");
+			}
+		}
+		if(audioEncoder != null) {
+			// 音声のsampleFormatを決定する。
+			ICodec codec = audioEncoder.getCodec();
+			// AudioFormatはS16
+			IAudioSamples.Format findFormat = null;
+			for(IAudioSamples.Format format : codec.getSupportedAudioSampleFormats()) {
+				if(findFormat == null) {
+					findFormat = format;
+				}
+				if(findFormat == IAudioSamples.Format.FMT_S16) {
+					findFormat = format;
+					break;
+				}
+			}
+			if(findFormat == null) {
+				throw new Exception("対応している音声のSampleFormatが不明です。");
+			}
+			audioEncoder.setSampleFormat(findFormat);
+			// coderを開く
+			if(audioEncoder.open(null, null) < 0) {
+				throw new Exception("音声エンコーダーが開けませんでした。");
+			}
+		}
+		// containerのheaderを書く
+		if(container.writeHeader() < 0) {
+			throw new Exception("headerデータの書き込みが失敗しました。");
+		}
+		IPacket packet = IPacket.make();
+		// packetの書き込み実行
+		while(true) {
+			IVideoPicture picture = null;
+			if(videoEncoder != null) {
+				picture = image();
+				if(picture.getWidth() != videoEncoder.getWidth()
+				|| picture.getHeight() != videoEncoder.getHeight()
+				|| picture.getPixelType() != videoEncoder.getPixelType()) {
+					if(videoResampler == null) {
+						videoResampler = IVideoResampler.make(
+								videoEncoder.getWidth(), videoEncoder.getHeight(), videoEncoder.getPixelType(),
+								picture.getWidth(), picture.getHeight(), picture.getPixelType());
+					}
+					IVideoPicture pct = IVideoPicture.make(videoEncoder.getPixelType(), videoEncoder.getWidth(), videoEncoder.getHeight());
+					int retVal = videoResampler.resample(pct, picture);
+					if(retVal <= 0) {
+						throw new Exception("映像リサンプル失敗");
+					}
+					picture = pct;
+				}
+				if(videoEncoder.encodeVideo(packet, picture, 0) < 0) {
+					throw new Exception("映像変換失敗");
+				}
+				if(packet.isComplete()) {
+					if(container.writePacket(packet) < 0) {
+						System.out.println(packet);
+						packet.setDts(packet.getPts());
+						throw new Exception("コンテナ書き込み失敗");
+					}
+				}
+			}
+			while(true) {
+				IAudioSamples samples = samples();
+				if(samples.getSampleRate() != audioEncoder.getSampleRate() 
+				|| samples.getFormat() != audioEncoder.getSampleFormat()
+				|| samples.getChannels() != audioEncoder.getChannels()) {
+					if(audioResampler == null) {
+						// resamplerを作る必要あり。
+						audioResampler = IAudioResampler.make(
+								audioEncoder.getChannels(), samples.getChannels(),
+								audioEncoder.getSampleRate(), samples.getSampleRate(),
+								audioEncoder.getSampleFormat(), samples.getFormat());
+					}
+					IAudioSamples spl = IAudioSamples.make(1024, audioEncoder.getChannels());
+					int retVal = audioResampler.resample(spl, samples, samples.getNumSamples());
+					if(retVal <= 0) {
+						throw new Exception("音声サンプル失敗しました。");
+					}
+					samples = spl;
+				}
+				int samplesConsumed = 0;
+				while(samplesConsumed < samples.getNumSamples()) {
+					int retval = audioEncoder.encodeAudio(packet, samples, samplesConsumed);
+					if(retval < 0) {
+						throw new Exception("変換失敗");
+					}
+					samplesConsumed +=  retval;
+					if(packet.isComplete()) {
+						packet.setDts(packet.getPts());
+						if(container.writePacket(packet) < 0) {
+							throw new Exception("コンテナ書き込み失敗");
+						}
+					}
+				}
+				if((picture != null && samples.getPts() > picture.getPts())
+						|| samples.getPts() > 1000000) {
+					break;
+				}
+			}
+			if(picture == null || picture.getPts() > 1000000) {
+				break;
+			}
+		}
+		// containerのtailer書き込み
+		if(container.writeTrailer() < 0) {
+			throw new Exception("tailerデータの書き込みが失敗しました。");
+		}
+		// おわり
 	}
 }
