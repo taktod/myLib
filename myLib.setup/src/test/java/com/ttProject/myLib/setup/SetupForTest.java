@@ -120,45 +120,18 @@ public class SetupForTest {
 		videoCounter = 0;
 		// flvデータを作ります。
 		IContainer container = IContainer.make();
-		// TODO ここの動作では、パスのディレクトリがないとだめ。
 		if(container.open(getTargetFile("myLib.media.mp3/src/test/resources/test.mp3"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_MP3);
-		IStreamCoder coder = stream.getStreamCoder();
-		coder.setSampleRate(44100);
-		coder.setChannels(2);
-		coder.setBitRate(96000);
-		if(coder.open(null, null) < 0) {
-			throw new Exception("エンコーダーが開けませんでした");
-		}
-		if(container.writeHeader() < 0) {
-			throw new Exception("header書き込み失敗");
-		}
-		while(true) {
-			IPacket packet = IPacket.make();
-			IAudioSamples samples = samples();
-			int samplesConsumed = 0;
-			while(samplesConsumed < samples.getNumSamples()) {
-				int retval = coder.encodeAudio(packet, samples, samplesConsumed);
-				if(retval < 0) {
-					throw new Exception("変換失敗");
-				}
-				samplesConsumed +=  retval;
-				if(packet.isComplete()) {
-					if(container.writePacket(packet) < 0) {
-						throw new Exception("コンテナ書き込み失敗");
-					}
-				}
-			}
-			if(samples.getPts() > 1000000) {
-				break;
-			}
-		}
-		if(container.writeTrailer() < 0) {
-			throw new Exception("tailer書き込み失敗");
-		}
-		coder.close();
+		IStreamCoder audioEncoder = stream.getStreamCoder();
+		audioEncoder.setSampleRate(44100);
+		audioEncoder.setChannels(2);
+		audioEncoder.setBitRate(96000);
+
+		processConvert(container, null, audioEncoder);
+
+		audioEncoder.close();
 		container.close();
 	}
 	/**
@@ -170,46 +143,20 @@ public class SetupForTest {
 		logger.info("aacのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
-		// flvデータを作ります。
+		// aacデータを作ります。
 		IContainer container = IContainer.make();
 		if(container.open(getTargetFile("myLib.media.aac/src/test/resources/test.aac"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_AAC);
-		IStreamCoder coder = stream.getStreamCoder();
-		coder.setSampleRate(44100);
-		coder.setChannels(2);
-		coder.setBitRate(96000);
-		if(coder.open(null, null) < 0) {
-			throw new Exception("エンコーダーが開けませんでした");
-		}
-		if(container.writeHeader() < 0) {
-			throw new Exception("header書き込み失敗");
-		}
-		while(true) {
-			IPacket packet = IPacket.make();
-			IAudioSamples samples = samples();
-			int samplesConsumed = 0;
-			while(samplesConsumed < samples.getNumSamples()) {
-				int retval = coder.encodeAudio(packet, samples, samplesConsumed);
-				if(retval < 0) {
-					throw new Exception("変換失敗");
-				}
-				samplesConsumed +=  retval;
-				if(packet.isComplete()) {
-					if(container.writePacket(packet) < 0) {
-						throw new Exception("コンテナ書き込み失敗");
-					}
-				}
-			}
-			if(samples.getPts() > 1000000) {
-				break;
-			}
-		}
-		if(container.writeTrailer() < 0) {
-			throw new Exception("tailer書き込み失敗");
-		}
-		coder.close();
+		IStreamCoder audioEncoder = stream.getStreamCoder();
+		audioEncoder.setSampleRate(44100);
+		audioEncoder.setChannels(2);
+		audioEncoder.setBitRate(96000);
+
+		processConvert(container, null, audioEncoder);
+
+		audioEncoder.close();
 		container.close();
 	}
 	/**
@@ -227,65 +174,43 @@ public class SetupForTest {
 			throw new Exception("開けませんでした");
 		}
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_H264);
-		IStreamCoder coder = stream.getStreamCoder();
+		IStreamCoder videoEncoder = stream.getStreamCoder();
 		IRational frameRate = IRational.make(15, 1); // 15fps
-		coder.setNumPicturesInGroupOfPictures(5); // gopを30にしておく。keyframeが30枚ごとになる。
+		videoEncoder.setNumPicturesInGroupOfPictures(5); // gopを5にしておく。keyframeが5枚ごとになる。
 		
-		coder.setBitRate(650000); // 250kbps
-		coder.setBitRateTolerance(9000);
-		coder.setPixelType(IPixelFormat.Type.YUV420P);
-		coder.setWidth(320);
-		coder.setHeight(240);
-		coder.setGlobalQuality(10);
-		coder.setFrameRate(frameRate);
-		coder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
-		coder.setProperty("level", "30");
-		coder.setProperty("coder", "0");
-		coder.setProperty("qmin", "10");
-		coder.setProperty("bf", "0");
-		coder.setProperty("wprefp", "0");
-		coder.setProperty("cmp", "+chroma");
-		coder.setProperty("partitions", "-parti8x8+parti4x4+partp8x8+partp4x4-partb8x8");
-		coder.setProperty("me_method", "hex");
-		coder.setProperty("subq", "5");
-		coder.setProperty("me_range", "16");
-		coder.setProperty("keyint_min", "25");
-		coder.setProperty("sc_threshold", "40");
-		coder.setProperty("i_qfactor", "0.71");
-		coder.setProperty("b_strategy", "0");
-		coder.setProperty("qcomp", "0.6");
-		coder.setProperty("qmax", "30");
-		coder.setProperty("qdiff", "4");
-		coder.setProperty("directpred", "0");
-		coder.setProperty("profile", "main");
-		coder.setProperty("cqp", "0");
-		coder.setFlag(Flags.FLAG_LOOP_FILTER, true);
-		coder.setFlag(Flags.FLAG_CLOSED_GOP, true);
-		if(coder.open(null, null) < 0) {
-			throw new Exception("エンコーダーが開けませんでした");
-		}
-		if(container.writeHeader() < 0) {
-			throw new Exception("header書き込み失敗");
-		}
-		while(true) {
-			IPacket packet = IPacket.make();
-			IVideoPicture picture = image();
-			if(coder.encodeVideo(packet, picture, 0) < 0) {
-				throw new Exception("変換失敗");
-			}
-			if(packet.isComplete()) {
-				if(container.writePacket(packet) < 0) {
-					throw new Exception("コンテナ書き込み失敗");
-				}
-			}
-			if(picture.getPts() > 1000000) {
-				break;
-			}
-		}
-		if(container.writeTrailer() < 0) {
-			throw new Exception("tailer書き込み失敗");
-		}
-		coder.close();
+		videoEncoder.setBitRate(650000); // 650kbps
+		videoEncoder.setBitRateTolerance(9000);
+		videoEncoder.setWidth(320);
+		videoEncoder.setHeight(240);
+		videoEncoder.setGlobalQuality(10);
+		videoEncoder.setFrameRate(frameRate);
+		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
+		videoEncoder.setProperty("level", "30");
+		videoEncoder.setProperty("coder", "0");
+		videoEncoder.setProperty("qmin", "10");
+		videoEncoder.setProperty("bf", "0");
+		videoEncoder.setProperty("wprefp", "0");
+		videoEncoder.setProperty("cmp", "+chroma");
+		videoEncoder.setProperty("partitions", "-parti8x8+parti4x4+partp8x8+partp4x4-partb8x8");
+		videoEncoder.setProperty("me_method", "hex");
+		videoEncoder.setProperty("subq", "5");
+		videoEncoder.setProperty("me_range", "16");
+		videoEncoder.setProperty("keyint_min", "25");
+		videoEncoder.setProperty("sc_threshold", "40");
+		videoEncoder.setProperty("i_qfactor", "0.71");
+		videoEncoder.setProperty("b_strategy", "0");
+		videoEncoder.setProperty("qcomp", "0.6");
+		videoEncoder.setProperty("qmax", "30");
+		videoEncoder.setProperty("qdiff", "4");
+		videoEncoder.setProperty("directpred", "0");
+		videoEncoder.setProperty("profile", "main");
+		videoEncoder.setProperty("cqp", "0");
+		videoEncoder.setFlag(Flags.FLAG_LOOP_FILTER, true);
+		videoEncoder.setFlag(Flags.FLAG_CLOSED_GOP, true);
+
+		processConvert(container, videoEncoder, null);
+
+		videoEncoder.close();
 		container.close();
 	}
 	/**
@@ -303,93 +228,50 @@ public class SetupForTest {
 			throw new Exception("開けませんでした");
 		}
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_H264);
-		IStreamCoder coder = stream.getStreamCoder();
+		IStreamCoder videoEncoder = stream.getStreamCoder();
 		IRational frameRate = IRational.make(15, 1); // 15fps
-		coder.setNumPicturesInGroupOfPictures(5); // gopを30にしておく。keyframeが30枚ごとになる。
+		videoEncoder.setNumPicturesInGroupOfPictures(5); // gopを5にしておく。keyframeが5枚ごとになる。
 		
-		coder.setBitRate(650000); // 250kbps
-		coder.setBitRateTolerance(9000);
-		coder.setPixelType(IPixelFormat.Type.YUV420P);
-		coder.setWidth(320);
-		coder.setHeight(240);
-		coder.setGlobalQuality(10);
-		coder.setFrameRate(frameRate);
-		coder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
-		coder.setProperty("level", "30");
-		coder.setProperty("coder", "0");
-		coder.setProperty("qmin", "10");
-		coder.setProperty("bf", "0");
-		coder.setProperty("wprefp", "0");
-		coder.setProperty("cmp", "+chroma");
-		coder.setProperty("partitions", "-parti8x8+parti4x4+partp8x8+partp4x4-partb8x8");
-		coder.setProperty("me_method", "hex");
-		coder.setProperty("subq", "5");
-		coder.setProperty("me_range", "16");
-		coder.setProperty("keyint_min", "25");
-		coder.setProperty("sc_threshold", "40");
-		coder.setProperty("i_qfactor", "0.71");
-		coder.setProperty("b_strategy", "0");
-		coder.setProperty("qcomp", "0.6");
-		coder.setProperty("qmax", "30");
-		coder.setProperty("qdiff", "4");
-		coder.setProperty("directpred", "0");
-		coder.setProperty("profile", "main");
-		coder.setProperty("cqp", "0");
-		coder.setFlag(Flags.FLAG_LOOP_FILTER, true);
-		coder.setFlag(Flags.FLAG_CLOSED_GOP, true);
-		if(coder.open(null, null) < 0) {
-			throw new Exception("エンコーダーが開けませんでした");
-		}
+		videoEncoder.setBitRate(650000); // 650kbps
+		videoEncoder.setBitRateTolerance(9000);
+		videoEncoder.setWidth(320);
+		videoEncoder.setHeight(240);
+		videoEncoder.setGlobalQuality(10);
+		videoEncoder.setFrameRate(frameRate);
+		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
+		videoEncoder.setProperty("level", "30");
+		videoEncoder.setProperty("coder", "0");
+		videoEncoder.setProperty("qmin", "10");
+		videoEncoder.setProperty("bf", "0");
+		videoEncoder.setProperty("wprefp", "0");
+		videoEncoder.setProperty("cmp", "+chroma");
+		videoEncoder.setProperty("partitions", "-parti8x8+parti4x4+partp8x8+partp4x4-partb8x8");
+		videoEncoder.setProperty("me_method", "hex");
+		videoEncoder.setProperty("subq", "5");
+		videoEncoder.setProperty("me_range", "16");
+		videoEncoder.setProperty("keyint_min", "25");
+		videoEncoder.setProperty("sc_threshold", "40");
+		videoEncoder.setProperty("i_qfactor", "0.71");
+		videoEncoder.setProperty("b_strategy", "0");
+		videoEncoder.setProperty("qcomp", "0.6");
+		videoEncoder.setProperty("qmax", "30");
+		videoEncoder.setProperty("qdiff", "4");
+		videoEncoder.setProperty("directpred", "0");
+		videoEncoder.setProperty("profile", "main");
+		videoEncoder.setProperty("cqp", "0");
+		videoEncoder.setFlag(Flags.FLAG_LOOP_FILTER, true);
+		videoEncoder.setFlag(Flags.FLAG_CLOSED_GOP, true);
+
 		stream = container.addNewStream(ICodec.ID.CODEC_ID_AAC);
-		IStreamCoder coder2 = stream.getStreamCoder();
-		coder2.setSampleRate(44100);
-		coder2.setChannels(2);
-		coder2.setBitRate(96000);
-		if(coder2.open(null, null) < 0) {
-			throw new Exception("エンコーダーが開けませんでした");
-		}
-		if(container.writeHeader() < 0) {
-			throw new Exception("header書き込み失敗");
-		}
-		while(true) {
-			IPacket packet = IPacket.make();
-			IVideoPicture picture = image();
-			if(coder.encodeVideo(packet, picture, 0) < 0) {
-				throw new Exception("変換失敗");
-			}
-			if(packet.isComplete()) {
-				if(container.writePacket(packet) < 0) {
-					throw new Exception("コンテナ書き込み失敗");
-				}
-			}
-			while(true) {
-				IAudioSamples samples = samples();
-				int samplesConsumed = 0;
-				while(samplesConsumed < samples.getNumSamples()) {
-					int retval = coder2.encodeAudio(packet, samples, samplesConsumed);
-					if(retval < 0) {
-						throw new Exception("変換失敗");
-					}
-					samplesConsumed +=  retval;
-					if(packet.isComplete()) {
-						if(container.writePacket(packet) < 0) {
-							throw new Exception("コンテナ書き込み失敗");
-						}
-					}
-				}
-				if(samples.getPts() > picture.getPts()) {
-					break;
-				}
-			}
-			if(picture.getPts() > 1000000) {
-				break;
-			}
-		}
-		if(container.writeTrailer() < 0) {
-			throw new Exception("tailer書き込み失敗");
-		}
-		coder2.close();
-		coder.close();
+		IStreamCoder audioEncoder = stream.getStreamCoder();
+		audioEncoder.setSampleRate(44100);
+		audioEncoder.setChannels(2);
+		audioEncoder.setBitRate(96000);
+
+		processConvert(container, videoEncoder, audioEncoder);
+
+		audioEncoder.close();
+		videoEncoder.close();
 		container.close();
 	}
 	/**
@@ -407,93 +289,51 @@ public class SetupForTest {
 			throw new Exception("開けませんでした");
 		}
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_H264);
-		IStreamCoder coder = stream.getStreamCoder();
+		IStreamCoder videoEncoder = stream.getStreamCoder();
 		IRational frameRate = IRational.make(15, 1); // 15fps
-		coder.setNumPicturesInGroupOfPictures(5); // gopを30にしておく。keyframeが30枚ごとになる。
+		videoEncoder.setNumPicturesInGroupOfPictures(5); // gopを5にしておく。keyframeが5枚ごとになる。
 		
-		coder.setBitRate(650000); // 250kbps
-		coder.setBitRateTolerance(9000);
-		coder.setPixelType(IPixelFormat.Type.YUV420P);
-		coder.setWidth(320);
-		coder.setHeight(240);
-		coder.setGlobalQuality(10);
-		coder.setFrameRate(frameRate);
-		coder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
-		coder.setProperty("level", "30");
-		coder.setProperty("coder", "0");
-		coder.setProperty("qmin", "10");
-		coder.setProperty("bf", "0");
-		coder.setProperty("wprefp", "0");
-		coder.setProperty("cmp", "+chroma");
-		coder.setProperty("partitions", "-parti8x8+parti4x4+partp8x8+partp4x4-partb8x8");
-		coder.setProperty("me_method", "hex");
-		coder.setProperty("subq", "5");
-		coder.setProperty("me_range", "16");
-		coder.setProperty("keyint_min", "25");
-		coder.setProperty("sc_threshold", "40");
-		coder.setProperty("i_qfactor", "0.71");
-		coder.setProperty("b_strategy", "0");
-		coder.setProperty("qcomp", "0.6");
-		coder.setProperty("qmax", "30");
-		coder.setProperty("qdiff", "4");
-		coder.setProperty("directpred", "0");
-		coder.setProperty("profile", "main");
-		coder.setProperty("cqp", "0");
-		coder.setFlag(Flags.FLAG_LOOP_FILTER, true);
-		coder.setFlag(Flags.FLAG_CLOSED_GOP, true);
-		if(coder.open(null, null) < 0) {
-			throw new Exception("エンコーダーが開けませんでした");
-		}
+		videoEncoder.setBitRate(650000); // 650kbps
+		videoEncoder.setBitRateTolerance(9000);
+		videoEncoder.setPixelType(IPixelFormat.Type.YUV420P);
+		videoEncoder.setWidth(320);
+		videoEncoder.setHeight(240);
+		videoEncoder.setGlobalQuality(10);
+		videoEncoder.setFrameRate(frameRate);
+		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
+		videoEncoder.setProperty("level", "30");
+		videoEncoder.setProperty("coder", "0");
+		videoEncoder.setProperty("qmin", "10");
+		videoEncoder.setProperty("bf", "0");
+		videoEncoder.setProperty("wprefp", "0");
+		videoEncoder.setProperty("cmp", "+chroma");
+		videoEncoder.setProperty("partitions", "-parti8x8+parti4x4+partp8x8+partp4x4-partb8x8");
+		videoEncoder.setProperty("me_method", "hex");
+		videoEncoder.setProperty("subq", "5");
+		videoEncoder.setProperty("me_range", "16");
+		videoEncoder.setProperty("keyint_min", "25");
+		videoEncoder.setProperty("sc_threshold", "40");
+		videoEncoder.setProperty("i_qfactor", "0.71");
+		videoEncoder.setProperty("b_strategy", "0");
+		videoEncoder.setProperty("qcomp", "0.6");
+		videoEncoder.setProperty("qmax", "30");
+		videoEncoder.setProperty("qdiff", "4");
+		videoEncoder.setProperty("directpred", "0");
+		videoEncoder.setProperty("profile", "main");
+		videoEncoder.setProperty("cqp", "0");
+		videoEncoder.setFlag(Flags.FLAG_LOOP_FILTER, true);
+		videoEncoder.setFlag(Flags.FLAG_CLOSED_GOP, true);
+
 		stream = container.addNewStream(ICodec.ID.CODEC_ID_MP3);
-		IStreamCoder coder2 = stream.getStreamCoder();
-		coder2.setSampleRate(44100);
-		coder2.setChannels(2);
-		coder2.setBitRate(96000);
-		if(coder2.open(null, null) < 0) {
-			throw new Exception("エンコーダーが開けませんでした");
-		}
-		if(container.writeHeader() < 0) {
-			throw new Exception("header書き込み失敗");
-		}
-		while(true) {
-			IPacket packet = IPacket.make();
-			IVideoPicture picture = image();
-			if(coder.encodeVideo(packet, picture, 0) < 0) {
-				throw new Exception("変換失敗");
-			}
-			if(packet.isComplete()) {
-				if(container.writePacket(packet) < 0) {
-					throw new Exception("コンテナ書き込み失敗");
-				}
-			}
-			while(true) {
-				IAudioSamples samples = samples();
-				int samplesConsumed = 0;
-				while(samplesConsumed < samples.getNumSamples()) {
-					int retval = coder2.encodeAudio(packet, samples, samplesConsumed);
-					if(retval < 0) {
-						throw new Exception("変換失敗");
-					}
-					samplesConsumed +=  retval;
-					if(packet.isComplete()) {
-						if(container.writePacket(packet) < 0) {
-							throw new Exception("コンテナ書き込み失敗");
-						}
-					}
-				}
-				if(samples.getPts() > picture.getPts()) {
-					break;
-				}
-			}
-			if(picture.getPts() > 1000000) {
-				break;
-			}
-		}
-		if(container.writeTrailer() < 0) {
-			throw new Exception("tailer書き込み失敗");
-		}
-		coder2.close();
-		coder.close();
+		IStreamCoder audioEncoder = stream.getStreamCoder();
+		audioEncoder.setSampleRate(44100);
+		audioEncoder.setChannels(2);
+		audioEncoder.setBitRate(96000);
+		
+		processConvert(container, videoEncoder, audioEncoder);
+
+		audioEncoder.close();
+		videoEncoder.close();
 		container.close();
 	}
 	/**
@@ -511,93 +351,50 @@ public class SetupForTest {
 			throw new Exception("開けませんでした");
 		}
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_H264);
-		IStreamCoder coder = stream.getStreamCoder();
+		IStreamCoder videoEncoder = stream.getStreamCoder();
 		IRational frameRate = IRational.make(15, 1); // 15fps
-		coder.setNumPicturesInGroupOfPictures(5); // gopを30にしておく。keyframeが30枚ごとになる。
+		videoEncoder.setNumPicturesInGroupOfPictures(5); // gopを5にしておく。keyframeが5枚ごとになる。
 		
-		coder.setBitRate(650000); // 250kbps
-		coder.setBitRateTolerance(9000);
-		coder.setPixelType(IPixelFormat.Type.YUV420P);
-		coder.setWidth(320);
-		coder.setHeight(240);
-		coder.setGlobalQuality(10);
-		coder.setFrameRate(frameRate);
-		coder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
-		coder.setProperty("level", "30");
-		coder.setProperty("coder", "0");
-		coder.setProperty("qmin", "10");
-		coder.setProperty("bf", "0");
-		coder.setProperty("wprefp", "0");
-		coder.setProperty("cmp", "+chroma");
-		coder.setProperty("partitions", "-parti8x8+parti4x4+partp8x8+partp4x4-partb8x8");
-		coder.setProperty("me_method", "hex");
-		coder.setProperty("subq", "5");
-		coder.setProperty("me_range", "16");
-		coder.setProperty("keyint_min", "25");
-		coder.setProperty("sc_threshold", "40");
-		coder.setProperty("i_qfactor", "0.71");
-		coder.setProperty("b_strategy", "0");
-		coder.setProperty("qcomp", "0.6");
-		coder.setProperty("qmax", "30");
-		coder.setProperty("qdiff", "4");
-		coder.setProperty("directpred", "0");
-		coder.setProperty("profile", "main");
-		coder.setProperty("cqp", "0");
-		coder.setFlag(Flags.FLAG_LOOP_FILTER, true);
-		coder.setFlag(Flags.FLAG_CLOSED_GOP, true);
-		if(coder.open(null, null) < 0) {
-			throw new Exception("エンコーダーが開けませんでした");
-		}
+		videoEncoder.setBitRate(650000); // 650kbps
+		videoEncoder.setBitRateTolerance(9000);
+		videoEncoder.setPixelType(IPixelFormat.Type.YUV420P);
+		videoEncoder.setWidth(320);
+		videoEncoder.setHeight(240);
+		videoEncoder.setGlobalQuality(10);
+		videoEncoder.setFrameRate(frameRate);
+		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
+		videoEncoder.setProperty("level", "30");
+		videoEncoder.setProperty("coder", "0");
+		videoEncoder.setProperty("qmin", "10");
+		videoEncoder.setProperty("bf", "0");
+		videoEncoder.setProperty("wprefp", "0");
+		videoEncoder.setProperty("cmp", "+chroma");
+		videoEncoder.setProperty("partitions", "-parti8x8+parti4x4+partp8x8+partp4x4-partb8x8");
+		videoEncoder.setProperty("me_method", "hex");
+		videoEncoder.setProperty("subq", "5");
+		videoEncoder.setProperty("me_range", "16");
+		videoEncoder.setProperty("keyint_min", "25");
+		videoEncoder.setProperty("sc_threshold", "40");
+		videoEncoder.setProperty("i_qfactor", "0.71");
+		videoEncoder.setProperty("b_strategy", "0");
+		videoEncoder.setProperty("qcomp", "0.6");
+		videoEncoder.setProperty("qmax", "30");
+		videoEncoder.setProperty("qdiff", "4");
+		videoEncoder.setProperty("directpred", "0");
+		videoEncoder.setProperty("profile", "main");
+		videoEncoder.setProperty("cqp", "0");
+		videoEncoder.setFlag(Flags.FLAG_LOOP_FILTER, true);
+		videoEncoder.setFlag(Flags.FLAG_CLOSED_GOP, true);
 		stream = container.addNewStream(ICodec.ID.CODEC_ID_MP3);
-		IStreamCoder coder2 = stream.getStreamCoder();
-		coder2.setSampleRate(44100);
-		coder2.setChannels(2);
-		coder2.setBitRate(96000);
-		if(coder2.open(null, null) < 0) {
-			throw new Exception("エンコーダーが開けませんでした");
-		}
-		if(container.writeHeader() < 0) {
-			throw new Exception("header書き込み失敗");
-		}
-		while(true) {
-			IPacket packet = IPacket.make();
-			IVideoPicture picture = image();
-			if(coder.encodeVideo(packet, picture, 0) < 0) {
-				throw new Exception("変換失敗");
-			}
-			if(packet.isComplete()) {
-				if(container.writePacket(packet) < 0) {
-					throw new Exception("コンテナ書き込み失敗");
-				}
-			}
-			while(true) {
-				IAudioSamples samples = samples();
-				int samplesConsumed = 0;
-				while(samplesConsumed < samples.getNumSamples()) {
-					int retval = coder2.encodeAudio(packet, samples, samplesConsumed);
-					if(retval < 0) {
-						throw new Exception("変換失敗");
-					}
-					samplesConsumed +=  retval;
-					if(packet.isComplete()) {
-						if(container.writePacket(packet) < 0) {
-							throw new Exception("コンテナ書き込み失敗");
-						}
-					}
-				}
-				if(samples.getPts() > picture.getPts()) {
-					break;
-				}
-			}
-			if(picture.getPts() > 1000000) {
-				break;
-			}
-		}
-		if(container.writeTrailer() < 0) {
-			throw new Exception("tailer書き込み失敗");
-		}
-		coder2.close();
-		coder.close();
+		IStreamCoder audioEncoder = stream.getStreamCoder();
+		audioEncoder.setSampleRate(44100);
+		audioEncoder.setChannels(2);
+		audioEncoder.setBitRate(96000);
+
+		processConvert(container, videoEncoder, audioEncoder);
+
+		audioEncoder.close();
+		videoEncoder.close();
 		container.close();
 	}
 	/**
@@ -609,108 +406,34 @@ public class SetupForTest {
 		logger.info("mkvのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
-		IAudioResampler resampler = null;
 		// flvデータを作ります。
 		IContainer container = IContainer.make();
 		if(container.open(getTargetFile("myLib.media.mkv/src/test/resources/test.webm"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
+		
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_VP8);
-		IStreamCoder coder = stream.getStreamCoder();
+		IStreamCoder videoEncoder = stream.getStreamCoder();
 		IRational frameRate = IRational.make(15, 1); // 15fps
-		coder.setNumPicturesInGroupOfPictures(5); // gopを30にしておく。keyframeが30枚ごとになる。
-		coder.setBitRate(650000); // 250kbps
-		coder.setBitRateTolerance(9000);
-		coder.setPixelType(IPixelFormat.Type.YUV420P);
-		coder.setWidth(320);
-		coder.setHeight(240);
-		coder.setGlobalQuality(10);
-		coder.setFrameRate(frameRate);
-		coder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
+		videoEncoder.setNumPicturesInGroupOfPictures(5); // gopを5にしておく。keyframeが5枚ごとになる。
+		videoEncoder.setBitRate(650000); // 650kbps
+		videoEncoder.setBitRateTolerance(9000);
+		videoEncoder.setWidth(320);
+		videoEncoder.setHeight(240);
+		videoEncoder.setGlobalQuality(10);
+		videoEncoder.setFrameRate(frameRate);
+		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
+
 		stream = container.addNewStream(ICodec.ID.CODEC_ID_VORBIS);
-		IStreamCoder coder2 = stream.getStreamCoder();
-		ICodec codec = coder2.getCodec();
-		Format format = null;
-		for(Format fmt : codec.getSupportedAudioSampleFormats()) {
-			// ここでformatを１つめに見つけたやつで入れた方がよさそうです。
-			format = fmt;
-			break;
-		}
-		if(format == null) {
-			throw new Exception("変換フォーマットが決定しませんでした。");
-		}
-		coder2.setSampleRate(44100);
-		coder2.setChannels(2);
-		coder2.setBitRate(96000);
-		coder2.setSampleFormat(format);
-		if(coder.open(null, null) < 0) {
-			throw new Exception("エンコーダーが開けませんでした");
-		}
-		if(coder2.open(null, null) < 0) {
-			throw new Exception("エンコーダーが開けませんでした");
-		}
-		if(container.writeHeader() < 0) {
-			throw new Exception("header書き込み失敗");
-		}
-		while(true) {
-			IPacket packet = IPacket.make();
-			IVideoPicture picture = image();
-			if(coder.encodeVideo(packet, picture, 0) < 0) {
-				throw new Exception("変換失敗");
-			}
-			if(packet.isComplete()) {
-				if(container.writePacket(packet) < 0) {
-					System.out.println(packet);
-					packet.setDts(packet.getPts());
-					throw new Exception("コンテナ書き込み失敗");
-				}
-			}
-			while(true) {
-				IAudioSamples samples = samples();
-				if(samples.getSampleRate() != coder2.getSampleRate() 
-				|| samples.getFormat() != coder2.getSampleFormat()
-				|| samples.getChannels() != coder2.getChannels()) {
-					if(resampler == null) {
-						// resamplerを作る必要あり。
-						resampler = IAudioResampler.make(
-								coder2.getChannels(), samples.getChannels(),
-								coder2.getSampleRate(), samples.getSampleRate(),
-								coder2.getSampleFormat(), samples.getFormat());
-					}
-					IAudioSamples spl = IAudioSamples.make(1024, coder2.getChannels());
-					int retVal = resampler.resample(spl, samples, samples.getNumSamples());
-					if(retVal <= 0) {
-						throw new Exception("リサンプル失敗しました。");
-					}
-					samples = spl;
-				}
-				int samplesConsumed = 0;
-				while(samplesConsumed < samples.getNumSamples()) {
-					int retval = coder2.encodeAudio(packet, samples, samplesConsumed);
-					if(retval < 0) {
-						throw new Exception("変換失敗");
-					}
-					samplesConsumed +=  retval;
-					if(packet.isComplete()) {
-						packet.setDts(packet.getPts());
-						if(container.writePacket(packet) < 0) {
-							throw new Exception("コンテナ書き込み失敗");
-						}
-					}
-				}
-				if(samples.getPts() > picture.getPts()) {
-					break;
-				}
-			}
-			if(picture.getPts() > 1000000) {
-				break;
-			}
-		}
-		if(container.writeTrailer() < 0) {
-			throw new Exception("tailer書き込み失敗");
-		}
-		coder2.close();
-		coder.close();
+		IStreamCoder audioEncoder = stream.getStreamCoder();
+		audioEncoder.setSampleRate(44100);
+		audioEncoder.setChannels(2);
+		audioEncoder.setBitRate(96000);
+		
+		processConvert(container, videoEncoder, audioEncoder);
+		
+		audioEncoder.close();
+		videoEncoder.close();
 		container.close();
 	}
 	/**
@@ -804,42 +527,44 @@ public class SetupForTest {
 					}
 				}
 			}
-			while(true) {
-				IAudioSamples samples = samples();
-				if(samples.getSampleRate() != audioEncoder.getSampleRate() 
-				|| samples.getFormat() != audioEncoder.getSampleFormat()
-				|| samples.getChannels() != audioEncoder.getChannels()) {
-					if(audioResampler == null) {
-						// resamplerを作る必要あり。
-						audioResampler = IAudioResampler.make(
-								audioEncoder.getChannels(), samples.getChannels(),
-								audioEncoder.getSampleRate(), samples.getSampleRate(),
-								audioEncoder.getSampleFormat(), samples.getFormat());
+			if(audioEncoder != null) {
+				while(true) {
+					IAudioSamples samples = samples();
+					if(samples.getSampleRate() != audioEncoder.getSampleRate() 
+					|| samples.getFormat() != audioEncoder.getSampleFormat()
+					|| samples.getChannels() != audioEncoder.getChannels()) {
+						if(audioResampler == null) {
+							// resamplerを作る必要あり。
+							audioResampler = IAudioResampler.make(
+									audioEncoder.getChannels(), samples.getChannels(),
+									audioEncoder.getSampleRate(), samples.getSampleRate(),
+									audioEncoder.getSampleFormat(), samples.getFormat());
+						}
+						IAudioSamples spl = IAudioSamples.make(1024, audioEncoder.getChannels());
+						int retVal = audioResampler.resample(spl, samples, samples.getNumSamples());
+						if(retVal <= 0) {
+							throw new Exception("音声サンプル失敗しました。");
+						}
+						samples = spl;
 					}
-					IAudioSamples spl = IAudioSamples.make(1024, audioEncoder.getChannels());
-					int retVal = audioResampler.resample(spl, samples, samples.getNumSamples());
-					if(retVal <= 0) {
-						throw new Exception("音声サンプル失敗しました。");
-					}
-					samples = spl;
-				}
-				int samplesConsumed = 0;
-				while(samplesConsumed < samples.getNumSamples()) {
-					int retval = audioEncoder.encodeAudio(packet, samples, samplesConsumed);
-					if(retval < 0) {
-						throw new Exception("変換失敗");
-					}
-					samplesConsumed +=  retval;
-					if(packet.isComplete()) {
-						packet.setDts(packet.getPts());
-						if(container.writePacket(packet) < 0) {
-							throw new Exception("コンテナ書き込み失敗");
+					int samplesConsumed = 0;
+					while(samplesConsumed < samples.getNumSamples()) {
+						int retval = audioEncoder.encodeAudio(packet, samples, samplesConsumed);
+						if(retval < 0) {
+							throw new Exception("変換失敗");
+						}
+						samplesConsumed +=  retval;
+						if(packet.isComplete()) {
+							packet.setDts(packet.getPts());
+							if(container.writePacket(packet) < 0) {
+								throw new Exception("コンテナ書き込み失敗");
+							}
 						}
 					}
-				}
-				if((picture != null && samples.getPts() > picture.getPts())
-						|| samples.getPts() > 1000000) {
-					break;
+					if((picture != null && samples.getPts() > picture.getPts())
+							|| samples.getPts() > 1000000) {
+						break;
+					}
 				}
 			}
 			if(picture == null || picture.getPts() > 1000000) {
