@@ -17,6 +17,7 @@ import com.ttProject.media.mpegts.field.DtsField;
 import com.ttProject.media.mpegts.field.PtsField;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.util.BufferUtil;
 
 /**
  * ElementaryStreamPacket
@@ -274,85 +275,85 @@ public class Pes extends Packet {
 	@Override
 	public void analyze(IReadChannel ch) throws Exception {
 		analyzeHeader(ch);
-		if(!isPayloadUnitStart()) {
-			return;
-		}
-		// 中身確認
-		Bit8 prefix_1 = new Bit8();
-		Bit8 prefix_2 = new Bit8();
-		Bit8 prefix_3 = new Bit8();
-		streamId = new Bit8();
-		Bit8 pesPacketLength_1 = new Bit8();
-		Bit8 pesPacketLength_2 = new Bit8();
-		markerBits = new Bit2();
-		scramblingControl = new Bit2();
-		priority = new Bit1();
-		dataAlignmentIndicator = new Bit1();
-		copyright = new Bit1();
-		originFlg = new Bit1();
-		ptsDtsIndicator = new Bit2();
-		escrFlag = new Bit1();
-		esRateFlag = new Bit1();
-		DSMTrickModeFlag = new Bit1();
-		additionalCopyInfoFlag = new Bit1();
-		CRCFlag = new Bit1();
-		extensionFlag = new Bit1();
-		PESHeaederLength = new Bit8();
-		Bit.bitLoader(ch, prefix_1, prefix_2, prefix_3, streamId,
-				pesPacketLength_1, pesPacketLength_2, markerBits, scramblingControl,
-				priority, dataAlignmentIndicator, copyright, originFlg,
-				ptsDtsIndicator, escrFlag, esRateFlag, DSMTrickModeFlag, additionalCopyInfoFlag,
-				CRCFlag, extensionFlag, PESHeaederLength);
-		prefix = (prefix_1.get() << 16) | (prefix_2.get() << 8) | prefix_3.get();
-		pesPacketLength = (short)((pesPacketLength_1.get() << 8) | pesPacketLength_2.get());
-
-		int length = PESHeaederLength.get();
-		switch(ptsDtsIndicator.get()) {
-		case 0x03:
-			{
-				pts = new PtsField();
-				dts = new DtsField();
-				pts.analyze(ch);
-				dts.analyze(ch);
-				// pts
-				length -= 10;
+		if(isPayloadUnitStart()) {
+			// 中身確認
+			Bit8 prefix_1 = new Bit8();
+			Bit8 prefix_2 = new Bit8();
+			Bit8 prefix_3 = new Bit8();
+			streamId = new Bit8();
+			Bit8 pesPacketLength_1 = new Bit8();
+			Bit8 pesPacketLength_2 = new Bit8();
+			markerBits = new Bit2();
+			scramblingControl = new Bit2();
+			priority = new Bit1();
+			dataAlignmentIndicator = new Bit1();
+			copyright = new Bit1();
+			originFlg = new Bit1();
+			ptsDtsIndicator = new Bit2();
+			escrFlag = new Bit1();
+			esRateFlag = new Bit1();
+			DSMTrickModeFlag = new Bit1();
+			additionalCopyInfoFlag = new Bit1();
+			CRCFlag = new Bit1();
+			extensionFlag = new Bit1();
+			PESHeaederLength = new Bit8();
+			Bit.bitLoader(ch, prefix_1, prefix_2, prefix_3, streamId,
+					pesPacketLength_1, pesPacketLength_2, markerBits, scramblingControl,
+					priority, dataAlignmentIndicator, copyright, originFlg,
+					ptsDtsIndicator, escrFlag, esRateFlag, DSMTrickModeFlag, additionalCopyInfoFlag,
+					CRCFlag, extensionFlag, PESHeaederLength);
+			prefix = (prefix_1.get() << 16) | (prefix_2.get() << 8) | prefix_3.get();
+			pesPacketLength = (short)((pesPacketLength_1.get() << 8) | pesPacketLength_2.get());
+	
+			int length = PESHeaederLength.get();
+			switch(ptsDtsIndicator.get()) {
+			case 0x03:
+				{
+					pts = new PtsField();
+					dts = new DtsField();
+					pts.analyze(ch);
+					dts.analyze(ch);
+					// pts
+					length -= 10;
+				}
+				break;
+			case 0x02:
+				{
+					// pts
+					pts = new PtsField();
+					pts.analyze(ch);
+					length -= 5;
+				}
+				break;
+			case 0x00:
+				break;
+			default:
+				throw new Exception("ptsDtsIndicatorが不正です。");
 			}
-			break;
-		case 0x02:
-			{
-				// pts
-				pts = new PtsField();
-				pts.analyze(ch);
-				length -= 5;
+			if(escrFlag.get() != 0x00) {
+				throw new Exception("escrFlagの解析は未実装です。");
 			}
-			break;
-		case 0x00:
-			break;
-		default:
-			throw new Exception("ptsDtsIndicatorが不正です。");
-		}
-		if(escrFlag.get() != 0x00) {
-			throw new Exception("escrFlagの解析は未実装です。");
-		}
-		if(esRateFlag.get() != 0x00) {
-			throw new Exception("esRateFlagの解析は未実装です。");
-		}
-		if(DSMTrickModeFlag.get() != 0x00) {
-			throw new Exception("DSMTrickModeFlagの解析は未実装です。");
-		}
-		if(additionalCopyInfoFlag.get() != 0x00) {
-			throw new Exception("additionalCopyInfoFlagの解析は未実装です。");
-		}
-		if(CRCFlag.get() != 0x00) {
-			throw new Exception("CRCFlagの解析は未実装です。");
-		}
-		if(extensionFlag.get() != 0x00) {
-			throw new Exception("extensionFlagの解析は未実装です。");
-		}
-		if(length != 0) {
-			throw new Exception("読み込みできていないデータがあるみたいです。");
+			if(esRateFlag.get() != 0x00) {
+				throw new Exception("esRateFlagの解析は未実装です。");
+			}
+			if(DSMTrickModeFlag.get() != 0x00) {
+				throw new Exception("DSMTrickModeFlagの解析は未実装です。");
+			}
+			if(additionalCopyInfoFlag.get() != 0x00) {
+				throw new Exception("additionalCopyInfoFlagの解析は未実装です。");
+			}
+			if(CRCFlag.get() != 0x00) {
+				throw new Exception("CRCFlagの解析は未実装です。");
+			}
+			if(extensionFlag.get() != 0x00) {
+				throw new Exception("extensionFlagの解析は未実装です。");
+			}
+			if(length != 0) {
+				throw new Exception("読み込みできていないデータがあるみたいです。");
+			}
 		}
 		// 本来はこのあとデータを読み込む作業がでてくるはず。(順にデータパケットを流し込むと生成される的な感じでしょうか)
+		rawData = BufferUtil.safeRead(ch, ch.size() - ch.position());
 	}
 	@Override
 	public List<Bit> getBits() {
@@ -509,6 +510,13 @@ public class Pes extends Packet {
 	}
 	public boolean hasDts() {
 		return dts != null;
+	}
+	/**
+	 * 内部の生データを応答する。
+	 * @return
+	 */
+	public ByteBuffer getRawData() {
+		return rawData.duplicate();
 	}
 	public String dump3() {
 		StringBuilder data = new StringBuilder();
