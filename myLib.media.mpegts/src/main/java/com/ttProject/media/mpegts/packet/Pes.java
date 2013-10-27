@@ -520,6 +520,9 @@ public class Pes extends Packet {
 		}
 		return data.toString();
 	}
+	public PtsField getPts() {
+		return pts;
+	}
 	@Override
 	public String toString() {
 		StringBuilder data = new StringBuilder();
