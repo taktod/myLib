@@ -1,5 +1,7 @@
 package com.ttProject.packet.mpegts.test;
 
+import java.nio.ByteBuffer;
+
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
@@ -9,6 +11,9 @@ import com.ttProject.media.mpegts.PacketAnalyzer;
 import com.ttProject.media.mpegts.packet.Pes;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.packet.IMediaPacket;
+import com.ttProject.packet.mpegts.MpegtsPacketManager;
+import com.ttProject.util.BufferUtil;
 
 /**
  * ファイルの読み込みを実行するテスト
@@ -21,6 +26,7 @@ import com.ttProject.nio.channels.IReadChannel;
  * patのchunk
  * pmtのchunk
  * sdtのchunk
+ * 
  * ３：実験によると、音声のchunkがある程度の大きさにならないと送られてこないっぽいです。
  * 音声chunkが大きすぎることがありそうです。
  * よって、音声chunkは分解してやってきちんとしたサイズにしてやった方が動作は安定しそうです。
@@ -40,8 +46,8 @@ import com.ttProject.nio.channels.IReadChannel;
 public class FileLoadTest {
 	/** ロガー */
 	private final Logger logger = Logger.getLogger(FileLoadTest.class);
-	@Test
-	public void test() {
+//	@Test
+	public void readTest() {
 		logger.info("ファイル読み込みテスト開始");
 		IReadChannel source = null;
 		try {
@@ -78,5 +84,44 @@ public class FileLoadTest {
 				source = null;
 			}
 		}
+	}
+	@Test
+	public void test() throws Exception {
+		logger.info("パケット生成テスト開始");
+		IReadChannel source = null;
+		try {
+			source = FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("mario.ts")
+			);
+			MpegtsPacketManager packetManager = new MpegtsPacketManager();
+			// 読み込めたデータを送り込んでいけばOK
+			ByteBuffer buffer = null;
+			while(true) {
+				int remaining = source.size() - source.position();
+				int readSize = (remaining > 655350 ? 655350 : remaining);
+				if(readSize == 0) {
+					break;
+				}
+				buffer = BufferUtil.safeRead(source, readSize);
+				// 読み取ったbufferをぶち込む
+				for(IMediaPacket packet : packetManager.getPackets(buffer)) {
+					logger.info(packet);
+				}
+			}
+		}
+		catch(Exception e) {
+			logger.error("", e);
+		}
+		finally {
+			if(source != null) {
+				try {
+					source.close();
+				}
+				catch(Exception e) {
+				}
+				source = null;
+			}
+		}
+		
 	}
 }
