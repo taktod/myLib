@@ -31,4 +31,5 @@ public abstract class MediaData {
 		}
 		return true;
 	}
+	public abstract long getStackedDataPts();
 }

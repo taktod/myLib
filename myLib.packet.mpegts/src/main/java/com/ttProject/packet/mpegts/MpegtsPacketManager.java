@@ -38,6 +38,7 @@ public class MpegtsPacketManager extends MediaPacketManager {
 	private final VideoData videoData = new VideoData();
 	/** 音声用データのpes保持 */
 	private final AudioData audioData = new AudioData();
+	private long passedPts = -1; // 処理済みpts値保持
 	/**
 	 * コンストラクタ
 	 */
@@ -86,14 +87,42 @@ public class MpegtsPacketManager extends MediaPacketManager {
 				}
 				else if(packet instanceof Pes) {
 					Pes pes = (Pes)packet;
+					if(passedPts == -1) {
+						if(pes.hasPts()) {
+							passedPts = pes.getPts().getPts();
+						}
+					}
 					videoData.analyzePes(pes);
 					audioData.analyzePes(pes);
+					long targetDuration = passedPts + (long)(90000 * getDuration());
+					if(targetDuration < videoData.getStackedDataPts()
+					&& targetDuration < audioData.getStackedDataPts()) {
+						// 音声も映像もduration分以上たまったので・・・ファイルに吐いてOK
+						logger.info(targetDuration);
+						logger.info(videoData.getStackedDataPts());
+						logger.info(audioData.getStackedDataPts());
+						// まずh264のkeyとなるPesデータについて取得する。
+						// TODO みつけたデータはpacketオブジェクトに持たせておけばいいか？
+						// pesデータを取り出す。(終端まできたときにどうするかが問題だが・・・)
+						while(true) {
+							// 次のmpegtsの値が決定しないと、audioDataの取得すべきデータ量が決まらない。
+							Pes videoPes = videoData.shift();
+							break;
+						}
+						// h264のinnerFrameとなるPesデータについて取得する。
+						// aacの内部に挿入すべきデータを取得する。
+						// h264のkey用データを書き込む
+						// aacのpesを書き込む
+						// h264のinner用データを書き込む
+						// おわり。 
+						System.exit(0);
+					}
 				}
 			}
 			buffer.position(readChannel.position());
 		}
 		catch(Exception e) {
-			
+			logger.error(e);
 		}
 		// 処理中のパケットデータを参照
 		// 処理中のパケットデータがなければ、新しいパケットデータを作成

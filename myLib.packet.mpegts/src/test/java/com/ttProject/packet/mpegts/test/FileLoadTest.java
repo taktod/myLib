@@ -85,6 +85,10 @@ public class FileLoadTest {
 			}
 		}
 	}
+	/**
+	 * パケットをつくる動作テスト
+	 * @throws Exception
+	 */
 	@Test
 	public void test() throws Exception {
 		logger.info("パケット生成テスト開始");
@@ -94,6 +98,7 @@ public class FileLoadTest {
 					Thread.currentThread().getContextClassLoader().getResource("mario.ts")
 			);
 			MpegtsPacketManager packetManager = new MpegtsPacketManager();
+			packetManager.setDuration(2); // ２秒ごとに設定しておく。
 			// 読み込めたデータを送り込んでいけばOK
 			ByteBuffer buffer = null;
 			while(true) {

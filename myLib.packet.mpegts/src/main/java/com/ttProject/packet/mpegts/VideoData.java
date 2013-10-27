@@ -19,6 +19,7 @@ public class VideoData extends MediaData {
 	private final Logger logger = Logger.getLogger(VideoData.class);
 	private final List<Pes> videoPesList = new ArrayList<Pes>();
 	private final List<Pes> keyPesList = new ArrayList<Pes>();
+	private long lastPesPts = 0;
 	/**
 	 * pesデータを解析します。
 	 */
@@ -42,10 +43,31 @@ public class VideoData extends MediaData {
 				if(field.getRandomAccessIndicator() == 1) {
 					// キーフレームの位置となる。
 					keyPesList.add(pes);
+					// キーフレームの位置でのみ、ptsの更新を実施する。
+					lastPesPts = pes.getPts().getPts();
 				}
 			}
 		}
 	}
-	// すすんだ時間データを応答する。
-	// データを取り出す。
+	/**
+	 * 現在たまっているデータのpts値を応答します。
+	 */
+	@Override
+	public long getStackedDataPts() {
+		return lastPesPts;
+	}
+	/**
+	 * 先頭を取り出す
+	 * @return
+	 */
+	public Pes shift() {
+		return videoPesList.remove(0);
+	}
+	/**
+	 * 先頭に追加
+	 * @param pes
+	 */
+	public void unshift(Pes pes) {
+		videoPesList.add(0, pes);
+	}
 }

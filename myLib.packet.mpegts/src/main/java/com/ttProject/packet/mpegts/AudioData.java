@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.ttProject.media.IAudioData;
-import com.ttProject.media.aac.AacManager;
 import com.ttProject.media.aac.Frame;
 import com.ttProject.media.aac.FrameAnalyzer;
 import com.ttProject.media.aac.IFrameAnalyzer;
@@ -29,11 +28,15 @@ public class AudioData extends MediaData {
 	/** 分解後のIAudioDataリスト */
 	private final List<IAudioData> audioDataList = new ArrayList<IAudioData>();
 	private long counter = 0; // 開始位置からの保持データ量
-	private long startPos = 0; // データ開始位置のpts値
+	private long startPos = -1; // データ開始位置のpts
 	@Override
 	public void analyzePes(Pes pes) {
 		if(!checkPes(pes)) {
 			return;
+		}
+		if(startPos == -1) {
+			// 開始位置のpts値を保存しておく。(ずれ分)
+			startPos = pes.getPts().getPts();
 		}
 		// 自分用のデータなので対処しておく。
 		// 音声データのpesは分解して、aacもしくはmp3に変更してしまっておく。
@@ -50,21 +53,25 @@ public class AudioData extends MediaData {
 				IFrameAnalyzer analyzer = new FrameAnalyzer();
 				Frame frame = null;
 				while((frame = analyzer.analyze(bufferChannel)) != null) {
-					logger.info(frame);
 					if(frame instanceof Aac) {
-						audioDataList.add((Aac) frame);
+						Aac aac = (Aac)frame;
+						counter += aac.getSampleNum();
+						audioDataList.add(aac);
 					}
 				}
 			}
 			catch(Exception e) {
 				e.printStackTrace();
 			}
-			logger.info(buffer.remaining());
-			// たまっている前のデータについて調整しておく。
-			// byteBufferのchunkに変更し、
-			// aacManagerで解析して、aac化
-			// その後aacのデータ群として保持しておけばOK
 		}
 		pesList.add(pes);
+	}
+	/**
+	 * ptsにしたときに現在たまっているaudioデータ量を応答します。
+	 * @return
+	 */
+	@Override
+	public long getStackedDataPts() {
+		return startPos + (long)(counter * (90000D / 44100D));
 	}
 }
