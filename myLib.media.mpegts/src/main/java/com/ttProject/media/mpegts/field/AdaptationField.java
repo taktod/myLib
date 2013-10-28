@@ -50,6 +50,10 @@ public class AdaptationField {
 		pcrBase = base;
 	}
 	public void setRandomAccessIndicator(int flg) {
+		// adaptationFieldの長さが存在しない場合は1に変更する必要あり。
+		if(adaptationFieldLength.get() == 0) {
+			adaptationFieldLength.set(1);
+		}
 		randomAccessIndicator = new Bit1(flg);
 	}
 	// pcr opcr spliceCountdown stuffingBytes等々・・・
