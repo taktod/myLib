@@ -95,12 +95,12 @@ public class MpegtsPacketManager extends MediaPacketManager {
 					videoData.analyzePes(pes);
 					audioData.analyzePes(pes);
 					long targetDuration = passedPts + (long)(90000 * getDuration());
-					if(targetDuration < videoData.getStackedDataPts()
-					&& targetDuration < audioData.getStackedDataPts()) {
+					if(targetDuration < videoData.getLastDataPts()
+					&& targetDuration < audioData.getLastDataPts()) {
 						// 音声も映像もduration分以上たまったので・・・ファイルに吐いてOK
 						logger.info(targetDuration);
-						logger.info(videoData.getStackedDataPts());
-						logger.info(audioData.getStackedDataPts());
+						logger.info(videoData.getLastDataPts());
+						logger.info(audioData.getLastDataPts());
 						// まずh264のkeyとなるPesデータについて取得する。
 						// TODO みつけたデータはpacketオブジェクトに持たせておけばいいか？
 						// pesデータを取り出す。(終端まできたときにどうするかが問題だが・・・)
