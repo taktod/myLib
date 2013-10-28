@@ -98,7 +98,7 @@ public class FileLoadTest {
 					Thread.currentThread().getContextClassLoader().getResource("mario.ts")
 			);
 			MpegtsPacketManager packetManager = new MpegtsPacketManager();
-			packetManager.setDuration(2); // ２秒ごとに設定しておく。
+			packetManager.setDuration(5); // 5秒ごとに設定しておく。
 			// 読み込めたデータを送り込んでいけばOK
 			ByteBuffer buffer = null;
 			while(true) {
