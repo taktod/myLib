@@ -61,8 +61,13 @@ public abstract class MediaData {
 		return true;
 	}
 	/**
-	 * stackしているデータのpts値を応答します。
+	 * 現在保持しているデータの終端pts値
 	 * @return
 	 */
-	public abstract long getStackedDataPts();
+	public abstract long getLastDataPts();
+	/**
+	 * 現在保持しているデータの先頭pts値
+	 * @return
+	 */
+	public abstract long getFirstDataPts();
 }
