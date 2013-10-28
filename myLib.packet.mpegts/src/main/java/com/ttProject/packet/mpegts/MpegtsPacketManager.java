@@ -73,11 +73,11 @@ public class MpegtsPacketManager extends MediaPacketManager {
 							logger.info(field.getCodecType());
 							switch(field.getCodecType()) {
 							case VIDEO_H264:
-								videoData.analyzePmt(field);
+								videoData.analyzePmt(pmt, field);
 								break;
 							case AUDIO_AAC:
 							case AUDIO_MPEG1:
-								audioData.analyzePmt(field);
+								audioData.analyzePmt(pmt, field);
 								break;
 							default:
 								break;
