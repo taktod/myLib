@@ -50,11 +50,20 @@ public class VideoData extends MediaData {
 		}
 	}
 	/**
-	 * 現在たまっているデータのpts値を応答します。
+	 * 現在保持しているデータの終端pts値
+	 * @return
 	 */
 	@Override
-	public long getStackedDataPts() {
+	public long getLastDataPts() {
 		return lastPesPts;
+	}
+	/**
+	 * 現在保持しているデータの先頭pts値
+	 * @return
+	 */
+	@Override
+	public long getFirstDataPts() {
+		return -1;
 	}
 	/**
 	 * 先頭を取り出す
