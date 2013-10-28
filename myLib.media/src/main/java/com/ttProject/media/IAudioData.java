@@ -18,4 +18,9 @@ public interface IAudioData extends IMediaData {
 	 * サンプリングレートを応答します。
 	 */
 	public int getSampleRate();
+	/**
+	 * データサイズを応答します。
+	 * @return
+	 */
+	public int getSize();
 }
