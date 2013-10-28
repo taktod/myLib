@@ -28,9 +28,27 @@ public abstract class MediaData {
 	public boolean isPcr() {
 		return pcrFlg;
 	}
+	/**
+	 * 対応pid参照
+	 * @return
+	 */
+	public short getPid() {
+		return pid;
+	}
+	/**
+	 * コーデック情報参照
+	 * @return
+	 */
+	public CodecType getCodecType() {
+		return type;
+	}
+	/**
+	 * pesデータを解析します。
+	 * @param pes
+	 */
 	public abstract void analyzePes(Pes pes);
 	/**
-	 * pesのデータを解析する。
+	 * pesのデータを確認する
 	 * @param pes
 	 */
 	protected boolean checkPes(Pes pes) {
@@ -42,5 +60,9 @@ public abstract class MediaData {
 		}
 		return true;
 	}
+	/**
+	 * stackしているデータのpts値を応答します。
+	 * @return
+	 */
 	public abstract long getStackedDataPts();
 }
