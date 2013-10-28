@@ -16,6 +16,9 @@ public class MpegtsPacket extends MediaPacket {
 	 */
 	@Override
 	public boolean analize(ByteBuffer buffer) {
+		// 保持しているbufferを取り出す
+		ByteBuffer buf = getBuffer(buffer.remaining());
+		buf.put(buffer); // 追加しておく。
 		return false;
 	}
 	/**
