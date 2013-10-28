@@ -1,9 +1,14 @@
 package com.ttProject.packet.mpegts;
 
+import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.media.IAudioData;
 import com.ttProject.media.mpegts.CodecType;
 import com.ttProject.media.mpegts.IPacketAnalyzer;
 import com.ttProject.media.mpegts.Packet;
@@ -48,6 +53,7 @@ public class MpegtsPacketManager extends MediaPacketManager {
 	}
 	// analyzerは外にだしておかないと、初期化時のデータがなくなってエラーになることがあるっぽいですね。
 	private IPacketAnalyzer analyzer = new PacketAnalyzer();
+	private int counter = 0;
 	/**
 	 * パケットの内容を解析して、必要な時間分のデータ(Packetを応答します)
 	 */
@@ -101,28 +107,72 @@ public class MpegtsPacketManager extends MediaPacketManager {
 						logger.info(targetDuration);
 						logger.info(videoData.getLastDataPts());
 						logger.info(audioData.getLastDataPts());
-						// まずh264のkeyとなるPesデータについて取得する。
-						// TODO みつけたデータはpacketオブジェクトに持たせておけばいいか？
-						// pesデータを取り出す。(終端まできたときにどうするかが問題だが・・・)
+						
+						boolean keyFrame = true; // keyFrameデータフラグ
+						long frameEndPts = -1;
+						List<Pes> innerFrameList = new ArrayList<Pes>();
+						FileChannel fc = new FileOutputStream("test" + (++counter) + ".ts").getChannel();
+						fc.write(sdt.getBuffer());
+						fc.write(pat.getBuffer());
+						fc.write(pmt.getBuffer());
 						while(true) {
-							// 次のmpegtsの値が決定しないと、audioDataの取得すべきデータ量が決まらない。
 							Pes videoPes = videoData.shift();
-							break;
+							if(videoPes == null) {
+								break;
+							}
+							if(videoPes.isPayloadUnitStart()) {
+								if(videoPes.isAdaptationFieldExist() && videoPes.getAdaptationField().getRandomAccessIndicator() == 1) {
+									// キーフレーム
+									if(!keyFrame) {
+										// すでに別のフレームの確認結果だった場合
+										// このキーフレームは次の処理で対処すべき
+										frameEndPts = videoPes.getPts().getPts();
+										// データは返しておく。
+										videoData.unshift(videoPes);
+										break;
+									}
+								}
+								else {
+									keyFrame = false;
+								}
+							}
+							fc.write(videoPes.getBuffer());
 						}
-						// h264のinnerFrameとなるPesデータについて取得する。
-						// aacの内部に挿入すべきデータを取得する。
-						// h264のkey用データを書き込む
-						// aacのpesを書き込む
-						// h264のinner用データを書き込む
-						// おわり。 
-						System.exit(0);
+						long audioStartPts = audioData.getFirstDataPts();
+						List<IAudioData> aDataList = new ArrayList<IAudioData>();
+						int size = 0;
+						while(true) {
+							IAudioData aData = audioData.shift();
+							// 残りのデータの先頭データのptsが動画frameのptsを超した場合、とりすぎとなる。
+							if(aData == null || audioData.getFirstDataPts() > frameEndPts) {
+								audioData.unshift(aData);
+								break;
+							}
+							size += aData.getSize();
+							aDataList.add(aData);
+						}
+						ByteBuffer buf =ByteBuffer.allocate(size);
+						for(IAudioData aData : aDataList) {
+							buf.put(aData.getRawData());
+						}
+						buf.flip();
+						// audio用のpesを作成する。
+						Pes audioPes = new Pes(audioData.getCodecType(), audioData.isPcr(), true, audioData.getPid(), buf, audioStartPts);
+						do {
+							fc.write(audioPes.getBuffer());
+						}
+						while((audioPes = audioPes.nextPes()) != null);
+						fc.close();
+						passedPts = frameEndPts;
+//						System.exit(0);
 					}
 				}
 			}
 			buffer.position(readChannel.position());
 		}
 		catch(Exception e) {
-			logger.error(e);
+			logger.error("", e);
+			System.exit(0);
 		}
 		// 処理中のパケットデータを参照
 		// 処理中のパケットデータがなければ、新しいパケットデータを作成
