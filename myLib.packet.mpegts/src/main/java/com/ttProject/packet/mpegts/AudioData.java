@@ -27,8 +27,17 @@ public class AudioData extends MediaData {
 	private final List<Pes> pesList = new ArrayList<Pes>();
 	/** 分解後のIAudioDataリスト */
 	private final List<IAudioData> audioDataList = new ArrayList<IAudioData>();
-	private long counter = 0; // 開始位置からの保持データ量
-	private long startPos = -1; // データ開始位置のpts
+	/** 経過サンプル数 */
+	private long counter = 0;
+	/** 転送済みのサンプル数 */
+	private long sendedCounter = 0;
+	/** データ開始位置のpts */
+	private long startPos = -1;
+	/** データのサンプルレート */
+	private int sampleRate = 44100;
+	/**
+	 * pesの中身を解析します
+	 */
 	@Override
 	public void analyzePes(Pes pes) {
 		if(!checkPes(pes)) {
@@ -67,11 +76,36 @@ public class AudioData extends MediaData {
 		pesList.add(pes);
 	}
 	/**
-	 * ptsにしたときに現在たまっているaudioデータ量を応答します。
+	 * 先頭データを取り出す。
+	 * @return
+	 */
+	public IAudioData shift() {
+		IAudioData audioData = audioDataList.remove(0);
+		sendedCounter += audioData.getSampleNum();
+		return audioData;
+	}
+	/**
+	 * 先頭にデータを追加
+	 * @param audioData
+	 */
+	public void unshift(IAudioData audioData) {
+		sendedCounter -= audioData.getSampleNum(); // 戻すサンプル数
+		audioDataList.add(0, audioData);
+	}
+	/**
+	 * 現在保持しているデータの終端pts値
 	 * @return
 	 */
 	@Override
-	public long getStackedDataPts() {
-		return startPos + (long)(counter * (90000D / 44100D));
+	public long getLastDataPts() {
+		return startPos + (long)(counter * (90000D / sampleRate));
+	}
+	/**
+	 * 現在保持しているデータの先頭pts値
+	 * @return
+	 */
+	@Override
+	public long getFirstDataPts() {
+		return startPos + (long)(sendedCounter * (90000D / sampleRate));
 	}
 }
