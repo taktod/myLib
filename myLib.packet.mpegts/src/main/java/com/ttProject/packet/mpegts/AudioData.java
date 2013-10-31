@@ -22,6 +22,7 @@ import com.ttProject.nio.channels.IReadChannel;
  */
 public class AudioData extends MediaData {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private final Logger logger = Logger.getLogger(AudioData.class);
 	/** 分解前のpesデータリスト(1パケット分だけ保持する形) */
 	private final List<Pes> pesList = new ArrayList<Pes>();
@@ -35,6 +36,13 @@ public class AudioData extends MediaData {
 	private long startPos = -1;
 	/** データのサンプルレート */
 	private int sampleRate = 44100;
+	/**
+	 * 保持データリストのサイズを参照して確認したかった。
+	 * @return
+	 */
+	public int getListCount() {
+		return audioDataList.size();
+	}
 	/**
 	 * pesの中身を解析します
 	 */

@@ -16,10 +16,12 @@ import com.ttProject.media.mpegts.packet.Pes;
  */
 public class VideoData extends MediaData {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private final Logger logger = Logger.getLogger(VideoData.class);
+	/** 映像のpesデータリスト */
 	private final List<Pes> videoPesList = new ArrayList<Pes>();
+	/** 映像のキーフレームのpesデータリスト(キーフレームの先頭の部分となります。) */
 	private final List<Pes> keyPesList = new ArrayList<Pes>();
-	private long lastPesPts = 0;
 	/**
 	 * pesデータを解析します。
 	 */
@@ -28,8 +30,6 @@ public class VideoData extends MediaData {
 		if(!checkPes(pes)) {
 			return;
 		}
-		// 自分用のデータなので対処しておく。
-//		logger.info("動画データ解析");
 		// pesデータはそのまま保持しておけばいいと思われる。
 		// 順番にいれていくだけ、
 		// ただしkeyFrameの位置だけは知っておく必要あり。
@@ -43,27 +43,33 @@ public class VideoData extends MediaData {
 				if(field.getRandomAccessIndicator() == 1) {
 					// キーフレームの位置となる。
 					keyPesList.add(pes);
-					// キーフレームの位置でのみ、ptsの更新を実施する。
-					lastPesPts = pes.getPts().getPts();
 				}
 			}
 		}
 	}
 	/**
 	 * 現在保持しているデータの終端pts値
-	 * @return
+	 * @return -1:存在しない。 数値:対象pts
 	 */
 	@Override
 	public long getLastDataPts() {
-		return lastPesPts;
+		Pes lastKeyFramePes = keyPesList.get(keyPesList.size() - 1);
+		if(lastKeyFramePes == null) {
+			return -1;
+		}
+		return lastKeyFramePes.getPts().getPts();
 	}
 	/**
 	 * 現在保持しているデータの先頭pts値
-	 * @return
+	 * @return -1:存在しない。 数値:対象pts
 	 */
 	@Override
 	public long getFirstDataPts() {
-		return -1;
+		Pes firstKeyFramePes = keyPesList.get(0);
+		if(firstKeyFramePes == null) {
+			return -1;
+		}
+		return firstKeyFramePes.getPts().getPts();
 	}
 	/**
 	 * 先頭を取り出す
