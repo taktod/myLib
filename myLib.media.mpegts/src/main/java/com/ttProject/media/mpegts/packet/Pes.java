@@ -110,7 +110,7 @@ public class Pes extends Packet {
 	private final boolean pcrFlg;
 	/** このエレメントのコーデック情報 */
 	private final CodecType codec;
-	
+
 	/** 保持している生データ */
 	// TODO 読み込み処理中にこのデータも作成すべき
 	private ByteBuffer rawData;
@@ -118,40 +118,44 @@ public class Pes extends Packet {
 	 * コンストラクタ
 	 * @param codec コーデック情報
 	 * @param pcrFlg pcrであるかのフラグ
+	 * @param randomAccessFlg ランダムにアクセス可能であるかフラグ
 	 * @param pid packetIdの値
 	 * @param rawData 内部で保持する生データ
 	 * @throws Exception
 	 */
-	public Pes(CodecType codec, boolean pcrFlg, short pid, ByteBuffer rawData) throws Exception {
-		this(codec, pcrFlg, pid, rawData, -1, -1);
+	public Pes(CodecType codec, boolean pcrFlg, boolean randomAccessFlg, short pid, ByteBuffer rawData) throws Exception {
+		this(codec, pcrFlg, randomAccessFlg, pid, rawData, -1, -1);
 	}
 	/**
 	 * コンストラクタ
 	 * @param codec コーデック情報
 	 * @param pcrFlg pcrであるかのフラグ
+	 * @param randomAccessFlg ランダムにアクセス可能であるかフラグ
 	 * @param pid packetIdの値
 	 * @param rawData 内部で保持する生データ
 	 * @param presentationTimestamp pts
 	 * @throws Exception
 	 */
-	public Pes(CodecType codec, boolean pcrFlg, short pid, ByteBuffer rawData, long presentationTimestamp) throws Exception {
-		this(codec, pcrFlg, pid, rawData, presentationTimestamp, -1);
+	public Pes(CodecType codec, boolean pcrFlg, boolean randomAccessFlg, short pid, ByteBuffer rawData, long presentationTimestamp) throws Exception {
+		this(codec, pcrFlg, randomAccessFlg, pid, rawData, presentationTimestamp, -1);
 	}
 	/**
 	 * 
 	 * @param codec コーデック情報
 	 * @param pcrFlg pcrであるかフラグ
+	 * @param randomAccessFlg ランダムにアクセス可能であるかフラグ
 	 * @param pid packetIdの値
 	 * @param rawData 内部で保持する生データ
 	 * @param presentationTimestamp pts
 	 * @param decodeTimestamp dts
 	 * @throws Exception
 	 */
-	public Pes(CodecType codec, boolean pcrFlg, short pid, ByteBuffer rawData, long presentationTimestamp, long decodeTimestamp) throws Exception {
+	public Pes(CodecType codec, boolean pcrFlg, boolean randomAccessFlg, short pid, ByteBuffer rawData, long presentationTimestamp, long decodeTimestamp) throws Exception {
 		super(0);
 		this.codec = codec;
 		this.pcrFlg = pcrFlg;
-		setupDefault(pid); // デフォルトを設定しておく。
+		// keyFrameか音声データの場合はrandomAccessFlgをつけておきたいところ
+		setupDefault(pid, randomAccessFlg); // デフォルトを設定しておく。
 		this.rawData = rawData.duplicate(); // コピーでデータを保持しておく。
 		setPesPacketLength((short)rawData.remaining());
 		// pts
@@ -172,6 +176,7 @@ public class Pes extends Packet {
 				ptsDtsIndicator = new Bit2(2);
 			}
 		}
+		checkLength(false);
 	}
 	/**
 	 * コンストラクタ
@@ -214,7 +219,7 @@ public class Pes extends Packet {
 	 * @param pid
 	 * @throws Exception
 	 */
-	public void setupDefault(short pid) throws Exception {
+	public void setupDefault(short pid, boolean randomAccessFlg) throws Exception {
 		// 初期化します。
 		byte b1 = (byte)(0x40 | (pid >>> 8));
 		byte b2 = (byte)(pid & 0xFF);
@@ -224,7 +229,7 @@ public class Pes extends Packet {
 		if(isPcr()) {
 			// pcrがある場合はadaptationField(pcr付きということにしておく)
 			analyzeHeader(new ByteReadChannel(new byte[]{
-					0x47, b1, b2, 0x30, 0x07, 0x50, 0x00, 0x00, 0x00, 0x00, 0x7E, 0x00
+					0x47, b1, b2, 0x30, 0x07, 0x10, 0x00, 0x00, 0x00, 0x00, 0x7E, 0x00
 			}));
 		}
 		else {
@@ -232,6 +237,10 @@ public class Pes extends Packet {
 			analyzeHeader(new ByteReadChannel(new byte[]{
 					0x47, b1, b2, 0x10
 			}));
+		}
+		if(randomAccessFlg) {
+			setAdaptationFieldExist(1);
+			getAdaptationField().setRandomAccessIndicator(1);
 		}
 		prefix = 0x000001;
 		// コーデック情報をベースに動作をきめていく。
@@ -252,7 +261,7 @@ public class Pes extends Packet {
 		copyright = new Bit1(0);
 		originFlg = new Bit1(0); // originalをなのっておく。
 
-		ptsDtsIndicator = new Bit2(2);
+		ptsDtsIndicator = new Bit2(0);
 		escrFlag = new Bit1(0);
 		esRateFlag = new Bit1(0);
 		DSMTrickModeFlag = new Bit1(0);
@@ -358,42 +367,44 @@ public class Pes extends Packet {
 	@Override
 	public List<Bit> getBits() {
 		List<Bit> list = super.getBits();
-		list.add(new Bit8(prefix >>> 16));
-		list.add(new Bit8(prefix >>> 8));
-		list.add(new Bit8(prefix));
-		list.add(streamId);
-		list.add(new Bit8(pesPacketLength >>> 8));
-		list.add(new Bit8(pesPacketLength));
-		list.add(markerBits);
-		list.add(scramblingControl);
-		list.add(priority);
-		list.add(dataAlignmentIndicator);
-		list.add(copyright);
-		list.add(originFlg);
-		list.add(ptsDtsIndicator);
-		list.add(escrFlag);
-		list.add(esRateFlag);
-		list.add(DSMTrickModeFlag);
-		list.add(additionalCopyInfoFlag);
-		list.add(CRCFlag);
-		list.add(extensionFlag);
-		list.add(PESHeaederLength);
-		switch(ptsDtsIndicator.get()) {
-		case 0x03:
-			// ptsもdtsもある場合
-			pts.setSignature(new Bit4(3));
-			list.addAll(pts.getBits());
-			dts.setSignature(new Bit4(1));
-			list.addAll(dts.getBits());
-			break;
-		case 0x02:
-			// ptsのみの場合
-			pts.setSignature(new Bit4(2));
-			list.addAll(pts.getBits());
-			break;
-		default:
-			// なにもなし。
-			break;
+		if(isPayloadUnitStart()) {
+			list.add(new Bit8(prefix >>> 16));
+			list.add(new Bit8(prefix >>> 8));
+			list.add(new Bit8(prefix));
+			list.add(streamId);
+			list.add(new Bit8(pesPacketLength >>> 8));
+			list.add(new Bit8(pesPacketLength));
+			list.add(markerBits);
+			list.add(scramblingControl);
+			list.add(priority);
+			list.add(dataAlignmentIndicator);
+			list.add(copyright);
+			list.add(originFlg);
+			list.add(ptsDtsIndicator);
+			list.add(escrFlag);
+			list.add(esRateFlag);
+			list.add(DSMTrickModeFlag);
+			list.add(additionalCopyInfoFlag);
+			list.add(CRCFlag);
+			list.add(extensionFlag);
+			list.add(PESHeaederLength);
+			switch(ptsDtsIndicator.get()) {
+			case 0x03:
+				// ptsもdtsもある場合
+				pts.setSignature(new Bit4(3));
+				list.addAll(pts.getBits());
+				dts.setSignature(new Bit4(1));
+				list.addAll(dts.getBits());
+				break;
+			case 0x02:
+				// ptsのみの場合
+				pts.setSignature(new Bit4(2));
+				list.addAll(pts.getBits());
+				break;
+			default:
+				// なにもなし。
+				break;
+			}
 		}
 		return list;
 	}
@@ -415,89 +426,26 @@ public class Pes extends Packet {
 		if(counter == null) {
 			counter = 0;
 		}
-		setContinuityCounter(counter ++);
+		setContinuityCounter(counter);
+		counter ++;
 		counterMap.put((int)getPid(), counter);
-		if(rawData.position() == 0) {
-			// 初めてのアクセスの場合
-			setPayloadUnitStartIndicator(1); // payloadの開始フラグをたてておく。
-			List<Bit> bitsList = getBits();
-			buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
-			int left = buffer.limit() - buffer.position();
-			if(left > rawData.remaining()) { // データが足りなさそうな場合はやり直す。
-				// rawDataのサイズが小さくて1パケットうまらない場合
-				// adaptationFieldが設定されていないはずのデータである可能性もあるので、その場合は調整する必要がある。
-				boolean isAdaptationFieldExist = isAdaptationFieldExist();
-				if(!isAdaptationFieldExist) {
-					AdaptationField dummy = new AdaptationField();
-					setAdaptationField(dummy);
-					setAdaptationFieldExist(1);
-				}
-				buffer = ByteBuffer.allocate(188);
-				getAdaptationField().setLength(getAdaptationField().getLength() + left - rawData.remaining());
-				bitsList = getBits();
-				buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
-				left = buffer.limit() - buffer.position();
-				// もともとadaptationFieldがなければとりさっておく。
-				if(!isAdaptationFieldExist) {
-					setAdaptationFieldExist(0);
-				}
-			}
-			byte[] data = new byte[left];
-			rawData.get(data);
-			buffer.put(data);
-			buffer.flip();
-			return buffer;
-		}
-		else {
-			// payloadの開始位置ではないので、offにしとく
-			setPayloadUnitStartIndicator(0);
-			// 中途アクセスの場合
-			if(rawData.remaining() <= 183) {
-				// 今回で完結できる場合
-				AdaptationField afield = getAdaptationField();
-				AdaptationField dummy = new AdaptationField();
-				setAdaptationField(dummy);
-				setAdaptationFieldExist(1);
-				if(rawData.remaining() == 183) {
-					// 今回で完結できないけど、adaptationFieldの設定が必要な場合
-					dummy.setLength(1);
-					// データをつくる
-					List<Bit> bitsList = super.getBits();
-					buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
-					// 182バイトデータが書き込めるはず。
-					byte[] data = new byte[182];
-					rawData.get(data);
-					buffer.put(data);
-				}
-				else {
-					dummy.setLength(183 - rawData.remaining());
-					List<Bit> bitsList = super.getBits();
-					buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
-					// データをつくる
-					buffer.put(rawData);
-				}
-				// おわったらfieldを戻しておく
-				buffer.flip();
-				setAdaptationField(afield);
-				return buffer;
-			}
-			else {
-				// そのままデータがはいっていればよい場合
-				// adaptationFieldもないとします。
-				setAdaptationFieldExist(0);
-				List<Bit> bitsList = super.getBits();
-				buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
-				// 残りのデータを書き込んでおく。
-				byte[] data = new byte[184];
-				rawData.get(data);
-				buffer.put(data);
-				buffer.flip();
-				return buffer;
-			}
-		}
+
+		// bitデータを書き込む
+		List<Bit> bitsList = getBits();
+		buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
+		// データを書き込む
+		int left = 188 - buffer.position();
+		byte[] data = new byte[left];
+		rawData.get(data);
+		buffer.put(data);
+		buffer.flip();
+		return buffer;
 	}
 	public void setPesPacketLength(short length) {
 		pesPacketLength = length;
+	}
+	public short getPesPacketLength() {
+		return pesPacketLength;
 	}
 	public void setPts(PtsField pts) {
 		this.pts = pts;
@@ -517,16 +465,6 @@ public class Pes extends Packet {
 	 */
 	public ByteBuffer getRawData() {
 		return rawData.duplicate();
-	}
-	public String dump3() {
-		StringBuilder data = new StringBuilder();
-		if(pts != null) {
-			data.append(pts);
-		}
-		if(dts != null) {
-			data.append(dts);
-		}
-		return data.toString();
 	}
 	public PtsField getPts() {
 		return pts;
@@ -562,5 +500,58 @@ public class Pes extends Packet {
 			}
 		}
 		return data.toString();
+	}
+	/**
+	 * 応答データの長さについて調査して、adaptationFieldとかを調整しておく。
+	 * @param nextFlg
+	 */
+	private void checkLength(boolean nextFlg) {
+		int length = 0;
+		length += 4;
+		// adaptationFieldの部分(任意)
+		if(isAdaptationFieldExist()) {
+			AdaptationField adaptationField = getAdaptationField();
+			if(nextFlg) {
+				adaptationField.setLength(1);
+			}
+			length += adaptationField.getLength() + 1;
+		}
+		if(isPayloadUnitStart()) {
+			// prefix 3byte
+			length += 3;
+			// streamId 1byte
+			length += 1;
+			// pesPacketLength 2byte
+			length += 2;
+			// bitflags 2byte
+			length += 2;
+			// pesHeaderLength 1byte
+			length += 1;
+			// pesHeader実態 pesHeaderLength byte
+			length += PESHeaederLength.get();
+		}
+		// はじめそのままいれれそうなデータ量
+		if(188 - length > pesPacketLength) {
+			// このパケットで埋め完了しそうな場合
+			// ここで完了しそうなんだけど、adaptationFieldを追加したら完了できなくなるというシナリオもあり。
+			if(!isAdaptationFieldExist()) {
+				setAdaptationFieldExist(1);
+			}
+			AdaptationField adaptationField = getAdaptationField();
+			adaptationField.setLength(adaptationField.getLength() + 188 - length - pesPacketLength);
+		}
+	}
+	/**
+	 * 次のデータを応答します
+	 */
+	public Pes nextPes() throws Exception {
+		// まだデータがあるか確認
+		if(rawData.remaining() == 0) {
+			return null;
+		}
+		Pes nextPes = new Pes(codec, isPcr(), false, getPid(), rawData);
+		nextPes.setPayloadUnitStartIndicator(0);
+		nextPes.checkLength(true);
+		return nextPes;
 	}
 }
