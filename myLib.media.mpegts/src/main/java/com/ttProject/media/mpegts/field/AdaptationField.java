@@ -34,7 +34,12 @@ public class AdaptationField {
 	private long opcrBase; // 33bit 90KHz表示
 	private Bit6 opcrPadding;
 	private short opcrExtension; // 9bit 27MHz
-
+	public boolean hasPcr() {
+		return pcrFlag.get() == 1;
+	}
+	public long getPcrBase() {
+		return pcrBase;
+	}
 	public AdaptationField() {
 		adaptationFieldLength = new Bit8(0);
 		discontinuityIndicator = new Bit1(0);
@@ -148,6 +153,9 @@ public class AdaptationField {
 		List<Bit> list = new ArrayList<Bit>();
 		int length = adaptationFieldLength.get();
 		list.add(adaptationFieldLength);
+		if(length == 0) {
+			return list;
+		}
 		list.add(discontinuityIndicator);
 		list.add(randomAccessIndicator);
 		list.add(elementaryStreamPriorityIndicator);
@@ -192,39 +200,6 @@ public class AdaptationField {
 		StringBuilder data = new StringBuilder();
 		data.append(" ");
 		data.append("adaptationField:");
-		data.append(" afl:").append(Integer.toHexString(adaptationFieldLength.get()));
-		if(adaptationFieldLength.get() != 0) {
-			data.append(" di:").append(discontinuityIndicator);
-			data.append(" rai:").append(randomAccessIndicator);
-			data.append(" espi:").append(elementaryStreamPriorityIndicator);
-			data.append(" pf:").append(pcrFlag);
-			data.append(" of:").append(opcrFlag);
-			data.append(" spf:").append(splicingPointFlag);
-			data.append(" tpdf:").append(transportPrivateDataFlag);
-			data.append(" afef:").append(adaptationFieldExtensionFlag);
-			if(pcrFlag.get() != 0x00) {
-				data.append("[pcrBase:").append(Long.toHexString(pcrBase))
-					.append("(").append(pcrBase / 90000f).append("sec)");
-				data.append(" pcrPadding:").append(pcrPadding);
-				data.append(" pcrExtension:").append(pcrExtension);
-				data.append("]");
-			}
-			if(opcrFlag.get() != 0x00) {
-				data.append("[opcrBase:").append(Long.toHexString(opcrBase))
-					.append("(").append(opcrBase / 90000f).append("sec)");
-				data.append(" opcrPadding:").append(opcrPadding);
-				data.append(" opcrExtension:").append(opcrExtension);
-				data.append("]");
-			}
-		}
-		return data.toString();
-	}
-	/**
-	 * 
-	 * @return
-	 */
-	public String dump() {
-		StringBuilder data = new StringBuilder("adaptationField:");
 		data.append(" afl:").append(Integer.toHexString(adaptationFieldLength.get()));
 		if(adaptationFieldLength.get() != 0) {
 			data.append(" di:").append(discontinuityIndicator);
