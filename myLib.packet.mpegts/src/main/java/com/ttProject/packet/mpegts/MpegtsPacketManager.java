@@ -9,10 +9,10 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.ttProject.media.IAudioData;
-import com.ttProject.media.mpegts.CodecType;
 import com.ttProject.media.mpegts.IPacketAnalyzer;
 import com.ttProject.media.mpegts.Packet;
 import com.ttProject.media.mpegts.PacketAnalyzer;
+import com.ttProject.media.mpegts.field.AdaptationField;
 import com.ttProject.media.mpegts.field.PmtElementaryField;
 import com.ttProject.media.mpegts.packet.Pat;
 import com.ttProject.media.mpegts.packet.Pes;
@@ -110,11 +110,12 @@ public class MpegtsPacketManager extends MediaPacketManager {
 						
 						boolean keyFrame = true; // keyFrameデータフラグ
 						long frameEndPts = -1;
-						List<Pes> innerFrameList = new ArrayList<Pes>();
+						// TODO とりあえずここで分割tsを仮につくってみる。
 						FileChannel fc = new FileOutputStream("test" + (++counter) + ".ts").getChannel();
 						fc.write(sdt.getBuffer());
 						fc.write(pat.getBuffer());
 						fc.write(pmt.getBuffer());
+						// 映像の間にいい感じに音声データを挟めばいいはず。pcrや時間の同期に注意といったところか？
 						while(true) {
 							Pes videoPes = videoData.shift();
 							if(videoPes == null) {
@@ -135,12 +136,19 @@ public class MpegtsPacketManager extends MediaPacketManager {
 								else {
 									keyFrame = false;
 								}
+								// PCRのデータは書き直してやった方がいいのだろうか？
+								if(videoPes.isAdaptationFieldExist()) {
+									AdaptationField afield = videoPes.getAdaptationField();
+									afield.setPcrBase(videoPes.getPts().getPts());
+								}
 							}
 							fc.write(videoPes.getBuffer());
 						}
-						long audioStartPts = audioData.getFirstDataPts();
+						// audioのpts値を計算する。(1足す必要はなさそう。)
+						long audioStartPts = audioData.getFirstDataPts() + 1;
 						List<IAudioData> aDataList = new ArrayList<IAudioData>();
 						int size = 0;
+						// ここはおおいに改良の余地あり。とりあえず時間同期がややこしいが・・・
 						while(true) {
 							IAudioData aData = audioData.shift();
 							// 残りのデータの先頭データのptsが動画frameのptsを超した場合、とりすぎとなる。
@@ -150,18 +158,36 @@ public class MpegtsPacketManager extends MediaPacketManager {
 							}
 							size += aData.getSize();
 							aDataList.add(aData);
+/*							if(size > 0x1000) {
+								ByteBuffer buf =ByteBuffer.allocate(size);
+								for(IAudioData aD : aDataList) {
+									buf.put(aD.getRawData());
+								}
+								buf.flip();
+								// audio用のpesを作成する。
+								Pes audioPes = new Pes(audioData.getCodecType(), audioData.isPcr(), true, audioData.getPid(), buf, audioStartPts);
+								do {
+									fc.write(audioPes.getBuffer());
+								}
+								while((audioPes = audioPes.nextPes()) != null);
+								size = 0;
+								aDataList.clear();
+								audioStartPts = audioData.getFirstDataPts();
+							}*/
 						}
-						ByteBuffer buf =ByteBuffer.allocate(size);
-						for(IAudioData aData : aDataList) {
-							buf.put(aData.getRawData());
+						if(size > 0) {
+							ByteBuffer buf =ByteBuffer.allocate(size);
+							for(IAudioData aData : aDataList) {
+								buf.put(aData.getRawData());
+							}
+							buf.flip();
+							// audio用のpesを作成する。
+							Pes audioPes = new Pes(audioData.getCodecType(), audioData.isPcr(), true, audioData.getPid(), buf, audioStartPts);
+							do {
+								fc.write(audioPes.getBuffer());
+							}
+							while((audioPes = audioPes.nextPes()) != null);
 						}
-						buf.flip();
-						// audio用のpesを作成する。
-						Pes audioPes = new Pes(audioData.getCodecType(), audioData.isPcr(), true, audioData.getPid(), buf, audioStartPts);
-						do {
-							fc.write(audioPes.getBuffer());
-						}
-						while((audioPes = audioPes.nextPes()) != null);
 						fc.close();
 						passedPts = frameEndPts;
 //						System.exit(0);
