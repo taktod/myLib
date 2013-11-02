@@ -61,7 +61,7 @@ public class Pes extends Packet {
 	private static Map<Integer, Integer> counterMap = new HashMap<Integer, Integer>();
 	private int prefix; // 3バイト 0x000001固定
 	private Bit8 streamId; // audioなら0xC0 - 0xDF videoなら0xE0 - 0xEF通常は0xC0もしくは0xE0(トラックが１つずつしかないため)
-	private short pesPacketLength; // 2バイト
+	private short pesPacketLength; // 2バイト(この値はpesの以下のデータも含んだデータ長になる必要がある。)
 	private Bit2 markerBits; // 10固定
 	private Bit2 scramblingControl; // 00
 	private Bit1 priority; // 0
@@ -157,13 +157,15 @@ public class Pes extends Packet {
 		// keyFrameか音声データの場合はrandomAccessFlgをつけておきたいところ
 		setupDefault(pid, randomAccessFlg); // デフォルトを設定しておく。
 		this.rawData = rawData.duplicate(); // コピーでデータを保持しておく。
-		setPesPacketLength((short)rawData.remaining());
+//		setPesPacketLength((short)rawData.remaining());
+		setPesPacketLength((short)(rawData.remaining() + 3));
 		// pts
 		if(presentationTimestamp != -1) {
 			PtsField pts = new PtsField();
 			pts.setPts(presentationTimestamp);
 			setPts(pts);
 			PESHeaederLength.set(PESHeaederLength.get() + 5); // pts分データ量が増える
+			setPesPacketLength((short)(getPesPacketLength() + 5));
 			// dts
 			if(decodeTimestamp != -1) {
 				ptsDtsIndicator = new Bit2(3);
@@ -171,6 +173,7 @@ public class Pes extends Packet {
 				dts.setDts(decodeTimestamp);
 				setDts(dts);
 				PESHeaederLength.set(PESHeaederLength.get() + 5); // dts分データ量が増える
+				setPesPacketLength((short)(getPesPacketLength() + 5));
 			}
 			else {
 				ptsDtsIndicator = new Bit2(2);
@@ -531,14 +534,15 @@ public class Pes extends Packet {
 			length += PESHeaederLength.get();
 		}
 		// はじめそのままいれれそうなデータ量
-		if(188 - length > pesPacketLength) {
+		int rawDataLength = pesPacketLength - 3 - PESHeaederLength.get();
+		if(188 - length > rawDataLength) {
 			// このパケットで埋め完了しそうな場合
 			// ここで完了しそうなんだけど、adaptationFieldを追加したら完了できなくなるというシナリオもあり。
 			if(!isAdaptationFieldExist()) {
 				setAdaptationFieldExist(1);
 			}
 			AdaptationField adaptationField = getAdaptationField();
-			adaptationField.setLength(adaptationField.getLength() + 188 - length - pesPacketLength);
+			adaptationField.setLength(adaptationField.getLength() + 188 - length - rawDataLength);
 		}
 	}
 	/**
