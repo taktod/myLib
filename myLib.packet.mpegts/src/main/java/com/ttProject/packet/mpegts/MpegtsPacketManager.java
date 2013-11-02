@@ -2,7 +2,6 @@ package com.ttProject.packet.mpegts;
 
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,13 +53,22 @@ public class MpegtsPacketManager extends MediaPacketManager {
 	// analyzerは外にだしておかないと、初期化時のデータがなくなってエラーになることがあるっぽいですね。
 	private IPacketAnalyzer analyzer = new PacketAnalyzer();
 	private int counter = 0;
+	private FileOutputStream fos = null;
+	protected void finalize() throws Throwable {
+		if(fos == null) {
+			try {
+				fos.close();
+			}
+			catch(Exception e) {
+			}
+			fos = null;
+		}
+	}
 	/**
 	 * パケットの内容を解析して、必要な時間分のデータ(Packetを応答します)
 	 */
 	@Override
 	protected IMediaPacket analizePacket(ByteBuffer buffer) {
-		logger.info("analyzePacket here...:" + buffer.remaining());
-//		logger.info(HexUtil.toHex(buffer.duplicate(), 0, 20, true));
 		IReadChannel readChannel = new ByteReadChannel(buffer);
 		Packet packet = null;
 		try {
@@ -103,25 +111,60 @@ public class MpegtsPacketManager extends MediaPacketManager {
 					long targetDuration = passedPts + (long)(90000 * getDuration());
 					if(targetDuration < videoData.getLastDataPts()
 					&& targetDuration < audioData.getLastDataPts()) {
-						// 音声も映像もduration分以上たまったので・・・ファイルに吐いてOK
-						logger.info(targetDuration);
-						logger.info(videoData.getLastDataPts());
-						logger.info(audioData.getLastDataPts());
-						
 						boolean keyFrame = true; // keyFrameデータフラグ
 						long frameEndPts = -1;
 						// TODO とりあえずここで分割tsを仮につくってみる。
-						FileChannel fc = new FileOutputStream("test" + (++counter) + ".ts").getChannel();
-						fc.write(sdt.getBuffer());
-						fc.write(pat.getBuffer());
-						fc.write(pmt.getBuffer());
+//						if(fos == null) {
+//							fos = new FileOutputStream("test_made.ts");
+							fos = new FileOutputStream("test" + (++ counter) + ".ts");
+//						}
+						logger.info("counter:" + counter);
+						fos.getChannel().write(sdt.getBuffer());
+						fos.getChannel().write(pat.getBuffer());
+						fos.getChannel().write(pmt.getBuffer());
 						// 映像の間にいい感じに音声データを挟めばいいはず。pcrや時間の同期に注意といったところか？
+						long audioStartPts = audioData.getFirstDataPts();
+						List<IAudioData> aDataList = new ArrayList<IAudioData>();
+						int size = 0;
 						while(true) {
 							Pes videoPes = videoData.shift();
 							if(videoPes == null) {
 								break;
 							}
 							if(videoPes.isPayloadUnitStart()) {
+								// payloadUnitがおわったところで、audioデータを集めて必要なデータがあるか見ておきたい。
+								if(!keyFrame) {
+									// キーフレームの位置の検索がおわっている場合audioの処理を実行する。
+									while(true) {
+										IAudioData aData = audioData.shift();
+										if(aData == null || audioData.getFirstDataPts() > videoPes.getPts().getPts()) {
+											// audioDataがなくなった場合もしくは、videoPesを超えた場合は、データを戻しておく。
+											if(aData != null) {
+												audioData.unshift(aData);
+											}
+											// たまっているデータがある程度以上だったら、書き込みを実行する。
+											if(size > 0x1000) {
+												ByteBuffer buf =ByteBuffer.allocate(size);
+												for(IAudioData aD : aDataList) {
+													buf.put(aD.getRawData());
+												}
+												buf.flip();
+												// audio用のpesを作成する。
+												Pes audioPes = new Pes(audioData.getCodecType(), audioData.isPcr(), true, audioData.getPid(), buf, audioStartPts);
+												do {
+													fos.getChannel().write(audioPes.getBuffer());
+												}
+												while((audioPes = audioPes.nextPes()) != null);
+												aDataList.clear();
+												size = 0;
+												audioStartPts = audioData.getFirstDataPts();
+											}
+											break;
+										}
+										size += aData.getSize();
+										aDataList.add(aData);
+									}
+								}
 								if(videoPes.isAdaptationFieldExist() && videoPes.getAdaptationField().getRandomAccessIndicator() == 1) {
 									// キーフレーム
 									if(!keyFrame) {
@@ -132,6 +175,7 @@ public class MpegtsPacketManager extends MediaPacketManager {
 										videoData.unshift(videoPes);
 										break;
 									}
+									logger.info(videoPes.getPts());
 								}
 								else {
 									keyFrame = false;
@@ -142,14 +186,14 @@ public class MpegtsPacketManager extends MediaPacketManager {
 									afield.setPcrBase(videoPes.getPts().getPts());
 								}
 							}
-							fc.write(videoPes.getBuffer());
+							fos.getChannel().write(videoPes.getBuffer());
 						}
 						// audioのpts値を計算する。(1足す必要はなさそう。)
-						long audioStartPts = audioData.getFirstDataPts() + 1;
-						List<IAudioData> aDataList = new ArrayList<IAudioData>();
-						int size = 0;
+//						long audioStartPts = audioData.getFirstDataPts();
+//						List<IAudioData> aDataList = new ArrayList<IAudioData>();
+//						int size = 0;
 						// ここはおおいに改良の余地あり。とりあえず時間同期がややこしいが・・・
-						while(true) {
+/*						while(true) {
 							IAudioData aData = audioData.shift();
 							// 残りのデータの先頭データのptsが動画frameのptsを超した場合、とりすぎとなる。
 							if(aData == null || audioData.getFirstDataPts() > frameEndPts) {
@@ -173,8 +217,9 @@ public class MpegtsPacketManager extends MediaPacketManager {
 								size = 0;
 								aDataList.clear();
 								audioStartPts = audioData.getFirstDataPts();
-							}*/
-						}
+							}* /
+						}*/
+						// この書き方だと、audioBufferが大きすぎることがありそう。
 						if(size > 0) {
 							ByteBuffer buf =ByteBuffer.allocate(size);
 							for(IAudioData aData : aDataList) {
@@ -184,11 +229,14 @@ public class MpegtsPacketManager extends MediaPacketManager {
 							// audio用のpesを作成する。
 							Pes audioPes = new Pes(audioData.getCodecType(), audioData.isPcr(), true, audioData.getPid(), buf, audioStartPts);
 							do {
-								fc.write(audioPes.getBuffer());
+								fos.getChannel().write(audioPes.getBuffer());
 							}
 							while((audioPes = audioPes.nextPes()) != null);
 						}
-						fc.close();
+						if(fos != null) {
+							fos.close();
+							fos = null;
+						}
 						passedPts = frameEndPts;
 //						System.exit(0);
 					}
