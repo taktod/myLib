@@ -28,6 +28,8 @@ import com.ttProject.packet.MediaPacketManager;
  * このパケットデータが指定された秒数分のファイルデータとなります。
  * Sdt Pat Pmt [keyFrame Audio innerFrame] [keyFrame Audio innerFrame]
  * となるようにしておきたいと思います。
+ * この動作って、mpegtsの入力からmpegtsを作り出すものなので、xuggleとかつかった場合は
+ * rawDataからmpegtsをつくる動作がほしくなるわけか・・・
  * @author taktod
  */
 public class MpegtsPacketManager extends MediaPacketManager {
@@ -65,10 +67,168 @@ public class MpegtsPacketManager extends MediaPacketManager {
 		}
 	}
 	/**
-	 * パケットの内容を解析して、必要な時間分のデータ(Packetを応答します)
+	 * パケットの内容を解析して必要な時間分のデータ(Packet)を応答します。
 	 */
 	@Override
 	protected IMediaPacket analizePacket(ByteBuffer buffer) {
+		IReadChannel readChannel = new ByteReadChannel(buffer);
+		Packet packet = null;
+		try {
+			// mpegtsのパケットについて調査しておく
+			while((packet = analyzer.analyze(readChannel)) != null) {
+				if(packet instanceof Pat) {
+					analyzePat((Pat)packet);
+				}
+				else if(packet instanceof Pmt) {
+					analyzePmt((Pmt)packet);
+				}
+				else if(packet instanceof Pes) {
+					analyzePes((Pes)packet);
+				}
+			}
+		}
+		catch(Exception e) {
+			
+		}
+		return null;
+	}
+	/**
+	 * patについて処理する
+	 * @param pat
+	 */
+	private void analyzePat(Pat pat) {
+		// pat指定がはじめての場合のみ受け入れる
+		if(this.pat != null) {
+			return;
+		}
+		this.pat = pat;
+	}
+	/**
+	 * pmtについて処理する
+	 * @param pmt
+	 */
+	private void analyzePmt(Pmt pmt) throws Exception {
+		// pmt指定がはじめての場合のみ受け入れる
+		if(this.pmt != null) {
+			return;
+		}
+		this.pmt = pmt;
+		for(PmtElementaryField field : pmt.getFields()) {
+			// pidとコーデック情報を保持
+			switch(field.getCodecType()) {
+			case VIDEO_H264:
+				videoData.analyzePmt(pmt, field);
+				break;
+			case AUDIO_AAC:
+			case AUDIO_MPEG1:
+				audioData.analyzePmt(pmt, field);
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	/**
+	 * pesについて解析する。
+	 * @param pes
+	 * @throws Exception
+	 */
+	private void analyzePes(Pes pes) throws Exception {
+		// 処理済みpts値がまだ決まっていない場合は現在値を代入しておく。
+		videoData.analyzePes(pes);
+		audioData.analyzePes(pes);
+		if(passedPts == -1) {
+			if(!pes.hasPts()) {
+				throw new Exception("ptsのない状態から開始しました。");
+			}
+			passedPts = pes.getPts().getPts();
+		}
+		long targetDuration = passedPts + (long)(90000L * getDuration());
+		if(targetDuration < videoData.getLastDataPts()
+		&& targetDuration < audioData.getLastDataPts()) {
+			// 音声も映像も必要分以上データがたまっている場合
+			// sdtを書き込む
+			// patを書き込む
+			// pmtを書き込む
+			// keyframeとそれに従うデータをパケット化しておく。
+			makeKeyFrameUnit();
+		}
+	}
+	private void makeKeyFrameUnit() throws Exception {
+		
+		// 映像のフレームを書き込む
+		boolean isFirst = true; // 発動作フラグ
+		// 補完する音声フレームを書き込む(ある程度以上にならない場合はスキップ)
+		long audioStartPts = audioData.getFirstDataPts();
+		List<IAudioData> audioDataList = new ArrayList<IAudioData>();
+		int audioSize = 0;
+		Pes videoPes = null;
+		while((videoPes = videoData.shift()) != null) {
+			if(videoPes.isPayloadUnitStart()) {
+				// payloadUnitの開始位置の場合
+				if(!isFirst) {
+					while(true) {
+						IAudioData aData = audioData.shift();
+						if(aData == null || audioData.getFirstDataPts() > videoPes.getPts().getPts()) {
+							if(aData != null) {
+								audioData.unshift(aData);
+							}
+							// たまったサイズを確認して書き込みを実行
+							if(audioSize > 0x1000) {
+								// 書き込み実行
+								ByteBuffer buf = ByteBuffer.allocate(audioSize);
+								for(IAudioData aD : audioDataList) {
+									buf.put(aD.getRawData());
+								}
+								buf.flip();
+								Pes audioPes = new Pes(audioData.getCodecType(), audioData.isPcr(), true, audioData.getPid(), buf, audioStartPts);
+								do {
+									// 書き込み対象
+									audioPes.getBuffer();
+								} while((audioPes = audioPes.nextPes()) != null);
+								audioDataList.clear();
+								audioSize = 0;
+								audioStartPts = audioData.getFirstDataPts();
+							}
+							break;
+						}
+						audioSize += aData.getSize();
+						audioDataList.add(aData);
+					}
+					// キーフレームでない場合はaudioDataを挿入したい。
+					if(videoPes.isAdaptationFieldExist() && videoPes.getAdaptationField().getRandomAccessIndicator() == 1) {
+						// 挿入処理後に確認してkeyFrameだったら、次のデータまできたことになる。
+						videoData.unshift(videoPes);
+						break;
+					}
+				}
+				isFirst = false;
+			}
+			if(videoPes.isAdaptationFieldExist()) {
+				AdaptationField aField = videoPes.getAdaptationField();
+				aField.setPcrBase(videoPes.getPts().getPts());
+			}
+			// videoPesの値はここで書き込みしてしまえばOK
+		}
+		// たまっているaudioデータがある場合は最後尾に追加しておく。
+		if(audioSize > 0) {
+			// 書き込み実行
+			ByteBuffer buf = ByteBuffer.allocate(audioSize);
+			for(IAudioData aD : audioDataList) {
+				buf.put(aD.getRawData());
+			}
+			buf.flip();
+			Pes audioPes = new Pes(audioData.getCodecType(), audioData.isPcr(), true, audioData.getPid(), buf, audioStartPts);
+			do {
+				// 書き込み対象
+				audioPes.getBuffer();
+			} while((audioPes = audioPes.nextPes()) != null);
+		}
+	}
+	/**
+	 * パケットの内容を解析して、必要な時間分のデータ(Packetを応答します)
+	 */
+	protected IMediaPacket analizePacket2(ByteBuffer buffer) {
 		IReadChannel readChannel = new ByteReadChannel(buffer);
 		Packet packet = null;
 		try {
