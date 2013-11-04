@@ -155,7 +155,6 @@ public class MpegtsPacketManager extends MediaPacketManager {
 		}
 	}
 	private void makeKeyFrameUnit() throws Exception {
-		
 		// 映像のフレームを書き込む
 		boolean isFirst = true; // 発動作フラグ
 		// 補完する音声フレームを書き込む(ある程度以上にならない場合はスキップ)
