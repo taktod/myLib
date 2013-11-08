@@ -66,19 +66,40 @@ public class AudioData extends MediaData {
 			}
 			buffer.flip(); // aacもしくはmp3として分解できそうなデータはそろった。あとは分解して、配列に突っ込んでおくだけ。
 			IReadChannel bufferChannel = new ByteReadChannel(buffer);
-			try {
-				IFrameAnalyzer analyzer = new FrameAnalyzer();
-				Frame frame = null;
-				while((frame = analyzer.analyze(bufferChannel)) != null) {
-					if(frame instanceof Aac) {
-						Aac aac = (Aac)frame;
-						counter += aac.getSampleNum();
-						audioDataList.add(aac);
+			switch(getCodecType()) {
+			case AUDIO_AAC: // aacの場合
+				try {
+					IFrameAnalyzer analyzer = new FrameAnalyzer();
+					Frame frame = null;
+					while((frame = analyzer.analyze(bufferChannel)) != null) {
+						if(frame instanceof Aac) {
+							Aac aac = (Aac)frame;
+							counter += aac.getSampleNum();
+							audioDataList.add(aac);
+						}
 					}
 				}
-			}
-			catch(Exception e) {
-				e.printStackTrace();
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+				break;
+			case AUDIO_MPEG1: // mp3の場合
+/*				try {
+					IFrameAnalyzer analyzer = new FrameAnalyzer();
+					Frame frame = null;
+					while((frame = analyzer.analyze(bufferChannel)) != null) {
+						if(frame instanceof Aac) {
+							Aac aac = (Aac)frame;
+							counter += aac.getSampleNum();
+							audioDataList.add(aac);
+						}
+					}
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}*/
+			default:
+				throw new RuntimeException("扱うことができないmpegtsの音声コーデックです。");
 			}
 		}
 		pesList.add(pes);
@@ -88,6 +109,8 @@ public class AudioData extends MediaData {
 	 * @return
 	 */
 	public IAudioData shift() {
+		if(audioDataList.size() == 0) 
+			return null;
 		IAudioData audioData = audioDataList.remove(0);
 		sendedCounter += audioData.getSampleNum();
 		return audioData;
@@ -97,8 +120,12 @@ public class AudioData extends MediaData {
 	 * @param audioData
 	 */
 	public void unshift(IAudioData audioData) {
+		if(audioData == null) {
+			return;
+		}
 		sendedCounter -= audioData.getSampleNum(); // 戻すサンプル数
 		audioDataList.add(0, audioData);
+//		logger.info("sendedCounter:" + sendedCounter);
 	}
 	/**
 	 * 現在保持しているデータの終端pts値
@@ -115,5 +142,12 @@ public class AudioData extends MediaData {
 	@Override
 	public long getFirstDataPts() {
 		return startPos + (long)(sendedCounter * (90000D / sampleRate));
+	}
+	/**
+	 * ptsにしたときの現在転送済みのaudioデータ料を応答します。
+	 * @return
+	 */
+	public long getSendedDataPts() {
+		return startPos + (long)(sendedCounter * (90000D / 44100D));
 	}
 }
