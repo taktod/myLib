@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
@@ -48,6 +50,9 @@ import com.ttProject.util.BufferUtil;
  * @see http://en.wikipedia.org/wiki/Elementary_stream
  * 
  * getBuffer()を実行すると、前から順にpacketデータが取り出せていって・・・というのがよさそうです。
+ * →getBufferで自動的に次のデータとしておくとファイルから読み取った場合とかの処理が詰まってしまうので、変更する必要あり。
+ * よって次のようにしたいとおもいます。
+ * 連続するデータの場合はnextPesというメソッドを作成して、次のpesデータがある場合は、それを応答する形にしておく。
  * 
  * データの読み込み時の動作を改良する必要がある。
  * 現状では、対象パケットのデータを読み込んでおわりだが、変更したら、読み込みデータから本当のデータ量を取り出す必要がでてくる。
@@ -57,6 +62,8 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Pes extends Packet {
+	/** ロガー */
+	private Logger logger = Logger.getLogger(Pes.class);
 	/** 巡回データカウンター */
 	private static Map<Integer, Integer> counterMap = new HashMap<Integer, Integer>();
 	private int prefix; // 3バイト 0x000001固定
@@ -78,7 +85,7 @@ public class Pes extends Packet {
 	private Bit1 extensionFlag; // 0
 
 	private Bit8 PESHeaederLength; // 10byte?
-	
+
 	// @see http://dvd.sourceforge.net/dvdinfo/pes-hdr.html
 	// PTSDTSFlagがついている場合
 	// pts only
@@ -115,7 +122,7 @@ public class Pes extends Packet {
 	// TODO 読み込み処理中にこのデータも作成すべき
 	private ByteBuffer rawData;
 	/**
-	 * コンストラクタ
+	 * コンストラクタ(データ作成用)
 	 * @param codec コーデック情報
 	 * @param pcrFlg pcrであるかのフラグ
 	 * @param randomAccessFlg ランダムにアクセス可能であるかフラグ
@@ -127,7 +134,7 @@ public class Pes extends Packet {
 		this(codec, pcrFlg, randomAccessFlg, pid, rawData, -1, -1);
 	}
 	/**
-	 * コンストラクタ
+	 * コンストラクタ(データ作成用)
 	 * @param codec コーデック情報
 	 * @param pcrFlg pcrであるかのフラグ
 	 * @param randomAccessFlg ランダムにアクセス可能であるかフラグ
@@ -140,7 +147,7 @@ public class Pes extends Packet {
 		this(codec, pcrFlg, randomAccessFlg, pid, rawData, presentationTimestamp, -1);
 	}
 	/**
-	 * 
+	 * コンストラクタ(データ作成用)
 	 * @param codec コーデック情報
 	 * @param pcrFlg pcrであるかフラグ
 	 * @param randomAccessFlg ランダムにアクセス可能であるかフラグ
@@ -154,10 +161,10 @@ public class Pes extends Packet {
 		super(0);
 		this.codec = codec;
 		this.pcrFlg = pcrFlg;
-		// keyFrameか音声データの場合はrandomAccessFlgをつけておきたいところ
 		setupDefault(pid, randomAccessFlg); // デフォルトを設定しておく。
+		// keyFrameもしくは、codecが音声の場合は、randomAccessIndicatorをつけておきたい。
 		this.rawData = rawData.duplicate(); // コピーでデータを保持しておく。
-//		setPesPacketLength((short)rawData.remaining());
+//		System.out.println("targetSize:" + rawData.remaining());
 		setPesPacketLength((short)(rawData.remaining() + 3));
 		// pts
 		if(presentationTimestamp != -1) {
@@ -182,7 +189,7 @@ public class Pes extends Packet {
 		checkLength(false);
 	}
 	/**
-	 * コンストラクタ
+	 * コンストラクタ(データ参照用)
 	 * @param buffer
 	 * @param codec
 	 * @param pcrFlg
@@ -191,7 +198,7 @@ public class Pes extends Packet {
 		this(0, buffer, codec, pcrFlg);
 	}
 	/**
-	 * コンストラクタ
+	 * コンストラクタ(データ参照用)
 	 * @param position
 	 * @param buffer
 	 * @param codec
@@ -224,11 +231,14 @@ public class Pes extends Packet {
 	 */
 	public void setupDefault(short pid, boolean randomAccessFlg) throws Exception {
 		// 初期化します。
-		byte b1 = (byte)(0x40 | (pid >>> 8));
+		byte b1 = (byte)(0x40 | (pid >>> 8)); // 強制的にpayload unit startにしてある。
 		byte b2 = (byte)(pid & 0xFF);
 		// 47 41 00 30 07 50 00 00 6F 51 7E 00 00 00 01 E0 06 01 80 C0 0A 31 00 07 D8 61 11 00 07 A9 75
 		// adaptation fieldも追加しときたいけど、adaptationFieldのデータにpcrはいっていて、このデータがパケット依存なので、やるとしたら
 		// デフォルトとして、pcr付きのデータということにしておきます。
+		// TODO ここもおかしい。pcrだったら750というわけではない。(50の部分がrandomAccessできて)
+		// h264のkeyFrameかaudioFrameの場合はadaptationFieldのrandomAccessIndicatorが必要だし。
+		// h264のinnerFrameの場合は、pcrフラグがついててもついてなくてもいいはず。
 		if(isPcr()) {
 			// pcrがある場合はadaptationField(pcr付きということにしておく)
 			analyzeHeader(new ByteReadChannel(new byte[]{
@@ -242,7 +252,9 @@ public class Pes extends Packet {
 			}));
 		}
 		if(randomAccessFlg) {
+			// 強制的にadaptationField持たせる。
 			setAdaptationFieldExist(1);
+			// randomAccessIndicatorのフラグをたてておく。
 			getAdaptationField().setRandomAccessIndicator(1);
 		}
 		prefix = 0x000001;
@@ -316,7 +328,7 @@ public class Pes extends Packet {
 					CRCFlag, extensionFlag, PESHeaederLength);
 			prefix = (prefix_1.get() << 16) | (prefix_2.get() << 8) | prefix_3.get();
 			pesPacketLength = (short)((pesPacketLength_1.get() << 8) | pesPacketLength_2.get());
-	
+
 			int length = PESHeaederLength.get();
 			switch(ptsDtsIndicator.get()) {
 			case 0x03:
@@ -432,13 +444,15 @@ public class Pes extends Packet {
 		setContinuityCounter(counter);
 		counter ++;
 		counterMap.put((int)getPid(), counter);
-
-		// bitデータを書き込む
+		// ここは持っているデータをそのまま書き込めばOK
+		// adaptationFieldの調整とか、出力データの調整はあとでnextPesでなんとかしておく。
+		// bitデータについて調整しておく。
 		List<Bit> bitsList = getBits();
+		// bitデータを書き込む
 		buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
 		// データを書き込む
 		int left = 188 - buffer.position();
-		byte[] data = new byte[left];
+		byte[] data = new byte[left]; // 残りの長さがrawDataに入っているデータとしておきます。
 		rawData.get(data);
 		buffer.put(data);
 		buffer.flip();
