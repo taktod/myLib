@@ -4,7 +4,9 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 /**
- * 
+ * TODO おわったときの残っているbufferの処理が抜けていますので、なんとかしなきゃだめ。
+ * 適当な関数をつくって動作できるようにしておかなければ・・・
+ * とりあえず、jsegmenterとconvertWorker_mvnで利用しているプログラムとなるので、注意が必要。s
  * @author taktod
  */
 public interface IMediaPacketManager {

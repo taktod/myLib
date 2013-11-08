@@ -44,6 +44,7 @@ public class MpegtsPacketManager extends MediaPacketManager {
 	private final VideoData videoData = new VideoData();
 	/** 音声用データのpes保持 */
 	private final AudioData audioData = new AudioData();
+	/** 処理済みpts値を保持 */
 	private long passedPts = -1; // 処理済みpts値保持
 	/**
 	 * コンストラクタ
@@ -54,8 +55,13 @@ public class MpegtsPacketManager extends MediaPacketManager {
 	}
 	// analyzerは外にだしておかないと、初期化時のデータがなくなってエラーになることがあるっぽいですね。
 	private IPacketAnalyzer analyzer = new PacketAnalyzer();
+	/** 動作カウンター */
 	private int counter = 0;
+	/** 出力ターゲットファイル */
 	private FileOutputStream fos = null;
+	/**
+	 * 全体停止時のため対処
+	 */
 	protected void finalize() throws Throwable {
 		if(fos == null) {
 			try {
@@ -72,6 +78,7 @@ public class MpegtsPacketManager extends MediaPacketManager {
 	protected IMediaPacket analizePacket(ByteBuffer buffer) {
 		IReadChannel readChannel = new ByteReadChannel(buffer);
 		Packet packet = null;
+		MpegtsPacket mediaPacket = null;
 		try {
 			// mpegtsのパケットについて調査しておく
 			while((packet = analyzer.analyze(readChannel)) != null) {
@@ -82,7 +89,10 @@ public class MpegtsPacketManager extends MediaPacketManager {
 					analyzePmt((Pmt)packet);
 				}
 				else if(packet instanceof Pes) {
-					analyzePes((Pes)packet);
+					mediaPacket = analyzePes((Pes)packet);
+					if(mediaPacket != null) {
+						break;
+					}
 				}
 			}
 			buffer.position(readChannel.position());
@@ -90,7 +100,7 @@ public class MpegtsPacketManager extends MediaPacketManager {
 		catch(Exception e) {
 			logger.error("aiueo", e);
 		}
-		return null;
+		return mediaPacket;
 	}
 	/**
 	 * patについて処理する
@@ -133,7 +143,7 @@ public class MpegtsPacketManager extends MediaPacketManager {
 	 * @param pes
 	 * @throws Exception
 	 */
-	private void analyzePes(Pes pes) throws Exception {
+	private MpegtsPacket analyzePes(Pes pes) throws Exception {
 		// 処理済みpts値がまだ決まっていない場合は現在値を代入しておく。
 		videoData.analyzePes(pes);
 		audioData.analyzePes(pes);
@@ -143,24 +153,33 @@ public class MpegtsPacketManager extends MediaPacketManager {
 			}
 			passedPts = pes.getPts().getPts();
 		}
-		long targetDuration = passedPts + (long)(90000L * getDuration());
+		long targetDuration = passedPts + (long)(90000L * getDuration()); // targetDuration以上たまっている場合は作成が成功する可能性があるので、作り始める。
 		if(targetDuration < videoData.getLastDataPts()
 		&& targetDuration < audioData.getLastDataPts()) {
-			// 音声も映像も必要分以上データがたまっている場合
-			if(fos == null) {
-				fos = new FileOutputStream("aiuoe99.ts");
-			}
-			// sdtを書き込む
-			fos.getChannel().write(sdt.getBuffer());
-			// patを書き込む
-			fos.getChannel().write(pat.getBuffer());
-			// pmtを書き込む
-			fos.getChannel().write(pmt.getBuffer());
+			logger.info("必要以上にデータがたまったので書き込み実行");
 			// keyframeとそれに従うデータをパケット化しておく。
-			makeKeyFrameUnit();
+			MpegtsPacket packet = (MpegtsPacket)getCurrentPacket();
+			if(packet == null) {
+				packet = new MpegtsPacket();
+				// 先頭にあるべきデータをいれておく
+				packet.analize(sdt.getBuffer());
+				packet.analize(pat.getBuffer());
+				packet.analize(pmt.getBuffer());
+				setCurrentPacket(packet);
+			}
+			// keyframeとそれに従うデータをパケット化しておく。
+			packet = makeKeyFrameUnit();
+			if(packet != null) {
+				return packet;
+			}
 		}
+		return null;
 	}
-	private void makeKeyFrameUnit() throws Exception {
+	/**
+	 * keyFrameから次のkeyFrameまでのunitを設定しておきます。
+	 * @throws Exception
+	 */
+	private MpegtsPacket makeKeyFrameUnit() throws Exception {
 		// 映像のフレームを書き込む
 		boolean isFirst = true; // 発動作フラグ
 		// 補完する音声フレームを書き込む(ある程度以上にならない場合はスキップ)
@@ -168,10 +187,13 @@ public class MpegtsPacketManager extends MediaPacketManager {
 		List<IAudioData> audioDataList = new ArrayList<IAudioData>();
 		int audioSize = 0;
 		Pes videoPes = null;
+		logger.info("フレーム書き込み開始");
 		while((videoPes = videoData.shift()) != null) {
 			if(videoPes.isPayloadUnitStart()) {
+				logger.info("動画のペイロード");
 				// payloadUnitの開始位置の場合
 				if(!isFirst) {
+					logger.info("音声書き込み");
 					while(true) {
 						IAudioData aData = audioData.shift();
 						if(aData == null || audioData.getFirstDataPts() > videoPes.getPts().getPts()) {
@@ -193,6 +215,7 @@ public class MpegtsPacketManager extends MediaPacketManager {
 					}
 					// キーフレームでない場合はaudioDataを挿入したい。
 					if(videoPes.isAdaptationFieldExist() && videoPes.getAdaptationField().getRandomAccessIndicator() == 1) {
+						logger.info("キーフレーム発見");
 						// 挿入処理後に確認してkeyFrameだったら、次のデータまできたことになる。
 						videoData.unshift(videoPes);
 						break;
@@ -205,18 +228,45 @@ public class MpegtsPacketManager extends MediaPacketManager {
 				aField.setPcrBase(videoPes.getPts().getPts());
 			}
 			// videoPesの値はここで書き込みしてしまえばOK
-			fos.getChannel().write(videoPes.getBuffer());
+			getCurrentPacket().analize(videoPes.getBuffer());
+//			fos.getChannel().write(videoPes.getBuffer());
 		}
+		logger.info("ループをぬけました。");
 		passedPts = audioData.getFirstDataPts(); // audioDataに残っているデータの終端位置をしっておきたい？
 		// たまっているaudioデータがある場合は最後尾に追加しておく。
 		if(audioSize > 0) {
+			logger.info("音声の残りデータがあるので、書き込み実施します。");
+			logger.info(audioSize);
+			logger.info(audioDataList);
+			logger.info(audioStartPts);
 			// 書き込み実行
 			makeAudioPes(audioSize, audioDataList, audioStartPts);
 		}
+		logger.info("フレーム書き込み完了。");
+		// audioSampleの長さを確認して、対象データより大きくなっていたら完了として扱う。
+		if(getCurrentPacket().getDuration() > getDuration()) {
+			// duration以上にデータがたまっているなら、出来上がったことになります。
+			MpegtsPacket packet = (MpegtsPacket)getCurrentPacket();
+			setCurrentPacket(null);
+			return packet;
+		}
+		else {
+			return null;
+		}
 	}
+	/**
+	 * audio用のpesを作成します。
+	 * @param audioSize
+	 * @param audioDataList
+	 * @param audioStartPts
+	 * @throws Exception
+	 */
 	private void makeAudioPes(int audioSize, List<IAudioData> audioDataList, long audioStartPts) throws Exception {
 		ByteBuffer buffer = ByteBuffer.allocate(audioSize);
+		MpegtsPacket mediaPacket = (MpegtsPacket)getCurrentPacket();
 		for(IAudioData audioData : audioDataList) {
+			mediaPacket.addSampleNum(audioData.getSampleNum());
+			mediaPacket.setAudioSampleRate(audioData.getSampleRate());
 			buffer.put(audioData.getRawData());
 		}
 		buffer.flip();
@@ -227,7 +277,7 @@ public class MpegtsPacketManager extends MediaPacketManager {
 				buffer, // 実データ
 				audioStartPts); // 開始pts
 		do {
-			fos.getChannel().write(audioPes.getBuffer());
+			mediaPacket.analize(audioPes.getBuffer());
 		} while((audioPes = audioPes.nextPes()) != null);
 	}
 	/**
