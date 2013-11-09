@@ -36,4 +36,9 @@ public interface IMediaChunkManager {
 	 * @return
 	 */
 	public float getDuration();
+	/**
+	 * 現在の保持データを破棄して終了する。
+	 * @return 残っているmediaChunkがある場合はここで応答しなければいけない。
+	 */
+	public IMediaChunk close();
 }

@@ -13,7 +13,7 @@ public interface IMediaChunk {
 	 */
 	public boolean isHeader();
 	/**
-	 * データを追加します。
+	 * データを追加します。(追加書き込みしておく)
 	 * @return
 	 */
 	public boolean write(ByteBuffer data);
@@ -27,4 +27,9 @@ public interface IMediaChunk {
 	 * @return
 	 */
 	public byte[] getRawData();
+	/**
+	 * 登録されている生データのbufferを参照します。
+	 * @return
+	 */
+	public ByteBuffer getRawBuffer();
 }

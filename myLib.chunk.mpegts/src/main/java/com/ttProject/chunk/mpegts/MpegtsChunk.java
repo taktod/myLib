@@ -10,20 +10,21 @@ import com.ttProject.chunk.MediaChunk;
  *
  */
 public class MpegtsChunk extends MediaChunk {
+	/**
+	 * headerであるかの応答
+	 */
 	@Override
 	public boolean isHeader() {
-		return false;
+		return false; // false固定
 	}
+	/**
+	 * 書き込みデータ登録
+	 */
 	@Override
 	public boolean write(ByteBuffer data) {
-		return false;
-	}
-	@Override
-	public float getDuration() {
-		return 0;
-	}
-	@Override
-	public byte[] getRawData() {
-		return null;
+		// データを登録しておく。
+		ByteBuffer buffer = getBuffer(data.remaining());
+		buffer.put(data);
+		return true;
 	}
 }
