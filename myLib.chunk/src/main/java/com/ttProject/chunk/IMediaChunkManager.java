@@ -1,7 +1,5 @@
 package com.ttProject.chunk;
 
-import java.util.List;
-
 import com.ttProject.media.Unit;
 
 /**
@@ -12,10 +10,11 @@ import com.ttProject.media.Unit;
 public interface IMediaChunkManager {
 	/**
 	 * メディアデータのunitをいれると対象クラス用のデータがでてくる
+	 * chunkを作るのにデータが足りない場合はnullが帰ってきます。
 	 * @param unit
 	 * @return
 	 */
-	public List<IMediaChunk> getChunks(Unit unit);
+	public IMediaChunk getChunk(Unit unit);
 	/**
 	 * 現在処理中のchunkを応答する。
 	 * @return

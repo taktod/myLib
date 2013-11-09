@@ -11,6 +11,7 @@ import com.ttProject.media.aac.Frame;
 import com.ttProject.media.aac.FrameAnalyzer;
 import com.ttProject.media.aac.IFrameAnalyzer;
 import com.ttProject.media.aac.frame.Aac;
+import com.ttProject.media.mpegts.CodecType;
 import com.ttProject.media.mpegts.packet.Pes;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -18,7 +19,6 @@ import com.ttProject.nio.channels.IReadChannel;
 /**
  * audioDataはunitごとの動作への切り分けが比較的容易に実行できるので、unitごとの保存でいい
  * @author taktod
- *
  */
 public class AudioDataList extends MediaDataList {
 	/** ロガー */
@@ -35,7 +35,7 @@ public class AudioDataList extends MediaDataList {
 	/** sampleRate値(時間の計算で必要) */
 	private int sampleRate = 44100;
 	/** pesからデータを取得する場合に必要になる処置(一度ためてからIAudioDataに分解して、再構築する必要がでてくる) */
-	private final List<Pes> pesList = new ArrayList<Pes>();
+//	private final List<Pes> pesList = new ArrayList<Pes>();
 	/**
 	 * 保持データリストのサイズを確認する。
 	 * @return
@@ -44,11 +44,14 @@ public class AudioDataList extends MediaDataList {
 		return audioDataList.size();
 	}
 	/**
-	 * pesデータを追加する
-	 * @param pes
+	 * データを追加する。
+	 * @param data データ実体
+	 * @param pts pts値(任意)
+	 * @param pid pid値(任意)
+	 * @param type codecType(任意)
 	 */
-	public void addPes(Pes pes) {
-		if(getPid() != pes.getPid() // 自分のデータではない
+	public void addAudioData(IAudioData data, long pts, short pid, CodecType type) {
+/*		if(getPid() != pes.getPid() // 自分のデータではない
 			|| getCodecType() == null) { // 初期化が済んでいない
 			return; // 処理しない
 		}
@@ -99,7 +102,10 @@ public class AudioDataList extends MediaDataList {
 				}
 			}
 		}
-		pesList.add(pes);
+		pesList.add(pes);*/
+		sampleRate = data.getSampleRate();
+		counter += data.getSampleNum();
+		audioDataList.add(data);
 	}
 	/**
 	 * 終端pts値を参照する

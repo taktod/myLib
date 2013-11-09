@@ -1,21 +1,25 @@
 package com.ttProject.chunk.mpegts;
 
-import java.util.List;
+import org.apache.log4j.Logger;
 
 import com.ttProject.chunk.IMediaChunk;
 import com.ttProject.chunk.MediaChunkManager;
 import com.ttProject.media.Unit;
+import com.ttProject.media.mpegts.Packet;
 
 /**
  * mpegtsのchunkを取り出すための動作マネージャー
  * 基本的にgetChunksにUnitデータ(flvのTagとかmpegtsのPacketとか)をいれると、対応したMediaChunkがでてくる。
  */
 public class MpegtsChunkManager extends MediaChunkManager {
+	private Logger logger = Logger.getLogger(MpegtsChunkManager.class);
+	/**
+	 * chunkを取り出します。
+	 */
 	@Override
-	public List<IMediaChunk> getChunks(Unit unit) {
-		// 入力されるunitはいろいろあることになる。
-		// とりあえずmpegtsのunitをいれたらデータを取り出すようにしたいところ。
-		// 音声のみや映像のみのデータでもきちんとmpegtsのchunkに分けられるようにしたいところ。
+	public IMediaChunk getChunk(Unit unit) {
+		// 映像データの場合は、mpegtsのpesに変更しなければいけない。
+		// 音声データの場合は、IAudioDataに変更しなければいけない。
 		return null;
 	}
 	/**

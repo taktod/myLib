@@ -6,5 +6,4 @@ package com.ttProject.chunk;
  *
  */
 public abstract class MediaChunkManager implements IMediaChunkManager {
-
 }
