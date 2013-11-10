@@ -17,6 +17,7 @@ import com.ttProject.media.mpegts.packet.Pmt;
  */
 public class MpegtsPesAnalyzer implements IPesAnalyzer {
 	/** 動作ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MpegtsPesAnalyzer.class);
 	private Pmt pmt;
 	private VideoDataList videoDataList;
@@ -45,7 +46,6 @@ public class MpegtsPesAnalyzer implements IPesAnalyzer {
 	public void analyze(Unit unit) {
 		if(unit instanceof Pmt) {
 			if(pmt == null) {
-				logger.info("pmt取得しました。");
 				this.pmt = (Pmt)unit;
 			}
 			return;
@@ -54,12 +54,10 @@ public class MpegtsPesAnalyzer implements IPesAnalyzer {
 			// pesのみに興味あり
 			return;
 		}
-		logger.info("pesがきました。");
 		Pes pes = (Pes)unit;
 		if(pes.getPid() == videoDataList.getPid()) {
 			// 動画のpesの場合
 			videoDataList.addPes(pes);
-			logger.info(videoDataList);
 		}
 		else if(pes.getPid() == audioDataList.getPid()) {
 			if(audioDataAnalyzer == null) {
@@ -81,7 +79,6 @@ public class MpegtsPesAnalyzer implements IPesAnalyzer {
 				for(IAudioData audioData : audioList) {
 					audioDataList.addAudioData(audioData, audioDataAnalyzer.getLastPtsValue());
 				}
-				logger.info(audioDataList);
 			}
 		}
 		return;

@@ -141,6 +141,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	private IMediaChunk checkCompleteChunk() throws Exception {
 		// 先頭情報が抜け落ちている場合は処理できない。
 		if(sdt == null || pat == null || pmt == null) {
+			logger.info("必要なセットアップ情報がありませんでした。");
 			return null;
 		}
 		// 処理したいtimestampを求めておく
@@ -149,9 +150,11 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		// 問題のduration以上データがのこっていることを確認しておく。
 		if((videoDataList.getCodecType() != null && videoDataList.getLastDataPts() > targetPts)
 		&& (audioDataList.getCodecType() != null && audioDataList.getLastDataPts() > targetPts)) {
+//			logger.info("すでに必要な情報がたまっています。");
 			// すでにデータがたまっている。
 			// mpegtsChunkにデータをいれていく必要あり。
 			if(chunk == null) {
+				logger.info("chunkがないので、新規生成します。");
 				chunk = new MpegtsChunk();
 				chunk.write(sdt.getBuffer());
 				chunk.write(pat.getBuffer());
