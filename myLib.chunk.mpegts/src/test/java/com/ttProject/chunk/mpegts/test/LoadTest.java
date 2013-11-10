@@ -16,7 +16,7 @@ import com.ttProject.nio.channels.IReadChannel;
  */
 public class LoadTest {
 	private Logger logger = Logger.getLogger(LoadTest.class);
-	@Test
+//	@Test
 	public void analyzeNormalData() {
 		IReadChannel source = null;
 		try {
@@ -53,7 +53,7 @@ public class LoadTest {
 			IPacketAnalyzer analyzer = new PacketAnalyzer();
 			Packet packet = null;
 			while((packet = analyzer.analyze(source)) != null) {
-				System.out.println(packet);
+				System.out.println(packet.getClass().getSimpleName());
 			}
 		}
 		catch(Exception e) {
@@ -70,7 +70,7 @@ public class LoadTest {
 			}
 		}
 	}
-	@Test
+//	@Test
 	public void analyzeNoAudioData() {
 		IReadChannel source = null;
 		try {

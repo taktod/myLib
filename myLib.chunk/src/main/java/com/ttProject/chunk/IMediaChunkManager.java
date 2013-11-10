@@ -14,7 +14,7 @@ public interface IMediaChunkManager {
 	 * @param unit
 	 * @return
 	 */
-	public IMediaChunk getChunk(Unit unit);
+	public IMediaChunk getChunk(Unit unit) throws Exception;
 	/**
 	 * 現在処理中のchunkを応答する。
 	 * @return

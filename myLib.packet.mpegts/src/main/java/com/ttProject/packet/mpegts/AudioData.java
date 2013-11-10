@@ -125,7 +125,6 @@ public class AudioData extends MediaData {
 		}
 		sendedCounter -= audioData.getSampleNum(); // 戻すサンプル数
 		audioDataList.add(0, audioData);
-//		logger.info("sendedCounter:" + sendedCounter);
 	}
 	/**
 	 * 現在保持しているデータの終端pts値

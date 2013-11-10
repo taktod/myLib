@@ -1,20 +1,12 @@
 package com.ttProject.chunk.mpegts;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.ttProject.media.IAudioData;
-import com.ttProject.media.aac.Frame;
-import com.ttProject.media.aac.FrameAnalyzer;
-import com.ttProject.media.aac.IFrameAnalyzer;
-import com.ttProject.media.aac.frame.Aac;
 import com.ttProject.media.mpegts.CodecType;
-import com.ttProject.media.mpegts.packet.Pes;
-import com.ttProject.nio.channels.ByteReadChannel;
-import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * audioDataはunitごとの動作への切り分けが比較的容易に実行できるので、unitごとの保存でいい
