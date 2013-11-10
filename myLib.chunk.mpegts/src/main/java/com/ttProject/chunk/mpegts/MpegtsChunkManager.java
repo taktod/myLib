@@ -148,8 +148,8 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		long targetPts = passedPts + (long)(90000 * getDuration());
 		// 映像と音声のdurationについて確認しておく。
 		// 問題のduration以上データがのこっていることを確認しておく。
-		if((videoDataList.getCodecType() != null && videoDataList.getLastDataPts() > targetPts)
-		&& (audioDataList.getCodecType() != null && audioDataList.getLastDataPts() > targetPts)) {
+		if((videoDataList.getCodecType() == null || (videoDataList.getCodecType() != null && videoDataList.getLastDataPts() > targetPts))
+		&& (audioDataList.getCodecType() == null || (audioDataList.getCodecType() != null && audioDataList.getLastDataPts() > targetPts))) {
 //			logger.info("すでに必要な情報がたまっています。");
 			// すでにデータがたまっている。
 			// mpegtsChunkにデータをいれていく必要あり。
@@ -161,9 +161,28 @@ public class MpegtsChunkManager extends MediaChunkManager {
 				chunk.write(pmt.getBuffer());
 			}
 			// unitを作成する。
+			makeFrameUnit();
 			// 必要な長さのデータができていたら応答する。
 		}
 		return null;
+	}
+	/**
+	 * frameunitを作成します。
+	 * ただし、映像のあるなし、音声のあるなしによって変わります。
+	 */
+	private void makeFrameUnit() {
+		if(videoDataList.getCodecType() == null) {
+			// 音声のみの場合
+			logger.info("音声のみ");
+		}
+		else if(audioDataList.getCodecType() == null) {
+			// 映像のみの場合
+			logger.info("映像のみ");
+		}
+		else {
+			// 両方ある場合
+			logger.info("両方ある");
+		}
 	}
 	/**
 	 * 現在処理中のchunkについて応答する。

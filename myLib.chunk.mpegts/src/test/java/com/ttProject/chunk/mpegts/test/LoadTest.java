@@ -57,10 +57,14 @@ public class LoadTest {
 			source = FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("mario_novideo.ts")
 			);
+			MpegtsChunkManager chunkManager = new MpegtsChunkManager();
+			// mpegtsのデータを投入するので、analyzerを設定しておく。
+			chunkManager.addPesAnalyzer(new MpegtsPesAnalyzer());
 			IPacketAnalyzer analyzer = new PacketAnalyzer();
 			Packet packet = null;
 			while((packet = analyzer.analyze(source)) != null) {
-				System.out.println(packet.getClass().getSimpleName());
+				// 見つけたpacketを順にmpegtsChunkManagerに流していけばOK
+				chunkManager.getChunk(packet);
 			}
 		}
 		catch(Exception e) {
@@ -84,10 +88,14 @@ public class LoadTest {
 			source = FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("mario_noaudio.ts")
 			);
+			MpegtsChunkManager chunkManager = new MpegtsChunkManager();
+			// mpegtsのデータを投入するので、analyzerを設定しておく。
+			chunkManager.addPesAnalyzer(new MpegtsPesAnalyzer());
 			IPacketAnalyzer analyzer = new PacketAnalyzer();
 			Packet packet = null;
 			while((packet = analyzer.analyze(source)) != null) {
-				System.out.println(packet);
+				// 見つけたpacketを順にmpegtsChunkManagerに流していけばOK
+				chunkManager.getChunk(packet);
 			}
 		}
 		catch(Exception e) {
