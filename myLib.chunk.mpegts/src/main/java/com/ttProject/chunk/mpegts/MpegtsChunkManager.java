@@ -1,6 +1,9 @@
 package com.ttProject.chunk.mpegts;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -8,10 +11,12 @@ import org.apache.log4j.Logger;
 import com.ttProject.chunk.IMediaChunk;
 import com.ttProject.chunk.MediaChunkManager;
 import com.ttProject.chunk.mpegts.analyzer.IPesAnalyzer;
+import com.ttProject.media.IAudioData;
 import com.ttProject.media.Unit;
 import com.ttProject.media.mpegts.CodecType;
 import com.ttProject.media.mpegts.field.PmtElementaryField;
 import com.ttProject.media.mpegts.packet.Pat;
+import com.ttProject.media.mpegts.packet.Pes;
 import com.ttProject.media.mpegts.packet.Pmt;
 import com.ttProject.media.mpegts.packet.Sdt;
 
@@ -161,7 +166,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 				chunk.write(pmt.getBuffer());
 			}
 			// unitを作成する。
-			makeFrameUnit();
+			makeFrameUnit(targetPts);
 			// 必要な長さのデータができていたら応答する。
 		}
 		return null;
@@ -169,20 +174,87 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	/**
 	 * frameunitを作成します。
 	 * ただし、映像のあるなし、音声のあるなしによって変わります。
+	 * @param targetPts
 	 */
-	private void makeFrameUnit() {
+	private void makeFrameUnit(long targetPts) throws Exception {
 		if(videoDataList.getCodecType() == null) {
 			// 音声のみの場合
 			logger.info("音声のみ");
+			makeAudioOnlyFrameUnit(targetPts);
 		}
 		else if(audioDataList.getCodecType() == null) {
 			// 映像のみの場合
 			logger.info("映像のみ");
+			makeVideoOnlyFrameUnit(targetPts);
 		}
 		else {
 			// 両方ある場合
 			logger.info("両方ある");
+			makeNormalFrameUnit(targetPts);
 		}
+	}
+	/**
+	 * 音声のみのframeUnitをつくります。
+	 * この処理のみでchunkが作成完了します。
+	 * @param targetPts
+	 * @throws Exception
+	 */
+	private void makeAudioOnlyFrameUnit(long targetPts) throws Exception {
+		int audioSize = 0;
+		List<IAudioData> audioList = new ArrayList<IAudioData>();
+		long audioStartPts = audioDataList.getFirstDataPts();
+		while(true) {
+			IAudioData audioData = audioDataList.shift();
+			if(audioData == null || audioDataList.getFirstDataPts() > targetPts) {
+				// データがなくなった場合もしくは、データが問題のptsを超えた場合
+				if(audioData != null) {
+					audioDataList.unshift(audioData);
+				}
+				// 処理おわり
+				break;
+			}
+			audioSize += audioData.getSize(); // データサイズを計算
+			audioList.add(audioData); // データを追加リストに登録
+			// ある程度以上データがたまっていたら追加計算しておく。
+			if(audioSize > 0x1000) {
+				// 書き込み実行
+				makeAudioPes(audioSize, audioList, audioStartPts);
+				audioList.clear();
+				audioSize = 0;
+				audioStartPts = audioDataList.getFirstDataPts();
+			}
+		}
+	}
+	/**
+	 * audio用のpesを作成します。
+	 * @param audioSize
+	 * @param audioDataList
+	 * @param audioStartPts
+	 * @throws Exception
+	 */
+	private void makeAudioPes(int audioSize, List<IAudioData> audioList, long audioStartPts) throws Exception {
+		ByteBuffer buffer = ByteBuffer.allocate(audioSize);
+		for(IAudioData audioData : audioList) {
+//			mediaPacket.addSampleNum(audioData.getSampleNum());
+//			mediaPacket.setAudioSampleRate(audioData.getSampleRate());
+			buffer.put(audioData.getRawData());
+		}
+		buffer.flip();
+		Pes audioPes = new Pes(audioDataList.getCodecType(),
+				pmt.getPcrPid() == audioDataList.getPid(), // pcrであるかはフラグ次第
+				true, // randomAccessは絶対にOK(音声なので)
+				audioDataList.getPid(), // pid
+				buffer, // 実データ
+				audioStartPts); // 開始pts
+		do {
+			chunk.write(audioPes.getBuffer());
+		} while((audioPes = audioPes.nextPes()) != null);
+	}
+	private void makeVideoOnlyFrameUnit(long targetPts) {
+		
+	}
+	private void makeNormalFrameUnit(long targetPts) {
+		
 	}
 	/**
 	 * 現在処理中のchunkについて応答する。
