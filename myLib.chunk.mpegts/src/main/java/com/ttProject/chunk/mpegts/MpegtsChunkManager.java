@@ -5,7 +5,11 @@ import org.apache.log4j.Logger;
 import com.ttProject.chunk.IMediaChunk;
 import com.ttProject.chunk.MediaChunkManager;
 import com.ttProject.media.Unit;
-import com.ttProject.media.mpegts.Packet;
+import com.ttProject.media.mpegts.CodecType;
+import com.ttProject.media.mpegts.field.PmtElementaryField;
+import com.ttProject.media.mpegts.packet.Pat;
+import com.ttProject.media.mpegts.packet.Pmt;
+import com.ttProject.media.mpegts.packet.Sdt;
 
 /**
  * mpegtsのchunkを取り出すための動作マネージャー
@@ -13,6 +17,38 @@ import com.ttProject.media.mpegts.Packet;
  */
 public class MpegtsChunkManager extends MediaChunkManager {
 	private Logger logger = Logger.getLogger(MpegtsChunkManager.class);
+	private final Sdt sdt;
+	private Pat pat;
+	private Pmt pmt;
+	private AudioDataList audioDataList = new AudioDataList();
+	private VideoDataList videoDataList = new VideoDataList();
+	/**
+	 * コンストラクタ
+	 * @throws Exception
+	 */
+	public MpegtsChunkManager() throws Exception {
+		sdt = new Sdt();
+		sdt.writeDefaultProvider("taktodTools", "mpegtsChunkMuxer");
+		pat = new Pat();
+		pmt = new Pmt();
+	}
+	/**
+	 * トラック情報をいれておきます。(mpegtsの場合はpatやpmtから読み取るので必要ありません。)
+	 * あらかじめ宣言したいときにいれておくと、すんなり動作します。
+	 * なお、すでに定義済みの場合は例外をなげるようにします。
+	 * 再定義したい場合はpmtを作り直してください。
+	 */
+	public void setupTracks(CodecType videoCodec, CodecType audioCodec) throws Exception {
+		if(pmt.getFields().size() != 0) {
+			throw new Exception("すでにfield定義がおわっています。");
+		}
+		if(videoCodec != null) {
+			pmt.addNewField(PmtElementaryField.makeNewField(videoCodec));
+		}
+		if(audioCodec != null) {
+			pmt.addNewField(PmtElementaryField.makeNewField(audioCodec));
+		}
+	}
 	/**
 	 * chunkを取り出します。
 	 */
