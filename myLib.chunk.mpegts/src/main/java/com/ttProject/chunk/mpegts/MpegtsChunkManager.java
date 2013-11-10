@@ -21,11 +21,20 @@ import com.ttProject.media.mpegts.packet.Sdt;
  */
 public class MpegtsChunkManager extends MediaChunkManager {
 	private Logger logger = Logger.getLogger(MpegtsChunkManager.class);
+	/** sdtデータ */
 	private final Sdt sdt;
+	/** patデータ */
 	private Pat pat;
+	/** pmtデータ */
 	private Pmt pmt;
+	/** 処理中のaudioData保持オブジェクト */
 	private AudioDataList audioDataList = new AudioDataList();
+	/** 処理中のvideoData保持オブジェクト */
 	private VideoDataList videoDataList = new VideoDataList();
+	/** すでに処理済みのpts値 */
+	private long passedPts = 0;
+	/** 現在処理中のchunkオブジェクト */
+	private MpegtsChunk chunk = null;
 	/**
 	 * 解析用のオブジェクト
 	 */
@@ -89,7 +98,8 @@ public class MpegtsChunkManager extends MediaChunkManager {
 			for(IPesAnalyzer analyzer : analyzers) {
 				analyzer.analyze(unit);
 			}
-			// TODO 今回の解析でaudioDataListとvideoDataListの内容が更新されているか確認しなければならない。
+			// 複数取れる可能性も一応あるのか・・・
+			return checkCompleteChunk(); // 完了したchunkについて調査する。
 		}
 		return null;
 	}
@@ -127,6 +137,34 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		}
 	}
 	/**
+	 * chunkが作成完了したか確認する。
+	 * @return
+	 */
+	private IMediaChunk checkCompleteChunk() throws Exception {
+		// 先頭情報が抜け落ちている場合は処理できない。
+		if(sdt == null || pat == null || pmt == null) {
+			return null;
+		}
+		// 処理したいtimestampを求めておく
+		long targetPts = passedPts + (long)(90000 * getDuration());
+		// 映像と音声のdurationについて確認しておく。
+		// 問題のduration以上データがのこっていることを確認しておく。
+		if((videoDataList.getCodecType() != null && videoDataList.getLastDataPts() > targetPts)
+		&& (audioDataList.getCodecType() != null && audioDataList.getLastDataPts() > targetPts)) {
+			// すでにデータがたまっている。
+			// mpegtsChunkにデータをいれていく必要あり。
+			if(chunk == null) {
+				chunk = new MpegtsChunk();
+				chunk.write(sdt.getBuffer());
+				chunk.write(pat.getBuffer());
+				chunk.write(pmt.getBuffer());
+			}
+			// unitを作成する。
+			// 必要な長さのデータができていたら応答する。
+		}
+		return null;
+	}
+	/**
 	 * 現在処理中のchunkについて応答する。
 	 */
 	@Override
@@ -160,6 +198,18 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	 */
 	@Override
 	public float getDuration() {
-		return 0;
+		long videoPts = 0, audioPts = 0;
+		if(videoDataList.getCodecType() != null) {
+			videoPts = videoDataList.getFirstDataPts();
+		}
+		if(audioDataList.getCodecType() != null) {
+			audioPts = audioDataList.getFirstDataPts();
+		}
+		if(audioPts > videoPts) {
+			return videoPts / 90000f;
+		}
+		else {
+			return audioPts / 90000f;
+		}
 	}
 }
