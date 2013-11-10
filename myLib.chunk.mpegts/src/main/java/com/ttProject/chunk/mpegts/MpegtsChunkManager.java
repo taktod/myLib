@@ -20,6 +20,7 @@ import com.ttProject.media.mpegts.packet.Sdt;
  * 基本的にgetChunksにUnitデータ(flvのTagとかmpegtsのPacketとか)をいれると、対応したMediaChunkがでてくる。
  */
 public class MpegtsChunkManager extends MediaChunkManager {
+	/** ロガー */
 	private Logger logger = Logger.getLogger(MpegtsChunkManager.class);
 	/** sdtデータ */
 	private final Sdt sdt;
@@ -92,16 +93,13 @@ public class MpegtsChunkManager extends MediaChunkManager {
 			// mpegtsのpmtの場合
 			analyzePmt((Pmt) unit);
 		}
-		else {
-			// データをanalyzeしてchunkが取得できたらそこでおわり。
-			// それ以外の場合はnullを返す。
-			for(IPesAnalyzer analyzer : analyzers) {
-				analyzer.analyze(unit);
-			}
-			// 複数取れる可能性も一応あるのか・・・
-			return checkCompleteChunk(); // 完了したchunkについて調査する。
+		// データをanalyzeしてchunkが取得できたらそこでおわり。
+		// それ以外の場合はnullを返す。
+		for(IPesAnalyzer analyzer : analyzers) {
+			analyzer.analyze(unit);
 		}
-		return null;
+		// 複数取れる可能性も一応あるのか・・・
+		return checkCompleteChunk(); // 完了したchunkについて調査する。
 	}
 	/**
 	 * patを解析します

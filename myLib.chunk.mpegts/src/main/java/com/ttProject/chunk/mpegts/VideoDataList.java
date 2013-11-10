@@ -45,10 +45,10 @@ public class VideoDataList extends MediaDataList {
 	 * @return
 	 */
 	public long getLastDataPts() {
-		Pes lastKeyFramePes = keyPesList.get(keyPesList.size() - 1);
-		if(lastKeyFramePes == null) {
+		if(keyPesList.size() == 0) {
 			return -1;
 		}
+		Pes lastKeyFramePes = keyPesList.get(keyPesList.size() - 1);
 		return lastKeyFramePes.getPts().getPts();
 	}
 	/**
@@ -81,5 +81,11 @@ public class VideoDataList extends MediaDataList {
 			return;
 		}
 		videoPesList.add(0, pes);
+	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append("videoDataList:").append(videoPesList.size());
+		return data.toString();
 	}
 }

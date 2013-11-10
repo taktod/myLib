@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.ttProject.media.IAudioData;
-import com.ttProject.media.mpegts.CodecType;
 
 /**
  * audioDataはunitごとの動作への切り分けが比較的容易に実行できるので、unitごとの保存でいい
@@ -42,59 +41,10 @@ public class AudioDataList extends MediaDataList {
 	 * @param pid pid値(任意)
 	 * @param type codecType(任意)
 	 */
-	public void addAudioData(IAudioData data, long pts, short pid, CodecType type) {
-/*		if(getPid() != pes.getPid() // 自分のデータではない
-			|| getCodecType() == null) { // 初期化が済んでいない
-			return; // 処理しない
+	public void addAudioData(IAudioData data, long pts) {
+		if(startPos == -1 && pts != -1L) {
+			startPos = pts;
 		}
-		if(startPos == -1 && pes.hasPts()) {
-			// 開始位置が未決定でpts値があるデータの場合
-			startPos = pes.getPts().getPts();
-		}
-		if(pes.isPayloadUnitStart()) {
-			// 前のデータがある場合はデータが決定するので、ここでIAudioDataに分解する
-			ByteBuffer buffer = ByteBuffer.allocate(188 * pesList.size());
-			while(pesList.size() > 0) {
-				Pes p = pesList.remove(0);
-				buffer.put(p.getRawData());
-			}
-			buffer.flip(); // ここまででbufferデータが決定する。
-			IReadChannel bufferChannel = null;
-			try {
-				bufferChannel = new ByteReadChannel(buffer);
-				switch(getCodecType()) {
-				case AUDIO_AAC:
-					// ここでaacをIAudioDataに戻してやりたい。
-					IFrameAnalyzer analyzer = new FrameAnalyzer();
-					Frame frame = null;
-					while((frame = analyzer.analyze(bufferChannel)) != null) {
-						if(frame instanceof Aac) {
-							Aac aac = (Aac)frame;
-							counter += aac.getSampleNum();
-							sampleRate = aac.getSampleRate();
-							audioDataList.add(aac);
-						}
-					}
-					break;
-				case AUDIO_MPEG1:
-//					break;
-				default:
-					throw new RuntimeException();
-				}
-			}
-			catch(Exception e) {
-			}
-			finally {
-				if(bufferChannel != null) {
-					try {
-						bufferChannel.close();
-					}
-					catch(Exception e) {}
-					bufferChannel = null;
-				}
-			}
-		}
-		pesList.add(pes);*/
 		sampleRate = data.getSampleRate();
 		counter += data.getSampleNum();
 		audioDataList.add(data);
@@ -135,5 +85,11 @@ public class AudioDataList extends MediaDataList {
 		}
 		sendedCounter -= audioData.getSampleNum();
 		audioDataList.add(0, audioData);
+	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append("audioDataList:").append(audioDataList.size());
+		return data.toString();
 	}
 }
