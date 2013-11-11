@@ -63,6 +63,7 @@ import com.ttProject.util.BufferUtil;
  */
 public class Pes extends Packet {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Pes.class);
 	/** 巡回データカウンター */
 	private static Map<Integer, Integer> counterMap = new HashMap<Integer, Integer>();
@@ -166,6 +167,11 @@ public class Pes extends Packet {
 		this.rawData = rawData.duplicate(); // コピーでデータを保持しておく。
 //		System.out.println("targetSize:" + rawData.remaining());
 		setPesPacketLength((short)(rawData.remaining() + 3));
+		// pcr
+		if(pcrFlg) {
+			AdaptationField aField = getAdaptationField();
+			aField.setPcrBase(presentationTimestamp);
+		}
 		// pts
 		if(presentationTimestamp != -1) {
 			PtsField pts = new PtsField();
@@ -567,7 +573,7 @@ public class Pes extends Packet {
 		if(rawData.remaining() == 0) {
 			return null;
 		}
-		Pes nextPes = new Pes(codec, isPcr(), false, getPid(), rawData);
+		Pes nextPes = new Pes(codec, false, false, getPid(), rawData);
 		nextPes.setPayloadUnitStartIndicator(0);
 		nextPes.checkLength(true);
 		return nextPes;

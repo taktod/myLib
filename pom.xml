@@ -47,6 +47,8 @@
     <module>myLib.xuggle.raw</module>
     <module>myLib.xuggle</module>
     <module>myLib.xuggle.flv</module>
+    <module>myLib.chunk</module>
+    <module>myLib.chunk.mpegts</module>
   </modules>
   <scm>
   	<url>scm:git:git@github.com:taktod/myLib.git</url>

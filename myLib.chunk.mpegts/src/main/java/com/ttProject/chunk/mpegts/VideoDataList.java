@@ -20,6 +20,8 @@ public class VideoDataList extends MediaDataList {
 	private final List<Pes> videoPesList = new ArrayList<Pes>();
 	/** 映像のキーフレームの先頭の部分のpesリスト */
 	private final List<Pes> keyPesList = new ArrayList<Pes>();
+	/** 最終pesデータのpts値記録 */
+	private long lastDataPts = -1L;
 	/**
 	 * pesデータを追記する
 	 * @param pes
@@ -39,6 +41,9 @@ public class VideoDataList extends MediaDataList {
 				}
 			}
 		}
+		if(pes.hasPts() && lastDataPts < pes.getPts().getPts()) {
+			lastDataPts = pes.getPts().getPts();
+		}
 	}
 	/**
 	 * 終端データのpts値
@@ -46,7 +51,7 @@ public class VideoDataList extends MediaDataList {
 	 */
 	public long getLastDataPts() {
 		if(keyPesList.size() == 0) {
-			return -1;
+			return lastDataPts;
 		}
 		Pes lastKeyFramePes = keyPesList.get(keyPesList.size() - 1);
 		return lastKeyFramePes.getPts().getPts();
@@ -56,7 +61,7 @@ public class VideoDataList extends MediaDataList {
 	 */
 	public long getFirstDataPts() {
 		if(keyPesList.size() == 0) {
-			return -1;
+			return lastDataPts;
 		}
 		Pes firstKeyFramePes = keyPesList.get(0);
 		return firstKeyFramePes.getPts().getPts();
@@ -69,8 +74,12 @@ public class VideoDataList extends MediaDataList {
 		if(videoPesList.size() == 0) {
 			return null;
 		}
-		// TODO keyPesと一致する場合はそっちも抜いておくべき。
-		return videoPesList.remove(0);
+		Pes targetPes = videoPesList.remove(0);
+		// keyPesと一致するpesがある場合は撤去しておく
+		if(keyPesList.contains(targetPes)) {
+			keyPesList.remove(targetPes);
+		}
+		return targetPes;
 	}
 	/**
 	 * 先頭に追加
@@ -80,7 +89,16 @@ public class VideoDataList extends MediaDataList {
 		if(pes == null) {
 			return;
 		}
+		// 相手がkeyFrameとなりうるpesの場合は・・・keyFrame側にも追加する必要がある。
 		videoPesList.add(0, pes);
+		if(pes.isPayloadUnitStart()) { // データpacketの開始位置の場合
+			AdaptationField field = pes.getAdaptationField();
+			if(pes.isAdaptationFieldExist() && field != null) { // adaptationFieldが存在している場合
+				if(field.getRandomAccessIndicator() == 1) { // ランダムアクセスが許可されているデータの場合(キーフレームであるということ)
+					keyPesList.add(0, pes); // キーフレームのpesデータなので、リストにいれておく。
+				}
+			}
+		}
 	}
 	@Override
 	public String toString() {

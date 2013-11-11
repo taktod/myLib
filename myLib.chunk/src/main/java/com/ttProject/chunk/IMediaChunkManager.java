@@ -31,10 +31,16 @@ public interface IMediaChunkManager {
 	 */
 	public String getHeaderExt();
 	/**
-	 * 現在の処理済み時刻を応答します。
+	 * 分割長さを参照します。
 	 * @return
 	 */
 	public float getDuration();
+	/**
+	 * 分割長さを設定します。
+	 * @param duration
+	 * @return
+	 */
+	public void setDuration(float duration);
 	/**
 	 * 現在の保持データを破棄して終了する。
 	 * @return 残っているmediaChunkがある場合はここで応答しなければいけない。

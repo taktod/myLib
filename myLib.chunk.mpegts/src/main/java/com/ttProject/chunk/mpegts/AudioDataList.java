@@ -25,8 +25,6 @@ public class AudioDataList extends MediaDataList {
 	private long startPos = 0;
 	/** sampleRate値(時間の計算で必要) */
 	private int sampleRate = 44100;
-	/** pesからデータを取得する場合に必要になる処置(一度ためてからIAudioDataに分解して、再構築する必要がでてくる) */
-//	private final List<Pes> pesList = new ArrayList<Pes>();
 	/**
 	 * 保持データリストのサイズを確認する。
 	 * @return

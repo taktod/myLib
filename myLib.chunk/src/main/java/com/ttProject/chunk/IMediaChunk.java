@@ -18,6 +18,11 @@ public interface IMediaChunk {
 	 */
 	public boolean write(ByteBuffer data);
 	/**
+	 * timestamp値を応答する(とりあえずmpegtsのptsでいってみる。)
+	 * @return
+	 */
+	public long getTimestamp();
+	/**
 	 * このデータのduration値を参照する
 	 * @return
 	 */

@@ -324,7 +324,7 @@ public class SetupForTest {
 		videoEncoder.setFlag(Flags.FLAG_LOOP_FILTER, true);
 		videoEncoder.setFlag(Flags.FLAG_CLOSED_GOP, true);
 
-		stream = container.addNewStream(ICodec.ID.CODEC_ID_MP3);
+		stream = container.addNewStream(ICodec.ID.CODEC_ID_AAC);
 		IStreamCoder audioEncoder = stream.getStreamCoder();
 		audioEncoder.setSampleRate(44100);
 		audioEncoder.setChannels(2);

@@ -12,6 +12,8 @@ public abstract class MediaChunk implements IMediaChunk {
 	private ByteBuffer buffer = null;
 	/** データの長さ */
 	private float duration = 0;
+	/** 動作タイムスタンプ値 */
+	private long timestamp = 0;
 	/**
 	 * 処理buffer参照
 	 * @param size
@@ -67,5 +69,19 @@ public abstract class MediaChunk implements IMediaChunk {
 		byte[] data = new byte[buffer.limit()];
 		buffer.get(data);
 		return data;
+	}
+	/**
+	 * timestampを参照する
+	 */
+	@Override
+	public long getTimestamp() {
+		return timestamp;
+	}
+	/**
+	 * timestampを設置する
+	 * @param pts
+	 */
+	public void setTimestamp(long pts) {
+		timestamp = pts;
 	}
 }

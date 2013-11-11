@@ -27,4 +27,13 @@ public class MpegtsChunk extends MediaChunk {
 		buffer.put(data);
 		return true;
 	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append("mpegtsChunk");
+		data.append(" timestamp:").append(getTimestamp() / 90000D);
+		data.append(" duration:").append(getDuration());
+		data.append(" size:").append(getBufferSize());
+		return data.toString();
+	}
 }

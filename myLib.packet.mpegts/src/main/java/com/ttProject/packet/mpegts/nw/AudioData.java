@@ -1,4 +1,4 @@
-package com.ttProject.packet.mpegts;
+package com.ttProject.packet.mpegts.nw;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

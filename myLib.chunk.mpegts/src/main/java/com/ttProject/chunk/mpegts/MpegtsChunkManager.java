@@ -1,6 +1,9 @@
 package com.ttProject.chunk.mpegts;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -8,10 +11,12 @@ import org.apache.log4j.Logger;
 import com.ttProject.chunk.IMediaChunk;
 import com.ttProject.chunk.MediaChunkManager;
 import com.ttProject.chunk.mpegts.analyzer.IPesAnalyzer;
+import com.ttProject.media.IAudioData;
 import com.ttProject.media.Unit;
 import com.ttProject.media.mpegts.CodecType;
 import com.ttProject.media.mpegts.field.PmtElementaryField;
 import com.ttProject.media.mpegts.packet.Pat;
+import com.ttProject.media.mpegts.packet.Pes;
 import com.ttProject.media.mpegts.packet.Pmt;
 import com.ttProject.media.mpegts.packet.Sdt;
 
@@ -144,13 +149,13 @@ public class MpegtsChunkManager extends MediaChunkManager {
 			logger.info("必要なセットアップ情報がありませんでした。");
 			return null;
 		}
+		IMediaChunk resultChunk;
 		// 処理したいtimestampを求めておく
 		long targetPts = passedPts + (long)(90000 * getDuration());
 		// 映像と音声のdurationについて確認しておく。
 		// 問題のduration以上データがのこっていることを確認しておく。
-		if((videoDataList.getCodecType() != null && videoDataList.getLastDataPts() > targetPts)
-		&& (audioDataList.getCodecType() != null && audioDataList.getLastDataPts() > targetPts)) {
-//			logger.info("すでに必要な情報がたまっています。");
+		if((videoDataList.getCodecType() == null || (videoDataList.getCodecType() != null && videoDataList.getLastDataPts() > targetPts))
+		&& (audioDataList.getCodecType() == null || (audioDataList.getCodecType() != null && audioDataList.getLastDataPts() > targetPts))) {
 			// すでにデータがたまっている。
 			// mpegtsChunkにデータをいれていく必要あり。
 			if(chunk == null) {
@@ -159,11 +164,191 @@ public class MpegtsChunkManager extends MediaChunkManager {
 				chunk.write(sdt.getBuffer());
 				chunk.write(pat.getBuffer());
 				chunk.write(pmt.getBuffer());
+				// 開始時の時刻を書き込んでおきたい。
+				if(videoDataList.getCodecType() != null) {
+					chunk.setTimestamp(videoDataList.getFirstDataPts());
+				}
+				else if(audioDataList.getCodecType() != null) {
+					chunk.setTimestamp(audioDataList.getFirstDataPts());
+				}
 			}
 			// unitを作成する。
+			resultChunk = makeFrameUnit(targetPts);
+			if(resultChunk != null) {
+				// 前のデータが完成しているので、次のデータにうつりたい。
+				chunk = null;
+			}
 			// 必要な長さのデータができていたら応答する。
+			return resultChunk;
 		}
 		return null;
+	}
+	/**
+	 * frameunitを作成します。
+	 * ただし、映像のあるなし、音声のあるなしによって変わります。
+	 * @param targetPts
+	 */
+	private IMediaChunk makeFrameUnit(long targetPts) throws Exception {
+		if(videoDataList.getCodecType() == null) {
+			// 音声のみの場合
+			logger.info("音声のみ");
+			return makeAudioOnlyFrameUnit(targetPts);
+		}
+		else if(audioDataList.getCodecType() == null) {
+			// 映像のみの場合
+			logger.info("映像のみ");
+			return makeVideoOnlyFrameUnit(targetPts);
+		}
+		else {
+			// 両方ある場合
+			logger.info("両方ある");
+			return makeNormalFrameUnit(targetPts);
+		}
+	}
+	/**
+	 * 音声のみのframeUnitをつくります。
+	 * @param targetPts
+	 * @throws Exception
+	 */
+	private IMediaChunk makeAudioOnlyFrameUnit(long targetPts) throws Exception {
+		int audioSize = 0;
+		List<IAudioData> audioList = new ArrayList<IAudioData>();
+		long audioStartPts = audioDataList.getFirstDataPts();
+		while(true) {
+			IAudioData audioData = audioDataList.shift();
+			if(audioData == null || audioDataList.getFirstDataPts() > targetPts) {
+				// データがなくなった場合もしくは、データが問題のptsを超えた場合
+				if(audioData != null) {
+					audioDataList.unshift(audioData);
+				}
+				if(audioSize != 0) {
+					// 処理おわり ここまでこれたということはchunkができたということ。
+					makeAudioPes(audioSize, audioList, audioStartPts);
+				}
+				// getFirstDataPtsでデータがなくても音声に限っていえばduration値を応答することは可能。
+				long durationTimestamp = audioDataList.getFirstDataPts() - chunk.getTimestamp();
+				chunk.setDuration(durationTimestamp / 90000F);
+				passedPts = audioDataList.getFirstDataPts();
+				break;
+			}
+			audioSize += audioData.getSize(); // データサイズを計算
+			audioList.add(audioData); // データを追加リストに登録
+			// ある程度以上データがたまっていたら追加計算しておく。
+			if(audioSize > 0x1000) {
+				// 書き込み実行
+				makeAudioPes(audioSize, audioList, audioStartPts);
+				audioList.clear();
+				audioSize = 0;
+				audioStartPts = audioDataList.getFirstDataPts();
+			}
+		}
+		return chunk;
+	}
+	/**
+	 * audio用のpesを作成します。
+	 * @param audioSize
+	 * @param audioDataList
+	 * @param audioStartPts
+	 * @throws Exception
+	 */
+	private void makeAudioPes(int audioSize, List<IAudioData> audioList, long audioStartPts) throws Exception {
+		ByteBuffer buffer = ByteBuffer.allocate(audioSize);
+		for(IAudioData audioData : audioList) {
+			buffer.put(audioData.getRawData());
+		}
+		buffer.flip();
+		Pes audioPes = new Pes(audioDataList.getCodecType(),
+				pmt.getPcrPid() == audioDataList.getPid(), // pcrであるかはフラグ次第
+				true, // randomAccessは絶対にOK(音声なので)
+				audioDataList.getPid(), // pid
+				buffer, // 実データ
+				audioStartPts); // 開始pts
+		do {
+			chunk.write(audioPes.getBuffer());
+		} while((audioPes = audioPes.nextPes()) != null);
+	}
+	/**
+	 * 映像のみのframeUnitをつくります
+	 * @param targetPts
+	 * @return
+	 */
+	private IMediaChunk makeVideoOnlyFrameUnit(long targetPts) throws Exception {
+		// pesデータをvideoDataListから引き出していく。
+		while(true) {
+			Pes videoPes = videoDataList.shift();
+			if(videoPes == null || // もうvideoPesがない場合
+					(videoPes.isAdaptationFieldExist() && videoPes.getAdaptationField().getRandomAccessIndicator() == 1) && // keyFrameで
+					(videoPes.hasPts() && videoPes.getPts().getPts() > targetPts)) { // pts値が目標のptsを超えている場合
+				if(videoPes != null) {
+					videoDataList.unshift(videoPes);
+				}
+				// データが残っている場合は記録しなければいけな・・・いことないか
+				long durationTimestamp = videoDataList.getFirstDataPts() - chunk.getTimestamp();
+				chunk.setDuration(durationTimestamp / 90000F);
+				passedPts = videoDataList.getFirstDataPts();
+				break;
+			}
+			// pesがある場合は書き込んでいく。
+			chunk.write(videoPes.getBuffer());
+		}
+		return chunk;
+	}
+	/**
+	 * 通常のframeUnitを作ります。
+	 * @param targetPts
+	 * @return
+	 */
+	private IMediaChunk makeNormalFrameUnit(long targetPts) throws Exception {
+		// pesデータをvideoDataListから引き出していく。
+		int audioSize = 0;
+		List<IAudioData> audioList = new ArrayList<IAudioData>();
+		long audioStartPts = audioDataList.getFirstDataPts();
+		// 開始位置のptsは必要ないか？
+		while(true) {
+			Pes videoPes = videoDataList.shift();
+			// payloadstartの段階でaudioデータの挿入を気にかける。
+			if(videoPes.isPayloadUnitStart() && videoPes.hasPts()) {
+				while(true) {
+					IAudioData audioData = audioDataList.shift();
+					if(audioData == null || audioDataList.getFirstDataPts() > videoPes.getPts().getPts()) {
+						if(audioData != null) {
+							audioDataList.unshift(audioData);
+						}
+						// ptsを超えた場合もしくはaudioDataがnullの場合
+						logger.info("frame間audioData:" + audioList.size());
+						if(audioSize > 0x1000) {
+							logger.info("データサイズがたまったので書き込み実行しておく。");
+							makeAudioPes(audioSize, audioList, audioStartPts);
+							audioList.clear();
+							audioSize = 0;
+							audioStartPts = audioDataList.getFirstDataPts();
+						}
+						break;
+					}
+					audioSize += audioData.getSize();
+					audioList.add(audioData);
+				}
+			}
+			if(videoPes == null || // もうvideoPesがない場合
+					(videoPes.isAdaptationFieldExist() && videoPes.getAdaptationField().getRandomAccessIndicator() == 1) && // keyFrameで
+					(videoPes.hasPts() && videoPes.getPts().getPts() > targetPts)) { // pts値が目標のptsを超えている場合
+				if(videoPes != null) {
+					videoDataList.unshift(videoPes);
+				}
+				// ここまできたときにaudioデータがのこっている場合
+				if(audioSize != 0) {
+					makeAudioPes(audioSize, audioList, audioStartPts);
+				}
+				// データが残っている場合は記録しなければいけな・・・いことないか
+				long durationTimestamp = videoDataList.getFirstDataPts() - chunk.getTimestamp();
+				chunk.setDuration(durationTimestamp / 90000F);
+				passedPts = videoDataList.getFirstDataPts();
+				break;
+			}
+			// pesがある場合は書き込んでいく。
+			chunk.write(videoPes.getBuffer());
+		}
+		return chunk;
 	}
 	/**
 	 * 現在処理中のchunkについて応答する。
@@ -193,24 +378,5 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	@Deprecated
 	public String getHeaderExt() {
 		return "ts";
-	}
-	/**
-	 * 処理時間(秒数表記)
-	 */
-	@Override
-	public float getDuration() {
-		long videoPts = 0, audioPts = 0;
-		if(videoDataList.getCodecType() != null) {
-			videoPts = videoDataList.getFirstDataPts();
-		}
-		if(audioDataList.getCodecType() != null) {
-			audioPts = audioDataList.getFirstDataPts();
-		}
-		if(audioPts > videoPts) {
-			return videoPts / 90000f;
-		}
-		else {
-			return audioPts / 90000f;
-		}
 	}
 }

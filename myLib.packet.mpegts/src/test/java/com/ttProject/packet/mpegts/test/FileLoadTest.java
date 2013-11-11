@@ -1,5 +1,6 @@
 package com.ttProject.packet.mpegts.test;
 
+import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
@@ -12,6 +13,7 @@ import com.ttProject.media.mpegts.packet.Pes;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.packet.IMediaPacket;
+import com.ttProject.packet.mpegts.MpegtsPacket;
 import com.ttProject.packet.mpegts.MpegtsPacketManager;
 import com.ttProject.util.BufferUtil;
 
@@ -52,7 +54,7 @@ public class FileLoadTest {
 		IReadChannel source = null;
 		try {
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("mario__.ts")
+					Thread.currentThread().getContextClassLoader().getResource("mario.ts")
 			);
 			IPacketAnalyzer analyzer = new PacketAnalyzer();
 			Packet packet = null;
@@ -60,9 +62,12 @@ public class FileLoadTest {
 				if(packet instanceof Pes) { 
 					if(packet.isPayloadUnitStart()) {
 						Pes pes = (Pes)packet;
+						if(pes.isAdaptationFieldExist()) {
+							logger.info(pes.getAdaptationField());
+						}
 						if(pes.getPid() == 0x0101) {
 							logger.info("*" + pes.getPts());
-							Thread.sleep(100);
+//							Thread.sleep(100);
 						}
 						else {
 							logger.info(pes.getPts());
@@ -93,31 +98,52 @@ public class FileLoadTest {
 	public void test() throws Exception {
 		logger.info("パケット生成テスト開始");
 		IReadChannel source = null;
+		FileOutputStream fos = null;
 		try {
+			fos = new FileOutputStream("hogehoge2.ts");
 			source = FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("mario.ts")
 			);
 			MpegtsPacketManager packetManager = new MpegtsPacketManager();
-			packetManager.setDuration(5); // 5秒ごとに設定しておく。
+			packetManager.setDuration(10); // 5秒ごとに設定しておく。
 			// 読み込めたデータを送り込んでいけばOK
 			ByteBuffer buffer = null;
 			while(true) {
 				int remaining = source.size() - source.position();
 				int readSize = (remaining > 655350 ? 655350 : remaining);
 				if(readSize == 0) {
+					logger.info("読み込みサイズが0になりました。");
 					break;
 				}
+				logger.info("読み込みます。");
 				buffer = BufferUtil.safeRead(source, readSize);
 				// 読み取ったbufferをぶち込む
 				for(IMediaPacket packet : packetManager.getPackets(buffer)) {
 					logger.info(packet);
+					System.out.println(packet);
+					fos.write(packet.getRawData());
 				}
+			}
+			// 残っているデータがあれば・・・
+			MpegtsPacket packet = (MpegtsPacket)packetManager.getCurrentPacket();
+			if(packet != null) {
+				// パケットの生成が実行されていないので、ゴミが残ったままになってしまうわけか・・・
+				logger.info("packetがまだあるので、書き込みしておきます。");
+				fos.write(packet.getRawData());
 			}
 		}
 		catch(Exception e) {
-			logger.error("", e);
+			logger.error("エラーが発生しました。", e);
 		}
 		finally {
+			if(fos != null) {
+				try {
+					fos.close();
+				}
+				catch(Exception e) {
+				}
+				fos = null;
+			}
 			if(source != null) {
 				try {
 					source.close();
