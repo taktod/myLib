@@ -26,7 +26,7 @@ public class LoadTest {
 	/**
 	 * 通常のmpegtsを分割する動作テスト
 	 */
-//	@Test
+	@Test
 	public void analyzeNormalData() {
 		IReadChannel source = null;
 		FileOutputStream fos = null;
@@ -75,7 +75,7 @@ public class LoadTest {
 	/**
 	 * 映像なしのmpegtsを分割する動作テスト
 	 */
-	@Test
+//	@Test
 	public void analyzeNoVideoData() {
 		IReadChannel source = null;
 		FileOutputStream fos = null;
@@ -129,7 +129,7 @@ public class LoadTest {
 	/**
 	 * 音声なしのmpegtsを分割する動作テスト
 	 */
-	@Test
+//	@Test
 	public void analyzeNoAudioData() {
 		IReadChannel source = null;
 		FileOutputStream fos = null;

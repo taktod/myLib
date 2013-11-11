@@ -19,6 +19,7 @@ import com.ttProject.media.mpegts.packet.Pat;
 import com.ttProject.media.mpegts.packet.Pes;
 import com.ttProject.media.mpegts.packet.Pmt;
 import com.ttProject.media.mpegts.packet.Sdt;
+import com.ttProject.util.HexUtil;
 
 /**
  * mpegtsのchunkを取り出すための動作マネージャー
@@ -252,11 +253,13 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	 * @throws Exception
 	 */
 	private void makeAudioPes(int audioSize, List<IAudioData> audioList, long audioStartPts) throws Exception {
+		logger.info("buffer作成");
 		ByteBuffer buffer = ByteBuffer.allocate(audioSize);
 		for(IAudioData audioData : audioList) {
 			buffer.put(audioData.getRawData());
 		}
 		buffer.flip();
+		logger.info("pes作成");
 		Pes audioPes = new Pes(audioDataList.getCodecType(),
 				pmt.getPcrPid() == audioDataList.getPid(), // pcrであるかはフラグ次第
 				true, // randomAccessは絶対にOK(音声なので)
@@ -264,7 +267,9 @@ public class MpegtsChunkManager extends MediaChunkManager {
 				buffer, // 実データ
 				audioStartPts); // 開始pts
 		do {
-			chunk.write(audioPes.getBuffer());
+			buffer = audioPes.getBuffer();
+			logger.info(HexUtil.toHex(buffer, 0, 50, true));
+			chunk.write(buffer);
 		} while((audioPes = audioPes.nextPes()) != null);
 	}
 	/**
@@ -318,10 +323,14 @@ public class MpegtsChunkManager extends MediaChunkManager {
 						logger.info("frame間audioData:" + audioList.size());
 						if(audioSize > 0x1000) {
 							logger.info("データサイズがたまったので書き込み実行しておく。");
+							logger.info(audioSize);
+							logger.info(audioList);
+							logger.info(audioStartPts);
 							makeAudioPes(audioSize, audioList, audioStartPts);
 							audioList.clear();
 							audioSize = 0;
 							audioStartPts = audioDataList.getFirstDataPts();
+							logger.info("書き込みおわり");
 						}
 						break;
 					}
