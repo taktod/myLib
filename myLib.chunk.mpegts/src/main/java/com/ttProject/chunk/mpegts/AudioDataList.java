@@ -22,7 +22,7 @@ public class AudioDataList extends MediaDataList {
 	/** 転送済みのサンプル数 */
 	private long sendedCounter = 0;
 	/** pesの開始位置(mpegtsのtimestampは必ずしも0からはじまっていないので、ずれ分を保持しなければいけない) */
-	private long startPos = 0;
+	private long startPos = -1;
 	/** sampleRate値(時間の計算で必要) */
 	private int sampleRate = 44100;
 	/**
