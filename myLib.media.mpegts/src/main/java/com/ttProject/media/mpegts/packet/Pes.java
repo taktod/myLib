@@ -165,8 +165,10 @@ public class Pes extends Packet {
 		setupDefault(pid, randomAccessFlg); // デフォルトを設定しておく。
 		// keyFrameもしくは、codecが音声の場合は、randomAccessIndicatorをつけておきたい。
 		this.rawData = rawData.duplicate(); // コピーでデータを保持しておく。
-//		System.out.println("targetSize:" + rawData.remaining());
 		setPesPacketLength((short)(rawData.remaining() + 3));
+		if(getPesPacketLength() < 0) {
+			throw new Exception("pesPacketのサイズがoverflowしました。データの粒度が大きすぎます。");
+		}
 		// pcr
 		if(pcrFlg) {
 			AdaptationField aField = getAdaptationField();
