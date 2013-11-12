@@ -66,6 +66,13 @@ public class VideoDataList extends MediaDataList {
 		Pes firstKeyFramePes = keyPesList.get(0);
 		return firstKeyFramePes.getPts().getPts();
 	}
+	public long getSecondDataPts() {
+		if(keyPesList.size() <= 1) {
+			return -1;
+		}
+		Pes secondKeyFramePes = keyPesList.get(1);
+		return secondKeyFramePes.getPts().getPts();
+	}
 	/**
 	 * 先頭を取り出す
 	 * @return
