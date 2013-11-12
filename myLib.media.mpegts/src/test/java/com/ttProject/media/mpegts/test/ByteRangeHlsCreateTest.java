@@ -2,7 +2,6 @@ package com.ttProject.media.mpegts.test;
 
 import java.io.FileOutputStream;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.media.mpegts.IPacketAnalyzer;
@@ -20,12 +19,13 @@ import com.ttProject.util.BufferUtil;
  *
  */
 public class ByteRangeHlsCreateTest {
-	private Logger logger = Logger.getLogger(ByteRangeHlsCreateTest.class);
+//	private Logger logger = Logger.getLogger(ByteRangeHlsCreateTest.class);
 	@Test
 	public void test() {
+		FileOutputStream master = null;
 		try {
 			// 母艦
-			FileOutputStream master = new FileOutputStream("/Users/todatakahiko/tmp/rtype/rtype.ts");
+			master = new FileOutputStream("/Users/todatakahiko/tmp/rtype/rtype.ts");
 			/*
 			 * こんなのをつくりたいところ。
 			 * #EXTM3U
@@ -93,6 +93,15 @@ public class ByteRangeHlsCreateTest {
 		}
 		catch(Exception e) {
 			e.printStackTrace();
+		}
+		finally {
+			if(master != null) {
+				try {
+					master.close();
+				}
+				catch(Exception e) {}
+				master = null;
+			}
 		}
 	}
 }
