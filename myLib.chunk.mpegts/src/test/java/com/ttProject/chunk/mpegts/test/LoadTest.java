@@ -21,12 +21,12 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class LoadTest {
-	/** 黄砂ロガー */
+	/** ロガー */
 	private Logger logger = Logger.getLogger(LoadTest.class);
 	/**
 	 * 通常のmpegtsを分割する動作テスト
 	 */
-//	@Test
+	@Test
 	public void analyzeNormalData() {
 		IReadChannel source = null;
 		FileOutputStream fos = null;
