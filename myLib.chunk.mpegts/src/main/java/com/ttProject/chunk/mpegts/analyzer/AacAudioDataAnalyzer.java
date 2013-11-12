@@ -53,9 +53,7 @@ public class AacAudioDataAnalyzer implements IAudioDataAnalyzer {
 	@Override
 	public List<IAudioData> getRemainData() {
 		List<IAudioData> result = null;
-		// payloadの開始位置の場合
 		if(pesList.size() != 0) {
-			// 前のデータがある場合
 			ByteBuffer buffer = ByteBuffer.allocate(188 * pesList.size());
 			while(pesList.size() > 0) {
 				Pes p = pesList.remove(0);

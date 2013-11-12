@@ -69,6 +69,7 @@ public class MpegtsPesAnalyzer implements IPesAnalyzer {
 					break;
 				case AUDIO_MPEG1:
 					// mp3の場合
+					audioDataAnalyzer = new Mp3AudioDataAnalyzer();
 					break;
 				default:
 					break;
