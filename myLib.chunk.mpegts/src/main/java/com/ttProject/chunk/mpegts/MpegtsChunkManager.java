@@ -156,6 +156,13 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		// 問題のduration以上データがのこっていることを確認しておく。
 		if((videoDataList.getCodecType() == null || (videoDataList.getCodecType() != null && videoDataList.getLastDataPts() > targetPts))
 		&& (audioDataList.getCodecType() == null || (audioDataList.getCodecType() != null && audioDataList.getLastDataPts() > targetPts))) {
+			// 映像音声ともにあるデータの場合は、keyFrame間の音声データが満了しているか確認しておく。
+			if(videoDataList.getCodecType() != null && audioDataList.getCodecType() != null // 両方メディアがある
+			&& videoDataList.getSecondDataPts() != -1 // videoDataのkeyFrameが２つ以上内包されている
+			&& videoDataList.getSecondDataPts() > audioDataList.getLastDataPts()) { // ２つ目までのaudioデータがcompleteしている
+				// 満了していなさそうなので、処理をスキップ
+				return null;
+			}
 			// すでにデータがたまっている。
 			// mpegtsChunkにデータをいれていく必要あり。
 			if(chunk == null) {
@@ -303,21 +310,27 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		int audioSize = 0;
 		List<IAudioData> audioList = new ArrayList<IAudioData>();
 		long audioStartPts = audioDataList.getFirstDataPts();
-		// 開始位置のptsは必要ないか？
+		// はじめのframeの処理をしたというフラグをいれます。(これをいれないとフレーム0で処理がおわることがあります。)
+		boolean firstFlg = true;
+		// 開始前のptsは必要ないか？
 		while(true) {
 			Pes videoPes = videoDataList.shift();
 			// payloadstartの段階でaudioデータの挿入を気にかける。
 			if(videoPes.isPayloadUnitStart() && videoPes.hasPts()) {
 				while(true) {
 					IAudioData audioData = audioDataList.shift();
-					if(audioData == null || audioDataList.getFirstDataPts() > videoPes.getPts().getPts()) {
+					if(audioData == null) {
+						logger.warn("audioDataがnullでした");
+						// TODO どうしてもaudioDataがnullにならないと動作しないといったことが発生したら、対処を考える
+						throw new Exception("audioDataがnullになることは想定外としておきます。");
+					}
+					if(audioDataList.getFirstDataPts() > videoPes.getPts().getPts()) {
+						// 現在処理中の映像ptsを超えた場合
 						if(audioData != null) {
 							audioDataList.unshift(audioData);
 						}
 						// ptsを超えた場合もしくはaudioDataがnullの場合
-						logger.info("frame間audioData:" + audioList.size());
 						if(audioSize > 0x1000) {
-							logger.info("データサイズがたまったので書き込み実行しておく。");
 							makeAudioPes(audioSize, audioList, audioStartPts);
 							audioList.clear();
 							audioSize = 0;
@@ -330,20 +343,29 @@ public class MpegtsChunkManager extends MediaChunkManager {
 				}
 			}
 			if(videoPes == null || // もうvideoPesがない場合
-					(videoPes.isAdaptationFieldExist() && videoPes.getAdaptationField().getRandomAccessIndicator() == 1) && // keyFrameで
-					(videoPes.hasPts() && videoPes.getPts().getPts() > targetPts)) { // pts値が目標のptsを超えている場合
-				if(videoPes != null) {
-					videoDataList.unshift(videoPes);
+					(videoPes.isAdaptationFieldExist() && videoPes.getAdaptationField().getRandomAccessIndicator() == 1)) {// keyFrameである場合
+				if(firstFlg && videoPes != null) {
+					// はじめのデータである場合はフラグをつけて放置する
+					firstFlg = false;
 				}
-				// ここまできたときにaudioデータがのこっている場合
-				if(audioSize != 0) {
-					makeAudioPes(audioSize, audioList, audioStartPts);
+				else {
+					// 今回の処理完了時
+					if(videoPes != null) {
+						videoDataList.unshift(videoPes);
+					}
+					// ここまできたときにaudioデータがのこっている場合
+					if(audioSize != 0) {
+						makeAudioPes(audioSize, audioList, audioStartPts);
+					}
+					if(videoDataList.getFirstDataPts() < targetPts) {
+						return null;
+					}
+					// データが残っている場合は記録しなければいけな・・・いことないか
+					long durationTimestamp = videoDataList.getFirstDataPts() - chunk.getTimestamp();
+					chunk.setDuration(durationTimestamp / 90000F);
+					passedPts = videoDataList.getFirstDataPts();
+					break;
 				}
-				// データが残っている場合は記録しなければいけな・・・いことないか
-				long durationTimestamp = videoDataList.getFirstDataPts() - chunk.getTimestamp();
-				chunk.setDuration(durationTimestamp / 90000F);
-				passedPts = videoDataList.getFirstDataPts();
-				break;
 			}
 			// pesがある場合は書き込んでいく。
 			chunk.write(videoPes.getBuffer());
@@ -378,5 +400,12 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	@Deprecated
 	public String getHeaderExt() {
 		return "ts";
+	}
+	/**
+	 * 経過ptsを応答します。
+	 */
+	@Override
+	public long getPassedTic() {
+		return passedPts;
 	}
 }

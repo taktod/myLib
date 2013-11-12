@@ -46,4 +46,9 @@ public interface IMediaChunkManager {
 	 * @return 残っているmediaChunkがある場合はここで応答しなければいけない。
 	 */
 	public IMediaChunk close();
+	/**
+	 * 
+	 * @return
+	 */
+	public long getPassedTic();
 }
