@@ -1,6 +1,7 @@
 package com.ttProject.media.mpegts;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,7 @@ import com.ttProject.media.mpegts.packet.Pes;
 import com.ttProject.media.mpegts.packet.Pat;
 import com.ttProject.media.mpegts.packet.Pmt;
 import com.ttProject.media.mpegts.packet.Sdt;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
@@ -40,7 +42,22 @@ public class MpegtsManager extends Manager<Packet> {
 	 */
 	@Override
 	public List<Packet> getUnits(ByteBuffer data) throws Exception {
-		return null;
+		ByteBuffer buffer = appendBuffer(data);
+		if(buffer == null) {
+			return null;
+		}
+		IReadChannel bufferChannel = new ByteReadChannel(buffer);
+		List<Packet> result = new ArrayList<Packet>();
+		while(true) {
+			int position = bufferChannel.position();
+			Packet packet = getUnit(bufferChannel);
+			if(packet == null) {
+				buffer.position(position);
+				break;
+			}
+			result.add(packet);
+		}
+		return result;
 	}
 	/**
 	 * {@inheritDoc}
