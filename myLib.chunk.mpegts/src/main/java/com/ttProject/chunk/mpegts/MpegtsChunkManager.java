@@ -55,11 +55,16 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	}
 	/**
 	 * pesの解析オブジェクトを登録する。
+	 * <note>
+	 * setupTracksを先に設定してください。(設定後のpmtをベースに処理するため)
+	 * </note>
 	 * @param pesAnalyzer
 	 */
 	public void addPesAnalyzer(IPesAnalyzer pesAnalyzer) {
+		// pmtを設置してやらないと自分がpcrであるかわからない。
 		pesAnalyzer.setAudioDataList(audioDataList);
 		pesAnalyzer.setVideoDataList(videoDataList);
+		pesAnalyzer.analyze(pmt); // pmtを先行して送っておきます。
 		analyzers.add(pesAnalyzer);
 	}
 	/**
