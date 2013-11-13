@@ -9,7 +9,6 @@ import com.ttProject.media.mpegts.packet.Pmt;
  * h264のframeを解析してPesを作成します。
  * IAudioDataはスルー
  * @author taktod
- *
  */
 public class H264PesAnalyzer implements IPesAnalyzer {
 	@Override
