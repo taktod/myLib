@@ -122,6 +122,8 @@ public class Pes extends Packet {
 	/** 保持している生データ */
 	// TODO 読み込み処理中にこのデータも作成すべき
 	private ByteBuffer rawData;
+	/** 書き込み済み時のデータ */
+	private ByteBuffer writtenRawData = null;
 	/**
 	 * コンストラクタ(データ作成用)
 	 * @param codec コーデック情報
@@ -440,18 +442,20 @@ public class Pes extends Packet {
 		if(rawData == null) {
 			throw new Exception("メディアデータの設定がなされていません。");
 		}
-		// 動作カウンターを上げる
-		if(rawData.remaining() == 0) {
-			return null;
+		if(writtenRawData == null) {
+			// 動作カウンターを上げる
+			if(rawData.remaining() == 0) {
+				return null;
+			}
+			Integer counter = counterMap.get((int)getPid());
+			if(counter == null) {
+				counter = 0;
+			}
+			setContinuityCounter(counter);
+			counter ++;
+			counterMap.put((int)getPid(), counter);
 		}
 		ByteBuffer buffer = ByteBuffer.allocate(188);
-		Integer counter = counterMap.get((int)getPid());
-		if(counter == null) {
-			counter = 0;
-		}
-		setContinuityCounter(counter);
-		counter ++;
-		counterMap.put((int)getPid(), counter);
 		// ここは持っているデータをそのまま書き込めばOK
 		// adaptationFieldの調整とか、出力データの調整はあとでnextPesでなんとかしておく。
 		// bitデータについて調整しておく。
@@ -461,7 +465,15 @@ public class Pes extends Packet {
 		// データを書き込む
 		int left = 188 - buffer.position();
 		byte[] data = new byte[left]; // 残りの長さがrawDataに入っているデータとしておきます。
-		rawData.get(data);
+		if(writtenRawData == null) {
+			rawData.get(data);
+			writtenRawData = ByteBuffer.allocate(left);
+			writtenRawData.put(data);
+		}
+		else {
+			writtenRawData.position(0);
+			writtenRawData.get(data);
+		}
 		buffer.put(data);
 		buffer.flip();
 		return buffer;
