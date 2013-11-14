@@ -37,10 +37,10 @@ public class Mp3PesAnalyzer implements IPesAnalyzer {
 	 * 開始時のptsはとりあえず0と仮定します。
 	 */
 	@Override
-	public void analyze(Unit unit) {
+	public void analyze(Unit unit, long timestamp) {
 		if(unit instanceof Mp3) {
 			Mp3 mp3 = (Mp3)unit;
-			audioDataList.addAudioData(mp3, 0);
+			audioDataList.addAudioData(mp3, timestamp);
 		}
 	}
 }

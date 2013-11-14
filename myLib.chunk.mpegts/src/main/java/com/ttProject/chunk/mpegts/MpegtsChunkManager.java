@@ -64,7 +64,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		// pmtを設置してやらないと自分がpcrであるかわからない。
 		pesAnalyzer.setAudioDataList(audioDataList);
 		pesAnalyzer.setVideoDataList(videoDataList);
-		pesAnalyzer.analyze(pmt); // pmtを先行して送っておきます。
+		pesAnalyzer.analyze(pmt, 0); // pmtを先行して送っておきます。
 		analyzers.add(pesAnalyzer);
 	}
 	/**
@@ -106,7 +106,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		// データをanalyzeしてchunkが取得できたらそこでおわり。
 		// それ以外の場合はnullを返す。
 		for(IPesAnalyzer analyzer : analyzers) {
-			analyzer.analyze(unit);
+			analyzer.analyze(unit, 0);
 		}
 		// 複数取れる可能性も一応あるのか・・・
 		return checkCompleteChunk(); // 完了したchunkについて調査する。

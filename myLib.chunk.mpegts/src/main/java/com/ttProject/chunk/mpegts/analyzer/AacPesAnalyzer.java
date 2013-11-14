@@ -33,14 +33,14 @@ public class AacPesAnalyzer implements IPesAnalyzer {
 		this.audioDataList = audioDataList;
 	}
 	/**
-	 * データを登録します。開始時のptsは0ととりあえずしておきます。
+	 * データを登録します。
 	 */
 	@Override
-	public void analyze(Unit unit) {
+	public void analyze(Unit unit, long timestamp) {
 		if(unit instanceof Aac) {
 			// aacの場合はaudioDataListにいれますが、動作中のptsが必要になります。(開始位置の情報を登録する必要があるります。)
 			Aac aac = (Aac) unit;
-			audioDataList.addAudioData(aac, 0);
+			audioDataList.addAudioData(aac, timestamp);
 		}
 	}
 }

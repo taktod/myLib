@@ -23,5 +23,5 @@ public interface IPesAnalyzer {
 	 * 解析を実行します
 	 * @param unit
 	 */
-	public void analyze(Unit unit);
+	public void analyze(Unit unit, long timestamp);
 }

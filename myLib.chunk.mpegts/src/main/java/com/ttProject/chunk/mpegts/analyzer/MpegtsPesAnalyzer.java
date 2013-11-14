@@ -43,7 +43,7 @@ public class MpegtsPesAnalyzer implements IPesAnalyzer {
 	 * 解析できたら、必要に応じてaudioDataListやvideoDataListにみつけたデータをいれなければならない。
 	 */
 	@Override
-	public void analyze(Unit unit) {
+	public void analyze(Unit unit, long timestamp) {
 		if(unit instanceof Pmt) {
 			if(pmt == null) {
 				this.pmt = (Pmt)unit;
