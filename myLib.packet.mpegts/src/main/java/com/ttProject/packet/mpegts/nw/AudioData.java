@@ -65,10 +65,11 @@ public class AudioData extends MediaData {
 				buffer.put(p.getRawData());
 			}
 			buffer.flip(); // aacもしくはmp3として分解できそうなデータはそろった。あとは分解して、配列に突っ込んでおくだけ。
-			IReadChannel bufferChannel = new ByteReadChannel(buffer);
 			switch(getCodecType()) {
 			case AUDIO_AAC: // aacの場合
+				IReadChannel bufferChannel = null;
 				try {
+					bufferChannel = new ByteReadChannel(buffer);
 					IFrameAnalyzer analyzer = new FrameAnalyzer();
 					Frame frame = null;
 					while((frame = analyzer.analyze(bufferChannel)) != null) {
@@ -81,6 +82,15 @@ public class AudioData extends MediaData {
 				}
 				catch(Exception e) {
 					e.printStackTrace();
+				}
+				finally {
+					if(bufferChannel != null) {
+						try {
+							bufferChannel.close();
+						}
+						catch(Exception e) {}
+						bufferChannel = null;
+					}
 				}
 				break;
 			case AUDIO_MPEG1: // mp3の場合

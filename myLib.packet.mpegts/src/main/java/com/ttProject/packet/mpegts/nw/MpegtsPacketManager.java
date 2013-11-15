@@ -56,6 +56,7 @@ public class MpegtsPacketManager extends MediaPacketManager {
 	// analyzerは外にだしておかないと、初期化時のデータがなくなってエラーになることがあるっぽいですね。
 	private IPacketAnalyzer analyzer = new PacketAnalyzer();
 	/** 動作カウンター */
+	@SuppressWarnings("unused")
 	private int counter = 0;
 	/** 出力ターゲットファイル */
 	private FileOutputStream fos = null;
