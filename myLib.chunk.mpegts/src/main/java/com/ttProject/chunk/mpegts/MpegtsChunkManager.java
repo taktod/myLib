@@ -26,8 +26,8 @@ import com.ttProject.media.mpegts.packet.Sdt;
  * 
  * TODO このchunkManagerは中途で音声や映像のtrackが追加されることは想定していないので、そういう場合に誤動作する可能性があります。
  * VLCの出力データは得意ではないということですね。
- * あと映像がpcrのPIDになっていることを想定しています。その辺りもvlcの出力データに合致していないところ。
- * あとで対応しておきたい。
+ * audioがpcrになっているデータは想定済みになってます。
+ * またVLCの出力データでAC-3を扱ったのだが、myLib.media.ac3をつくらないと対応無理。
  */
 public class MpegtsChunkManager extends MediaChunkManager {
 	/** ロガー */
@@ -131,6 +131,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	 * @param pmt
 	 */
 	private void analyzePmt(Pmt pmt) throws Exception {
+		// TODO あとで下記変わることがあるので、この点注意
 		if(this.pmt != null) {
 			return;
 		}
