@@ -207,17 +207,17 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	private IMediaChunk makeFrameUnit(long targetPts) throws Exception {
 		if(videoDataList.getCodecType() == null) {
 			// 音声のみの場合
-			logger.info("音声のみ");
+//			logger.info("音声のみ");
 			return makeAudioOnlyFrameUnit(targetPts);
 		}
 		else if(audioDataList.getCodecType() == null) {
 			// 映像のみの場合
-			logger.info("映像のみ");
+//			logger.info("映像のみ");
 			return makeVideoOnlyFrameUnit(targetPts);
 		}
 		else {
 			// 両方ある場合
-			logger.info("両方ある");
+//			logger.info("両方ある");
 			return makeNormalFrameUnit(targetPts);
 		}
 	}

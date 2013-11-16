@@ -28,17 +28,23 @@ public class LoadTest {
 	 */
 	@Test
 	public void analyzeNormalData() {
+		System.out.println("#EXTM3U");
+		System.out.println("#EXT-X-ALLOW-CACHE:NO");
+		System.out.println("#EXT-X-TARGETDURATION:5");
+		System.out.println("#EXT-X-VERSION:3");
+		int counter = 0;
 		IReadChannel source = null;
 		FileOutputStream fos = null;
 		try {
-			fos = new FileOutputStream("mario.ts");
+//			fos = new FileOutputStream("mario.ts");
 			// データソース
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("mario.ts")
+					Thread.currentThread().getContextClassLoader().getResource("rtypeDelta.aac.ts")
 			);
 			IMediaChunkManager chunkManager = new MpegtsChunkManager();
 			// mpegtsのデータを投入するので、analyzerを設定しておく。
 			((MpegtsChunkManager)chunkManager).addPesAnalyzer(new MpegtsPesAnalyzer());
+			chunkManager.setDuration(5);
 			IPacketAnalyzer analyzer = new PacketAnalyzer();
 			Packet packet = null;
 			IMediaChunk chunk = null;
@@ -46,8 +52,12 @@ public class LoadTest {
 				// 見つけたpacketを順にmpegtsChunkManagerに流していけばOK
 				chunk = chunkManager.getChunk(packet);
 				if(chunk != null) {
+					System.out.println("#EXTINF:" + chunk.getDuration());
+					fos = new FileOutputStream("rtypeDelta_" + (++ counter) + ".ts");
+					System.out.println("rtypeDelta_" + counter + ".ts");
 					fos.getChannel().write(chunk.getRawBuffer());
-					logger.info(chunk);
+					fos.close();
+//					logger.info(chunk);
 				}
 			}
 		}
