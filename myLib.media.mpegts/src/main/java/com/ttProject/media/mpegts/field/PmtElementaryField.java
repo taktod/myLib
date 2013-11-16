@@ -24,6 +24,15 @@ public class PmtElementaryField {
 	private Bit4 reserved2;
 	private short esInfoLength; // 12bit
 	// ESDescriptor
+	/*
+	 * vlcで作成したmpegtsのデータにこのdescriptorの定義がありましたが、情報がみつからない・・・
+	 * とりあえず・・・
+	 * type:0x05 4 AC-3と書いてあった
+	 * type:0x0A 4 00 00 00 00で埋まってた。
+	 * の２種類だけ見つかりました。なんだろうねぇこれ・・・
+	 * @see http://www.etherguidesystems.com/help/sdos/mpeg/semantics/mpeg-2/descriptors/Default.aspx
+	 * 情報めっけ
+	 */
 //	private Descriptor esDescriptor; // 形式がわからないので、とりあえず放置
 	public int getSize() {
 		return 5 + esInfoLength;
