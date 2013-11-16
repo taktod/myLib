@@ -9,6 +9,7 @@ import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit8;
 import com.ttProject.media.mpegts.CodecType;
+import com.ttProject.media.mpegts.descriptor.Descriptor;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
@@ -33,6 +34,7 @@ public class PmtElementaryField {
 	 * @see http://www.etherguidesystems.com/help/sdos/mpeg/semantics/mpeg-2/descriptors/Default.aspx
 	 * 情報めっけ
 	 */
+	private List<Descriptor> descriptors = new ArrayList<Descriptor>();
 //	private Descriptor esDescriptor; // 形式がわからないので、とりあえず放置
 	public int getSize() {
 		return 5 + esInfoLength;
@@ -70,7 +72,16 @@ public class PmtElementaryField {
 		list.add(reserved2);
 		list.add(new Bit4(esInfoLength >>> 8));
 		list.add(new Bit8(esInfoLength));
+		for(Descriptor descriptor : descriptors) {
+			list.addAll(descriptor.getBits());
+		}
 		return list;
+	}
+	/**
+	 * 保持descriptorを応答する
+	 */
+	public List<Descriptor> getDescriptors() {
+		return new ArrayList<Descriptor>(descriptors);
 	}
 	/**
 	 * 解析しておく。
@@ -92,8 +103,11 @@ public class PmtElementaryField {
 			nextTrackPid = (short)(pid + 1);
 		}
 		esInfoLength = (short)((esInfoLength_1.get() << 8) | esInfoLength_2.get());
-		if(esInfoLength != 0) {
-			throw new Exception("elementaryStreamのdescriptorが定義されていました。作者に解析を依頼してください。");
+		int size = esInfoLength;
+		while(size > 0) {
+			Descriptor descriptor = Descriptor.getDescriptor(ch);
+			size -= descriptor.getDescriptorLength().get() + 2; // データ長 + データtype&length定義分
+			descriptors.add(descriptor);
 		}
 	}
 	@Override
@@ -110,6 +124,10 @@ public class PmtElementaryField {
 		data.append(" pid:").append(Integer.toHexString(pid));
 		data.append(" r2:").append(reserved2);
 		data.append(" eil").append(Integer.toHexString(esInfoLength));
+		for(Descriptor descriptor : descriptors) {
+			data.append("\n");
+			data.append(descriptor);
+		}
 		return data.toString();
 	}
 }

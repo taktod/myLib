@@ -74,6 +74,14 @@ public abstract class Descriptor {
 		Bit8 descriptorLength = new Bit8();
 		Bit.bitLoader(channel, descriptorTag, descriptorLength);
 		switch(DescriptorType.getType(descriptorTag.get())) {
+		case registration_descriptor:
+			RegistrationDescriptor registrationDescriptor = new RegistrationDescriptor(descriptorLength);
+			registrationDescriptor.analyze(channel);
+			return registrationDescriptor;
+		case ISO_639_language_descriptor:
+			ISO639LanguageDescriptor iso639LanguageDescriptor = new ISO639LanguageDescriptor(descriptorLength);
+			iso639LanguageDescriptor.analyze(channel);
+			return iso639LanguageDescriptor;
 		case service_descriptor:
 			ServiceDescriptor serviceDescriptor = new ServiceDescriptor(descriptorLength);
 			serviceDescriptor.analyze(channel);
