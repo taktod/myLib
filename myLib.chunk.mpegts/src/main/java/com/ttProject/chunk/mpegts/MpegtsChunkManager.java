@@ -23,6 +23,11 @@ import com.ttProject.media.mpegts.packet.Sdt;
 /**
  * mpegtsのchunkを取り出すための動作マネージャー
  * 基本的にgetChunksにUnitデータ(flvのTagとかmpegtsのPacketとか)をいれると、対応したMediaChunkがでてくる。
+ * 
+ * TODO このchunkManagerは中途で音声や映像のtrackが追加されることは想定していないので、そういう場合に誤動作する可能性があります。
+ * VLCの出力データは得意ではないということですね。
+ * あと映像がpcrのPIDになっていることを想定しています。その辺りもvlcの出力データに合致していないところ。
+ * あとで対応しておきたい。
  */
 public class MpegtsChunkManager extends MediaChunkManager {
 	/** ロガー */
