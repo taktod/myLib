@@ -56,6 +56,7 @@ public class MpegtsPesAnalyzer implements IPesAnalyzer {
 		}
 		Pes pes = (Pes)unit;
 		if(pes.getPid() == videoDataList.getPid()) {
+			// TODO 動画の場合でも一旦別のデータにもどしてから再構築した方がpcrが音声にあるときに動作できるようになるので、そうしたい。
 			// 動画のpesの場合
 			videoDataList.addPes(pes);
 		}
