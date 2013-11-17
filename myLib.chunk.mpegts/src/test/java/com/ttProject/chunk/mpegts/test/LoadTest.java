@@ -4,7 +4,6 @@ import java.io.FileOutputStream;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-import org.junit.Test;
 
 import com.ttProject.chunk.IMediaChunk;
 import com.ttProject.chunk.IMediaChunkManager;
@@ -26,7 +25,7 @@ public class LoadTest {
 	/**
 	 * 通常のmpegtsを分割する動作テスト
 	 */
-	@Test
+//	@Test
 	public void analyzeNormalData() {
 		System.out.println("#EXTM3U");
 		System.out.println("#EXT-X-ALLOW-CACHE:NO");
@@ -36,7 +35,6 @@ public class LoadTest {
 		IReadChannel source = null;
 		FileOutputStream fos = null;
 		try {
-//			fos = new FileOutputStream("mario.ts");
 			// データソース
 			source = FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("rtypeDelta.aac.ts")
