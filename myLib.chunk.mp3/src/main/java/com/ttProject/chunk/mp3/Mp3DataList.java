@@ -3,8 +3,7 @@ package com.ttProject.chunk.mp3;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ttProject.media.IAudioData;
-import com.ttProject.media.mp3.Frame;
+import com.ttProject.media.mp3.frame.Mp3;
 
 /**
  * mp3のframeをためる動作、ここにデータをためておくと、mp3ChunkManagerが必要に応じてmp3frameを取り出してchunk化する。
@@ -14,7 +13,7 @@ import com.ttProject.media.mp3.Frame;
  */
 public class Mp3DataList {
 	/** 保持データリスト */
-	private final List<Frame> mp3DataList = new ArrayList<Frame>();
+	private final List<Mp3> mp3DataList = new ArrayList<Mp3>();
 	/** 取得フレーム数 */
 	private long counter;
 	/** 転送済みフレーム数 */
@@ -32,10 +31,9 @@ public class Mp3DataList {
 	 * データを追加する
 	 * @param data
 	 */
-	public void addMp3Data(Frame frame) {
-		IAudioData data = (IAudioData) frame;
-		counter += data.getSampleNum();
-		sampleRate = data.getSampleRate();
+	public void addMp3Data(Mp3 frame) {
+		counter += frame.getSampleNum();
+		sampleRate = frame.getSampleRate();
 		mp3DataList.add(frame);
 	}
 	/**
@@ -63,25 +61,23 @@ public class Mp3DataList {
 	 * 先頭データを取り出す
 	 * @return
 	 */
-	public Frame shift() {
+	public Mp3 shift() {
 		if(mp3DataList.size() == 0) {
 			return null;
 		}
-		Frame frame = mp3DataList.remove(0);
-		IAudioData data = (IAudioData)frame;
-		sendedCounter += data.getSampleNum();
+		Mp3 frame = mp3DataList.remove(0);
+		sendedCounter += frame.getSampleNum();
 		return frame;
 	}
 	/**
 	 * 先頭にデータを戻す
 	 * @param frame
 	 */
-	public void unshift(Frame frame) {
+	public void unshift(Mp3 frame) {
 		if(frame == null) {
 			return;
 		}
-		IAudioData data = (IAudioData)frame;
-		sendedCounter -= data.getSampleNum();
+		sendedCounter -= frame.getSampleNum();
 		mp3DataList.add(0, frame);
 	}
 	@Override

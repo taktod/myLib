@@ -9,7 +9,7 @@ import com.ttProject.chunk.IMediaChunk;
 import com.ttProject.chunk.MediaChunkManager;
 import com.ttProject.chunk.mp3.analyzer.IMp3FrameAnalyer;
 import com.ttProject.media.Unit;
-import com.ttProject.media.mp3.Frame;
+import com.ttProject.media.mp3.frame.Mp3;
 
 /**
  * mp3のchunkを取り出すための動作マネージャー
@@ -67,7 +67,7 @@ public class Mp3ChunkManager extends MediaChunkManager {
 			}
 			// データを構築する。
 			do {
-				Frame frame = mp3DataList.shift();
+				Mp3 frame = mp3DataList.shift();
 				chunk.write(frame.getBuffer());
 			} while(mp3DataList.getFirstCounter() <= targetFrameCount);
 			return chunk;
