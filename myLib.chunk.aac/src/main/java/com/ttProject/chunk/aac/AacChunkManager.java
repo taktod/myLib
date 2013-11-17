@@ -96,7 +96,7 @@ public class AacChunkManager extends MediaChunkManager{
 	 */
 	@Override
 	public String getExt() {
-		return "mp3";
+		return "aac";
 	}
 	/**
 	 * mp3の分割では、headerという概念が存在しない
@@ -104,7 +104,7 @@ public class AacChunkManager extends MediaChunkManager{
 	@Override
 	@Deprecated
 	public String getHeaderExt() {
-		return "mp3";
+		return "aac";
 	}
 	/**
 	 * 経過時刻を応答します

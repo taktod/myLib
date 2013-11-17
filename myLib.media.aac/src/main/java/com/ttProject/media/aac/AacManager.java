@@ -1,6 +1,7 @@
 package com.ttProject.media.aac;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ttProject.media.Manager;
@@ -12,6 +13,7 @@ import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
@@ -25,7 +27,26 @@ public class AacManager extends Manager<Frame> {
 	 */
 	@Override
 	public List<Frame> getUnits(ByteBuffer data) throws Exception {
-		return null;
+		ByteBuffer buffer = appendBuffer(data);
+		if(buffer == null) {
+			return null;
+		}
+		IReadChannel bufferChannel = new ByteReadChannel(buffer);
+		List<Frame> result = new ArrayList<Frame>();
+		while(true) {
+			int position = bufferChannel.position();
+			Frame frame = getUnit(bufferChannel);
+			if(frame == null) {
+				buffer.position(position);
+				break;
+			}
+			frame.analyze(bufferChannel);
+			System.out.println("size:" + bufferChannel.size());
+			System.out.println("pos" + (position + frame.getSize()));
+			bufferChannel.position(position + frame.getSize());
+			result.add(frame);
+		}
+		return result;
 	}
 	@Override
 	public Frame getUnit(IReadChannel source) throws Exception {
@@ -59,6 +80,10 @@ public class AacManager extends Manager<Frame> {
 			copyrightIdentificationBit, copyrightIdentificationStart, frameSize_1, frameSize_2,
 			adtsBufferFullness_1, adtsBufferFullness_2, noRawDataBlocksInFrame);
 		int size = (frameSize_1.get() << 8) + frameSize_2.get();
-		return new Aac(position, size, id, layer, protectionAbsent, profile, samplingFrequenceIndex, privateBit, channelConfiguration, originalFlg, home, copyrightIdentificationBit, copyrightIdentificationStart, size, (adtsBufferFullness_1.get() << 8) + adtsBufferFullness_2.get(), noRawDataBlocksInFrame);
+		Aac aac = new Aac(position, size, id, layer, protectionAbsent, profile, samplingFrequenceIndex, privateBit, channelConfiguration, originalFlg, home, copyrightIdentificationBit, copyrightIdentificationStart, size, (adtsBufferFullness_1.get() << 8) + adtsBufferFullness_2.get(), noRawDataBlocksInFrame);
+		if(aac.getPosition() + aac.getSize() > source.size()) {
+			return null;
+		}
+		return aac;
 	}
 }
