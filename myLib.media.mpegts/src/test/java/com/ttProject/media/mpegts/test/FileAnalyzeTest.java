@@ -25,7 +25,7 @@ public class FileAnalyzeTest {
 	public void fixedFileTest() throws Exception {
 		try {
 			IReadChannel source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("rtypeDelta.ts")
+					Thread.currentThread().getContextClassLoader().getResource("test.ts")
 			);
 			IPacketAnalyzer analyzer = new PacketAnalyzer();
 			Packet packet = null;
