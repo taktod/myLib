@@ -66,10 +66,14 @@ public class Mp3ChunkManager extends MediaChunkManager {
 				chunk.setTimestamp(mp3DataList.getFirstCounter());
 			}
 			// データを構築する。
+			int frameCount = 0;
 			do {
 				Mp3 frame = mp3DataList.shift();
+				frameCount += frame.getSampleNum();
 				chunk.write(frame.getBuffer());
 			} while(mp3DataList.getFirstCounter() <= targetFrameCount);
+			chunk.setDuration(1.0f * frameCount / sampleRate);
+			passedFrame += frameCount;
 			return chunk;
 		}
 		return null;

@@ -24,4 +24,17 @@ public class Mp3Chunk extends MediaChunk {
 	public int getSampleRate() {
 		return sampleRate;
 	}
+	/**
+	 * データ出力
+	 */
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append("mp3Chunk");
+		data.append(" header:").append(isHeader());
+		data.append(" timestamp:").append(getTimestamp());
+		data.append(" duration:").append(getDuration());
+		data.append(" size:").append(getBufferSize());
+		return data.toString();
+	}
 }

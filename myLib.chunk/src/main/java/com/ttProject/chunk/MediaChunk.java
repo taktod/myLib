@@ -101,17 +101,4 @@ public abstract class MediaChunk implements IMediaChunk {
 		buffer.put(data);
 		return true;
 	}
-	/**
-	 * データ出力
-	 */
-	@Override
-	public String toString() {
-		StringBuilder data = new StringBuilder();
-		data.append("mpegtsChunk");
-		data.append(" header:").append(isHeader());
-		data.append(" timestamp:").append(getTimestamp() / 90000D);
-		data.append(" duration:").append(getDuration());
-		data.append(" size:").append(getBufferSize());
-		return data.toString();
-	}
 }
