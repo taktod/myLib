@@ -13,6 +13,7 @@ public class M3u8Manager implements ISegmentManager {
 	private final String header;
 	private final String allowCache;
 	private final String targetDuration;
+	private final String targetVersion;
 	private Integer num;
 	// このあたりのstaticデータの管理をするやつがm3u8Managerということにしておきたい。
 	private final String m3u8File;
@@ -26,6 +27,7 @@ public class M3u8Manager implements ISegmentManager {
 		header         = "#EXTM3U";
 		allowCache     = "#EXT-X-ALLOW-CACHE:NO";
 		targetDuration = "#EXT-X-TARGETDURATION:" + (int)duration;
+		targetVersion  = "#EXT-X-VERSION:3";
 		this.m3u8File  = m3u8File;
 		this.limit = limit;
 		if(limit != null) {
@@ -40,7 +42,7 @@ public class M3u8Manager implements ISegmentManager {
 				pw.println(header);
 				pw.println(allowCache);
 				pw.println(targetDuration);
-				pw.println("#EXT-X-VERSION:3");
+				pw.println(targetVersion);
 				pw.close();
 				pw = null;
 			}
@@ -77,7 +79,7 @@ public class M3u8Manager implements ISegmentManager {
 				pw.println(header);
 				pw.println(allowCache);
 				pw.println(targetDuration);
-				pw.println("#EXT-X-VERSION:3");
+				pw.println(targetVersion);
 				pw.print("#EXT-X-MEDIA-SEQUENCE:");
 				num ++;
 				pw.println(num);
