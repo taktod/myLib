@@ -13,6 +13,7 @@ public abstract class Frame extends Unit {
 	@Override
 	public void analyze(IReadChannel ch, IAnalyzer<?> analyzer)
 			throws Exception {
+		analyze(ch, (IFrameAnalyzer)null);
 	}
 	public abstract ByteBuffer getBuffer() throws Exception;
 	public abstract void analyze(IReadChannel ch, IFrameAnalyzer analyzer) throws Exception;

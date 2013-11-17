@@ -24,6 +24,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Mp3Manager extends Manager<Frame> {
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Mp3Manager.class);
 	/**
 	 * {@inheritDoc}
@@ -40,13 +41,14 @@ public class Mp3Manager extends Manager<Frame> {
 			int position = bufferChannel.position();
 			Frame frame = getUnit(bufferChannel);
 			if(frame == null) {
+				// positionを戻します。
 				buffer.position(position);
 				break;
 			}
 			frame.analyze(bufferChannel);
 			// TODO analyze動作の中身をつくっておきたいところ。
-			logger.info(position);
-			logger.info(frame.getSize());
+//			logger.info(position);
+//			logger.info(frame.getSize());
 			bufferChannel.position(position + frame.getSize());
 			result.add(frame);
 		}
@@ -69,11 +71,20 @@ public class Mp3Manager extends Manager<Frame> {
 		if(data[0] == 'I'
 		&& data[1] == 'D'
 		&& data[2] == '3') {
+			if(source.size() - position < 10) {
+				// 少なくとも10(始めから数えて必要)バイト必要
+				return null;
+			}
 			buffer = BufferUtil.safeRead(source, 7);
 			short version = buffer.getShort();
 			data = new byte[5];
 			buffer.get(data);
-			return new ID3(position, ((data[1] & 0x7F) << 21) + ((data[2] & 0x7F) << 14) + ((data[3] & 0x7F) << 7) + (data[4] & 0x7F) + 10, version, data[0]);
+			ID3 id3 = new ID3(position, ((data[1] & 0x7F) << 21) + ((data[2] & 0x7F) << 14) + ((data[3] & 0x7F) << 7) + (data[4] & 0x7F) + 10, version, data[0]);
+			if(id3.getPosition() + id3.getSize() > source.size()) {
+				// 中身を充填するのに必要なサイズがない場合はnullを応答
+				return null;
+			}
+			return id3;
 		}
 		// ID3V1の場合(終端にくるデータなので、とりあえず無視しておく)
 		else if(data[0] == 'T'
