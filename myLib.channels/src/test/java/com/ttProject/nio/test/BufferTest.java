@@ -5,7 +5,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.nio.CacheBuffer;
 import com.ttProject.nio.channels.ByteReadChannel;
@@ -36,7 +35,7 @@ public class BufferTest {
 			logger.info(buffer.getInt());
 		}
 	}
-	@Test
+//	@Test
 	public void test3() throws Exception {
 		IReadChannel target = new ByteReadChannel("test".getBytes());
 		ByteBuffer buffer = ByteBuffer.allocate(10);
@@ -48,7 +47,7 @@ public class BufferTest {
 		}
 		target.close();
 	}
-	@Test
+//	@Test
 	public void test4() throws Exception {
 		FileOutputStream fos = new FileOutputStream("test");
 		FileChannel channel = fos.getChannel();
