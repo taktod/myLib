@@ -20,6 +20,9 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class AacManager extends Manager<Frame> {
+	/**
+	 * adtsの形式としてデータを取り出します。
+	 */
 	@Override
 	public List<Frame> getUnits(ByteBuffer data) throws Exception {
 		return null;
