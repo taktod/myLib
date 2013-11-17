@@ -8,7 +8,7 @@ import com.ttProject.media.mp3.frame.Mp3;
  * mp3のframeをmp3DataListに格納していきます。
  * @author taktod
  */
-public class Mp3FrameAnalyzer implements IMp3FrameAnalyer {
+public class Mp3FrameAnalyzer implements IMp3FrameAnalyzer {
 	/** mp3のデータ保持オブジェクト */
 	private Mp3DataList mp3DataList;
 	/**

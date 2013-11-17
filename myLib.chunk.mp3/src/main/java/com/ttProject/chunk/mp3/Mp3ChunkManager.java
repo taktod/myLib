@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.chunk.IMediaChunk;
 import com.ttProject.chunk.MediaChunkManager;
-import com.ttProject.chunk.mp3.analyzer.IMp3FrameAnalyer;
+import com.ttProject.chunk.mp3.analyzer.IMp3FrameAnalyzer;
 import com.ttProject.media.Unit;
 import com.ttProject.media.mp3.frame.Mp3;
 
@@ -24,13 +24,13 @@ public class Mp3ChunkManager extends MediaChunkManager {
 	/** 処理中のmp3Data保持オブジェクト */
 	private Mp3DataList mp3DataList = new Mp3DataList();
 	/** 解析用のオブジェクト */
-	private Set<IMp3FrameAnalyer> analyzers = new HashSet<IMp3FrameAnalyer>();
+	private Set<IMp3FrameAnalyzer> analyzers = new HashSet<IMp3FrameAnalyzer>();
 	/** 経過frame数 */
 	private long passedFrame = 0;
 	/**
 	 * mp3の解析オブジェクトを登録する。
 	 */
-	public void addMp3FrameAnalyzer(IMp3FrameAnalyer frameAnalyzer) {
+	public void addMp3FrameAnalyzer(IMp3FrameAnalyzer frameAnalyzer) {
 		frameAnalyzer.setMp3DataList(mp3DataList);
 		analyzers.add(frameAnalyzer);
 	}
@@ -40,7 +40,7 @@ public class Mp3ChunkManager extends MediaChunkManager {
 	@Override
 	public IMediaChunk getChunk(Unit unit) throws Exception {
 		// 解析してmp3DataListにデータを追記させる。
-		for(IMp3FrameAnalyer analyzer : analyzers) {
+		for(IMp3FrameAnalyzer analyzer : analyzers) {
 			analyzer.analyze(unit);
 		}
 		// 完了したデータを確認してある場合はchunkを応答する

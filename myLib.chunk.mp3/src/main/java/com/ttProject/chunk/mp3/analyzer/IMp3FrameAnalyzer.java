@@ -7,7 +7,7 @@ import com.ttProject.media.Unit;
  * unitの中身を解析して必要なmp3Frameを応答する動作
  * @author taktod
  */
-public interface IMp3FrameAnalyer {
+public interface IMp3FrameAnalyzer {
 	/**
 	 * mp3DataListをセットします
 	 * @param mp3DataList
