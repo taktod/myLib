@@ -22,7 +22,8 @@ import com.ttProject.media.mpegts.packet.Sdt;
 
 /**
  * mpegtsのchunkを取り出すための動作マネージャー
- * 基本的にgetChunksにUnitデータ(flvのTagとかmpegtsのPacketとか)をいれると、対応したMediaChunkがでてくる。
+ * 基本的にgetChunksにUnitデータ(flvのTagとかmpegtsのPacketとか)をいれると
+ * 対応したMediaChunkがでてくる。
  * 
  * TODO このchunkManagerは中途で音声や映像のtrackが追加されることは想定していないので、そういう場合に誤動作する可能性があります。
  * VLCの出力データは得意ではないということですね。
@@ -46,9 +47,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	private long passedPts = 0;
 	/** 現在処理中のchunkオブジェクト */
 	private MpegtsChunk chunk = null;
-	/**
-	 * 解析用のオブジェクト
-	 */
+	/** 解析用のオブジェクト */
 	private Set<IPesAnalyzer> analyzers = new HashSet<IPesAnalyzer>();
 	/**
 	 * コンストラクタ
@@ -98,8 +97,6 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	 */
 	@Override
 	public IMediaChunk getChunk(Unit unit) throws Exception {
-		// 映像データの場合は、mpegtsのpesに変更しなければいけない。
-		// 音声データの場合は、IAudioDataに変更しなければいけない。
 		if(unit instanceof Pat) {
 			// mpegtsのpatの場合
 			analyzePat((Pat) unit);
@@ -113,7 +110,6 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		for(IPesAnalyzer analyzer : analyzers) {
 			analyzer.analyze(unit, 0);
 		}
-		// 複数取れる可能性も一応あるのか・・・
 		return checkCompleteChunk(); // 完了したchunkについて調査する。
 	}
 	/**
@@ -160,7 +156,6 @@ public class MpegtsChunkManager extends MediaChunkManager {
 			logger.info("必要なセットアップ情報がありませんでした。");
 			return null;
 		}
-		IMediaChunk resultChunk;
 		// 処理したいtimestampを求めておく
 		long targetPts = passedPts + (long)(90000 * getDuration());
 		// 映像と音声のdurationについて確認しておく。
@@ -190,7 +185,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 				}
 			}
 			// unitを作成する。
-			resultChunk = makeFrameUnit(targetPts);
+			IMediaChunk resultChunk = makeFrameUnit(targetPts);
 			if(resultChunk != null) {
 				// 前のデータが完成しているので、次のデータにうつりたい。
 				chunk = null;
@@ -387,7 +382,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	 */
 	@Override
 	public IMediaChunk getCurrentChunk() {
-		return null;
+		return chunk;
 	}
 	/**
 	 * 残りデータがある場合はここで応答しなければいけない。

@@ -36,8 +36,6 @@ public class AudioDataList extends MediaDataList {
 	 * データを追加する。
 	 * @param data データ実体
 	 * @param pts pts値(任意)
-	 * @param pid pid値(任意)
-	 * @param type codecType(任意)
 	 */
 	public void addAudioData(IAudioData data, long pts) {
 		if(startPos == -1 && pts != -1L) {
