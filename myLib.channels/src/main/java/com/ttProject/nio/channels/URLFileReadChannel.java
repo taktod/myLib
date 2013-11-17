@@ -114,6 +114,13 @@ public class URLFileReadChannel implements IFileReadChannel {
 		return readSize; // 読み込めた量を応答しておく
 	}
 	/**
+	 * コンテンツタイプを応答します。
+	 * @return
+	 */
+	public String getContentType() {
+		return conn.getContentType();
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	public void close() throws IOException {
