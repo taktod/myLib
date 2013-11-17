@@ -36,9 +36,9 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	/** sdtデータ */
 	private final Sdt sdt;
 	/** patデータ */
-	private Pat pat;
+	private Pat pat = null;
 	/** pmtデータ */
-	private Pmt pmt;
+	private Pmt pmt = null;
 	/** 処理中のaudioData保持オブジェクト */
 	private AudioDataList audioDataList = new AudioDataList();
 	/** 処理中のvideoData保持オブジェクト */
