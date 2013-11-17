@@ -2,8 +2,6 @@ package com.ttProject.media.mpegts.test;
 
 import java.io.FileOutputStream;
 
-import org.junit.Test;
-
 import com.ttProject.media.mpegts.IPacketAnalyzer;
 import com.ttProject.media.mpegts.Packet;
 import com.ttProject.media.mpegts.PacketAnalyzer;
@@ -20,12 +18,12 @@ import com.ttProject.util.BufferUtil;
  */
 public class ByteRangeHlsCreateTest {
 //	private Logger logger = Logger.getLogger(ByteRangeHlsCreateTest.class);
-	@Test
+//	@Test
 	public void test() {
 		FileOutputStream master = null;
 		try {
 			// 母艦
-			master = new FileOutputStream("/Users/todatakahiko/tmp/rtype/rtype.ts");
+			master = new FileOutputStream("rtype.ts");
 			/*
 			 * こんなのをつくりたいところ。
 			 * #EXTM3U
