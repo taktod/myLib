@@ -176,11 +176,11 @@ public class MpegtsChunkManager extends MediaChunkManager {
 				chunk.write(pat.getBuffer());
 				chunk.write(pmt.getBuffer());
 				// 開始時の時刻を書き込んでおきたい。
-				if(videoDataList.getCodecType() != null) {
-					chunk.setTimestamp(videoDataList.getFirstDataPts());
-				}
-				else if(audioDataList.getCodecType() != null) {
+				if(pmt.getPcrPid() == audioDataList.getPid()) { // 音声のpidとpcrPidが一致する場合
 					chunk.setTimestamp(audioDataList.getFirstDataPts());
+				}
+				else { // それ以外の場合は映像を採用します
+					chunk.setTimestamp(videoDataList.getFirstDataPts());
 				}
 			}
 			// unitを作成する。
