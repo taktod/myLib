@@ -23,6 +23,13 @@ public class VideoDataList extends MediaDataList {
 	/** 最終pesデータのpts値記録 */
 	private long lastDataPts = -1L;
 	/**
+	 * 保持データサイズを応答します。
+	 * @return
+	 */
+	public int getListCount() {
+		return videoPesList.size();
+	}
+	/**
 	 * pesデータを追記する
 	 * @param pes
 	 */
