@@ -114,6 +114,13 @@ public class H264PesAnalyzer implements IPesAnalyzer {
 			}
 		}
 	}
+	/**
+	 * bufferをpesに分解して登録する動作
+	 * @param buffer
+	 * @param keyFrame
+	 * @param startPts
+	 * @throws Exception
+	 */
 	private void addByteBuffer(ByteBuffer buffer, boolean keyFrame, long startPts) throws Exception {
 		Pes videoPes = new Pes(CodecType.VIDEO_H264, keyFrame, keyFrame, pid, buffer, startPts);
 		do {
@@ -122,9 +129,15 @@ public class H264PesAnalyzer implements IPesAnalyzer {
 			videoDataList.addPes(videoPes);
 		} while((videoPes = videoPes.nextPes()) != null);
 	}
+	/**
+	 * audioDataListを登録
+	 */
 	@Override
 	public void setAudioDataList(AudioDataList audioDataList) {
 	}
+	/**
+	 * videoDataListを登録
+	 */
 	@Override
 	public void setVideoDataList(VideoDataList videoDataList) {
 		this.videoDataList = videoDataList;
