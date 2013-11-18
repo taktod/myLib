@@ -153,7 +153,6 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	private IMediaChunk checkCompleteChunk() throws Exception {
 		// 先頭情報が抜け落ちている場合は処理できない。
 		if(sdt == null || pat == null || pmt == null) {
-			logger.info("必要なセットアップ情報がありませんでした。");
 			return null;
 		}
 		// 処理したいtimestampを求めておく
