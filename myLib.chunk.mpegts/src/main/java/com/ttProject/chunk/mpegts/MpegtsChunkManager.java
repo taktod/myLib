@@ -395,6 +395,10 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	 */
 	@Override
 	public IMediaChunk close() {
+		// すでにデータが枯渇している場合は応答しない。
+		if(videoDataList.getListCount() == 0 && audioDataList.getListCount() == 0) {
+			return null;
+		}
 		try {
 			// chunkからデータを作って作成しなおす必要あり。
 			if(chunk == null) {
