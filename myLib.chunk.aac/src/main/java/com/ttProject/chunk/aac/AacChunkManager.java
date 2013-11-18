@@ -18,7 +18,6 @@ import com.ttProject.media.aac.frame.Aac;
  */
 public class AacChunkManager extends MediaChunkManager{
 	/** ロガー */
-	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(AacChunkManager.class);
 	/** 処理中のmp3Data保持オブジェクト */
 	private AacDataList aacDataList = new AacDataList();
@@ -59,11 +58,8 @@ public class AacChunkManager extends MediaChunkManager{
 		long targetFrameCount = passedFrame + (long)(getDuration() * sampleRate);
 		if(aacDataList.getCounter() > targetFrameCount) {
 			/** 現在処理中のchunkオブジェクト */
-			AacChunk chunk = null;
-			if(chunk == null) {
-				chunk = new AacChunk(sampleRate);
-				chunk.setTimestamp(aacDataList.getFirstCounter());
-			}
+			AacChunk chunk = new AacChunk(sampleRate);
+			chunk.setTimestamp(aacDataList.getFirstCounter());
 			// データを構築する。
 			int frameCount = 0;
 			do {
@@ -89,6 +85,27 @@ public class AacChunkManager extends MediaChunkManager{
 	 */
 	@Override
 	public IMediaChunk close() {
+		if(aacDataList.getListCount() == 0) {
+			return null;
+		}
+		// 最終のときには、中身すべて吐き出しておく。
+		try {
+			int sampleRate = aacDataList.getSampleRate();
+			AacChunk chunk = new AacChunk(sampleRate);
+			chunk.setTimestamp(aacDataList.getFirstCounter());
+			int frameCount = 0;
+			Aac frame = null;
+			while((frame = aacDataList.shift()) != null) {
+				frameCount += frame.getSampleNum();
+				chunk.write(frame.getBuffer());
+			}
+			chunk.setDuration(1.0f * frameCount / sampleRate);
+			passedFrame += frameCount;
+			return chunk;
+		}
+		catch(Exception e) {
+			logger.warn("エラー", e);
+		}
 		return null;
 	}
 	/**

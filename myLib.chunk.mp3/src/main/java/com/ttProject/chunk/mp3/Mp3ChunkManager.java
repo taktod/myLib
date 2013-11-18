@@ -19,7 +19,6 @@ import com.ttProject.media.mp3.frame.Mp3;
  */
 public class Mp3ChunkManager extends MediaChunkManager {
 	/** ロガー */
-	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Mp3ChunkManager.class);
 	/** 処理中のmp3Data保持オブジェクト */
 	private Mp3DataList mp3DataList = new Mp3DataList();
@@ -60,11 +59,8 @@ public class Mp3ChunkManager extends MediaChunkManager {
 		long targetFrameCount = passedFrame + (long)(getDuration() * sampleRate);
 		if(mp3DataList.getCounter() > targetFrameCount) {
 			/** 現在処理中のchunkオブジェクト */
-			Mp3Chunk chunk = null;
-			if(chunk == null) {
-				chunk = new Mp3Chunk(sampleRate);
-				chunk.setTimestamp(mp3DataList.getFirstCounter());
-			}
+			Mp3Chunk chunk = new Mp3Chunk(sampleRate);
+			chunk.setTimestamp(mp3DataList.getFirstCounter());
 			// データを構築する。
 			int frameCount = 0;
 			do {
@@ -90,6 +86,27 @@ public class Mp3ChunkManager extends MediaChunkManager {
 	 */
 	@Override
 	public IMediaChunk close() {
+		if(mp3DataList.getListCount() == 0) {
+			return null;
+		}
+		// 最終のときには、中身すべて吐き出しておく。
+		try {
+			int sampleRate = mp3DataList.getSampleRate();
+			Mp3Chunk chunk = new Mp3Chunk(sampleRate);
+			chunk.setTimestamp(mp3DataList.getFirstCounter());
+			int frameCount = 0;
+			Mp3 frame = null;
+			while((frame = mp3DataList.shift()) != null) {
+				frameCount += frame.getSampleNum();
+				chunk.write(frame.getBuffer());
+			}
+			chunk.setDuration(1.0f * frameCount / sampleRate);
+			passedFrame += frameCount;
+			return chunk;
+		}
+		catch(Exception e) {
+			logger.warn("エラー", e);
+		}
 		return null;
 	}
 	/**
