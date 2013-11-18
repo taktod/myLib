@@ -10,4 +10,8 @@ public interface ISegmentManager {
 	 * @param endFlg
 	 */
 	public void writeData(String target, String http, float duration, int index, boolean endFlg);
+	/**
+	 * 終端を書き込みます。
+	 */
+	public void writeEnd();
 }

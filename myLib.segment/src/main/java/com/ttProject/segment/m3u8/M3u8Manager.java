@@ -115,4 +115,15 @@ public class M3u8Manager implements ISegmentManager {
 			}
 		}
 	}
+	@Override
+	public void writeEnd() {
+		try {
+			PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(m3u8File, true)));
+			pw.println("#EXT-X-ENDLIST");
+			pw.close();
+			pw = null;
+		}
+		catch (Exception e) {
+		}
+	}
 }
