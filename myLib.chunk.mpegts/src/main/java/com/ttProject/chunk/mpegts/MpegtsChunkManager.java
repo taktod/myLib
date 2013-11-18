@@ -197,7 +197,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	/**
 	 * frameunitを作成します。
 	 * ただし、映像のあるなし、音声のあるなしによって変わります。
-	 * @param targetPts
+	 * @param targetPts -1ならすべて
 	 */
 	private IMediaChunk makeFrameUnit(long targetPts) throws Exception {
 		if(videoDataList.getCodecType() == null) {
@@ -218,7 +218,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	}
 	/**
 	 * 音声のみのframeUnitをつくります。
-	 * @param targetPts
+	 * @param targetPts -1ならすべてのデータ
 	 * @throws Exception
 	 */
 	private IMediaChunk makeAudioOnlyFrameUnit(long targetPts) throws Exception {
@@ -227,7 +227,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		long audioStartPts = audioDataList.getFirstDataPts();
 		while(true) {
 			IAudioData audioData = audioDataList.shift();
-			if(audioData == null || audioDataList.getFirstDataPts() > targetPts) {
+			if(audioData == null || (targetPts != -1 && audioDataList.getFirstDataPts() > targetPts)) {
 				// データがなくなった場合もしくは、データが問題のptsを超えた場合
 				if(audioData != null) {
 					audioDataList.unshift(audioData);
@@ -280,7 +280,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	}
 	/**
 	 * 映像のみのframeUnitをつくります
-	 * @param targetPts
+	 * @param targetPts -1ならすべて取り出します
 	 * @return
 	 */
 	private IMediaChunk makeVideoOnlyFrameUnit(long targetPts) throws Exception {
@@ -288,8 +288,9 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		while(true) {
 			Pes videoPes = videoDataList.shift();
 			if(videoPes == null || // もうvideoPesがない場合
+					(targetPts != -1 &&
 					(videoPes.isAdaptationFieldExist() && videoPes.getAdaptationField().getRandomAccessIndicator() == 1) && // keyFrameで
-					(videoPes.hasPts() && videoPes.getPts().getPts() > targetPts)) { // pts値が目標のptsを超えている場合
+					(videoPes.hasPts() && videoPes.getPts().getPts() > targetPts))) { // pts値が目標のptsを超えている場合
 				if(videoPes != null) {
 					videoDataList.unshift(videoPes);
 				}
@@ -306,7 +307,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	}
 	/**
 	 * 通常のframeUnitを作ります。
-	 * @param targetPts
+	 * @param targetPts -1の場合はすべて引き出します
 	 * @return
 	 */
 	private IMediaChunk makeNormalFrameUnit(long targetPts) throws Exception {
@@ -320,13 +321,18 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		while(true) {
 			Pes videoPes = videoDataList.shift();
 			// payloadstartの段階でaudioデータの挿入を気にかける。
-			if(videoPes.isPayloadUnitStart() && videoPes.hasPts()) {
+			if(videoPes != null && videoPes.isPayloadUnitStart() && videoPes.hasPts()) {
 				while(true) {
 					IAudioData audioData = audioDataList.shift();
 					if(audioData == null) {
-						logger.warn("audioDataがnullでした");
-						// TODO どうしてもaudioDataがnullにならないと動作しないといったことが発生したら、対処を考える
-						throw new Exception("audioDataがnullになることは想定外としておきます。");
+						if(targetPts != -1) {
+							logger.warn("audioDataがnullでした");
+							// TODO どうしてもaudioDataがnullにならないと動作しないといったことが発生したら、対処を考える
+							throw new Exception("audioDataがnullになることは想定外としておきます。");
+						}
+						else {
+							break;
+						}
 					}
 					if(audioDataList.getFirstDataPts() > videoPes.getPts().getPts()) {
 						// 現在処理中の映像ptsを超えた場合
@@ -347,7 +353,8 @@ public class MpegtsChunkManager extends MediaChunkManager {
 				}
 			}
 			if(videoPes == null || // もうvideoPesがない場合
-					(videoPes.isAdaptationFieldExist() && videoPes.getAdaptationField().getRandomAccessIndicator() == 1)) {// keyFrameである場合
+					(targetPts != -1 &&
+					(videoPes.isAdaptationFieldExist() && videoPes.getAdaptationField().getRandomAccessIndicator() == 1))) {// keyFrameである場合
 				if(firstFlg && videoPes != null) {
 					// はじめのデータである場合はフラグをつけて放置する
 					firstFlg = false;
@@ -361,7 +368,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 					if(audioSize != 0) {
 						makeAudioPes(audioSize, audioList, audioStartPts);
 					}
-					if(videoDataList.getFirstDataPts() < targetPts) {
+					if(targetPts != -1 && videoDataList.getFirstDataPts() < targetPts) {
 						return null;
 					}
 					// データが残っている場合は記録しなければいけな・・・いことないか
@@ -388,6 +395,31 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	 */
 	@Override
 	public IMediaChunk close() {
+		try {
+			// chunkからデータを作って作成しなおす必要あり。
+			if(chunk == null) {
+				chunk = new MpegtsChunk();
+				chunk.write(sdt.getBuffer());
+				chunk.write(pat.getBuffer());
+				chunk.write(pmt.getBuffer());
+				// 開始時の時刻を書き込んでおきたい。
+				if(pmt.getPcrPid() == audioDataList.getPid()) { // 音声のpidとpcrPidが一致する場合
+					chunk.setTimestamp(audioDataList.getFirstDataPts());
+				}
+				else { // それ以外の場合は映像を採用します
+					chunk.setTimestamp(videoDataList.getFirstDataPts());
+				}
+			}
+			// 残っているデータをすべて投入しておく。
+			IMediaChunk resultChunk = makeFrameUnit(-1);
+			if(resultChunk != null) {
+				chunk = null;
+			}
+			return resultChunk;
+		}
+		catch(Exception e) {
+			logger.warn("例外が発生しました。", e);
+		}
 		return null;
 	}
 	/**
