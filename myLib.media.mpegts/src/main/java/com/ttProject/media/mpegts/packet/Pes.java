@@ -455,6 +455,14 @@ public class Pes extends Packet {
 			counter ++;
 			counterMap.put((int)getPid(), counter);
 		}
+		return makeupBuffer();
+	}
+	/**
+	 * 内部buffer値を構築する動作(getBufferから分割)
+	 * @return
+	 * @throws Exception
+	 */
+	private ByteBuffer makeupBuffer() throws Exception {
 		ByteBuffer buffer = ByteBuffer.allocate(188);
 		// ここは持っているデータをそのまま書き込めばOK
 		// adaptationFieldの調整とか、出力データの調整はあとでnextPesでなんとかしておく。
