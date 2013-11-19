@@ -73,6 +73,10 @@ public class Pat extends ProgramPacket {
 		programNum = (short)((programNum_1.get() << 8) | programNum_2.get());
 		programPid = (short)((programPid_1.get() << 8) | programPid_2.get());
 	}
+	/**
+	 * 対応しているpmtのpidを応答します。
+	 * @return
+	 */
 	public short getProgramPid() {
 		return programPid;
 	}
