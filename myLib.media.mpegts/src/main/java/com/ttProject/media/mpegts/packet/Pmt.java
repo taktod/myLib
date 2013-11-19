@@ -170,6 +170,16 @@ public class Pmt extends ProgramPacket {
 		setContinuityCounter(counter ++);
 		return super.getBuffer();
 	}
+	/**
+	 * 巡回cc値を設定して動作するgetBuffer
+	 * @param counter
+	 * @return
+	 * @throws Exception
+	 */
+	public ByteBuffer getBuffer(int counter) throws Exception {
+		setContinuityCounter(counter);
+		return super.getBuffer();
+	}
 	@Override
 	public String toString() {
 		StringBuilder data = new StringBuilder();

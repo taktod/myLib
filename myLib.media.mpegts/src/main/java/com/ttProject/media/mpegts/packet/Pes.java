@@ -434,6 +434,25 @@ public class Pes extends Packet {
 		return list;
 	}
 	/**
+	 * 巡回カウンター付きのバッファ参照
+	 * @param counter
+	 * @return
+	 * @throws Exception
+	 */
+	public ByteBuffer getBuffer(int counter) throws Exception {
+		if(rawData == null) {
+			throw new Exception("メディアデータの設定がなされていません。");
+		}
+		if(writtenRawData == null) {
+			// 動作カウンターを上げる
+			if(rawData.remaining() == 0) {
+				return null;
+			}
+			setContinuityCounter(counter);
+		}
+		return makeupBuffer();
+	}
+	/**
 	 * bufferデータを取得する。
 	 * なお、nullが帰ってくるまで取得する必要ありとします。(そのデータのタグがすべて応答される。)
 	 */
