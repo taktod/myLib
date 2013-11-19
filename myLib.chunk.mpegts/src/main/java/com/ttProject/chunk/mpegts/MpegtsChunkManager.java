@@ -261,43 +261,29 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		return chunk;
 	}
 	/**
-	 * audio用のpesを作成します。
-	 * @param audioSize
-	 * @param audioDataList
-	 * @param audioStartPts
-	 * @throws Exception
-	 */
-	private void makeAudioPes(int audioSize, List<IAudioData> audioList, long audioStartPts) throws Exception {
-		ByteBuffer buffer = ByteBuffer.allocate(audioSize);
-		for(IAudioData audioData : audioList) {
-			buffer.put(audioData.getRawData());
-		}
-		buffer.flip();
-		Pes audioPes = new Pes(audioDataList.getCodecType(),
-				pmt.getPcrPid() == audioDataList.getPid(), // pcrであるかはフラグ次第
-				true, // randomAccessは絶対にOK(音声なので)
-				audioDataList.getPid(), // pid
-				buffer, // 実データ
-				audioStartPts); // 開始pts
-		do {
-			chunk.write(audioPes.getBuffer());
-		} while((audioPes = audioPes.nextPes()) != null);
-	}
-	/**
 	 * 映像のみのframeUnitをつくります
 	 * @param targetPts -1ならすべて取り出します
 	 * @return
 	 */
 	private IMediaChunk makeVideoOnlyFrameUnit(long targetPts) throws Exception {
 		// pesデータをvideoDataListから引き出していく。
+		List<Pes> videoList = new ArrayList<Pes>();
 		while(true) {
 			Pes videoPes = videoDataList.shift();
+			if(videoPes != null && videoPes.isPayloadUnitStart()) {
+				makeVideoPes(videoList);
+				videoList.clear();
+			}
 			if(videoPes == null || // もうvideoPesがない場合
 					(targetPts != -1 &&
 					(videoPes.isAdaptationFieldExist() && videoPes.getAdaptationField().getRandomAccessIndicator() == 1) && // keyFrameで
 					(videoPes.hasPts() && videoPes.getPts().getPts() > targetPts))) { // pts値が目標のptsを超えている場合
 				if(videoPes != null) {
 					videoDataList.unshift(videoPes);
+				}
+				if(videoList.size() != 0) {
+					makeVideoPes(videoList);
+					videoList.clear();
 				}
 				// データが残っている場合は記録しなければいけな・・・いことないか
 				long durationTimestamp = videoDataList.getFirstDataPts() - chunk.getTimestamp();
@@ -306,7 +292,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 				break;
 			}
 			// pesがある場合は書き込んでいく。
-			chunk.write(videoPes.getBuffer());
+			videoList.add(videoPes);
 		}
 		return chunk;
 	}
@@ -319,6 +305,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		// pesデータをvideoDataListから引き出していく。
 		int audioSize = 0;
 		List<IAudioData> audioList = new ArrayList<IAudioData>();
+		List<Pes> videoList = new ArrayList<Pes>();
 		long audioStartPts = audioDataList.getFirstDataPts();
 		// はじめのframeの処理をしたというフラグをいれます。(これをいれないとフレーム0で処理がおわることがあります。)
 		boolean firstFlg = true;
@@ -327,6 +314,9 @@ public class MpegtsChunkManager extends MediaChunkManager {
 			Pes videoPes = videoDataList.shift();
 			// payloadstartの段階でaudioデータの挿入を気にかける。
 			if(videoPes != null && videoPes.isPayloadUnitStart() && videoPes.hasPts()) {
+				// いままでにたまったvideoPesについて書き出す
+				makeVideoPes(videoList);
+				videoList.clear();
 				while(true) {
 					IAudioData audioData = audioDataList.shift();
 					if(audioData == null) {
@@ -369,6 +359,10 @@ public class MpegtsChunkManager extends MediaChunkManager {
 					if(videoPes != null) {
 						videoDataList.unshift(videoPes);
 					}
+					if(videoList.size() != 0) {
+						makeVideoPes(videoList);
+						videoList.clear();
+					}
 					// ここまできたときにaudioデータがのこっている場合
 					if(audioSize != 0) {
 						makeAudioPes(audioSize, audioList, audioStartPts);
@@ -383,10 +377,42 @@ public class MpegtsChunkManager extends MediaChunkManager {
 					break;
 				}
 			}
-			// pesがある場合は書き込んでいく。
-			chunk.write(videoPes.getBuffer());
+			// videoPesをためておく。
+			videoList.add(videoPes);
 		}
 		return chunk;
+	}
+	/**
+	 * audio用のpesを作成します。
+	 * @param audioSize
+	 * @param audioDataList
+	 * @param audioStartPts
+	 * @throws Exception
+	 */
+	protected void makeAudioPes(int audioSize, List<IAudioData> audioList, long audioStartPts) throws Exception {
+		ByteBuffer buffer = ByteBuffer.allocate(audioSize);
+		for(IAudioData audioData : audioList) {
+			buffer.put(audioData.getRawData());
+		}
+		buffer.flip();
+		Pes audioPes = new Pes(audioDataList.getCodecType(),
+				pmt.getPcrPid() == audioDataList.getPid(), // pcrであるかはフラグ次第
+				true, // randomAccessは絶対にOK(音声なので)
+				audioDataList.getPid(), // pid
+				buffer, // 実データ
+				audioStartPts); // 開始pts
+		do {
+			chunk.write(audioPes.getBuffer());
+		} while((audioPes = audioPes.nextPes()) != null);
+	}
+	/**
+	 * 動画のデータを書き込む
+	 * @param videoList
+	 */
+	protected void makeVideoPes(List<Pes> videoList) throws Exception {
+		for(Pes videoPes : videoList) {
+			chunk.write(videoPes.getBuffer());
+		}
 	}
 	/**
 	 * 現在処理中のchunkについて応答する。
