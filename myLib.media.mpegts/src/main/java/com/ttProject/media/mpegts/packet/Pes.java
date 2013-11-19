@@ -122,6 +122,7 @@ public class Pes extends Packet {
 	/** 保持している生データ */
 	// TODO 読み込み処理中にこのデータも作成すべき
 	private ByteBuffer rawData;
+	private int lastRawDataPosition = 0;
 	/** 書き込み済み時のデータ */
 	private ByteBuffer writtenRawData = null;
 	/**
@@ -167,6 +168,7 @@ public class Pes extends Packet {
 		setupDefault(pid, randomAccessFlg); // デフォルトを設定しておく。
 		// keyFrameもしくは、codecが音声の場合は、randomAccessIndicatorをつけておきたい。
 		this.rawData = rawData.duplicate(); // コピーでデータを保持しておく。
+		this.lastRawDataPosition = rawData.position();
 		setPesPacketLength((short)(rawData.remaining() + 3));
 		if(getPesPacketLength() < 0) {
 			throw new Exception("pesPacketのサイズがoverflowしました。データの粒度が大きすぎます。");
@@ -388,6 +390,7 @@ public class Pes extends Packet {
 		}
 		// 本来はこのあとデータを読み込む作業がでてくるはず。(順にデータパケットを流し込むと生成される的な感じでしょうか)
 		rawData = BufferUtil.safeRead(ch, ch.size() - ch.position());
+		this.lastRawDataPosition = rawData.position();
 	}
 	@Override
 	public List<Bit> getBits() {
@@ -432,6 +435,13 @@ public class Pes extends Packet {
 			}
 		}
 		return list;
+	}
+	/**
+	 * 書き込みバッファをクリアする。
+	 */
+	public void clearWrittenRawData() {
+		writtenRawData = null;
+		rawData.position(lastRawDataPosition);
 	}
 	/**
 	 * 巡回カウンター付きのバッファ参照
