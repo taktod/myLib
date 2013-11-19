@@ -64,7 +64,7 @@ import com.ttProject.nio.channels.IReadChannel;
 public class Pmt extends ProgramPacket {
 	/** 巡回データカウンター */
 	private static byte counter = 0;
-	private static short pmtPid = 0x1000; // pmtのpid値
+	private short pmtPid = 0x1000; // pmtのpid値
 	private Bit3 reserved1;
 	private short pcrPid; // 13bit
 	private Bit4 reserved2;
@@ -159,8 +159,11 @@ public class Pmt extends ProgramPacket {
 			fields.add(elementaryField);
 		}
 	}
-	public int getPcrPid() {
+	public short getPcrPid() {
 		return pcrPid;
+	}
+	public void setPcrPid(short pcrPid) {
+		this.pcrPid = pcrPid;
 	}
 	public List<PmtElementaryField> getFields() {
 		return new ArrayList<PmtElementaryField>(fields);
