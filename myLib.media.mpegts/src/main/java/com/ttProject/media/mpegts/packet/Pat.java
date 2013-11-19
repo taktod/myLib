@@ -73,7 +73,7 @@ public class Pat extends ProgramPacket {
 		programNum = (short)((programNum_1.get() << 8) | programNum_2.get());
 		programPid = (short)((programPid_1.get() << 8) | programPid_2.get());
 	}
-	public short getProgramPId() {
+	public short getProgramPid() {
 		return programPid;
 	}
 	@Override

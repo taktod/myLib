@@ -82,7 +82,7 @@ public class MpegtsManager extends Manager<Packet> {
 			Pat pat = new Pat(position, buffer);
 			// patを解析して、pmtを知る必要あり
 //			pat.analyze(source);
-			pmtId = pat.getProgramPId();
+			pmtId = pat.getProgramPid();
 			return pat;
 		}
 		else if(pid == sdtId) {
