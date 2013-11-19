@@ -171,10 +171,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 			// すでにデータがたまっている。
 			// mpegtsChunkにデータをいれていく必要あり。
 			if(chunk == null) {
-				chunk = new MpegtsChunk();
-				chunk.write(sdt.getBuffer());
-				chunk.write(pat.getBuffer());
-				chunk.write(pmt.getBuffer());
+				chunk = makeNewChunk();
 				// 開始時の時刻を書き込んでおきたい。
 				if(pmt.getPcrPid() == audioDataList.getPid()) { // 音声のpidとpcrPidが一致する場合
 					chunk.setTimestamp(audioDataList.getFirstDataPts());
@@ -193,6 +190,17 @@ public class MpegtsChunkManager extends MediaChunkManager {
 			return resultChunk;
 		}
 		return null;
+	}
+	/**
+	 * 動作用のchunkを生成します。
+	 * @return
+	 */
+	protected MpegtsChunk makeNewChunk() throws Exception {
+		MpegtsChunk chunk = new MpegtsChunk();
+		chunk.write(sdt.getBuffer());
+		chunk.write(pat.getBuffer());
+		chunk.write(pmt.getBuffer());
+		return chunk;
 	}
 	/**
 	 * frameunitを作成します。
@@ -402,10 +410,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		try {
 			// chunkからデータを作って作成しなおす必要あり。
 			if(chunk == null) {
-				chunk = new MpegtsChunk();
-				chunk.write(sdt.getBuffer());
-				chunk.write(pat.getBuffer());
-				chunk.write(pmt.getBuffer());
+				chunk = makeNewChunk();
 				// 開始時の時刻を書き込んでおきたい。
 				if(pmt.getPcrPid() == audioDataList.getPid()) { // 音声のpidとpcrPidが一致する場合
 					chunk.setTimestamp(audioDataList.getFirstDataPts());
