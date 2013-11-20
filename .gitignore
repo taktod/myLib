@@ -10,9 +10,10 @@
 /src
 /target
 /*/target
+/*/*/target
 /mvn-repo
 /*/mvn-repo
 *release*
-*/lib/*
+*/*/lib/*
 *.class
 *.DS_Store
