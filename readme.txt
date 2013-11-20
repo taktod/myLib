@@ -38,6 +38,7 @@
 各ライブラリの説明
 
  myLib:全部含んだライブラリ
+ 
  myLib.MIT:MITライセンスのみの構成の部分
   myLib.channels:入出力動作関連
   myLib.chunk:塊としてメディアデータを扱う
@@ -67,11 +68,15 @@
   myLib.segment:HLSの分割ファイル用(旧)
   myLib.swing:swingの動作補助
   myLib.util:データを扱うときの補助プログラム
+ 
  myLib.LGPLv3:LGPLv3ライセンスの部分
   myLib.flazr:flazrのコードの動作補助(rtmpのメッセージの受信、送信関連)
+ 
  myLib.GPLv3:GPLv3ライセンスの部分
   myLib.setup:テスト用のメディアデータをxuggleで自動生成するためだけのプロジェクト
   myLib.xuggle.flv:flvのデータとxuggleの仲介
   myLib.xuggle.raw:生データとxuggleの仲介
+ 
  myLib.GAPLv3:AGPLv3ライセンスの部分
+ 
  MITライセンス以外はつかっているライブラリのライセンスに依存しています。
