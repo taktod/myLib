@@ -113,14 +113,14 @@ public class SetupForTest {
 	 * mp3のテスト用データを作成する。
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void mp3Setup() throws Exception {
 		logger.info("mp3のテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
 		IContainer container = IContainer.make();
-		if(container.open(getTargetFile("myLib.media.mp3/src/test/resources/test.mp3"), IContainer.Type.WRITE, null) < 0) {
+		if(container.open(getTargetFile("../myLib.MIT/myLib.media.mp3/src/test/resources/test.mp3"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_MP3);
@@ -138,14 +138,14 @@ public class SetupForTest {
 	 * aacのテスト用データを作成する
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void aacSetup() throws Exception {
 		logger.info("aacのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// aacデータを作ります。
 		IContainer container = IContainer.make();
-		if(container.open(getTargetFile("myLib.media.aac/src/test/resources/test.aac"), IContainer.Type.WRITE, null) < 0) {
+		if(container.open(getTargetFile("../myLib.MIT/myLib.media.aac/src/test/resources/test.aac"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_AAC);
@@ -163,14 +163,14 @@ public class SetupForTest {
 	 * h264のテスト用データを作成する。
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void h264Setup() throws Exception {
 		logger.info("h264のテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
 		IContainer container = IContainer.make();
-		if(container.open(getTargetFile("myLib.media.h264/src/test/resources/test.flv"), IContainer.Type.WRITE, null) < 0) {
+		if(container.open(getTargetFile("../myLib.MIT/myLib.media.h264/src/test/resources/test.flv"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_H264);
@@ -217,14 +217,14 @@ public class SetupForTest {
 	 * flvのテスト用データを生成する
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void flvSetup() throws Exception {
 		logger.info("flvのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
 		IContainer container = IContainer.make();
-		if(container.open(getTargetFile("myLib.media.flv/src/test/resources/test.flv"), IContainer.Type.WRITE, null) < 0) {
+		if(container.open(getTargetFile("../myLib.MIT/myLib.media.flv/src/test/resources/test.flv"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_H264);
@@ -278,14 +278,14 @@ public class SetupForTest {
 	 * mpegtsのテスト用データを生成する
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void mpegtsSetup() throws Exception {
 		logger.info("mpegtsのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
 		IContainer container = IContainer.make();
-		if(container.open(getTargetFile("myLib.media.mpegts/src/test/resources/test.ts"), IContainer.Type.WRITE, null) < 0) {
+		if(container.open(getTargetFile("../myLib.MIT/myLib.media.mpegts/src/test/resources/test.ts"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_H264);
@@ -340,14 +340,14 @@ public class SetupForTest {
 	 * mp4のテスト用データを生成する。
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void mp4Setup() throws Exception {
 		logger.info("mp4のテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
 		IContainer container = IContainer.make();
-		if(container.open(getTargetFile("myLib.media.mp4/src/test/resources/test.mp4"), IContainer.Type.WRITE, null) < 0) {
+		if(container.open(getTargetFile("../myLib.MIT/myLib.media.mp4/src/test/resources/test.mp4"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_H264);
@@ -401,14 +401,14 @@ public class SetupForTest {
 	 * mkvのテスト用データを生成する。
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void webmSetup() throws Exception {
 		logger.info("mkvのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
 		IContainer container = IContainer.make();
-		if(container.open(getTargetFile("myLib.media.mkv/src/test/resources/test.webm"), IContainer.Type.WRITE, null) < 0) {
+		if(container.open(getTargetFile("../myLib.MIT/myLib.media.mkv/src/test/resources/test.webm"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
 		

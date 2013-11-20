@@ -13,7 +13,7 @@ public class PathTest {
 	private Logger logger = Logger.getLogger(PathTest.class);
 //	@Test
 	public void test() {
-		logger.info(getTargetFile("a/b/c/d/test.flv"));
+		logger.info(getTargetFile("../a/b/c/d/test.flv"));
 	}
 	/**
 	 * 
