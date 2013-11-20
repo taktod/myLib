@@ -1,0 +1,43 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.ttProject</groupId>
+    <artifactId>myLib</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+    <relativePath>../../</relativePath>
+  </parent>
+  <repositories>
+    <repository>
+      <id>jboss-public-repository</id>
+      <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+    </repository>
+  </repositories>
+  <artifactId>myLib.convert.ffmpeg</artifactId>
+  <dependencies>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.convert</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.netty</groupId>
+      <artifactId>netty</artifactId>
+      <version>3.2.9.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.channels</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+  <name>myLib.convert.ffmpeg</name>
+  <description>外部プロセスに変換をさせることで動作する変換プログラム
+
+本家 -&gt;*1 子プロセス -&gt;*2 ffmpeg -&gt;*3 本家
+という通信動作になります。
+*1はnettyを利用したtcpソケット通信
+*2はunixのプロセスpipeline
+*3はprocessBuilderへの標準出力
+となります。
+実践投入もしているプログラムです。</description>
+</project>

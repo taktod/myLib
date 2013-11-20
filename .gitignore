@@ -1,9 +1,12 @@
 /.project
 /*/.project
+/*/*/.project
 /.settings
 /*/.settings
+/*/*/.settings
 /.classpath
 /*/.classpath
+/*/*/.classpath
 /src
 /target
 /*/target
@@ -12,14 +15,4 @@
 *release*
 */lib/*
 *.class
-*.log
-*.tmp
-*.flv
-*.aac
-*.mp3
-*.mp4
-*.mkv
-*.webm
-*.ts
 *.DS_Store
-*.m3u8

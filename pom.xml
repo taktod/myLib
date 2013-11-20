@@ -15,43 +15,39 @@
     <version>0.0.1</version>
   </parent>
   <modules>
-    <module>myLib.setup</module>
-    <module>myLib.channels</module>
-    <module>myLib.util</module>
-    <module>myLib.packet</module>
-    <module>myLib.packet.flv</module>
-    <module>myLib.packet.mpegts</module>
-    <module>myLib.packet.mp3</module>
-    <module>myLib.xuggle.in.flv</module>
-    <module>myLib.xuggle.out.mpegts</module>
-    <module>myLib.segment</module>
-    <module>myLib.productHelper</module>
-    <module>myLib.flazr</module>
-    <module>myLib.convert</module>
-    <module>myLib.convert.ffmpeg</module>
-    <module>myLib.convert.xuggle</module>
-    <module>myLib.jmx</module>
-    <module>myLib.mkv</module>
-    <module>myLib.log4j</module>
-    <module>myLib.media</module>
-    <module>myLib.media.mp3</module>
-    <module>myLib.media.flv</module>
-    <module>myLib.media.mp4</module>
-    <module>myLib.media.mkv</module>
-    <module>myLib.media.mpegts</module>
-    <module>myLib.media.aac</module>
-    <module>myLib.media.h264</module>
-    <module>myLib.media.extra</module>
-    <module>myLib.media.raw</module>
-    <module>myLib.swing</module>
-    <module>myLib.xuggle.raw</module>
-    <module>myLib.xuggle</module>
-    <module>myLib.xuggle.flv</module>
-    <module>myLib.chunk</module>
-    <module>myLib.chunk.mpegts</module>
-    <module>myLib.chunk.mpegts.h264</module>
-    <module>myLib.chunk.mp3</module>
-    <module>myLib.chunk.aac</module>
+    <module>myLib.GPLv3/myLib.setup</module>
+    <module>myLib.MIT/myLib.channels</module>
+    <module>myLib.MIT/myLib.util</module>
+    <module>myLib.MIT/myLib.packet</module>
+    <module>myLib.MIT/myLib.packet.flv</module>
+    <module>myLib.MIT/myLib.packet.mpegts</module>
+    <module>myLib.MIT/myLib.packet.mp3</module>
+    <module>myLib.MIT/myLib.segment</module>
+    <module>myLib.LGPLv3/myLib.flazr</module>
+    <module>myLib.MIT/myLib.convert</module>
+    <module>myLib.MIT/myLib.convert.ffmpeg</module>
+    <module>myLib.GPLv3/myLib.convert.xuggle</module>
+    <module>myLib.MIT/myLib.jmx</module>
+    <module>myLib.MIT/myLib.log4j</module>
+    <module>myLib.MIT/myLib.media</module>
+    <module>myLib.MIT/myLib.media.mp3</module>
+    <module>myLib.MIT/myLib.media.flv</module>
+    <module>myLib.MIT/myLib.media.mp4</module>
+    <module>myLib.MIT/myLib.media.mkv</module>
+    <module>myLib.MIT/myLib.media.mpegts</module>
+    <module>myLib.MIT/myLib.media.aac</module>
+    <module>myLib.MIT/myLib.media.h264</module>
+    <module>myLib.MIT/myLib.media.extra</module>
+    <module>myLib.MIT/myLib.media.raw</module>
+    <module>myLib.MIT/myLib.swing</module>
+    <module>myLib.GPLv3/myLib.xuggle.raw</module>
+    <module>myLib.GPLv3/myLib.xuggle</module>
+    <module>myLib.GPLv3/myLib.xuggle.flv</module>
+    <module>myLib.MIT/myLib.chunk</module>
+    <module>myLib.MIT/myLib.chunk.mpegts</module>
+    <module>myLib.MIT/myLib.chunk.mpegts.h264</module>
+    <module>myLib.MIT/myLib.chunk.mp3</module>
+    <module>myLib.MIT/myLib.chunk.aac</module>
   </modules>
   <scm>
   	<url>scm:git:git@github.com:taktod/myLib.git</url>
