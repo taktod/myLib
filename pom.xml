@@ -48,6 +48,7 @@
     <module>myLib.MIT/myLib.chunk.mpegts.h264</module>
     <module>myLib.MIT/myLib.chunk.mp3</module>
     <module>myLib.MIT/myLib.chunk.aac</module>
+    <module>myLib.MIT/myLib.chunk.mpegts.flv</module>
   </modules>
   <scm>
   	<url>scm:git:git@github.com:taktod/myLib.git</url>
