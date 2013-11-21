@@ -2,9 +2,13 @@ package com.ttProject.xuggle;
 
 import com.ttProject.media.Unit;
 import com.ttProject.transcode.TranscodeManager;
+import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec.Type;
+import com.xuggle.xuggler.IAudioResampler;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStreamCoder;
+import com.xuggle.xuggler.IVideoPicture;
+import com.xuggle.xuggler.IVideoResampler;
 
 /**
  * 変換動作の中心マネージャー
@@ -25,6 +29,10 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	private IDepacketizer depacketizer;
 	/** 動作パケット(使い回します) */
 	private IPacket packet = null;
+	/** 音声リサンプラー */
+	private IAudioResampler audioResampler = null;
+	/** 映像リサンプラー */
+	private IVideoResampler videoResampler = null;
 	/**
 	 * エンコーダーを設定する
 	 */
@@ -119,6 +127,56 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	 * @throws Exception
 	 */
 	private void processAudio(IPacket packet) throws Exception {
+		IAudioSamples samples = IAudioSamples.make(1024, decoder.getChannels());
+		int offset = 0;
+		while(offset < packet.getSize()) {
+			int bytesDecoded = decoder.decodeAudio(samples, packet, offset);
+			if(bytesDecoded < 0) {
+				throw new Exception("デコード中にエラーが発生");
+			}
+			offset += bytesDecoded;
+			if(samples.isComplete()) {
+				// データができあがった
+				// エンコーダーとの型があわなかったらリサンプルする必要あり
+				if(samples.getSampleRate() != encoder.getSampleRate()
+				|| samples.getFormat() != encoder.getSampleFormat()
+				|| samples.getChannels() != encoder.getChannels()) {
+					// resamplerをつくってリサンプルする必要あり。
+					if(audioResampler == null
+					|| audioResampler.getOutputRate() != encoder.getSampleRate()
+					|| audioResampler.getOutputFormat() != encoder.getSampleFormat()
+					|| audioResampler.getOutputChannels() != encoder.getChannels()) {
+						if(audioResampler != null) {
+							// これ消さなくてもいいかも・・・xuggleがエラーになる場合はコメントアウトしておきたい。
+							audioResampler.delete();
+						}
+						audioResampler = IAudioResampler.make(
+								encoder.getChannels(), samples.getChannels(),
+								encoder.getSampleRate(), samples.getSampleRate(),
+								encoder.getSampleFormat(), samples.getFormat());
+					}
+					IAudioSamples spls = IAudioSamples.make(1024, encoder.getChannels());
+					int retval = audioResampler.resample(spls, samples, samples.getNumSamples());
+					if(retval <= 0) {
+						throw new Exception("音声のリサンプルに失敗しました。");
+					}
+					samples = spls;
+				}
+				int samplesConsumed = 0;
+				while(samplesConsumed < samples.getNumSamples()) {
+					// TODO ここでpacket使いまわしても大丈夫か？入力ソースが別で利用されていたらやばくない？
+					int retval = encoder.encodeAudio(packet, samples, samplesConsumed);
+					if(retval < 0) {
+						throw new Exception("変換失敗");
+					}
+					samplesConsumed += retval;
+					if(packet.isComplete()) {
+						// 音声のdtsとptsは一致するので、一応かいとく、必要ないかも
+//						packet.setDts(packet.getPts());
+					}
+				}
+			}
+		}
 	}
 	/**
 	 * 映像処理をすすめる
@@ -126,6 +184,6 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	 * @throws Exception
 	 */
 	private void processVideo(IPacket packet) throws Exception {
-		
+		IVideoPicture picture = IVideoPicture.make(decoder.getPixelType(), decoder.getWidth(), decoder.getHeight());
 	}
 }

@@ -12,4 +12,9 @@ public interface ITranscodeListener {
 	 * @param unit
 	 */
 	public void receiveData(Unit unit);
+	/**
+	 * 例外発生時に例外を受け取ります。
+	 * @param e
+	 */
+	public void exceptionCaught(Exception e);
 }
