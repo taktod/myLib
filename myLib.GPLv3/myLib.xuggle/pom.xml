@@ -54,5 +54,14 @@
     <version>0.0.2-SNAPSHOT</version>
     <scope>test</scope>
   </dependency>
+  <dependency>
+    <groupId>com.ttProject</groupId>
+    <artifactId>myLib.transcode</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+  </dependency>
  </dependencies>
+ <name>myLib.xuggle</name>
+ <description>xuggleの変換を実行する動作のベースの部分。
+myLib.chunk.mpegtsみたいに母艦の動作(packet -&gt; convert -&gt; packet)の部分だけ実装して
+各mediaからのpacket生成はinterface化&amp;module化してしまえばいいかな・・・</description>
 </project>
