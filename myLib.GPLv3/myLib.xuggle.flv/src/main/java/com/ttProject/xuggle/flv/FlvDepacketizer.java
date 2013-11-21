@@ -25,7 +25,7 @@ import com.xuggle.xuggler.IStreamCoder;
 
 /**
  * IPacketをflvTagに戻す処理
- * 変換を戻す場合はそれぞれのメディアトラック用のおDepacketizerをつくらないとだめ。
+ * 変換を戻す場合はそれぞれのメディアトラック用のDepacketizerをつくらないとだめ。
  * avcで複数出力するといった場合に出力できないことがありえる。
  * @author taktod
  */
