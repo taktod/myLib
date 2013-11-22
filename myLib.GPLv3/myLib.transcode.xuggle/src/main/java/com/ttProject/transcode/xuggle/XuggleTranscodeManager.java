@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.ttProject.media.Unit;
 import com.ttProject.transcode.TranscodeManager;
+import com.ttProject.transcode.xuggle.packet.IDepacketizer;
+import com.ttProject.transcode.xuggle.packet.IPacketizer;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec.Type;
 import com.xuggle.xuggler.IAudioResampler;
