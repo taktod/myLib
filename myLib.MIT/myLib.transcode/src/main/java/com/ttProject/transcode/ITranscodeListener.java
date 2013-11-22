@@ -1,5 +1,7 @@
 package com.ttProject.transcode;
 
+import java.util.List;
+
 import com.ttProject.media.Unit;
 
 /**
@@ -11,7 +13,7 @@ public interface ITranscodeListener {
 	 * 変換処理後のデータをうけとります。
 	 * @param unit
 	 */
-	public void receiveData(Unit unit);
+	public void receiveData(List<Unit> unit);
 	/**
 	 * 例外発生時に例外を受け取ります。
 	 * @param e

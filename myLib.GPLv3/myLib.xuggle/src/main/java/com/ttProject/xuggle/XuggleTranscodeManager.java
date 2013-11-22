@@ -174,6 +174,7 @@ public class XuggleTranscodeManager extends TranscodeManager {
 					samplesConsumed += retval;
 					if(packet.isComplete()) {
 						List<Unit> units = depacketizer.getUnit(encoder, packet);
+						getTranscodeListener().receiveData(units);
 					}
 				}
 			}
@@ -221,6 +222,7 @@ public class XuggleTranscodeManager extends TranscodeManager {
 				}
 				if(packet.isComplete()) {
 					List<Unit> units = depacketizer.getUnit(encoder, packet);
+					getTranscodeListener().receiveData(units);
 				}
 			}
 		}
