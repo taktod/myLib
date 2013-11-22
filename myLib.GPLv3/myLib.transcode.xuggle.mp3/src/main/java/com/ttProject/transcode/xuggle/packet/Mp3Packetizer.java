@@ -3,7 +3,7 @@ package com.ttProject.transcode.xuggle.packet;
 import java.nio.ByteBuffer;
 
 import com.ttProject.media.Unit;
-import com.ttProject.media.aac.frame.Aac;
+import com.ttProject.media.mp3.frame.Mp3;
 import com.ttProject.util.BufferUtil;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.ICodec;
@@ -13,41 +13,42 @@ import com.xuggle.xuggler.IStreamCoder;
 import com.xuggle.xuggler.IStreamCoder.Direction;
 
 /**
- * aacFrameからIPacketを作る動作
+ * mp3FrameからIPacketを作る動作
  * @author taktod
+ *
  */
-public class AacPacketizer implements IPacketizer {
-	/** 最終AacFrame */
-	private Aac lastAacFrame = null;
+public class Mp3Packetizer implements IPacketizer {
+	/** 最終mp3Frame */
+	private Mp3 lastMp3Frame = null;
 	/**
 	 * データをあらかじめ判定しておきます。
 	 */
 	@Override
 	public boolean check(Unit unit) {
-		if(!(unit instanceof Aac)) {
+		if(!(unit instanceof Mp3)) {
 			return true;
 		}
-		if(lastAacFrame == null) {
+		if(lastMp3Frame == null) {
 			return true;
 		}
-		Aac aacFrame = (Aac)unit;
-		return (aacFrame.getProfile() == lastAacFrame.getProfile()
-				&& aacFrame.getSampleRate() == lastAacFrame.getSampleRate()
-				&& aacFrame.getChannelConfiguration() == lastAacFrame.getChannelConfiguration());
+		Mp3 mp3Frame = (Mp3)unit;
+		return (mp3Frame.getBitrate() == lastMp3Frame.getBitrate()
+				&& mp3Frame.getSampleRate() == lastMp3Frame.getSampleRate()
+				&& mp3Frame.getChannelMode() == lastMp3Frame.getChannelMode());
 	}
 	/**
-	 * aacFrameからpacketを取り出します。
+	 * mp3Frameからpacketを取り出します。
 	 */
 	@Override
 	public IPacket getPacket(Unit unit, IPacket packet) throws Exception {
-		if(!(unit instanceof Aac)) {
+		if(!(unit instanceof Mp3)) {
 			return null;
 		}
 		if(packet == null) {
 			packet = IPacket.make();
 		}
-		Aac aacFrame = (Aac) unit;
-		ByteBuffer buffer = aacFrame.getBuffer();
+		Mp3 mp3Frame = (Mp3)unit;
+		ByteBuffer buffer = mp3Frame.getBuffer();
 		int size = buffer.remaining();
 		IBuffer bufData = IBuffer.make(null, BufferUtil.toByteArray(buffer), 0, size);
 		packet.setData(bufData);
@@ -62,14 +63,14 @@ public class AacPacketizer implements IPacketizer {
 	 */
 	@Override
 	public IStreamCoder createDecoder() throws Exception {
-		if(lastAacFrame == null) {
+		if(lastMp3Frame == null) {
 			return null;
 		}
 		IStreamCoder decoder = null;
-		decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_AAC);
-		decoder.setSampleRate(lastAacFrame.getSampleRate());
-		decoder.setTimeBase(IRational.make(1, lastAacFrame.getSampleRate()));
-		decoder.setChannels(lastAacFrame.getChannelConfiguration());
+		decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_MP3);
+		decoder.setSampleRate(lastMp3Frame.getSampleRate());
+		decoder.setTimeBase(IRational.make(1, lastMp3Frame.getSampleRate()));
+		decoder.setChannels(lastMp3Frame.getChannels());
 		return decoder;
 	}
 }
