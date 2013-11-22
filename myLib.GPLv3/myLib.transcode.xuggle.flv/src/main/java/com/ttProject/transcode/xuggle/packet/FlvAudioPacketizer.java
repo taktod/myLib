@@ -187,8 +187,7 @@ public class FlvAudioPacketizer implements IPacketizer {
 		}
 		IStreamCoder decoder = null;
 		switch(lastAudioTag.getCodec()) {
-		case AAC:
-			// 単に２重にするだけでも動作するっぽいなんだこれ？
+		case AAC: // win64bit版のxuggleのaacデコードにはバグがあるみたいです。xuggle-5.4のコンパイルがどうやら32bitになっている感じ？
 			decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_AAC);
 			decoder.setSampleRate(lastAudioTag.getSampleRate());
 			decoder.setTimeBase(IRational.make(1, lastAudioTag.getSampleRate()));

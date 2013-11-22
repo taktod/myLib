@@ -23,6 +23,10 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStreamCoder;
 
+/**
+ * packetからflvTagを取り出す
+ * @author taktod
+ */
 public class FlvDepacketizer implements IDepacketizer {
 	/** h264の動作補助 sps */
 	private SequenceParameterSet sps = null;
@@ -30,6 +34,9 @@ public class FlvDepacketizer implements IDepacketizer {
 	private PictureParameterSet pps = null;
 	/** aacの動作補助 dsi */
 	private DecoderSpecificInfo dsi = null;
+	/**
+	 * packetからflvTagを抜き出します。
+	 */
 	@Override
 	public List<Unit> getUnit(IStreamCoder encoder, IPacket packet)
 			throws Exception {

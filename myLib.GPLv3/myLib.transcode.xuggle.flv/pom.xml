@@ -29,4 +29,6 @@
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
+  <name>myLib.transcode.xuggle.flv</name>
+  <description>xuggleの変換結果をflvとして受け取らせるためのプロジェクト</description>
 </project>
