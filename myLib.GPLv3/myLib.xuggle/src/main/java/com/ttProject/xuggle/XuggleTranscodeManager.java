@@ -1,5 +1,7 @@
 package com.ttProject.xuggle;
 
+import java.util.List;
+
 import com.ttProject.media.Unit;
 import com.ttProject.transcode.TranscodeManager;
 import com.xuggle.xuggler.IAudioSamples;
@@ -167,12 +169,11 @@ public class XuggleTranscodeManager extends TranscodeManager {
 					// TODO ここでpacket使いまわしても大丈夫か？入力ソースが別で利用されていたらやばくない？
 					int retval = encoder.encodeAudio(packet, samples, samplesConsumed);
 					if(retval < 0) {
-						throw new Exception("変換失敗");
+						throw new Exception("音声変換失敗");
 					}
 					samplesConsumed += retval;
 					if(packet.isComplete()) {
-						// 音声のdtsとptsは一致するので、一応かいとく、必要ないかも
-//						packet.setDts(packet.getPts());
+						List<Unit> units = depacketizer.getUnit(encoder, packet);
 					}
 				}
 			}
@@ -185,5 +186,43 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	 */
 	private void processVideo(IPacket packet) throws Exception {
 		IVideoPicture picture = IVideoPicture.make(decoder.getPixelType(), decoder.getWidth(), decoder.getHeight());
+		int offset = 0;
+		while(offset < packet.getSize()) {
+			int bytesDecoded = decoder.decodeVideo(picture, packet, offset);
+			if(bytesDecoded <= 0) {
+				throw new Exception("デコード中にエラーが発生しました。");
+			}
+			offset += bytesDecoded;
+			if(picture.isComplete()) {
+				if(picture.getWidth() != encoder.getWidth()
+				|| picture.getHeight() != encoder.getHeight()
+				|| picture.getPixelType() != encoder.getPixelType()) {
+					if(videoResampler == null
+					|| videoResampler.getOutputWidth() != encoder.getWidth()
+					|| videoResampler.getOutputHeight() != encoder.getHeight()
+					|| videoResampler.getOutputPixelFormat() != encoder.getPixelType()) {
+						if(videoResampler != null) {
+							// 消さなくてもいいかもしれない。xuggleがエラーになるなら消したい。
+							videoResampler.delete();
+						}
+						videoResampler = IVideoResampler.make(
+								encoder.getWidth(), encoder.getHeight(), encoder.getPixelType(),
+								picture.getWidth(), picture.getHeight(), picture.getPixelType());
+						IVideoPicture pct = IVideoPicture.make(encoder.getPixelType(), encoder.getWidth(), encoder.getHeight());
+						int retval = videoResampler.resample(pct, picture);
+						if(retval <= 0) {
+							throw new Exception("映像リサンプル失敗");
+						}
+						picture = pct;
+					}
+				}
+				if(encoder.encodeVideo(packet, picture, 0) < 0) {
+					throw new Exception("映像変換失敗");
+				}
+				if(packet.isComplete()) {
+					List<Unit> units = depacketizer.getUnit(encoder, packet);
+				}
+			}
+		}
 	}
 }
