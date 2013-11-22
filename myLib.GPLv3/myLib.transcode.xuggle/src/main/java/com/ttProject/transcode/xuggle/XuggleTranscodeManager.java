@@ -22,6 +22,9 @@ import com.xuggle.xuggler.IVideoResampler;
  * 変換動作の中心マネージャー
  * 1つのマネージャーでは、１つのコンバートだけ実行します。
  * 音声と映像の両方をコンバートしたければ２つ変換マネージャーが必要となるとします。
+ * 
+ * TODO xuggleの変換モジュールで、VideoPictureやAudioSampleに変換してから、複数の出力にわける動作をいれると、１つのデータから複数出力できていい感じになると思われます。
+ * どうするかな・・・
  * @author taktod
  */
 public class XuggleTranscodeManager extends TranscodeManager {
