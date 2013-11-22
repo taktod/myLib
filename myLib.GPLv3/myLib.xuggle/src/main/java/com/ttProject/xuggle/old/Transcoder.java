@@ -650,6 +650,7 @@ public class Transcoder implements Runnable {
 		IPacket outPacket = IPacket.make();
 		
 		IVideoPicture preEncode = picture;
+		@SuppressWarnings("unused")
 		int numBytesConsumed = 0;
 		if(preEncode.isComplete()) {
 			retval = outputVideoCoder.encodeVideo(outPacket, preEncode, 0);
