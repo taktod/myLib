@@ -102,6 +102,7 @@ public class Preset {
 		encoder.setProperty("cqp", "0");
 		encoder.setFlag(Flags.FLAG_LOOP_FILTER, true);
 		encoder.setFlag(Flags.FLAG_CLOSED_GOP, true);
+		encoder.setPixelType(Type.YUV420P);
 		return encoder;
 	}
 	/**
@@ -119,6 +120,7 @@ public class Preset {
 		encoder.setGlobalQuality(10);
 		encoder.setFrameRate(frameRate);
 		encoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
+		encoder.setPixelType(Type.YUV420P);
 		return encoder;
 	}
 }
