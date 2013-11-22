@@ -50,6 +50,7 @@
     <module>myLib.MIT/myLib.chunk.aac</module>
     <module>myLib.MIT/myLib.chunk.mpegts.flv</module>
     <module>myLib.MIT/myLib.transcode</module>
+    <module>myLib.GPLv3/myLib.transcode.xuggle</module>
   </modules>
   <scm>
   	<url>scm:git:git@github.com:taktod/myLib.git</url>
