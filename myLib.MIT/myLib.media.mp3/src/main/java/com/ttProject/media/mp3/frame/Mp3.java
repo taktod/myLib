@@ -104,6 +104,20 @@ public class Mp3 extends Frame implements IAudioData {
 	public double getTimebase() {
 		return 0;
 	}
+	/**
+	 * チャンネルモードを応答します。
+	 * @return
+	 */
+	public int getChannelMode() {
+		return channelMode.get();
+	}
+	/**
+	 * チャンネル数を応答します。
+	 * @return
+	 */
+	public int getChannels() {
+		return channelMode.get() == 3 ? 1 : 2;
+	}
 	public int getBitrate() {
 		if(mpegVersion.get() == 0 || mpegVersion.get() == 2) { // 2.5と2の場合
 			if(layer.get() == 3) { // layer1
