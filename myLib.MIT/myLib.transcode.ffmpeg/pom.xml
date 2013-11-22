@@ -1,0 +1,16 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.ttProject</groupId>
+    <artifactId>myLib</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+    <relativePath>../../</relativePath>
+  </parent>
+  <artifactId>myLib.transcode.ffmpeg</artifactId>
+  <name>myLib.transcode.ffmpeg</name>
+  <description>ffmpegによる変換のtranscode実装
+myLib.convert.ffmpegと同じく、java -(socket)&gt; java -(pipe)&gt; ffmpeg -(pipe)&gt; java
+という方法でpipeline経由で動作させることにします。
+よって、macやlinuxでは動作するけど、windowsだと多分動作しません。
+また、別の変換プログラムでも一応できるはずですが、vlcの場合は、出力データがちょっと微妙なので、使えるか使えないかわかりません。</description>
+</project>
