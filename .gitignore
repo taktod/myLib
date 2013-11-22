@@ -17,3 +17,10 @@
 */*/lib/*
 *.class
 *.DS_Store
+*.mp3
+*.mp4
+*.flv
+*.ts
+*.webm
+*.aac
+*.log
