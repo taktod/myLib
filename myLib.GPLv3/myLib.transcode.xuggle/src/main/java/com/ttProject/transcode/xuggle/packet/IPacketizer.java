@@ -10,6 +10,13 @@ import com.xuggle.xuggler.IStreamCoder;
  */
 public interface IPacketizer {
 	/**
+	 * mediaDataの正当性を確認します。
+	 * 正当でない場合はあらかじめエラーを返します。
+	 * @param unit
+	 * @return
+	 */
+	public boolean check(Unit unit);
+	/**
 	 * packetデータを作成して応答します
 	 * @param unit メディアunit
 	 * @param packet 既存のpacketメモリーを使い回す場合(使い回すとGCを遅らせることが可能です)

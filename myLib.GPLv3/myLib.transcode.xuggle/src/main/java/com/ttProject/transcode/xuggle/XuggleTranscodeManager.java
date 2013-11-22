@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ttProject.media.Unit;
 import com.ttProject.transcode.TranscodeManager;
+import com.ttProject.transcode.xuggle.exception.FormatChangeException;
 import com.ttProject.transcode.xuggle.packet.IDepacketizer;
 import com.ttProject.transcode.xuggle.packet.IPacketizer;
 import com.xuggle.xuggler.IAudioSamples;
@@ -100,6 +101,9 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	 * @throws Exception (なにか問題がでたら例外がでます)
 	 */
 	private void process(Unit unit) throws Exception {
+		if(!packetizer.check(unit)) {
+			throw new FormatChangeException("コーデックが合いませんでした。");
+		}
 		// packet化する。
 		IPacket packet = packetizer.getPacket(unit, this.packet);
 		if(packet == null) {
