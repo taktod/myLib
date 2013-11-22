@@ -33,6 +33,8 @@ public class FileTranscodeTest {
 	@Test
 	public void test() {
 		IFileReadChannel source = null;
+		ITranscodeManager audioTranscodeManager = null;
+		ITranscodeManager videoTranscodeManager = null;
 		try {
 			// mario.flvをダウンロードしつつコンバートさせる
 			source = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.flv");
@@ -42,8 +44,8 @@ public class FileTranscodeTest {
 			Tag tag = null;
 			
 			// xuggleに変換させる。
-			ITranscodeManager audioTranscodeManager = new XuggleTranscodeManager();
-			ITranscodeManager videoTranscodeManager = new XuggleTranscodeManager();
+			audioTranscodeManager = new XuggleTranscodeManager();
+			videoTranscodeManager = new XuggleTranscodeManager();
 			ITranscodeListener listener = new ITranscodeListener() {
 				@Override
 				public void receiveData(List<Unit> unit) {
@@ -64,6 +66,8 @@ public class FileTranscodeTest {
 			((XuggleTranscodeManager) audioTranscodeManager).setPacketizer(new FlvAudioPacketizer());
 			// エンコードはmp3を選択
 			((XuggleTranscodeManager) audioTranscodeManager).setEncoder(Preset.mp3());
+			// threadで処理させる。
+			((XuggleTranscodeManager) audioTranscodeManager).setThreadFlg(true);
 
 			// 映像用
 			// flvで出力させるので、flvTagにするためのdepacketizer登録
@@ -71,17 +75,32 @@ public class FileTranscodeTest {
 			// flvを入力するので、flvTagからPacketをつくるPacketizerを登録とりあえず音声を扱う
 			((XuggleTranscodeManager) videoTranscodeManager).setPacketizer(new FlvVideoPacketizer());
 			// エンコードはflv1を選択
-			((XuggleTranscodeManager) videoTranscodeManager).setEncoder(Preset.flv1());
+			((XuggleTranscodeManager) videoTranscodeManager).setEncoder(Preset.h264());
+			// threadで処理させる
+			((XuggleTranscodeManager) videoTranscodeManager).setThreadFlg(true);
 			while((tag = analyzer.analyze(source)) != null) {
 				// 変換させます。
 				audioTranscodeManager.transcode(tag);
 				videoTranscodeManager.transcode(tag);
+			}
+			// 処理がおわっているか判断して、終わってなかったら１秒待つ
+			while(((XuggleTranscodeManager)videoTranscodeManager).isRemaining()
+				|| ((XuggleTranscodeManager)audioTranscodeManager).isRemaining()) {
+					Thread.sleep(1000);
 			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
 		finally {
+			if(audioTranscodeManager != null) {
+				audioTranscodeManager.close();
+				audioTranscodeManager = null;
+			}
+			if(videoTranscodeManager != null) {
+				videoTranscodeManager.close();
+				videoTranscodeManager = null;
+			}
 			if(source != null) {
 				try {
 					source.close();

@@ -1,6 +1,7 @@
 package com.ttProject.transcode.xuggle;
 
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
 
@@ -29,6 +30,10 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	private Logger logger = Logger.getLogger(XuggleTranscodeManager.class);
 	/** thread動作フラグ */
 	private boolean threadFlg = false;
+	/** 動作用Thread */
+	private Thread workerThread = null;
+	/** Thread動作実体 */
+	private ConvertWorker worker = null;
 	/** デコーダー */
 	private IStreamCoder decoder = null;
 	/** エンコーダー */
@@ -89,8 +94,21 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	 * @param unit 変換対象データ
 	 */
 	@Override
-	public void transcode(Unit unit) {
+	public void transcode(Unit unit) throws Exception {
+		// パケットの確認を実行します。
+		if(!packetizer.check(unit)) {
+			throw new FormatChangeException("コーデックが合いませんでした。");
+		}
 		if(threadFlg) {
+			if(worker == null) {
+				worker = new ConvertWorker();
+			}
+			if(workerThread == null) {
+				workerThread = new Thread(worker);
+				workerThread.setName("XuggleTranscodeThread:" + hashCode());
+				workerThread.start();
+			}
+			worker.addQueue(unit);
 		}
 		else {
 			try {
@@ -103,14 +121,36 @@ public class XuggleTranscodeManager extends TranscodeManager {
 		}
 	}
 	/**
+	 * 停止処理
+	 */
+	@Override
+	public void close() {
+		if(encoder != null) {
+			encoder.close();
+			encoder = null;
+		}
+		if(decoder != null) {
+			decoder.close();
+			decoder = null;
+		}
+		if(threadFlg) {
+			// threadを停止しないとだめ
+			if(worker != null) {
+				worker.stop();
+			}
+			if(workerThread != null) {
+				workerThread.interrupt();
+			}
+			workerThread = null;
+			worker = null;
+		}
+	}
+	/**
 	 * 処理を実施する。
 	 * @param unit
 	 * @throws Exception (なにか問題がでたら例外がでます)
 	 */
 	private void process(Unit unit) throws Exception {
-		if(!packetizer.check(unit)) {
-			throw new FormatChangeException("コーデックが合いませんでした。");
-		}
 		// packet化する。
 		IPacket packet = packetizer.getPacket(unit, this.packet);
 		if(packet == null) {
@@ -259,6 +299,69 @@ public class XuggleTranscodeManager extends TranscodeManager {
 					getTranscodeListener().receiveData(units);
 				}
 			}
+		}
+	}
+	/**
+	 * 処理待ちデータが残っているか確認
+	 * @return
+	 */
+	public boolean isRemaining() {
+		if(threadFlg && worker != null) {
+			return worker.getRemainUnitCount() != 0;
+		}
+		return false;
+	}
+	/**
+	 * マルチthread動作用変換worker
+	 * @author taktod
+	 *
+	 */
+	private class ConvertWorker implements Runnable {
+		/** 変換候補データを保持するqueue */
+		private LinkedBlockingQueue<Unit> unitQueue = new LinkedBlockingQueue<Unit>();
+		/** 処理中フラグ */
+		private boolean workFlg = true;
+		/**
+		 * 強制停止
+		 */
+		public void stop() {
+			workFlg = false;
+		}
+		/**
+		 * 残っているデータを参照する
+		 * @return
+		 */
+		public int getRemainUnitCount() {
+			return unitQueue.size();
+		}
+		/**
+		 * queueを登録します
+		 * @param unit
+		 */
+		public void addQueue(Unit unit) {
+			if(!workFlg) {
+				return;
+			}
+			unitQueue.add(unit);
+		}
+		/**
+		 * 変換を実行する
+		 */
+		@Override
+		public void run() {
+			try {
+				while(workFlg) {
+					Unit unit = unitQueue.take();
+					process(unit);
+				}
+			}
+			catch(Exception e) {
+				// 例外は通知して処理終わりにする。
+				getTranscodeListener().exceptionCaught(e);
+			}
+			workFlg = false;
+			// queueの中身を解放しておく
+			unitQueue.clear();
 		}
 	}
 }
