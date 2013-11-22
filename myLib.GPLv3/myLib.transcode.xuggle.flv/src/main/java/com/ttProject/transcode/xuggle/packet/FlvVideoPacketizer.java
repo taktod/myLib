@@ -26,7 +26,7 @@ import com.xuggle.xuggler.IStreamCoder.Direction;
  */
 public class FlvVideoPacketizer implements IPacketizer {
 	/** 最終映像タグ */
-	private VideoTag lastVideoTag;
+	private VideoTag lastVideoTag = null;
 	/** h264のsps */
 	private SequenceParameterSet sps = null;
 	/** h264のpps */
