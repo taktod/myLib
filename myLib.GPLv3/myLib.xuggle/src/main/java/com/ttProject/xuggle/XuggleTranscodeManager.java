@@ -79,18 +79,18 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	 * @param unit 変換対象データ
 	 */
 	@Override
-	public void transcode(Unit unit) throws Exception {
+	public void transcode(Unit unit) {
 		if(threadFlg) {
-			
 		}
 		else {
-			// threadでない場合はそのまま処理する
-			process(unit);
+			try {
+				// threadでない場合はそのまま処理する
+				process(unit);
+			}
+			catch(Exception e) {
+				getTranscodeListener().exceptionCaught(e);
+			}
 		}
-		// packetizerでpacket化する。
-		// そのまま処理するなら [デコード→エンコード→depacketizerでunitに戻して応答]
-		// threadで処理するなら、一旦queueに登録
-		// 無限ループthreadで処理
 	}
 	/**
 	 * 処理を実施する。

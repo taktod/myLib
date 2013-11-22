@@ -17,5 +17,5 @@ public interface ITranscodeManager {
 	 * 変換を実行
 	 * @param unit 対応メディアunit
 	 */
-	public void transcode(Unit unit) throws Exception;
+	public void transcode(Unit unit);
 }
