@@ -108,7 +108,20 @@ public class XuggleTranscodeManager extends TranscodeManager {
 		if(decoder == null) {
 			decoder = packetizer.createDecoder();
 			if(decoder == null) {
-				throw new Exception("decoderが作成できませんでした。");
+				throw new Exception("decoderが取得できませんでした");
+			}
+			if(!decoder.isOpen()) {
+				if(decoder.open(null, null) < 0) {
+					throw new Exception("decoderが開けませんでした");
+				}
+			}
+		}
+		if(encoder == null) {
+			throw new Exception("encoderが未設定です");
+		}
+		if(!encoder.isOpen()) {
+			if(encoder.open(null, null) < 0) {
+				throw new Exception("encoderが開けませんでした");
 			}
 		}
 		if(encoder.getCodecType() == Type.CODEC_TYPE_AUDIO) {
