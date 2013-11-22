@@ -2,6 +2,8 @@ package com.ttProject.transcode.xuggle;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.Unit;
 import com.ttProject.transcode.TranscodeManager;
 import com.ttProject.transcode.xuggle.exception.FormatChangeException;
@@ -22,6 +24,9 @@ import com.xuggle.xuggler.IVideoResampler;
  * @author taktod
  */
 public class XuggleTranscodeManager extends TranscodeManager {
+	/** 動作ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(XuggleTranscodeManager.class);
 	/** thread動作フラグ */
 	private boolean threadFlg = false;
 	/** デコーダー */
@@ -34,6 +39,8 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	private IDepacketizer depacketizer;
 	/** 動作パケット(使い回します) */
 	private IPacket packet = null;
+	/** エンコード用のパケット(使い回したい)(エンコードとデコードのpacketを同じにしたらchannel element 0.0 is not allocatedとかいうエラーがでた。) */
+	private IPacket encodePacket = null;
 	/** 音声リサンプラー */
 	private IAudioResampler audioResampler = null;
 	/** 映像リサンプラー */
@@ -169,7 +176,7 @@ public class XuggleTranscodeManager extends TranscodeManager {
 					|| audioResampler.getOutputChannels() != encoder.getChannels()) {
 						if(audioResampler != null) {
 							// これ消さなくてもいいかも・・・xuggleがエラーになる場合はコメントアウトしておきたい。
-							audioResampler.delete();
+//							audioResampler.delete();
 						}
 						audioResampler = IAudioResampler.make(
 								encoder.getChannels(), samples.getChannels(),
@@ -186,13 +193,16 @@ public class XuggleTranscodeManager extends TranscodeManager {
 				int samplesConsumed = 0;
 				while(samplesConsumed < samples.getNumSamples()) {
 					// TODO ここでpacket使いまわしても大丈夫か？入力ソースが別で利用されていたらやばくない？
-					int retval = encoder.encodeAudio(packet, samples, samplesConsumed);
+					if(encodePacket == null) {
+						encodePacket = IPacket.make();
+					}
+					int retval = encoder.encodeAudio(encodePacket, samples, samplesConsumed);
 					if(retval < 0) {
 						throw new Exception("音声変換失敗");
 					}
 					samplesConsumed += retval;
-					if(packet.isComplete()) {
-						List<Unit> units = depacketizer.getUnit(encoder, packet);
+					if(encodePacket.isComplete()) {
+						List<Unit> units = depacketizer.getUnit(encoder, encodePacket);
 						getTranscodeListener().receiveData(units);
 					}
 				}
@@ -214,6 +224,8 @@ public class XuggleTranscodeManager extends TranscodeManager {
 			}
 			offset += bytesDecoded;
 			if(picture.isComplete()) {
+				// なんか時間が狂うので、時間の設定し直しを実行しておいた。
+				picture.setPts(packet.getPts() * 1000L);
 				if(picture.getWidth() != encoder.getWidth()
 				|| picture.getHeight() != encoder.getHeight()
 				|| picture.getPixelType() != encoder.getPixelType()) {
@@ -223,24 +235,27 @@ public class XuggleTranscodeManager extends TranscodeManager {
 					|| videoResampler.getOutputPixelFormat() != encoder.getPixelType()) {
 						if(videoResampler != null) {
 							// 消さなくてもいいかもしれない。xuggleがエラーになるなら消したい。
-							videoResampler.delete();
+//							videoResampler.delete();
 						}
 						videoResampler = IVideoResampler.make(
 								encoder.getWidth(), encoder.getHeight(), encoder.getPixelType(),
 								picture.getWidth(), picture.getHeight(), picture.getPixelType());
-						IVideoPicture pct = IVideoPicture.make(encoder.getPixelType(), encoder.getWidth(), encoder.getHeight());
-						int retval = videoResampler.resample(pct, picture);
-						if(retval <= 0) {
-							throw new Exception("映像リサンプル失敗");
-						}
-						picture = pct;
 					}
+					IVideoPicture pct = IVideoPicture.make(encoder.getPixelType(), encoder.getWidth(), encoder.getHeight());
+					int retval = videoResampler.resample(pct, picture);
+					if(retval <= 0) {
+						throw new Exception("映像リサンプル失敗");
+					}
+					picture = pct;
 				}
-				if(encoder.encodeVideo(packet, picture, 0) < 0) {
+				if(encodePacket == null) {
+					encodePacket = IPacket.make();
+				}
+				if(encoder.encodeVideo(encodePacket, picture, 0) < 0) {
 					throw new Exception("映像変換失敗");
 				}
-				if(packet.isComplete()) {
-					List<Unit> units = depacketizer.getUnit(encoder, packet);
+				if(encodePacket.isComplete()) {
+					List<Unit> units = depacketizer.getUnit(encoder, encodePacket);
 					getTranscodeListener().receiveData(units);
 				}
 			}
