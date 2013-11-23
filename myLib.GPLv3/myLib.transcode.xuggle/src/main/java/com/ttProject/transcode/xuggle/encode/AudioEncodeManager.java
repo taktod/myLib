@@ -15,6 +15,7 @@ import com.xuggle.xuggler.IStreamCoder.Direction;
 /**
  * audioエンコード動作
  * @author taktod
+ * audioGapがある場合は補完しないとだめなんだろうか・・・そこだけ心配
  */
 public class AudioEncodeManager implements IEncodeManager {
 	private IPacket packet = null;
