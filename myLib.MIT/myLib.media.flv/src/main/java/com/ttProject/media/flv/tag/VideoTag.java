@@ -251,7 +251,7 @@ public class VideoTag extends Tag {
 	 */
 	@Override
 	public String toString() {
-		return "videoTag:" + getTimestamp();
+		return "videoTag:" + getTimestamp() + " codec:" + getCodec();
 	}
 	/**
 	 * 同じタグを作成して応答します。
