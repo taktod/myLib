@@ -1,6 +1,7 @@
 package com.ttProject.transcode.xuggle.encode;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import com.ttProject.media.Unit;
 import com.ttProject.transcode.ITranscodeListener;
@@ -20,10 +21,17 @@ import com.xuggle.xuggler.IStreamCoder.Direction;
 public class AudioEncodeManager implements IEncodeManager {
 	private IPacket packet = null;
 	private IAudioResampler resampler = null;
-	private boolean threadFlg = false;
 	private IStreamCoder encoder = null;
 	private IDepacketizer depacketizer = null;
 	private ITranscodeListener listener = null;
+	private ExecutorService executor = null;
+	/**
+	 * executorServiceを設定する
+	 */
+	@Override
+	public void setExecutorService(ExecutorService executor) {
+		this.executor = executor;
+	}
 	/**
 	 * 変換結果出力先を保持しておく。
 	 * @param listener
@@ -76,17 +84,37 @@ public class AudioEncodeManager implements IEncodeManager {
 	 * @param samples
 	 * @throws Exception
 	 */
-	public void encode(Object xuggleObject) throws Exception {
+	public void encode(Object xuggleObject) {
 		if(!(xuggleObject instanceof IAudioSamples)) {
 			return;
 		}
-		IAudioSamples samples = (IAudioSamples) xuggleObject;
+		final IAudioSamples samples = (IAudioSamples) xuggleObject;
 		if(!samples.isComplete()) {
 			// completeしていなかったら処理できません。
 			return;
 		}
 		// thread動作かどうか
-		process(samples);
+		if(executor != null) {
+			executor.execute(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						process(samples);
+					}
+					catch(Exception e) {
+						listener.exceptionCaught(e);
+					}
+				}
+			});
+		}
+		else {
+			try {
+				process(samples);
+			}
+			catch(Exception e) {
+				listener.exceptionCaught(e);
+			}
+		}
 	}
 	/**
 	 * エンコード内部処理

@@ -2,7 +2,7 @@ package com.ttProject.transcode.xuggle;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.Logger;
 
@@ -34,12 +34,8 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	/** 動作ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(XuggleTranscodeManager.class);
-	/** thread動作フラグ */
-	private boolean threadFlg = false;
-	/** 動作用Thread */
-	private Thread workerThread = null;
-	/** Thread動作実体 */
-	private ConvertWorker worker = null;
+	/** 処理thread pool */
+	private ExecutorService executor = null;
 	/** デコーダー */
 	private IStreamCoder decoder = null;
 	/** 元オブジェクトpacket化モジュール */
@@ -49,11 +45,19 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	/** 変換マネージャー */
 	List<IEncodeManager> encodeManagers = new ArrayList<IEncodeManager>();
 	/**
-	 * エンコード用オブジェクトをセットアップします
-	 * @param encoder
-	 * @param packetizer
+	 * executorの設定
+	 * @param executor
 	 */
-	public void addEncodeObject(IStreamCoder encoder, IDepacketizer depacketizer) throws Exception {
+	public void setExecutorService(ExecutorService executor) {
+		this.executor = executor;
+	}
+	/**
+	 * エンコード用オブジェクトを設置します。
+	 * @param encoder
+	 * @param depacketizer
+	 * @param executor
+	 */
+	public void addEncodeObject(IStreamCoder encoder, IDepacketizer depacketizer, ExecutorService executor) throws Exception {
 		IEncodeManager encodeManager = null;
 		if(encoder.getCodecType() == Type.CODEC_TYPE_AUDIO) {
 			// 音声の場合
@@ -66,13 +70,16 @@ public class XuggleTranscodeManager extends TranscodeManager {
 		encodeManager.setDepacketizer(depacketizer);
 		encodeManager.setEncoder(encoder);
 		encodeManager.setTranscodeListener(getTranscodeListener());
+		encodeManager.setExecutorService(executor);
 		encodeManagers.add(encodeManager);
 	}
 	/**
-	 * thread動作に変更する
+	 * エンコード用オブジェクトをセットアップします
+	 * @param encoder
+	 * @param packetizer
 	 */
-	public void setThreadFlg(boolean threadFlg) {
-		this.threadFlg = threadFlg;
+	public void addEncodeObject(IStreamCoder encoder, IDepacketizer depacketizer) throws Exception {
+		addEncodeObject(encoder, depacketizer, null);
 	}
 	/**
 	 * パケット化モジュールを設定
@@ -99,21 +106,23 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	 * @param unit 変換対象データ
 	 */
 	@Override
-	public void transcode(Unit unit) throws Exception {
+	public void transcode(final Unit unit) throws Exception {
 		// パケットの確認を実行します。
 		if(!packetizer.check(unit)) {
 			throw new FormatChangeException("コーデックが合いませんでした。");
 		}
-		if(threadFlg) {
-			if(worker == null) {
-				worker = new ConvertWorker();
-			}
-			if(workerThread == null) {
-				workerThread = new Thread(worker);
-				workerThread.setName("XuggleTranscodeThread:" + hashCode());
-				workerThread.start();
-			}
-			worker.addQueue(unit);
+		if(executor != null) {
+			executor.execute(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						process(unit);
+					}
+					catch(Exception e) {
+						getTranscodeListener().exceptionCaught(e);
+					}
+				}
+			});
 		}
 		else {
 			try {
@@ -137,17 +146,6 @@ public class XuggleTranscodeManager extends TranscodeManager {
 		if(decoder != null) {
 			decoder.close();
 			decoder = null;
-		}
-		if(threadFlg) {
-			// threadを停止しないとだめ
-			if(worker != null) {
-				worker.stop();
-			}
-			if(workerThread != null) {
-				workerThread.interrupt();
-			}
-			workerThread = null;
-			worker = null;
 		}
 	}
 	/**
@@ -238,62 +236,9 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	 * @return
 	 */
 	public boolean isRemaining() {
-		if(threadFlg && worker != null) {
-			return worker.getRemainUnitCount() != 0;
-		}
+//		if(threadFlg && worker != null) {
+//			return worker.getRemainUnitCount() != 0;
+//		}
 		return false;
-	}
-	/**
-	 * マルチthread動作用変換worker
-	 * @author taktod
-	 *
-	 */
-	private class ConvertWorker implements Runnable {
-		/** 変換候補データを保持するqueue */
-		private LinkedBlockingQueue<Unit> unitQueue = new LinkedBlockingQueue<Unit>();
-		/** 処理中フラグ */
-		private boolean workFlg = true;
-		/**
-		 * 強制停止
-		 */
-		public void stop() {
-			workFlg = false;
-		}
-		/**
-		 * 残っているデータを参照する
-		 * @return
-		 */
-		public int getRemainUnitCount() {
-			return unitQueue.size();
-		}
-		/**
-		 * queueを登録します
-		 * @param unit
-		 */
-		public void addQueue(Unit unit) {
-			if(!workFlg) {
-				return;
-			}
-			unitQueue.add(unit);
-		}
-		/**
-		 * 変換を実行する
-		 */
-		@Override
-		public void run() {
-			try {
-				while(workFlg) {
-					Unit unit = unitQueue.take();
-					process(unit);
-				}
-			}
-			catch(Exception e) {
-				// 例外は通知して処理終わりにする。
-				getTranscodeListener().exceptionCaught(e);
-			}
-			workFlg = false;
-			// queueの中身を解放しておく
-			unitQueue.clear();
-		}
 	}
 }
