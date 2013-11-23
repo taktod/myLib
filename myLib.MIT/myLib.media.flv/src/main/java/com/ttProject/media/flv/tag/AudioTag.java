@@ -315,7 +315,7 @@ public class AudioTag extends Tag {
 	 */
 	@Override
 	public String toString() {
-		return "audioTag:" + getTimestamp();
+		return "audioTag:" + getTimestamp() + " codec:" + getCodec();
 	}
 	/**
 	 * 同じタグを作成して応答します
