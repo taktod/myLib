@@ -25,6 +25,8 @@
  maven2とjava(開発ではjava6をつかっています。)が必要ですので入手してください。
  pom.xmlのあるディレクトリに移動してmavenのコマンドを実行してください。
 
+ 各プロジェクトの使い方はtestコードみてもらえればだいたいわかると思います。
+
 作者情報：
 
  taktod
@@ -40,43 +42,61 @@
  myLib:全部含んだライブラリ
  
  myLib.MIT:MITライセンスのみの構成の部分
-  myLib.channels:入出力動作関連
-  myLib.chunk:塊としてメディアデータを扱う
-   myLib.chunk.aac:aac用(HLS)
-   myLib.chunk.mp3:mp3用(HLS)
-   myLib.chunk.mpegts:mpegts用(HLS)
-    myLib.chunk.mpegts.h264:mpegts用h264データから作成拡張
-  myLib.convert:変換絡み
-   myLib.convert.ffmpeg:外部プロセスとしてpipelineでデータをやり取りするコンバート動作
-  myLib.jmx:jmxを扱う
-  myLib.log4j:log4jの動作用拡張
-  myLib.m2eHelper:pomの動作補助、よく使うものをまとめてある。
-  myLib.media:メディアデータ扱い用
-   myLib.media.aac:aac用
-   myLib.media.h264:h264データ用
-   myLib.media.mp3:mp3用
-   myLib.media.flv:flv用
-   myLib.media.mp4:mp4用
-    myLib.media.extra:mp4とflvの相互利用
-   myLib.media.raw:生データ用
-   myLib.media.mpegts:mpegts用
-  myLib.packet:塊としてメディアデータを扱う(旧)
-   myLib.packet.flv:前つくったhttpTakStreaming用(旧)
-   myLib.packet.mp3:mp3用(HLS)(旧)
-   myLib.packet.mpegts:mpegts用(HLS)(旧)
-  myLib.productHelper:実行プログラムとして吐くプロジェクト用のpomの動作補助
-  myLib.segment:HLSの分割ファイル用(旧)
-  myLib.swing:swingの動作補助
-  myLib.util:データを扱うときの補助プログラム
- 
  myLib.LGPLv3:LGPLv3ライセンスの部分
-  myLib.flazr:flazrのコードの動作補助(rtmpのメッセージの受信、送信関連)
- 
  myLib.GPLv3:GPLv3ライセンスの部分
-  myLib.setup:テスト用のメディアデータをxuggleで自動生成するためだけのプロジェクト
-  myLib.xuggle.flv:flvのデータとxuggleの仲介
-  myLib.xuggle.raw:生データとxuggleの仲介
- 
- myLib.GAPLv3:AGPLv3ライセンスの部分
- 
+ myLib.GAPLv3:AGPLv3ライセンスの部分(humble-videoをいれる予定ですが、コンパイルとおらないので、とりあえずパス)
+
+ myLib.GPLv3/myLib.setup:テストコード動作用メディアデータ自動生成プロジェクト
+ myLib.MIT/myLib.channels:ファイルを扱うための入力チャンネル動作
+ myLib.MIT/myLib.util:動作補助関連
+ myLib.MIT/myLib.segment:分割後のファイルを扱う動作
+ myLib.MIT/myLib.jmx:jmx動作補助
+ myLib.MIT/myLib.log4j:log4j動作補助
+ myLib.MIT/myLib.media:mediaデータを扱う
+ myLib.MIT/myLib.media.mp3:mp3データを扱う
+ myLib.MIT/myLib.media.flv:flvデータを扱う
+ myLib.MIT/myLib.media.mp4:mp4データを扱う
+ myLib.MIT/myLib.media.mkv:mkvデータを扱う(webmも含む)
+ myLib.MIT/myLib.media.mpegts:mpegtsデータを扱う
+ myLib.MIT/myLib.media.aac:aacデータを扱う
+ myLib.MIT/myLib.media.h264:h264データを扱う
+ myLib.MIT/myLib.media.extra:mp4+flvの相互拡張
+ myLib.MIT/myLib.media.raw:生データを扱う
+ myLib.GPLv3/myLib.media.xuggle:xuggleのpacketデータを扱う
+ myLib.MIT/myLib.swing:swing動作補助
+ myLib.MIT/myLib.chunk:データを塊として扱うchunk動作
+ myLib.MIT/myLib.chunk.mpegts:mpegtsベースのhttpLiveStreaming用
+ myLib.MIT/myLib.chunk.mpegts.h264:chunk.mpegtsのh264読み込み支援
+ myLib.MIT/myLib.chunk.mpegts.flv:chunk.mpegtsのflv読み込み支援
+ myLib.MIT/myLib.chunk.mp3:mp3ベースのhttpLiveStreaming用
+ myLib.MIT/myLib.chunk.aac:aacベースのhttpLiveStreaming用
+ myLib.MIT/myLib.transcode:変換支援
+ myLib.MIT/myLib.transcode.ffmpeg:ffmpegベースの変換
+ myLib.GPLv3/myLib.transcode.xuggle:xuggleベースの変換
+ myLib.GPLv3/myLib.transcode.xuggle.flv:flv読み込み支援
+ myLib.GPLv3/myLib.transcode.xuggle.h264:h264読み込み支援
+ myLib.GPLv3/myLib.transcode.xuggle.aac:aac読み込み支援
+ myLib.GPLv3/myLib.transcode.xuggle.mp3:mp3読み込み支援
+ myLib.LGPLv3/myLib.flazr:flazrの利用支援
+
+あとで消す候補
+ myLib.MIT/myLib.packet:データを塊として扱うpacket動作
+ myLib.MIT/myLib.packet.flv:httpTakStreaming用
+ myLib.MIT/myLib.packet.mpegts:httpLiveStreaming用
+ myLib.MIT/myLib.packet.mp3:httpLiveStreamingのmp3のみ用
+ myLib.MIT/myLib.convert:コンバート関連
+ myLib.MIT/myLib.convert.ffmpeg:コンバート関連ffmpeg系
+ myLib.GPLv3/myLib.convert.xuggle:コンバート関連xuggle系
+ myLib.GPLv3/myLib.xuggle:xuggle動作
+ myLib.GPLv3/myLib.xuggle.flv:xuggle動作flv関連連携
+ myLib.GPLv3/myLib.xuggle.raw:xuggle動作生データ関連連携
+
  MITライセンス以外はつかっているライブラリのライセンスに依存しています。
+
+今後の予定
+
+ 1:transcode系を充実させて、convert系を消したい。
+ 2:chunk系も充実させて、packet系を消したい。(某所でつかっているので消せないんですが・・・)
+ 3:mediaデータのUnit、IVideoData、IAudioDataにtimestamp、duration値をうまくいれたいけど、overflowが怖い。
+ 4:transcode.xuggleのデコードとエンコードを分離したいけど、やったらややこしくなりそう・・・
+ 5:1,2がクリアできるときになったら、version 0.0.2Releaseにして、0.0.3にしようかな。
