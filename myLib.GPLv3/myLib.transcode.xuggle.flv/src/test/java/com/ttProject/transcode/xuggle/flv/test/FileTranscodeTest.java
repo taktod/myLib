@@ -22,6 +22,8 @@ import com.ttProject.transcode.xuggle.XuggleTranscodeManager;
 import com.ttProject.transcode.xuggle.packet.FlvAudioPacketizer;
 import com.ttProject.transcode.xuggle.packet.FlvDepacketizer;
 import com.ttProject.transcode.xuggle.packet.FlvVideoPacketizer;
+import com.xuggle.ferry.JNIMemoryManager;
+import com.xuggle.ferry.JNIMemoryManager.MemoryModel;
 
 /**
  * ファイルをxuggleで変換する動作テスト
@@ -39,6 +41,7 @@ public class FileTranscodeTest {
 	 */
 	@Test
 	public void test() {
+		JNIMemoryManager.setMemoryModel(MemoryModel.NATIVE_BUFFERS);
 		IFileReadChannel source = null;
 		ITranscodeManager audioTranscodeManager = null;
 		ITranscodeManager videoTranscodeManager = null;
@@ -67,26 +70,51 @@ public class FileTranscodeTest {
 			audioTranscodeManager.addTranscodeListener(listener);
 			videoTranscodeManager.addTranscodeListener(listener);
 			ExecutorService executor1 = Executors.newSingleThreadExecutor();
-//			ExecutorService executor2 = Executors.newSingleThreadExecutor();
-//			ExecutorService executor3 = Executors.newSingleThreadExecutor();
+			ExecutorService executor2 = Executors.newSingleThreadExecutor();
+			ExecutorService executor3 = Executors.newSingleThreadExecutor();
 			ExecutorService executor4 = Executors.newSingleThreadExecutor();
-			ExecutorService executor5 = Executors.newSingleThreadExecutor();
+			executor1.execute(new Runnable() {
+				@Override
+				public void run() {
+					System.out.println(Thread.currentThread().getName() + "audioDecode");
+				}
+			});
+			executor2.execute(new Runnable() {
+				@Override
+				public void run() {
+					System.out.println(Thread.currentThread().getName() + "videoDecode");
+				}
+			});
+			executor3.execute(new Runnable() {
+				@Override
+				public void run() {
+					System.out.println(Thread.currentThread().getName() + "audioEncode both");
+				}
+			});
+			executor4.execute(new Runnable() {
+				@Override
+				public void run() {
+					System.out.println(Thread.currentThread().getName() + "videoEncode both");
+				}
+			});
+			Thread.sleep(5000);
+//			ExecutorService executor5 = Executors.newSingleThreadExecutor();
 //			ExecutorService executor6 = Executors.newSingleThreadExecutor();
 			// 音声用
 			// flvで出力させるので、flvTagにするためのdepacketizerとencoder(mp3)を設定
-			((XuggleTranscodeManager) audioTranscodeManager).addEncodeObject(Preset.mp3(), new FlvDepacketizer(), executor1);
-			((XuggleTranscodeManager) audioTranscodeManager).addEncodeObject(Preset.aac(), new FlvDepacketizer(), executor1);
+			((XuggleTranscodeManager) audioTranscodeManager).addEncodeObject(Preset.mp3(), new FlvDepacketizer(), executor3);
+			((XuggleTranscodeManager) audioTranscodeManager).addEncodeObject(Preset.aac(), new FlvDepacketizer(), executor3);
 			// flvを入力するので、flvTagからPacketをつくるPacketizerを登録とりあえず音声を扱う
 			((XuggleTranscodeManager) audioTranscodeManager).setPacketizer(new FlvAudioPacketizer());
-	//		((XuggleTranscodeManager) audioTranscodeManager).setExecutorService(executor3);
+			((XuggleTranscodeManager) audioTranscodeManager).setExecutorService(executor1);
 
 			// 映像用
 			// flvで出力させるので、flvTagにするためのdepacketizerとencoder(h264)を設定
 			((XuggleTranscodeManager) videoTranscodeManager).addEncodeObject(Preset.h264(), new FlvDepacketizer(), executor4);
-			((XuggleTranscodeManager) videoTranscodeManager).addEncodeObject(Preset.flv1(), new FlvDepacketizer(), executor5);
+//			((XuggleTranscodeManager) videoTranscodeManager).addEncodeObject(Preset.flv1(), new FlvDepacketizer(), executor5);
 			// flvを入力するので、flvTagからPacketをつくるPacketizerを登録とりあえず音声を扱う
 			((XuggleTranscodeManager) videoTranscodeManager).setPacketizer(new FlvVideoPacketizer());
-	//		((XuggleTranscodeManager) videoTranscodeManager).setExecutorService(executor6);
+			((XuggleTranscodeManager) videoTranscodeManager).setExecutorService(executor2);
 			while((tag = analyzer.analyze(source)) != null) {
 				// 変換させます
 				// 時間はずらしてもずれた分だけ勝手にデータが挿入されるとかなさそう。
@@ -101,19 +129,18 @@ public class FileTranscodeTest {
 //					Thread.sleep(1000);
 //			}
 
-//			executor3.shutdown();
-//			executor5.shutdown();
-//			executor3.awaitTermination(1000, TimeUnit.SECONDS);
-//			executor5.awaitTermination(1000, TimeUnit.SECONDS);
-			
 			executor1.shutdown();
-//			executor2.shutdown();
-			executor4.shutdown();
-			executor5.shutdown();
 			executor1.awaitTermination(1000, TimeUnit.SECONDS);
-//			executor2.awaitTermination(1000, TimeUnit.SECONDS);
+			executor3.shutdown();
+			executor3.awaitTermination(1000, TimeUnit.SECONDS);
+			
+			executor2.shutdown();
+			executor2.awaitTermination(1000, TimeUnit.SECONDS);
+
+//			executor5.shutdown();
+			executor4.shutdown();
 			executor4.awaitTermination(1000, TimeUnit.SECONDS);
-			executor5.awaitTermination(1000, TimeUnit.SECONDS);
+//			executor5.awaitTermination(1000, TimeUnit.SECONDS);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
