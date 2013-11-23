@@ -62,6 +62,7 @@ public class FileTranscodeTest {
 			// 音声用
 			// flvで出力させるので、flvTagにするためのdepacketizerとencoder(mp3)を設定
 			((XuggleTranscodeManager) audioTranscodeManager).addEncodeObject(Preset.mp3(), new FlvDepacketizer());
+			((XuggleTranscodeManager) audioTranscodeManager).addEncodeObject(Preset.aac(), new FlvDepacketizer());
 			// flvを入力するので、flvTagからPacketをつくるPacketizerを登録とりあえず音声を扱う
 			((XuggleTranscodeManager) audioTranscodeManager).setPacketizer(new FlvAudioPacketizer());
 			// threadで処理させる。
@@ -76,14 +77,17 @@ public class FileTranscodeTest {
 //			((XuggleTranscodeManager) videoTranscodeManager).setThreadFlg(true);
 			while((tag = analyzer.analyze(source)) != null) {
 				// 変換させます
+				// 時間はずらしてもずれた分だけ勝手にデータが挿入されるとかなさそう。
+				tag.setTimestamp(tag.getTimestamp()); // 時間をねつ造するとうまく動作しないらしい。
+				// ということは・・・時間軸がずれる場合はtimestampをきちんと張り替えた方がいいみたい。
 				audioTranscodeManager.transcode(tag);
 				videoTranscodeManager.transcode(tag);
 			}
 			// 処理がおわっているか判断して、終わってなかったら１秒待つ
-			while(((XuggleTranscodeManager)videoTranscodeManager).isRemaining()
-				|| ((XuggleTranscodeManager)audioTranscodeManager).isRemaining()) {
-					Thread.sleep(1000);
-			}
+//			while(((XuggleTranscodeManager)videoTranscodeManager).isRemaining()
+//				|| ((XuggleTranscodeManager)audioTranscodeManager).isRemaining()) {
+//					Thread.sleep(1000);
+//			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();

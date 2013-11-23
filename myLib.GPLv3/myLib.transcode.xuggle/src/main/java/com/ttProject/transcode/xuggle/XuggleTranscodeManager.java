@@ -16,11 +16,9 @@ import com.ttProject.transcode.xuggle.packet.IDepacketizer;
 import com.ttProject.transcode.xuggle.packet.IPacketizer;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec.Type;
-import com.xuggle.xuggler.IAudioResampler;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStreamCoder;
 import com.xuggle.xuggler.IVideoPicture;
-import com.xuggle.xuggler.IVideoResampler;
 
 /**
  * 変換動作の中心マネージャー
@@ -44,20 +42,10 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	private ConvertWorker worker = null;
 	/** デコーダー */
 	private IStreamCoder decoder = null;
-	/** エンコーダー */
-//	private IStreamCoder encoder = null;
 	/** 元オブジェクトpacket化モジュール */
 	private IPacketizer packetizer;
-	/** 変換後オブジェクト unit化モジュール */
-//	private IDepacketizer depacketizer;
 	/** 動作パケット(使い回します) */
 	private IPacket packet = null;
-	/** エンコード用のパケット(使い回したい)(エンコードとデコードのpacketを同じにしたらchannel element 0.0 is not allocatedとかいうエラーがでた。) */
-//	private IPacket encodePacket = null;
-	/** 音声リサンプラー */
-//	private IAudioResampler audioResampler = null;
-	/** 映像リサンプラー */
-//	private IVideoResampler videoResampler = null;
 	/** 変換マネージャー */
 	List<IEncodeManager> encodeManagers = new ArrayList<IEncodeManager>();
 	/**
@@ -213,10 +201,11 @@ public class XuggleTranscodeManager extends TranscodeManager {
 			}
 			offset += bytesDecoded;
 			if(samples.isComplete()) {
-				// データができあがった
+				// こっちも時間がずれるっぽいので、治してみよう。
+				samples.setPts((long)(packet.getPts() / samples.getTimeBase().getDouble() * packet.getTimeBase().getDouble()));
 				// エンコーダーとの型があわなかったらリサンプルする必要あり
 				for(IEncodeManager encodeManager : encodeManagers) {
-					encodeManager.encode(samples);
+					encodeManager.encode(samples.copyReference());
 				}
 			}
 		}
