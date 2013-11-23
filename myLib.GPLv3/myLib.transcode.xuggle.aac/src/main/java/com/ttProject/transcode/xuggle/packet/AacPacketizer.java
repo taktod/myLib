@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.media.Unit;
 import com.ttProject.media.aac.frame.Aac;
+import com.ttProject.transcode.xuggle.exception.FormatChangeException;
 import com.ttProject.util.BufferUtil;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.ICodec;
@@ -23,17 +24,20 @@ public class AacPacketizer implements IPacketizer {
 	 * データをあらかじめ判定しておきます。
 	 */
 	@Override
-	public boolean check(Unit unit) {
+	public boolean check(Unit unit) throws FormatChangeException {
 		if(!(unit instanceof Aac)) {
-			return true;
+			return false;
 		}
 		if(lastAacFrame == null) {
 			return true;
 		}
 		Aac aacFrame = (Aac)unit;
-		return (aacFrame.getProfile() == lastAacFrame.getProfile()
+		if(aacFrame.getProfile() == lastAacFrame.getProfile()
 				&& aacFrame.getSampleRate() == lastAacFrame.getSampleRate()
-				&& aacFrame.getChannelConfiguration() == lastAacFrame.getChannelConfiguration());
+				&& aacFrame.getChannelConfiguration() == lastAacFrame.getChannelConfiguration()) {
+			return true;
+		}
+		throw new FormatChangeException();
 	}
 	/**
 	 * aacFrameからpacketを取り出します。

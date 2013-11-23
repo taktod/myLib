@@ -1,6 +1,7 @@
 package com.ttProject.transcode.xuggle.packet;
 
 import com.ttProject.media.Unit;
+import com.ttProject.transcode.xuggle.exception.FormatChangeException;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStreamCoder;
 
@@ -15,7 +16,7 @@ public interface IPacketizer {
 	 * @param unit
 	 * @return
 	 */
-	public boolean check(Unit unit);
+	public boolean check(Unit unit) throws FormatChangeException;
 	/**
 	 * packetデータを作成して応答します
 	 * @param unit メディアunit

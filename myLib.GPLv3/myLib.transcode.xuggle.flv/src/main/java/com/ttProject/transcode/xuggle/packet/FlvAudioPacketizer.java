@@ -7,6 +7,7 @@ import com.ttProject.media.aac.DecoderSpecificInfo;
 import com.ttProject.media.aac.frame.Aac;
 import com.ttProject.media.flv.tag.AudioTag;
 import com.ttProject.nio.channels.ByteReadChannel;
+import com.ttProject.transcode.xuggle.exception.FormatChangeException;
 import com.ttProject.util.BufferUtil;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.ICodec;
@@ -28,12 +29,12 @@ public class FlvAudioPacketizer implements IPacketizer {
 	 * データをあらかじめ確認します。
 	 */
 	@Override
-	public boolean check(Unit unit) {
+	public boolean check(Unit unit) throws FormatChangeException {
 		// 先にデータを確認して、データの整合性を確認します。
 		// なおtypeが違う場合は、そのままtrueを返します。
 		// falseになる場合の例：中途でコーデックがかわったなど
 		if(!(unit instanceof AudioTag)) {
-			return true;
+			return false;
 		}
 		if(lastAudioTag == null) {
 			// 始めのデータなので問題なし
@@ -41,9 +42,12 @@ public class FlvAudioPacketizer implements IPacketizer {
 		}
 		AudioTag aTag = (AudioTag) unit;
 		// 一致してたらtrue 違ったらfalse
-		return (aTag.getCodec() == lastAudioTag.getCodec()
+		if(aTag.getCodec() == lastAudioTag.getCodec()
 				&& aTag.getChannels() == lastAudioTag.getChannels()
-				&& aTag.getSampleRate() == lastAudioTag.getSampleRate());
+				&& aTag.getSampleRate() == lastAudioTag.getSampleRate()) {
+			return true;
+		}
+		throw new FormatChangeException();
 	}
 	/**
 	 * tagからpacketを取り出します。

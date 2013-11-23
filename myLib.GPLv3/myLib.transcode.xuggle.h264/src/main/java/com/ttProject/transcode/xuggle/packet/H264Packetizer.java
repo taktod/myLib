@@ -8,6 +8,7 @@ import com.ttProject.media.h264.frame.PictureParameterSet;
 import com.ttProject.media.h264.frame.SequenceParameterSet;
 import com.ttProject.media.h264.frame.Slice;
 import com.ttProject.media.h264.frame.SliceIDR;
+import com.ttProject.transcode.xuggle.exception.FormatChangeException;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStreamCoder;
@@ -28,9 +29,9 @@ public class H264Packetizer implements IPacketizer {
 	 * 入力データの整合性を確認する。
 	 */
 	@Override
-	public boolean check(Unit unit) {
+	public boolean check(Unit unit) throws FormatChangeException {
 		if(!(unit instanceof Frame)) {
-			return true;
+			return false;
 		}
 		if(lastH264Frame == null) {
 			return true;

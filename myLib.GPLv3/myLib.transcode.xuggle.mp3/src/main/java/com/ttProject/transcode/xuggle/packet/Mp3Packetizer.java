@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.media.Unit;
 import com.ttProject.media.mp3.frame.Mp3;
+import com.ttProject.transcode.xuggle.exception.FormatChangeException;
 import com.ttProject.util.BufferUtil;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.ICodec;
@@ -24,17 +25,20 @@ public class Mp3Packetizer implements IPacketizer {
 	 * データをあらかじめ判定しておきます。
 	 */
 	@Override
-	public boolean check(Unit unit) {
+	public boolean check(Unit unit) throws FormatChangeException {
 		if(!(unit instanceof Mp3)) {
-			return true;
+			return false;
 		}
 		if(lastMp3Frame == null) {
 			return true;
 		}
 		Mp3 mp3Frame = (Mp3)unit;
-		return (mp3Frame.getBitrate() == lastMp3Frame.getBitrate()
+		if(mp3Frame.getBitrate() == lastMp3Frame.getBitrate()
 				&& mp3Frame.getSampleRate() == lastMp3Frame.getSampleRate()
-				&& mp3Frame.getChannelMode() == lastMp3Frame.getChannelMode());
+				&& mp3Frame.getChannelMode() == lastMp3Frame.getChannelMode()) {
+			return true;
+		}
+		throw new FormatChangeException();
 	}
 	/**
 	 * mp3Frameからpacketを取り出します。

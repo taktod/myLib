@@ -13,6 +13,7 @@ import com.ttProject.media.h264.frame.Slice;
 import com.ttProject.media.h264.frame.SliceIDR;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.transcode.xuggle.exception.FormatChangeException;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IPacket;
@@ -35,18 +36,21 @@ public class FlvVideoPacketizer implements IPacketizer {
 	 * データをあらかじめ確認します。
 	 */
 	@Override
-	public boolean check(Unit unit) {
+	public boolean check(Unit unit) throws FormatChangeException {
 		// 先にデータを確認して、データの整合性を確認します。
 		// なおtypeが違う場合は、そのままtrueを返します。
 		// falseになる場合の例：中途でコーデックがかわったなど
 		if(!(unit instanceof VideoTag)) {
-			return true;
+			return false;
 		}
 		if(lastVideoTag == null) {
 			return true;
 		}
 		VideoTag vTag = (VideoTag) unit;
-		return (vTag.getCodec() == lastVideoTag.getCodec());
+		if(vTag.getCodec() == lastVideoTag.getCodec()) {
+			return true;
+		}
+		throw new FormatChangeException();
 	}
 	/**
 	 * tagからpacketを取り出します。

@@ -11,7 +11,6 @@ import com.ttProject.transcode.TranscodeManager;
 import com.ttProject.transcode.xuggle.encode.AudioEncodeManager;
 import com.ttProject.transcode.xuggle.encode.IEncodeManager;
 import com.ttProject.transcode.xuggle.encode.VideoEncodeManager;
-import com.ttProject.transcode.xuggle.exception.FormatChangeException;
 import com.ttProject.transcode.xuggle.packet.IDepacketizer;
 import com.ttProject.transcode.xuggle.packet.IPacketizer;
 import com.xuggle.xuggler.IAudioSamples;
@@ -109,7 +108,7 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	public void transcode(final Unit unit) throws Exception {
 		// パケットの確認を実行します。
 		if(!packetizer.check(unit)) {
-			throw new FormatChangeException("コーデックが合いませんでした。");
+			return;
 		}
 		if(executor != null) {
 			executor.execute(new Runnable() {
@@ -155,7 +154,7 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	 */
 	private void process(Unit unit) throws Exception {
 		// packet化する。
-		IPacket packet = packetizer.getPacket(unit, this.packet);
+		packet = packetizer.getPacket(unit, packet);
 		if(packet == null) {
 			// packet化できない場合は処理しない。
 			return;
