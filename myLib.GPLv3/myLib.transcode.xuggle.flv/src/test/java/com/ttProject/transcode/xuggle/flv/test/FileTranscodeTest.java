@@ -24,6 +24,7 @@ import com.ttProject.transcode.xuggle.packet.FlvDepacketizer;
 import com.ttProject.transcode.xuggle.packet.FlvVideoPacketizer;
 import com.xuggle.ferry.JNIMemoryManager;
 import com.xuggle.ferry.JNIMemoryManager.MemoryModel;
+import com.xuggle.xuggler.IStreamCoder;
 
 /**
  * ファイルをxuggleで変換する動作テスト
@@ -98,7 +99,7 @@ public class FileTranscodeTest {
 				}
 			});
 			Thread.sleep(5000);
-//			ExecutorService executor5 = Executors.newSingleThreadExecutor();
+			ExecutorService executor5 = Executors.newSingleThreadExecutor();
 //			ExecutorService executor6 = Executors.newSingleThreadExecutor();
 			// 音声用
 			// flvで出力させるので、flvTagにするためのdepacketizerとencoder(mp3)を設定
@@ -111,7 +112,10 @@ public class FileTranscodeTest {
 			// 映像用
 			// flvで出力させるので、flvTagにするためのdepacketizerとencoder(h264)を設定
 			((XuggleTranscodeManager) videoTranscodeManager).addEncodeObject(Preset.h264(), new FlvDepacketizer(), executor4);
-//			((XuggleTranscodeManager) videoTranscodeManager).addEncodeObject(Preset.flv1(), new FlvDepacketizer(), executor5);
+			IStreamCoder h264_2 = Preset.h264();
+			h264_2.setWidth(640);
+			h264_2.setHeight(360);
+			((XuggleTranscodeManager) videoTranscodeManager).addEncodeObject(h264_2, new FlvDepacketizer(), executor5);
 			// flvを入力するので、flvTagからPacketをつくるPacketizerを登録とりあえず音声を扱う
 			((XuggleTranscodeManager) videoTranscodeManager).setPacketizer(new FlvVideoPacketizer());
 			((XuggleTranscodeManager) videoTranscodeManager).setExecutorService(executor2);
@@ -137,10 +141,10 @@ public class FileTranscodeTest {
 			executor2.shutdown();
 			executor2.awaitTermination(1000, TimeUnit.SECONDS);
 
-//			executor5.shutdown();
 			executor4.shutdown();
+			executor5.shutdown();
 			executor4.awaitTermination(1000, TimeUnit.SECONDS);
-//			executor5.awaitTermination(1000, TimeUnit.SECONDS);
+			executor5.awaitTermination(1000, TimeUnit.SECONDS);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
