@@ -16,7 +16,7 @@ import com.xuggle.xuggler.IStreamCoder.Direction;
  * audioエンコード動作
  * @author taktod
  */
-public class AudioEncoderManager {
+public class AudioEncodeManager implements IEncodeManager {
 	private IPacket packet = null;
 	private IAudioResampler resampler = null;
 	private boolean threadFlg = false;
@@ -31,21 +31,34 @@ public class AudioEncoderManager {
 		this.listener = listener;
 	}
 	/**
+	 * 閉じる動作
+	 */
+	public void close() {
+		if(resampler != null) {
+			resampler = null;
+		}
+		if(encoder != null) {
+			encoder.close();
+			encoder = null;
+		}
+		if(depacketizer != null) {
+			depacketizer = null;
+		}
+		if(listener != null) {
+			listener = null;
+		}
+	}
+	/**
 	 * エンコーダーを設定します
 	 * @param encoder
 	 * @throws Exception
 	 */
 	public void setEncoder(IStreamCoder encoder) throws Exception {
-		if(encoder.getDirection() != Direction.DECODING) {
+		if(encoder.getDirection() == Direction.DECODING) {
 			throw new Exception("デコーダーが設定されています");
 		}
 		if(encoder.getCodecType() != Type.CODEC_TYPE_AUDIO) {
 			throw new Exception("音声エンコーダーではありません。");
-		}
-		if(!encoder.isOpen()) {
-			if(encoder.open(null, null) < 0) {
-				throw new Exception("エンコーダーを開くことができませんでした。");
-			}
 		}
 		// 設定しておく。
 		this.encoder = encoder;
@@ -62,7 +75,11 @@ public class AudioEncoderManager {
 	 * @param samples
 	 * @throws Exception
 	 */
-	public void encode(IAudioSamples samples) throws Exception {
+	public void encode(Object xuggleObject) throws Exception {
+		if(!(xuggleObject instanceof IAudioSamples)) {
+			return;
+		}
+		IAudioSamples samples = (IAudioSamples) xuggleObject;
 		if(!samples.isComplete()) {
 			// completeしていなかったら処理できません。
 			return;
@@ -110,6 +127,11 @@ public class AudioEncoderManager {
 		while(samplesConsumed < samples.getNumSamples()) {
 			if(packet == null) {
 				packet = IPacket.make();
+			}
+			if(!encoder.isOpen()) {
+				if(encoder.open(null, null) < 0) {
+					throw new Exception("エンコーダーが開けませんでした");
+				}
 			}
 			int retval = encoder.encodeAudio(packet, samples, samplesConsumed);
 			if(retval < 0) {

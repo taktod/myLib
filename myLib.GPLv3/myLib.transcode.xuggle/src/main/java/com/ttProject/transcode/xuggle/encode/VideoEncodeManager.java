@@ -16,7 +16,7 @@ import com.xuggle.xuggler.IStreamCoder.Direction;
  * videoエンコード動作
  * @author taktod
  */
-public class VideoEncoderManager {
+public class VideoEncodeManager implements IEncodeManager {
 	private IPacket packet = null;
 	private IVideoResampler resampler = null;
 	private boolean threadFlg = false;
@@ -31,21 +31,34 @@ public class VideoEncoderManager {
 		this.listener = listener;
 	}
 	/**
+	 * 閉じる動作
+	 */
+	public void close() {
+		if(resampler != null) {
+			resampler = null;
+		}
+		if(encoder != null) {
+			encoder.close();
+			encoder = null;
+		}
+		if(depacketizer != null) {
+			depacketizer = null;
+		}
+		if(listener != null) {
+			listener = null;
+		}
+	}
+	/**
 	 * エンコーダーを設定します
 	 * @param encoder
 	 * @throws Exception
 	 */
 	public void setEncoder(IStreamCoder encoder) throws Exception {
-		if(encoder.getDirection() != Direction.DECODING) {
+		if(encoder.getDirection() == Direction.DECODING) {
 			throw new Exception("デコーダーが設定されています");
 		}
 		if(encoder.getCodecType() != Type.CODEC_TYPE_VIDEO) {
 			throw new Exception("映像エンコーダーではありません。");
-		}
-		if(!encoder.isOpen()) {
-			if(encoder.open(null, null) < 0) {
-				throw new Exception("エンコーダーを開くことができませんでした。");
-			}
 		}
 		// 設定しておく。
 		this.encoder = encoder;
@@ -62,7 +75,11 @@ public class VideoEncoderManager {
 	 * @param samples
 	 * @throws Exception
 	 */
-	public void encode(IVideoPicture picture) throws Exception {
+	public void encode(Object xuggleObject) throws Exception {
+		if(!(xuggleObject instanceof IVideoPicture)) {
+			return;
+		}
+		IVideoPicture picture = (IVideoPicture) xuggleObject;
 		if(!picture.isComplete()) {
 			// completeしていなかったら処理できません。
 			return;
@@ -103,6 +120,11 @@ public class VideoEncoderManager {
 		}
 		if(packet == null) {
 			packet = IPacket.make();
+		}
+		if(!encoder.isOpen()) {
+			if(encoder.open(null, null) < 0) {
+				throw new Exception("エンコーダーが開けませんでした");
+			}
 		}
 		if(encoder.encodeVideo(packet, picture, 0) < 0) {
 			throw new Exception("映像変換失敗");

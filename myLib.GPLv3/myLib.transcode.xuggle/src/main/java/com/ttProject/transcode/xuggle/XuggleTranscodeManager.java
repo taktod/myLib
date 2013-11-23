@@ -1,5 +1,6 @@
 package com.ttProject.transcode.xuggle;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -7,6 +8,9 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.media.Unit;
 import com.ttProject.transcode.TranscodeManager;
+import com.ttProject.transcode.xuggle.encode.AudioEncodeManager;
+import com.ttProject.transcode.xuggle.encode.IEncodeManager;
+import com.ttProject.transcode.xuggle.encode.VideoEncodeManager;
 import com.ttProject.transcode.xuggle.exception.FormatChangeException;
 import com.ttProject.transcode.xuggle.packet.IDepacketizer;
 import com.ttProject.transcode.xuggle.packet.IPacketizer;
@@ -41,24 +45,40 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	/** デコーダー */
 	private IStreamCoder decoder = null;
 	/** エンコーダー */
-	private IStreamCoder encoder = null;
+//	private IStreamCoder encoder = null;
 	/** 元オブジェクトpacket化モジュール */
 	private IPacketizer packetizer;
 	/** 変換後オブジェクト unit化モジュール */
-	private IDepacketizer depacketizer;
+//	private IDepacketizer depacketizer;
 	/** 動作パケット(使い回します) */
 	private IPacket packet = null;
 	/** エンコード用のパケット(使い回したい)(エンコードとデコードのpacketを同じにしたらchannel element 0.0 is not allocatedとかいうエラーがでた。) */
-	private IPacket encodePacket = null;
+//	private IPacket encodePacket = null;
 	/** 音声リサンプラー */
-	private IAudioResampler audioResampler = null;
+//	private IAudioResampler audioResampler = null;
 	/** 映像リサンプラー */
-	private IVideoResampler videoResampler = null;
+//	private IVideoResampler videoResampler = null;
+	/** 変換マネージャー */
+	List<IEncodeManager> encodeManagers = new ArrayList<IEncodeManager>();
 	/**
-	 * エンコーダーを設定する
+	 * エンコード用オブジェクトをセットアップします
+	 * @param encoder
+	 * @param packetizer
 	 */
-	public void setEncoder(IStreamCoder encoder) {
-		this.encoder = encoder;
+	public void addEncodeObject(IStreamCoder encoder, IDepacketizer depacketizer) throws Exception {
+		IEncodeManager encodeManager = null;
+		if(encoder.getCodecType() == Type.CODEC_TYPE_AUDIO) {
+			// 音声の場合
+			encodeManager = new AudioEncodeManager();
+		}
+		else if(encoder.getCodecType() == Type.CODEC_TYPE_VIDEO) {
+			// 映像の場合
+			encodeManager = new VideoEncodeManager();
+		}
+		encodeManager.setDepacketizer(depacketizer);
+		encodeManager.setEncoder(encoder);
+		encodeManager.setTranscodeListener(getTranscodeListener());
+		encodeManagers.add(encodeManager);
 	}
 	/**
 	 * thread動作に変更する
@@ -72,13 +92,6 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	 */
 	public void setPacketizer(IPacketizer packetizer) {
 		this.packetizer = packetizer;
-	}
-	/**
-	 * Unit化モジュールを設定
-	 * @param depacketizer
-	 */
-	public void setDepacketizer(IDepacketizer depacketizer) {
-		this.depacketizer = depacketizer;
 	}
 	/*
 	 * このマネージャーでやることは
@@ -129,9 +142,9 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	 */
 	@Override
 	public void close() {
-		if(encoder != null) {
-			encoder.close();
-			encoder = null;
+		// エンコードマネージャーを閉じておきます。
+		for(IEncodeManager encodeManager : encodeManagers) {
+			encodeManager.close();
 		}
 		if(decoder != null) {
 			decoder.close();
@@ -173,19 +186,11 @@ public class XuggleTranscodeManager extends TranscodeManager {
 				}
 			}
 		}
-		if(encoder == null) {
-			throw new Exception("encoderが未設定です");
-		}
-		if(!encoder.isOpen()) {
-			if(encoder.open(null, null) < 0) {
-				throw new Exception("encoderが開けませんでした");
-			}
-		}
-		if(encoder.getCodecType() == Type.CODEC_TYPE_AUDIO) {
+		if(decoder.getCodecType() == Type.CODEC_TYPE_AUDIO) {
 			// audioの場合
 			processAudio(packet);
 		}
-		else if(encoder.getCodecType() == Type.CODEC_TYPE_VIDEO) {
+		else if(decoder.getCodecType() == Type.CODEC_TYPE_VIDEO) {
 			// videoの場合
 			processVideo(packet);
 		}
@@ -210,45 +215,8 @@ public class XuggleTranscodeManager extends TranscodeManager {
 			if(samples.isComplete()) {
 				// データができあがった
 				// エンコーダーとの型があわなかったらリサンプルする必要あり
-				if(samples.getSampleRate() != encoder.getSampleRate()
-				|| samples.getFormat() != encoder.getSampleFormat()
-				|| samples.getChannels() != encoder.getChannels()) {
-					// resamplerをつくってリサンプルする必要あり。
-					if(audioResampler == null
-					|| audioResampler.getOutputRate() != encoder.getSampleRate()
-					|| audioResampler.getOutputFormat() != encoder.getSampleFormat()
-					|| audioResampler.getOutputChannels() != encoder.getChannels()) {
-						if(audioResampler != null) {
-							// これ消さなくてもいいかも・・・xuggleがエラーになる場合はコメントアウトしておきたい。
-//							audioResampler.delete();
-						}
-						audioResampler = IAudioResampler.make(
-								encoder.getChannels(), samples.getChannels(),
-								encoder.getSampleRate(), samples.getSampleRate(),
-								encoder.getSampleFormat(), samples.getFormat());
-					}
-					IAudioSamples spls = IAudioSamples.make(1024, encoder.getChannels());
-					int retval = audioResampler.resample(spls, samples, samples.getNumSamples());
-					if(retval <= 0) {
-						throw new Exception("音声のリサンプルに失敗しました。");
-					}
-					samples = spls;
-				}
-				int samplesConsumed = 0;
-				while(samplesConsumed < samples.getNumSamples()) {
-					// TODO ここでpacket使いまわしても大丈夫か？入力ソースが別で利用されていたらやばくない？
-					if(encodePacket == null) {
-						encodePacket = IPacket.make();
-					}
-					int retval = encoder.encodeAudio(encodePacket, samples, samplesConsumed);
-					if(retval < 0) {
-						throw new Exception("音声変換失敗");
-					}
-					samplesConsumed += retval;
-					if(encodePacket.isComplete()) {
-						List<Unit> units = depacketizer.getUnits(encoder, encodePacket);
-						getTranscodeListener().receiveData(units);
-					}
+				for(IEncodeManager encodeManager : encodeManagers) {
+					encodeManager.encode(samples);
 				}
 			}
 		}
@@ -270,37 +238,8 @@ public class XuggleTranscodeManager extends TranscodeManager {
 			if(picture.isComplete()) {
 				// なんか時間が狂うので、時間の設定し直しを実行しておいた。
 				picture.setPts(packet.getPts() * 1000L);
-				if(picture.getWidth() != encoder.getWidth()
-				|| picture.getHeight() != encoder.getHeight()
-				|| picture.getPixelType() != encoder.getPixelType()) {
-					if(videoResampler == null
-					|| videoResampler.getOutputWidth() != encoder.getWidth()
-					|| videoResampler.getOutputHeight() != encoder.getHeight()
-					|| videoResampler.getOutputPixelFormat() != encoder.getPixelType()) {
-						if(videoResampler != null) {
-							// 消さなくてもいいかもしれない。xuggleがエラーになるなら消したい。
-//							videoResampler.delete();
-						}
-						videoResampler = IVideoResampler.make(
-								encoder.getWidth(), encoder.getHeight(), encoder.getPixelType(),
-								picture.getWidth(), picture.getHeight(), picture.getPixelType());
-					}
-					IVideoPicture pct = IVideoPicture.make(encoder.getPixelType(), encoder.getWidth(), encoder.getHeight());
-					int retval = videoResampler.resample(pct, picture);
-					if(retval <= 0) {
-						throw new Exception("映像リサンプル失敗");
-					}
-					picture = pct;
-				}
-				if(encodePacket == null) {
-					encodePacket = IPacket.make();
-				}
-				if(encoder.encodeVideo(encodePacket, picture, 0) < 0) {
-					throw new Exception("映像変換失敗");
-				}
-				if(encodePacket.isComplete()) {
-					List<Unit> units = depacketizer.getUnits(encoder, encodePacket);
-					getTranscodeListener().receiveData(units);
+				for(IEncodeManager encodeManager : encodeManagers) {
+					encodeManager.encode(picture);
 				}
 			}
 		}

@@ -60,26 +60,22 @@ public class FileTranscodeTest {
 			audioTranscodeManager.addTranscodeListener(listener);
 			videoTranscodeManager.addTranscodeListener(listener);
 			// 音声用
-			// flvで出力させるので、flvTagにするためのdepacketizer登録
-			((XuggleTranscodeManager) audioTranscodeManager).setDepacketizer(new FlvDepacketizer());
+			// flvで出力させるので、flvTagにするためのdepacketizerとencoder(mp3)を設定
+			((XuggleTranscodeManager) audioTranscodeManager).addEncodeObject(Preset.mp3(), new FlvDepacketizer());
 			// flvを入力するので、flvTagからPacketをつくるPacketizerを登録とりあえず音声を扱う
 			((XuggleTranscodeManager) audioTranscodeManager).setPacketizer(new FlvAudioPacketizer());
-			// エンコードはmp3を選択
-			((XuggleTranscodeManager) audioTranscodeManager).setEncoder(Preset.mp3());
 			// threadで処理させる。
-			((XuggleTranscodeManager) audioTranscodeManager).setThreadFlg(true);
+//			((XuggleTranscodeManager) audioTranscodeManager).setThreadFlg(true);
 
 			// 映像用
-			// flvで出力させるので、flvTagにするためのdepacketizer登録
-			((XuggleTranscodeManager) videoTranscodeManager).setDepacketizer(new FlvDepacketizer());
+			// flvで出力させるので、flvTagにするためのdepacketizerとencoder(h264)を設定
+			((XuggleTranscodeManager) videoTranscodeManager).addEncodeObject(Preset.h264(), new FlvDepacketizer());
 			// flvを入力するので、flvTagからPacketをつくるPacketizerを登録とりあえず音声を扱う
 			((XuggleTranscodeManager) videoTranscodeManager).setPacketizer(new FlvVideoPacketizer());
-			// エンコードはflv1を選択
-			((XuggleTranscodeManager) videoTranscodeManager).setEncoder(Preset.h264());
 			// threadで処理させる
-			((XuggleTranscodeManager) videoTranscodeManager).setThreadFlg(true);
+//			((XuggleTranscodeManager) videoTranscodeManager).setThreadFlg(true);
 			while((tag = analyzer.analyze(source)) != null) {
-				// 変換させます。
+				// 変換させます
 				audioTranscodeManager.transcode(tag);
 				videoTranscodeManager.transcode(tag);
 			}
