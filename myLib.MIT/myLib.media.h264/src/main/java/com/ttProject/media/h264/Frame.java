@@ -44,6 +44,7 @@ public abstract class Frame extends Unit implements IVideoData {
 	private Bit2 nalRefIdc; // 0:ならなくてもいいやつ?数値のあるやつはdecodeに必須なnalなお0x09のadtはmpegtsには必要っぽい。
 	private Bit5 type; // typeで宣言している数値がはいるっぽい
 	private ByteBuffer buffer; // データ本体保持
+	
 	public Frame(final int size, byte frameTypeData) {
 		super(0, size);
 		forbiddenZeroBit = new Bit1(frameTypeData >>> 7);
@@ -91,14 +92,27 @@ public abstract class Frame extends Unit implements IVideoData {
 		}
 		buffer = BufferUtil.safeRead(ch, getSize() - 1);
 	}
+	// videoData用の拡張動作
+	private long pts = 0;
+	private long dts = 0;
+	private double timebase = 0.001;
+	public void setPts(long pts) {
+		this.pts = pts;
+	}
 	public long getPts() {
-		return 0L;
+		return pts;
+	}
+	public void setDts(long dts) {
+		this.dts = dts;
 	}
 	public long getDts() {
-		return 0L;
+		return dts;
+	}
+	public void setTimebase(double timebase) {
+		this.timebase = timebase;
 	}
 	public double getTimebase() {
-		return 0D;
+		return timebase;
 	}
 	public ByteBuffer getRawData() throws Exception {
 		return getData();

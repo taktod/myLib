@@ -88,21 +88,31 @@ public class Mp3 extends Frame implements IAudioData {
 		}
 		return 0;
 	}
-	@Override
-	public long getDts() {
-		return 0;
+	// videoData用の拡張動作
+	private long pts = 0;
+	private long dts = 0;
+	private double timebase = 0.001;
+	public void setPts(long pts) {
+		this.pts = pts;
 	}
-	@Override
 	public long getPts() {
-		return 0;
+		return pts;
+	}
+	public void setDts(long dts) {
+		this.dts = dts;
+	}
+	public long getDts() {
+		return dts;
+	}
+	public void setTimebase(double timebase) {
+		this.timebase = timebase;
+	}
+	public double getTimebase() {
+		return timebase;
 	}
 	@Override
 	public ByteBuffer getRawData() throws Exception {
 		return getBuffer();
-	}
-	@Override
-	public double getTimebase() {
-		return 0;
 	}
 	/**
 	 * チャンネルモードを応答します。

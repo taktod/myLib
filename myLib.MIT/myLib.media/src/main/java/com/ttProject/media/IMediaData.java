@@ -18,6 +18,7 @@ public interface IMediaData {
 	public long getDts();
 	/**
 	 * timestampのunitの単位を決定します。
+	 * 秒単位 1/1000秒の場合は0.001
 	 * @return
 	 */
 	public double getTimebase();

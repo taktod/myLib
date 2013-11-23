@@ -244,17 +244,27 @@ public class Aac extends Frame implements IAudioData {
 		data.append(Integer.toHexString(getSize()));
 		return data.toString();
 	}
-	@Override
+	// videoData用の拡張動作
+	private long pts = 0;
+	private long dts = 0;
+	private double timebase = 0.001;
+	public void setPts(long pts) {
+		this.pts = pts;
+	}
 	public long getPts() {
-		return 0;
+		return pts;
 	}
-	@Override
+	public void setDts(long dts) {
+		this.dts = dts;
+	}
 	public long getDts() {
-		return 0;
+		return dts;
 	}
-	@Override
+	public void setTimebase(double timebase) {
+		this.timebase = timebase;
+	}
 	public double getTimebase() {
-		return 0;
+		return timebase;
 	}
 	@Override
 	public ByteBuffer getRawData() throws Exception {
