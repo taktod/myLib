@@ -19,5 +19,5 @@ public interface IDepacketizer {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Unit> getUnit(IStreamCoder encoder, IPacket packet) throws Exception;
+	public List<Unit> getUnits(IStreamCoder encoder, IPacket packet) throws Exception;
 }

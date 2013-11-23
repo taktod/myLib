@@ -25,6 +25,7 @@ import com.xuggle.xuggler.IVideoResampler;
  * 
  * TODO xuggleの変換モジュールで、VideoPictureやAudioSampleに変換してから、複数の出力にわける動作をいれると、１つのデータから複数出力できていい感じになると思われます。
  * どうするかな・・・
+ * 
  * @author taktod
  */
 public class XuggleTranscodeManager extends TranscodeManager {
@@ -245,7 +246,7 @@ public class XuggleTranscodeManager extends TranscodeManager {
 					}
 					samplesConsumed += retval;
 					if(encodePacket.isComplete()) {
-						List<Unit> units = depacketizer.getUnit(encoder, encodePacket);
+						List<Unit> units = depacketizer.getUnits(encoder, encodePacket);
 						getTranscodeListener().receiveData(units);
 					}
 				}
@@ -298,7 +299,7 @@ public class XuggleTranscodeManager extends TranscodeManager {
 					throw new Exception("映像変換失敗");
 				}
 				if(encodePacket.isComplete()) {
-					List<Unit> units = depacketizer.getUnit(encoder, encodePacket);
+					List<Unit> units = depacketizer.getUnits(encoder, encodePacket);
 					getTranscodeListener().receiveData(units);
 				}
 			}

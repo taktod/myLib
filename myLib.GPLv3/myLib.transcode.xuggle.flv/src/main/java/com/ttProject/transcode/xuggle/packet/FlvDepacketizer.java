@@ -38,7 +38,7 @@ public class FlvDepacketizer implements IDepacketizer {
 	 * packetからflvTagを抜き出します。
 	 */
 	@Override
-	public List<Unit> getUnit(IStreamCoder encoder, IPacket packet)
+	public List<Unit> getUnits(IStreamCoder encoder, IPacket packet)
 			throws Exception {
 		if(!packet.isComplete()) {
 			return null;

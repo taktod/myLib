@@ -14,7 +14,7 @@ import com.xuggle.xuggler.IStreamCoder;
  */
 public class H264Depacketizer implements IDepacketizer {
 	@Override
-	public List<Unit> getUnit(IStreamCoder encoder, IPacket packet)
+	public List<Unit> getUnits(IStreamCoder encoder, IPacket packet)
 			throws Exception {
 		return null;
 	}

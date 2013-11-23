@@ -21,7 +21,7 @@ public class AacDepacketizer implements IDepacketizer {
 	 * AacのFrameに変換します。
 	 */
 	@Override
-	public List<Unit> getUnit(IStreamCoder encoder, IPacket packet)
+	public List<Unit> getUnits(IStreamCoder encoder, IPacket packet)
 			throws Exception {
 		if(!packet.isComplete()) {
 			return null;
