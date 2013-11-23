@@ -42,16 +42,24 @@ public abstract class Unit {
 	public int getSize() {
 		return size;
 	}
+	/**
+	 * データサイズ設定
+	 * @param size
+	 */
 	public void setSize(int size) {
 		this.size = size;
 	}
 	/**
-	 * データ位置取得
+	 * データ位置取得(ファイル上の位置情報)
 	 * @return
 	 */
 	public int getPosition() {
 		return position;
 	}
+	/**
+	 * 位置情報(ファイルから読み出した場合の位置情報)
+	 * @param position
+	 */
 	public void setPosition(int position) {
 		this.position = position;
 	}
