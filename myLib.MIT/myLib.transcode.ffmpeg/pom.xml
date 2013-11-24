@@ -13,4 +13,16 @@ myLib.convert.ffmpegと同じく、java -(socket)&gt; java -(pipe)&gt; ffmpeg -(
 という方法でpipeline経由で動作させることにします。
 よって、macやlinuxでは動作するけど、windowsだと多分動作しません。
 また、別の変換プログラムでも一応できるはずですが、vlcの場合は、出力データがちょっと微妙なので、使えるか使えないかわかりません。</description>
+  <dependencies>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.transcode</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.netty</groupId>
+      <artifactId>netty</artifactId>
+      <version>3.2.9.Final</version>
+    </dependency>
+  </dependencies>
 </project>
