@@ -6,6 +6,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.junit.Test;
 
 import com.ttProject.media.Unit;
 import com.ttProject.media.flv.FlvHeader;
@@ -39,7 +40,7 @@ public class FileTranscodeTest {
 	/**
 	 * 動作テスト
 	 */
-//	@Test
+	@Test
 	public void test() {
 		JNIMemoryManager.setMemoryModel(MemoryModel.NATIVE_BUFFERS);
 		IFileReadChannel source = null;
