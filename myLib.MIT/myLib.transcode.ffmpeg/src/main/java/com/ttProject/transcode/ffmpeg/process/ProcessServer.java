@@ -21,6 +21,8 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
+import com.ttProject.transcode.ffmpeg.worker.DataSendWorker;
+
 /**
  * 子プロセスにデータを送信するサーバー動作
  * @author taktod
@@ -36,6 +38,8 @@ public class ProcessServer {
 	private final ServerBootstrap bootstrap;
 	/** アクセスがくる子プロセスのキー情報 */
 	private final Set<String> keySet = new HashSet<String>();
+	/** 動作開始処理 */
+	private final DataSendWorker sendWorker;
 	/**
 	 * コンストラクタ
 	 * @param port
@@ -52,6 +56,14 @@ public class ProcessServer {
 			}
 		});
 		serverChannel = bootstrap.bind(new InetSocketAddress(port));
+		sendWorker = new DataSendWorker(this);
+	}
+	/**
+	 * データ送信モジュールを応答
+	 * @return
+	 */
+	public DataSendWorker getSendWorker() {
+		return sendWorker;
 	}
 	/**
 	 * 動作キーデータを登録する
@@ -134,9 +146,8 @@ public class ProcessServer {
 				}
 				if(keySet.size() == 0) {
 					logger.info("子プロセスから全接続をうけとったので、処理開始");
-					synchronized(keySet) {
-						keySet.notifyAll(); // 通知を実行する
-					}
+					// 送信動作を開始させる
+					sendWorker.start();
 				}
 			}
 		}

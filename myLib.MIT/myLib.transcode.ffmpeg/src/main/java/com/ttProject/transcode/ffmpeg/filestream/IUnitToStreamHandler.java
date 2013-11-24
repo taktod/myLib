@@ -23,5 +23,5 @@ public interface IUnitToStreamHandler {
 	 * @param unit
 	 * @return
 	 */
-	public ByteBuffer getBuffer(Unit unit);
+	public ByteBuffer getBuffer(Unit unit) throws Exception;
 }

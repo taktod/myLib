@@ -33,7 +33,7 @@ public class ProcessHandler {
 	/** 動作プロセス */
 	private Process process = null;
 	/** データ受信処理 */
-	private DataReceiveWorker worker = null;
+	private DataReceiveWorker receiveWorker = null;
 	/**
 	 * コンストラクタ
 	 * @param port
@@ -64,6 +64,13 @@ public class ProcessHandler {
 		this.envExtra = envExtra;
 	}
 	/**
+	 * 起動中であるかどうか
+	 * @return
+	 */
+	public boolean isRunning() {
+		return process != null;
+	}
+	/**
 	 * プロセスの実行
 	 */
 	protected void executeProcess() throws Exception {
@@ -78,10 +85,11 @@ public class ProcessHandler {
 		command.append("com.ttProject.transcode.ffmpeg.process.ProcessEntry").append(" ");
 		command.append(port).append(" ");
 		command.append(key).append(" ");
-		command.append("2>/dev/null");
+		command.append("2>java.log");
 		command.append(" | ");
 		command.append(processCommand);
 		logger.info("コマンド:" + processCommand);
+		logger.info("コマンド:" + command.toString());
 		ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", "-c", command.toString());
 		// 環境変数の変更が必要な場合はここでいじっておきます。
 		if(envExtra != null) {
@@ -99,12 +107,10 @@ public class ProcessHandler {
 		}
 		// プロセスを開始する
 		process = processBuilder.start();
+		logger.info("プロセスを開始しました。");
 		// 応答読み取りスレッド
-//		worker = new DataReceiveWorker(Channels.newChannel(process.getInputStream()), listeners);
-		thread = new Thread(worker);
-//		thread.setDaemon(true);
-		thread.setName("ffmpegDataReceiveThread");
-		thread.start();
+		receiveWorker = new DataReceiveWorker(Channels.newChannel(process.getInputStream()));
+		receiveWorker.start();
 	}
 	/**
 	 * 閉じる処理
@@ -113,9 +119,9 @@ public class ProcessHandler {
 		// 管理リスナーを解放しておく。
 //		listeners.clear();
 		// 内部threadの処理を抜けさせる
-		if(worker != null) {
+//		if(worker != null) {
 //			worker.stop();
-		}
+//		}
 		// Threadの解放
 		if(thread != null) {
 			thread.interrupt();

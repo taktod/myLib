@@ -17,5 +17,5 @@ public interface IStreamToUnitHandler {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Unit> getUnits(ByteBuffer buffer) throws Exception;
+	public List<Unit> getUnits(List<Unit> units) throws Exception;
 }

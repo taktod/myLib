@@ -1,9 +1,10 @@
 package com.ttProject.transcode.ffmpeg.worker;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.ReadableByteChannel;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.log4j.Logger;
 
@@ -18,6 +19,8 @@ public class DataReceiveWorker implements Runnable {
 	private final ReadableByteChannel outputChannel;
 	/** 処理転送先listener */
 	private boolean workFlg = true;
+	/** 動作させるexecutor */
+	private ExecutorService loopExecutor = null;
 	/**
 	 * コンストラクタ
 	 * @param outputChannel
@@ -26,34 +29,50 @@ public class DataReceiveWorker implements Runnable {
 		this.outputChannel = outputChannel;
 	}
 	/**
+	 * 処理に利用するexecutorを設定
+	 * @param executor
+	 */
+	public void setExecutor(ExecutorService executor) {
+		loopExecutor = executor;
+	}
+	/**
+	 * 開始します
+	 */
+	public void start() {
+		if(loopExecutor == null) {
+			loopExecutor = Executors.newSingleThreadExecutor();
+		}
+		loopExecutor.execute(this);
+	}
+	/**
 	 * 動作実体
 	 */
 	@Override
 	public void run() {
 		try {
-			while(workFlg) {
-				ByteBuffer buffer = ByteBuffer.allocate(65536);
-				// 処理入力を読み込みます。
-				outputChannel.read(buffer);
-				buffer.flip();
-				// リスナーにデータを渡す
-				// CPUをちょっとだけ解放しておく。// (おわったら次のexecutorServiceに処理を依頼する・・・でいけるか)
-				Thread.sleep(10);
+			boolean readFlg = false;
+			ByteBuffer buffer = ByteBuffer.allocate(65536);
+			outputChannel.read(buffer);
+			buffer.flip();
+			readFlg = buffer.remaining() != 0;
+			// bufferはここから適当なリスナーに渡す必要あり。
+			logger.info("size:" + buffer.remaining());
+			if(workFlg) {
+				if(!readFlg) {
+					if(loopExecutor instanceof ThreadPoolExecutor) {
+						ThreadPoolExecutor threadExecutor = (ThreadPoolExecutor) loopExecutor;
+						if(threadExecutor.getQueue().size() == 0) {
+							// queueのデータがない場合はちょっと待つ
+							Thread.sleep(100);
+						}
+					}
+				}
+				// 再度実行させる
+				loopExecutor.execute(this);
 			}
 		}
-		catch(ClosedByInterruptException e) {
-			
-		}
-		catch(IOException e) {
-			
-		}
-		catch(InterruptedException e) {
-			
-		}
 		catch(Exception e) {
-			logger.error("想定外の例外が発生しました。", e);
+			logger.error("例外が発生して、読み込みスレッドがとまりました。", e);
 		}
-		// ここでやること。
-		// ffmpegの標準出力を受け取るので、必要なunitに戻して応答してやる。
 	}
 }
