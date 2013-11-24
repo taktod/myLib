@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import com.ttProject.media.Unit;
+import com.ttProject.transcode.IExceptionListener;
 import com.ttProject.transcode.ITranscodeListener;
 import com.ttProject.transcode.xuggle.packet.IDepacketizer;
 import com.xuggle.xuggler.IAudioResampler;
@@ -24,6 +25,7 @@ public class AudioEncodeManager implements IEncodeManager {
 	private IStreamCoder encoder = null;
 	private IDepacketizer depacketizer = null;
 	private ITranscodeListener listener = null;
+	private IExceptionListener expListener = null;
 	private ExecutorService executor = null;
 	/**
 	 * executorServiceを設定する
@@ -31,6 +33,13 @@ public class AudioEncodeManager implements IEncodeManager {
 	@Override
 	public void setExecutorService(ExecutorService executor) {
 		this.executor = executor;
+	}
+	/**
+	 * 例外リスナーを設定する。
+	 */
+	@Override
+	public void setExceptionListener(IExceptionListener listener) {
+		this.expListener = listener;
 	}
 	/**
 	 * 変換結果出力先を保持しておく。
@@ -52,6 +61,9 @@ public class AudioEncodeManager implements IEncodeManager {
 		}
 		if(depacketizer != null) {
 			depacketizer = null;
+		}
+		if(expListener != null) {
+			expListener = null;
 		}
 		if(listener != null) {
 			listener = null;
@@ -102,7 +114,7 @@ public class AudioEncodeManager implements IEncodeManager {
 						process(samples);
 					}
 					catch(Exception e) {
-						listener.exceptionCaught(e);
+						expListener.exceptionCaught(e);
 					}
 				}
 			});
@@ -112,7 +124,7 @@ public class AudioEncodeManager implements IEncodeManager {
 				process(samples);
 			}
 			catch(Exception e) {
-				listener.exceptionCaught(e);
+				expListener.exceptionCaught(e);
 			}
 		}
 	}

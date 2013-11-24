@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import com.ttProject.media.Unit;
+import com.ttProject.transcode.IExceptionListener;
 import com.ttProject.transcode.ITranscodeListener;
 import com.ttProject.transcode.xuggle.packet.IDepacketizer;
 import com.xuggle.xuggler.IPacket;
@@ -23,6 +24,7 @@ public class VideoEncodeManager implements IEncodeManager {
 	private IStreamCoder encoder = null;
 	private IDepacketizer depacketizer = null;
 	private ITranscodeListener listener = null;
+	private IExceptionListener expListener = null;
 	private ExecutorService executor = null;
 	/**
 	 * executorServiceを設定する
@@ -39,6 +41,13 @@ public class VideoEncodeManager implements IEncodeManager {
 		this.listener = listener;
 	}
 	/**
+	 * 例外リスナーを保持しておく
+	 */
+	@Override
+	public void setExceptionListener(IExceptionListener listener) {
+		this.expListener = listener;
+	}
+	/**
 	 * 閉じる動作
 	 */
 	public void close() {
@@ -51,6 +60,9 @@ public class VideoEncodeManager implements IEncodeManager {
 		}
 		if(depacketizer != null) {
 			depacketizer = null;
+		}
+		if(expListener != null) {
+			expListener = null;
 		}
 		if(listener != null) {
 			listener = null;
@@ -101,7 +113,7 @@ public class VideoEncodeManager implements IEncodeManager {
 						process(picture);
 					}
 					catch(Exception e) {
-						listener.exceptionCaught(e);
+						expListener.exceptionCaught(e);
 					}
 				}
 			});
@@ -111,7 +123,7 @@ public class VideoEncodeManager implements IEncodeManager {
 				process(picture);
 			}
 			catch(Exception e) {
-				listener.exceptionCaught(e);
+				expListener.exceptionCaught(e);
 			}
 		}
 	}

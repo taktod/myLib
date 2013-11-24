@@ -9,10 +9,10 @@ import com.ttProject.media.Unit;
  */
 public interface ITranscodeManager {
 	/**
-	 * 出力取得用listenerの設定
+	 * 例外取得の設定
 	 * @param listener
 	 */
-	public void addTranscodeListener(ITranscodeListener listener);
+	public void addExceptionListener(IExceptionListener listener);
 	/**
 	 * 変換を実行
 	 * @param unit 対応メディアunit

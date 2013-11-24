@@ -14,6 +14,7 @@ import com.ttProject.media.flv.Tag;
 import com.ttProject.media.flv.TagAnalyzer;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.transcode.IExceptionListener;
 import com.ttProject.transcode.ITranscodeListener;
 import com.ttProject.transcode.ITranscodeManager;
 import com.ttProject.transcode.xuggle.Preset;
@@ -55,34 +56,35 @@ public class FileTranscodeTest {
 			// xuggleに変換させる。
 			audioTranscodeManager = new XuggleTranscodeManager();
 			videoTranscodeManager = new XuggleTranscodeManager();
+			IExceptionListener expListener = new IExceptionListener() {
+				@Override
+				public void exceptionCaught(Exception e) {
+					
+				}
+			};
 			ITranscodeListener listener = new ITranscodeListener() {
 				@Override
 				public void receiveData(List<Unit> unit) {
-					// 変換後データをうけとります。
 					logger.info(unit);
 				}
-				@Override
-				public void exceptionCaught(Exception e) {
-					logger.warn("変換中に例外が発生しました。", e);
-				}
 			};
-			audioTranscodeManager.addTranscodeListener(listener);
-			videoTranscodeManager.addTranscodeListener(listener);
+			audioTranscodeManager.addExceptionListener(expListener);
+			videoTranscodeManager.addExceptionListener(expListener);
 			ExecutorService executor1 = Executors.newSingleThreadExecutor();
 			ExecutorService executor2 = Executors.newSingleThreadExecutor();
 			ExecutorService executor3 = Executors.newSingleThreadExecutor();
 			ExecutorService executor4 = Executors.newSingleThreadExecutor();
 			// 音声用
 			// flvで出力させるので、flvTagにするためのdepacketizerとencoder(mp3)を設定
-			((XuggleTranscodeManager) audioTranscodeManager).addEncodeObject(Preset.mp3(), new FlvDepacketizer(), executor3);
-			((XuggleTranscodeManager) audioTranscodeManager).addEncodeObject(Preset.aac(), new FlvDepacketizer(), executor3);
+			((XuggleTranscodeManager) audioTranscodeManager).addEncodeObject(Preset.mp3(), new FlvDepacketizer(), listener, executor3);
+			((XuggleTranscodeManager) audioTranscodeManager).addEncodeObject(Preset.aac(), new FlvDepacketizer(), listener, executor3);
 			// flvを入力するので、flvTagからPacketをつくるPacketizerを登録とりあえず音声を扱う
 			((XuggleTranscodeManager) audioTranscodeManager).setPacketizer(new FlvAudioPacketizer());
 			((XuggleTranscodeManager) audioTranscodeManager).setExecutorService(executor1);
 
 			// 映像用
 			// flvで出力させるので、flvTagにするためのdepacketizerとencoder(h264)を設定
-			((XuggleTranscodeManager) videoTranscodeManager).addEncodeObject(Preset.h264(), new FlvDepacketizer(), executor4);
+			((XuggleTranscodeManager) videoTranscodeManager).addEncodeObject(Preset.h264(), new FlvDepacketizer(), listener, executor4);
 			// flvを入力するので、flvTagからPacketをつくるPacketizerを登録とりあえず音声を扱う
 			((XuggleTranscodeManager) videoTranscodeManager).setPacketizer(new FlvVideoPacketizer());
 			((XuggleTranscodeManager) videoTranscodeManager).setExecutorService(executor2);

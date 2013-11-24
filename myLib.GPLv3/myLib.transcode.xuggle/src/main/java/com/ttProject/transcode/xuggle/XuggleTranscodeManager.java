@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import org.apache.log4j.Logger;
 
 import com.ttProject.media.Unit;
+import com.ttProject.transcode.ITranscodeListener;
 import com.ttProject.transcode.TranscodeManager;
 import com.ttProject.transcode.xuggle.encode.AudioEncodeManager;
 import com.ttProject.transcode.xuggle.encode.IEncodeManager;
@@ -56,7 +57,7 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	 * @param depacketizer
 	 * @param executor
 	 */
-	public void addEncodeObject(IStreamCoder encoder, IDepacketizer depacketizer, ExecutorService executor) throws Exception {
+	public void addEncodeObject(IStreamCoder encoder, IDepacketizer depacketizer, ITranscodeListener listener, ExecutorService executor) throws Exception {
 		IEncodeManager encodeManager = null;
 		if(encoder.getCodecType() == Type.CODEC_TYPE_AUDIO) {
 			// 音声の場合
@@ -68,7 +69,8 @@ public class XuggleTranscodeManager extends TranscodeManager {
 		}
 		encodeManager.setDepacketizer(depacketizer);
 		encodeManager.setEncoder(encoder);
-		encodeManager.setTranscodeListener(getTranscodeListener());
+		encodeManager.setTranscodeListener(listener);
+		encodeManager.setExceptionListener(getExpListener());
 		encodeManager.setExecutorService(executor);
 		encodeManagers.add(encodeManager);
 	}
@@ -77,8 +79,8 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	 * @param encoder
 	 * @param packetizer
 	 */
-	public void addEncodeObject(IStreamCoder encoder, IDepacketizer depacketizer) throws Exception {
-		addEncodeObject(encoder, depacketizer, null);
+	public void addEncodeObject(IStreamCoder encoder, IDepacketizer depacketizer, ITranscodeListener listener) throws Exception {
+		addEncodeObject(encoder, depacketizer, listener, null);
 	}
 	/**
 	 * パケット化モジュールを設定
@@ -118,7 +120,7 @@ public class XuggleTranscodeManager extends TranscodeManager {
 						process(unit);
 					}
 					catch(Exception e) {
-						getTranscodeListener().exceptionCaught(e);
+						getExpListener().exceptionCaught(e);
 					}
 				}
 			});
@@ -129,7 +131,7 @@ public class XuggleTranscodeManager extends TranscodeManager {
 				process(unit);
 			}
 			catch(Exception e) {
-				getTranscodeListener().exceptionCaught(e);
+				getExpListener().exceptionCaught(e);
 			}
 		}
 	}
