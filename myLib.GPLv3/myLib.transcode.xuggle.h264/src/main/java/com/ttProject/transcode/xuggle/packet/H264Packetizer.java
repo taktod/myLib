@@ -8,7 +8,7 @@ import com.ttProject.media.h264.frame.PictureParameterSet;
 import com.ttProject.media.h264.frame.SequenceParameterSet;
 import com.ttProject.media.h264.frame.Slice;
 import com.ttProject.media.h264.frame.SliceIDR;
-import com.ttProject.transcode.xuggle.exception.FormatChangeException;
+import com.ttProject.transcode.exception.FormatChangeException;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStreamCoder;

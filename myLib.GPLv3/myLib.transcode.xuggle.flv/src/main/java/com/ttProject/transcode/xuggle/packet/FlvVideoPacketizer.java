@@ -13,7 +13,7 @@ import com.ttProject.media.h264.frame.Slice;
 import com.ttProject.media.h264.frame.SliceIDR;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.transcode.xuggle.exception.FormatChangeException;
+import com.ttProject.transcode.exception.FormatChangeException;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IPacket;

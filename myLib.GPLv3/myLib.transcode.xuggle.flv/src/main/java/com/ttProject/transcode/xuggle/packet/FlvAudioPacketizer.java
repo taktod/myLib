@@ -7,7 +7,7 @@ import com.ttProject.media.aac.DecoderSpecificInfo;
 import com.ttProject.media.aac.frame.Aac;
 import com.ttProject.media.flv.tag.AudioTag;
 import com.ttProject.nio.channels.ByteReadChannel;
-import com.ttProject.transcode.xuggle.exception.FormatChangeException;
+import com.ttProject.transcode.exception.FormatChangeException;
 import com.ttProject.util.BufferUtil;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.ICodec;

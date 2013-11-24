@@ -230,14 +230,4 @@ public class XuggleTranscodeManager extends TranscodeManager {
 			}
 		}
 	}
-	/**
-	 * 処理待ちデータが残っているか確認
-	 * @return
-	 */
-	public boolean isRemaining() {
-//		if(threadFlg && worker != null) {
-//			return worker.getRemainUnitCount() != 0;
-//		}
-		return false;
-	}
 }

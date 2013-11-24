@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.media.Unit;
 import com.ttProject.media.aac.frame.Aac;
-import com.ttProject.transcode.xuggle.exception.FormatChangeException;
+import com.ttProject.transcode.exception.FormatChangeException;
 import com.ttProject.util.BufferUtil;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.ICodec;

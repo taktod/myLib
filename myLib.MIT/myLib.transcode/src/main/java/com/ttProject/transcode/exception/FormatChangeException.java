@@ -1,4 +1,4 @@
-package com.ttProject.transcode.xuggle.exception;
+package com.ttProject.transcode.exception;
 
 /**
  * フォーマットが変更になった場合の例外
