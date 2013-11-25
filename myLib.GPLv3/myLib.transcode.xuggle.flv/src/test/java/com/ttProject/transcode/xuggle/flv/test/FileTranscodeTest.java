@@ -23,8 +23,6 @@ import com.ttProject.transcode.xuggle.XuggleTranscodeManager;
 import com.ttProject.transcode.xuggle.packet.FlvAudioPacketizer;
 import com.ttProject.transcode.xuggle.packet.FlvDepacketizer;
 import com.ttProject.transcode.xuggle.packet.FlvVideoPacketizer;
-import com.xuggle.ferry.JNIMemoryManager;
-import com.xuggle.ferry.JNIMemoryManager.MemoryModel;
 
 /**
  * ファイルをxuggleで変換する動作テスト
@@ -42,7 +40,7 @@ public class FileTranscodeTest {
 	 */
 	@Test
 	public void test() {
-		JNIMemoryManager.setMemoryModel(MemoryModel.NATIVE_BUFFERS);
+//		JNIMemoryManager.setMemoryModel(MemoryModel.NATIVE_BUFFERS);
 		IFileReadChannel source = null;
 		ITranscodeManager audioTranscodeManager = null;
 		ITranscodeManager videoTranscodeManager = null;
