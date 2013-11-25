@@ -52,9 +52,10 @@ public class FlvTagOrderManager {
 				audioTags.add(tag);
 			}
 			else {
+				AudioTag aTag = (AudioTag) tag;
 				Tag prevTag = audioTags.get(audioTags.size() - 1);
 				if(prevTag.getTimestamp() > tag.getTimestamp()) {
-					logger.warn("音声データのflipがありました。prev:" + prevTag.getTimestamp() + ", current:" + tag.getTimestamp());
+					logger.warn("音声データのflipがありました。codec:" + aTag.getCodec() + "prev:" + prevTag.getTimestamp() + ", current:" + tag.getTimestamp());
 					if(audioTags.size() > audioCompIndex) {
 						prevTag = audioTags.get(audioTags.size() - audioCompIndex);
 						if(prevTag.getTimestamp() > tag.getTimestamp()) {
