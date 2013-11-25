@@ -1,9 +1,7 @@
 package com.ttProject.transcode.ffmpeg;
 
 import java.nio.channels.Channels;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import org.apache.log4j.Logger;

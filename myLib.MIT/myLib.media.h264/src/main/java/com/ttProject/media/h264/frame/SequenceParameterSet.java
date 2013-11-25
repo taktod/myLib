@@ -54,6 +54,7 @@ public class SequenceParameterSet extends Frame {
 	private Ueg bitDepthChromaMinus8;
 	private Bit1 qpprimeYZeroTransformBypassFlag;
 	private Bit1 seqScalingMatrixPresentFlag;
+	@SuppressWarnings("unused")
 	private Bit1[] seqScalingListPresentFlag;
 	
 	private Ueg log2MaxFrameNumMinus4;
