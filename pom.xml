@@ -58,6 +58,8 @@
     <module>myLib.GPLv3/myLib.transcode.xuggle.aac</module>
     <module>myLib.GPLv3/myLib.transcode.xuggle.mp3</module>
     <module>myLib.GPLv3/myLib.media.xuggle</module>
+    <module>myLib.MIT/myLib.media.flv1</module>
+    <module>myLib.MIT/myLib.media.vp6</module>
   </modules>
   <scm>
   	<url>scm:git:git@github.com:taktod/myLib.git</url>
