@@ -12,6 +12,9 @@ import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitLoader;
+import com.ttProject.media.extra.Seg;
+import com.ttProject.media.extra.Ueg;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
@@ -22,7 +25,11 @@ import com.ttProject.util.HexUtil;
  */
 public class BitTest {
 	private Logger logger = Logger.getLogger(BitTest.class);
-	@Test
+	/**
+	 * 読み込み書き込みテスト
+	 * @throws Exception
+	 */
+//	@Test
 	public void test() throws Exception {
 		IReadChannel channel = new ByteReadChannel(new byte[] {
 				(byte)0xFF, (byte)0xF1, 0x50, (byte)0x80, 0x02, 0x1F, (byte)0xFC
@@ -58,5 +65,27 @@ public class BitTest {
 				copyrightIdentificationBit, copyrightIdentificationStart, frameSize1, frameSize2,
 				adtsBufferFullness1, adtsBufferFullness2, noRawDataBlocksInFrame);
 		logger.info(HexUtil.toHex(buffer.array(), true));
+	}
+	/**
+	 * extGolomb付きの動作テスト
+	 * @throws Exception
+	 */
+	@Test
+	public void test2() throws Exception {
+		IReadChannel channel = new ByteReadChannel(new byte[] {
+				(byte)0xF7
+		});
+		Bit1 a = new Bit1();
+		Bit2 b = new Bit2();
+		Bit1 c = new Bit1();
+		Ueg ueg = new Ueg();
+		Seg seg = new Seg();
+		BitLoader bitLoader = new BitLoader(channel);
+		bitLoader.load(a, b, c, ueg, seg);
+		logger.info(a);
+		logger.info(b);
+		logger.info(c);
+		logger.info(ueg);
+		logger.info(seg);
 	}
 }
