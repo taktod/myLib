@@ -14,7 +14,7 @@ import com.ttProject.util.BitUtil;
 public abstract class Bit {
 	/** 保持データ */
 	private byte value;
-	private final int bitCount;
+	protected final int bitCount;
 	public Bit(int count) {
 		bitCount = count;
 	}
