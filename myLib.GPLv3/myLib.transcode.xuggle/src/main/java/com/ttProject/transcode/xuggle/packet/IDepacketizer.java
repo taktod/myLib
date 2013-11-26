@@ -9,7 +9,6 @@ import com.xuggle.xuggler.IStreamCoder;
 /**
  * xuggleのpacketをオブジェクトに戻すプログラムのインターフェイス
  * @author taktod
- *
  */
 public interface IDepacketizer {
 	/**
@@ -20,4 +19,8 @@ public interface IDepacketizer {
 	 * @throws Exception
 	 */
 	public List<Unit> getUnits(IStreamCoder encoder, IPacket packet) throws Exception;
+	/**
+	 * 後始末
+	 */
+	public void close();
 }

@@ -76,4 +76,8 @@ public class AacPacketizer implements IPacketizer {
 		decoder.setChannels(lastAacFrame.getChannelConfiguration());
 		return decoder;
 	}
+	@Override
+	public void close() {
+		
+	}
 }

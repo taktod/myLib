@@ -18,4 +18,9 @@ public class H264Depacketizer implements IDepacketizer {
 			throws Exception {
 		return null;
 	}
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
+	}
 }

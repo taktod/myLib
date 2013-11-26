@@ -246,4 +246,8 @@ public class FlvAudioPacketizer implements IPacketizer {
 		}
 		return decoder;
 	}
+	@Override
+	public void close() {
+		
+	}
 }

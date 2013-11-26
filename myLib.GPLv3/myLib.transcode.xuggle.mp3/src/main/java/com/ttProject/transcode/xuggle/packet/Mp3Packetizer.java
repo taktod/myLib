@@ -77,4 +77,8 @@ public class Mp3Packetizer implements IPacketizer {
 		decoder.setChannels(lastMp3Frame.getChannels());
 		return decoder;
 	}
+	@Override
+	public void close() {
+		
+	}
 }

@@ -38,4 +38,8 @@ public class AacDepacketizer implements IDepacketizer {
 		}
 		return frameList;
 	}
+	@Override
+	public void close() {
+		
+	}
 }

@@ -13,22 +13,27 @@ public interface IPacketizer {
 	/**
 	 * mediaDataの正当性を確認します。
 	 * 正当でない場合はあらかじめエラーを返します。
-	 * @param unit
-	 * @return
+	 * @param unit 確認するデータunit
+	 * @return true:問題ない場合 false:処理対象でない場合
+	 * @throws FormatChangeException データフォーマットが変更していて処理できない場合
 	 */
 	public boolean check(Unit unit) throws FormatChangeException;
 	/**
-	 * packetデータを作成して応答します
-	 * @param unit メディアunit
+	 * packetデータを応答します
+	 * @param unit メディアUnit
 	 * @param packet 既存のpacketメモリーを使い回す場合(使い回すとGCを遅らせることが可能です)
-	 * @return
+	 * @return 生成したパケットデータを応答します
 	 * @throws Exception
 	 */
 	public IPacket getPacket(Unit unit, IPacket packet) throws Exception;
 	/**
 	 * デコーダーを応答します
-	 * @return
+	 * @return 処理パケットに対応するデコーダーを応答
 	 * @throws Exception
 	 */
 	public IStreamCoder createDecoder() throws Exception;
+	/**
+	 * 後始末
+	 */
+	public void close();
 }

@@ -282,4 +282,8 @@ public class FlvDepacketizer implements IDepacketizer {
 		// タグを応答すればOK
 		return tagList;
 	}
+	@Override
+	public void close() {
+		
+	}
 }

@@ -254,4 +254,8 @@ public class FlvVideoPacketizer implements IPacketizer {
 		}
 		return decoder;
 	}
+	@Override
+	public void close() {
+		
+	}
 }

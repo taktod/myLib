@@ -38,4 +38,8 @@ public class Mp3Depacketizer implements IDepacketizer {
 		}
 		return frameList;
 	}
+	@Override
+	public void close() {
+		
+	}
 }

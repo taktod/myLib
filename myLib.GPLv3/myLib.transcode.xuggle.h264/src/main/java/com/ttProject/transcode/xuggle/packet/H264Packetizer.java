@@ -106,4 +106,9 @@ public class H264Packetizer implements IPacketizer {
 	public IStreamCoder createDecoder() throws Exception {
 		return null;
 	}
+	@Override
+	public void close() {
+		// TODO Auto-generated method stub
+		
+	}
 }
