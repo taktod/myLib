@@ -12,7 +12,17 @@
 
 各コンテナの最小単位はUnitの継承クラスとします。
 positionはUnitの始まる位置(ファイル上にないデータの場合は、適当にやっておく。)
-sizeはUnitのヘッダ部等も含めた全体の量とします。flvとかでは、sizeが先頭の11バイトと終端の4バイト抜かしたデータになっていますが、これも全部含めたデータになっているべきとします。</description>
+sizeはUnitのヘッダ部等も含めた全体の量とします。flvとかでは、sizeが先頭の11バイトと終端の4バイト抜かしたデータになっていますが、これも全部含めたデータになっているべきとします
+
+コンテナの最小単位はUnit
+データの最小単位はMediaData(音声ならAudioData、映像ならVideoData)とします。
+
+すべてのMedia系ライブラリのデータはUnit、MediaDataのどちらかもしくは両方を継承しているものとします。
+
+例：
+flvの場合　flvTagはUnitです。中身のH264FrameやAacFrameはIVideoDataやIAudioDataを継承している必要があります。
+こんな感じ。
+</description>
   <dependencies>
     <dependency>
       <groupId>com.ttProject</groupId>

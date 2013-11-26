@@ -14,4 +14,7 @@
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
+  <name>myLib.transcode</name>
+  <description>メディアデータの変換絡みのプロジェクトのベース部分
+</description>
 </project>
