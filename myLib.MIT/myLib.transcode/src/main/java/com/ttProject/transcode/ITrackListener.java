@@ -13,7 +13,7 @@ public interface ITrackListener {
 	 * 変換処理後のunitデータを受けとります。
 	 * @param unit
 	 */
-	public void receiveData(List<Unit> unit);
+	public void receiveData(List<Unit> units);
 	/**
 	 * 終了処理
 	 */

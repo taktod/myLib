@@ -31,7 +31,7 @@ public class VideoTrackModule extends TrackModule {
 	@Override
 	protected void process(Object xuggleObject) {
 		try {
-			if(xuggleObject instanceof IVideoPicture) {
+			if(!(xuggleObject instanceof IVideoPicture)) {
 				throw new Exception("データがVideoPictureではありませんでした。異常です。");
 			}
 			IVideoPicture picture = (IVideoPicture) xuggleObject;

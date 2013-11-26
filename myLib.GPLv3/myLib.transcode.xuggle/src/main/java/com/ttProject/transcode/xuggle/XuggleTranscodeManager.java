@@ -1,20 +1,15 @@
 package com.ttProject.transcode.xuggle;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map.Entry;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.log4j.Logger;
 
 import com.ttProject.media.Unit;
 import com.ttProject.transcode.ITrackManager;
-import com.ttProject.transcode.ITranscodeListener;
 import com.ttProject.transcode.TranscodeManager;
-import com.ttProject.transcode.xuggle.encode.AudioEncodeManager;
-import com.ttProject.transcode.xuggle.encode.IEncodeManager;
-import com.ttProject.transcode.xuggle.encode.VideoEncodeManager;
-import com.ttProject.transcode.xuggle.packet.IDepacketizer;
 import com.ttProject.transcode.xuggle.packet.IPacketizer;
+import com.ttProject.transcode.xuggle.track.XuggleTrackManager;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec.Type;
 import com.xuggle.xuggler.IPacket;
@@ -39,8 +34,6 @@ public class XuggleTranscodeManager extends TranscodeManager implements IXuggleT
 	private IStreamCoder decoder = null;
 	/** 動作パケット(使い回します) */
 	private IPacket packet = null;
-	/** 変換マネージャー */
-	private List<IEncodeManager> encodeManagers = new ArrayList<IEncodeManager>();
 	/**
 	 * executorを設定することで動作を向上させます。
 	 * @param executor
@@ -56,37 +49,6 @@ public class XuggleTranscodeManager extends TranscodeManager implements IXuggleT
 	@Override
 	public void setPacketizer(IPacketizer packetizer) {
 		this.packetizer = packetizer;
-	}
-	/**
-	 * エンコード用オブジェクトを設置します。
-	 * @param encoder
-	 * @param depacketizer
-	 * @param executor
-	 */
-	public void addEncodeObject(IStreamCoder encoder, IDepacketizer depacketizer, ITranscodeListener listener, ExecutorService executor) throws Exception {
-		IEncodeManager encodeManager = null;
-		if(encoder.getCodecType() == Type.CODEC_TYPE_AUDIO) {
-			// 音声の場合
-			encodeManager = new AudioEncodeManager();
-		}
-		else if(encoder.getCodecType() == Type.CODEC_TYPE_VIDEO) {
-			// 映像の場合
-			encodeManager = new VideoEncodeManager();
-		}
-		encodeManager.setDepacketizer(depacketizer);
-		encodeManager.setEncoder(encoder);
-		encodeManager.setTranscodeListener(listener);
-		encodeManager.setExceptionListener(getExpListener());
-		encodeManager.setExecutorService(executor);
-		encodeManagers.add(encodeManager);
-	}
-	/**
-	 * エンコード用オブジェクトをセットアップします
-	 * @param encoder
-	 * @param packetizer
-	 */
-	public void addEncodeObject(IStreamCoder encoder, IDepacketizer depacketizer, ITranscodeListener listener) throws Exception {
-		addEncodeObject(encoder, depacketizer, listener, null);
 	}
 	/**
 	 * 変換実行
@@ -106,7 +68,7 @@ public class XuggleTranscodeManager extends TranscodeManager implements IXuggleT
 						process(unit);
 					}
 					catch(Exception e) {
-						getExpListener().exceptionCaught(e);
+						reportException(e);
 					}
 				}
 			});
@@ -117,7 +79,7 @@ public class XuggleTranscodeManager extends TranscodeManager implements IXuggleT
 				process(unit);
 			}
 			catch(Exception e) {
-				getExpListener().exceptionCaught(e);
+				reportException(e);
 			}
 		}
 	}
@@ -126,10 +88,6 @@ public class XuggleTranscodeManager extends TranscodeManager implements IXuggleT
 	 */
 	@Override
 	public void close() {
-		// エンコードマネージャーを閉じておきます。
-		for(IEncodeManager encodeManager : encodeManagers) {
-			encodeManager.close();
-		}
 		if(decoder != null) {
 			decoder.close();
 			decoder = null;
@@ -188,9 +146,14 @@ public class XuggleTranscodeManager extends TranscodeManager implements IXuggleT
 			if(samples.isComplete()) {
 				// こっちも時間がずれるっぽいので、治してみよう。
 				samples.setPts((long)(packet.getPts() / samples.getTimeBase().getDouble() * packet.getTimeBase().getDouble()));
-				// エンコーダーとの型があわなかったらリサンプルする必要あり
-				for(IEncodeManager encodeManager : encodeManagers) {
-					encodeManager.encode(samples.copyReference());
+				// ここでtrackManagerに処理をまかせる。
+				for(Entry<Integer, ITrackManager> entry : getTrackManagers().entrySet()) {
+					ITrackManager trackManager = entry.getValue();
+					if(!(trackManager instanceof XuggleTrackManager)) {
+						throw new Exception("想定外のtrackManagerを検知しました。");
+					}
+					XuggleTrackManager xuggleTrackManager = (XuggleTrackManager) trackManager;
+					xuggleTrackManager.encode(samples.copyReference());
 				}
 			}
 		}
@@ -212,14 +175,26 @@ public class XuggleTranscodeManager extends TranscodeManager implements IXuggleT
 			if(picture.isComplete()) {
 				// なんか時間が狂うので、時間の設定し直しを実行しておいた。
 				picture.setPts(packet.getPts() * 1000L);
-				for(IEncodeManager encodeManager : encodeManagers) {
-					encodeManager.encode(picture);
+				// ここでtrackManagerに処理をまかせる。
+				for(Entry<Integer, ITrackManager> entry : getTrackManagers().entrySet()) {
+					ITrackManager trackManager = entry.getValue();
+					if(!(trackManager instanceof XuggleTrackManager)) {
+						throw new Exception("想定外のtrackManagerを検知しました。");
+					}
+					XuggleTrackManager xuggleTrackManager = (XuggleTrackManager) trackManager;
+					xuggleTrackManager.encode(picture);
 				}
 			}
 		}
 	}
+	/**
+	 * 内部動作用のtrackManagerを生成する処理
+	 * (この動作はTranscodeManagerから呼び出されます)
+	 * @param newId
+	 */
 	@Override
 	protected ITrackManager makeTrackManager(int newId) {
-		return null;
+		XuggleTrackManager trackManager = new XuggleTrackManager(newId);
+		return trackManager;
 	}
 }

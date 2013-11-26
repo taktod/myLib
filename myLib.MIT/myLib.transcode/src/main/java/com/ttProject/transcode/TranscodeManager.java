@@ -23,11 +23,16 @@ public abstract class TranscodeManager implements ITranscodeManager {
 		expListener = listener;
 	}
 	/**
-	 * 例外リスナー参照
-	 * @return
+	 * 例外発行
+	 * @param e
 	 */
-	protected IExceptionListener getExpListener() {
-		return expListener;
+	protected void reportException(Exception e) {
+		if(expListener != null) {
+			expListener.exceptionCaught(e);
+		}
+		else {
+			throw new RuntimeException(e);
+		}
 	}
 	/**
 	 * trackManagerを取得します
@@ -61,4 +66,11 @@ public abstract class TranscodeManager implements ITranscodeManager {
 	 * @return
 	 */
 	protected abstract ITrackManager makeTrackManager(int newId);
+	/**
+	 * trackManager全体を参照する
+	 * @return
+	 */
+	protected Map<Integer, ITrackManager> getTrackManagers() {
+		return trackManagers;
+	}
 }
