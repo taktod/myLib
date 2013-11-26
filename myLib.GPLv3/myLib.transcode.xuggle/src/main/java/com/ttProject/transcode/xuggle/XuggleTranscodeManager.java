@@ -25,32 +25,37 @@ import com.xuggle.xuggler.IVideoPicture;
  * 変換動作の中心マネージャー
  * 1つのマネージャーでは、１つのコンバートだけ実行します。
  * 音声と映像の両方をコンバートしたければ２つ変換マネージャーが必要となるとします。
- * 
- * TODO xuggleの変換モジュールで、VideoPictureやAudioSampleに変換してから、複数の出力にわける動作をいれると、１つのデータから複数出力できていい感じになると思われます。
- * どうするかな・・・
- * 
  * @author taktod
  */
-public class XuggleTranscodeManager extends TranscodeManager {
+public class XuggleTranscodeManager extends TranscodeManager implements IXuggleTranscodeManager {
 	/** 動作ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(XuggleTranscodeManager.class);
 	/** 処理thread pool */
 	private ExecutorService executor = null;
+	/** 元オブジェクトpacket化モジュール */
+	private IPacketizer packetizer = null;
 	/** デコーダー */
 	private IStreamCoder decoder = null;
-	/** 元オブジェクトpacket化モジュール */
-	private IPacketizer packetizer;
 	/** 動作パケット(使い回します) */
 	private IPacket packet = null;
 	/** 変換マネージャー */
-	List<IEncodeManager> encodeManagers = new ArrayList<IEncodeManager>();
+	private List<IEncodeManager> encodeManagers = new ArrayList<IEncodeManager>();
 	/**
-	 * executorの設定
+	 * executorを設定することで動作を向上させます。
 	 * @param executor
 	 */
+	@Override
 	public void setExecutorService(ExecutorService executor) {
 		this.executor = executor;
+	}
+	/**
+	 * パケット化モジュールを設定
+	 * @param packetizer
+	 */
+	@Override
+	public void setPacketizer(IPacketizer packetizer) {
+		this.packetizer = packetizer;
 	}
 	/**
 	 * エンコード用オブジェクトを設置します。
@@ -83,26 +88,6 @@ public class XuggleTranscodeManager extends TranscodeManager {
 	public void addEncodeObject(IStreamCoder encoder, IDepacketizer depacketizer, ITranscodeListener listener) throws Exception {
 		addEncodeObject(encoder, depacketizer, listener, null);
 	}
-	/**
-	 * パケット化モジュールを設定
-	 * @param packetizer
-	 */
-	public void setPacketizer(IPacketizer packetizer) {
-		this.packetizer = packetizer;
-	}
-	/*
-	 * このマネージャーでやることは
-	 * Unitを入力として受け取る
-	 * IPacketizerでpacket化する
-	 * -----
-	 * IPacketizerからdecoderを取得
-	 * デコードしてIAudioSamplesかIVideoPictureに分解する。
-	 * エンコーダーで指定のデータにエンコードする。
-	 * IDepacketizerで目的のUnitに変換する
-	 * Listenerに応答を渡す
-	 * 
-	 * thread化する場合は----以降の処理がThread上の処理になります。
-	 */
 	/**
 	 * 変換実行
 	 * @param unit 変換対象データ
