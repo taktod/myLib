@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.media.Manager;
 import com.ttProject.media.Unit;
+import com.ttProject.transcode.ITrackManager;
 import com.ttProject.transcode.TranscodeManager;
 import com.ttProject.transcode.ffmpeg.filestream.IStreamToUnitHandler;
 import com.ttProject.transcode.ffmpeg.filestream.IUnitToStreamHandler;
@@ -132,5 +133,9 @@ public class FfmpegTranscodeManager extends TranscodeManager{
 			server.closeServer();
 			server = null;
 		}
+	}
+	@Override
+	protected ITrackManager makeTrackManager(int newId) {
+		return null;
 	}
 }

@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import org.apache.log4j.Logger;
 
 import com.ttProject.media.Unit;
+import com.ttProject.transcode.ITrackManager;
 import com.ttProject.transcode.ITranscodeListener;
 import com.ttProject.transcode.TranscodeManager;
 import com.ttProject.transcode.xuggle.encode.AudioEncodeManager;
@@ -231,5 +232,9 @@ public class XuggleTranscodeManager extends TranscodeManager {
 				}
 			}
 		}
+	}
+	@Override
+	protected ITrackManager makeTrackManager(int newId) {
+		return null;
 	}
 }
