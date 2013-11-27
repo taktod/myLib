@@ -4,15 +4,15 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import com.ttProject.media.Unit;
-import com.ttProject.transcode.IExceptionListener;
 import com.ttProject.transcode.ITrackListener;
+import com.ttProject.transcode.xuggle.XuggleTranscodeManager;
 import com.ttProject.transcode.xuggle.packet.IDepacketizer;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStreamCoder;
 import com.xuggle.xuggler.IStreamCoder.Direction;
 
 /**
- * xuggleのtrackManagerの共通動作定義
+ * xuggleのtrackManagerの動作定義
  * @author taktod
  */
 public class XuggleTrackManager implements IXuggleTrackManager {
@@ -20,8 +20,8 @@ public class XuggleTrackManager implements IXuggleTrackManager {
 	private final int id;
 	/** 出来上がったデータを参照するlistener */
 	private ITrackListener trackListener = null;
-	/** 例外発生時に通知するlistener */
-	private IExceptionListener exceptionListener = null;
+	/** 変換マネージャー */
+	private final XuggleTranscodeManager transcodeManager;
 	/** エンコーダー */
 	private IStreamCoder encoder = null;
 	/** 出力packetをunitに変換するプログラム */
@@ -34,7 +34,8 @@ public class XuggleTrackManager implements IXuggleTrackManager {
 	 * コンストラクタ
 	 * @param id
 	 */
-	public XuggleTrackManager(int id) {
+	public XuggleTrackManager(XuggleTranscodeManager transcodeManager, int id) {
+		this.transcodeManager = transcodeManager;
 		this.id = id;
 	}
 	/**
@@ -85,13 +86,6 @@ public class XuggleTrackManager implements IXuggleTrackManager {
 		return encoder;
 	}
 	/**
-	 * 例外時の通知先設定(XuggleTranscodeManagerが設定するので外から見える必要なし)
-	 * @param listener
-	 */
-	public void setExceptionListener(IExceptionListener listener) {
-		this.exceptionListener = listener;
-	}
-	/**
 	 * データを設定する動作
 	 * @param packet
 	 * @throws Exception
@@ -111,12 +105,7 @@ public class XuggleTrackManager implements IXuggleTrackManager {
 	 * @param e
 	 */
 	protected void reportException(Exception e) {
-		if(exceptionListener != null) {
-			exceptionListener.exceptionCaught(e);
-		}
-		else {
-			throw new RuntimeException(e);
-		}
+		transcodeManager.reportException(e);
 	}
 	/**
 	 * 非パケット化用プログラム定義

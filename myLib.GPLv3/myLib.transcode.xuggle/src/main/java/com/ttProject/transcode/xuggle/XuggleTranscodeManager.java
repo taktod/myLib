@@ -194,7 +194,7 @@ public class XuggleTranscodeManager extends TranscodeManager implements IXuggleT
 	 */
 	@Override
 	protected ITrackManager makeTrackManager(int newId) {
-		XuggleTrackManager trackManager = new XuggleTrackManager(newId);
+		XuggleTrackManager trackManager = new XuggleTrackManager(this, newId);
 		return trackManager;
 	}
 }
