@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.transcode.ffmpeg.FfmpegTranscodeManager;
 import com.ttProject.transcode.ffmpeg.worker.DataReceiveWorker;
 
 /**
@@ -31,11 +32,13 @@ public class ProcessHandler {
 	private Process process = null;
 	/** データ受信処理 */
 	private DataReceiveWorker receiveWorker = null;
+	private final FfmpegTranscodeManager transcodeManager;
 	/**
 	 * コンストラクタ
 	 * @param port
 	 */
-	public ProcessHandler(int port) {
+	public ProcessHandler(FfmpegTranscodeManager transcodeManager, int port) {
+		this.transcodeManager = transcodeManager;
 		this.port = port;
 		this.key = UUID.randomUUID().toString();
 	}
@@ -106,7 +109,7 @@ public class ProcessHandler {
 		process = processBuilder.start();
 		logger.info("プロセスを開始しました。");
 		// 応答読み取りスレッド
-		receiveWorker = new DataReceiveWorker(Channels.newChannel(process.getInputStream()));
+		receiveWorker = new DataReceiveWorker(transcodeManager, Channels.newChannel(process.getInputStream()));
 		receiveWorker.start();
 	}
 	/**

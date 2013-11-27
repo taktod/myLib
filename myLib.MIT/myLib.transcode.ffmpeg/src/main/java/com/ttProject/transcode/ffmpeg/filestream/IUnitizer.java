@@ -10,12 +10,12 @@ import com.ttProject.media.Unit;
  * こちらは、ほぼやることなし
  * @author taktod
  */
-public interface IStreamToUnitHandler {
+public interface IUnitizer {
 	/**
 	 * ffmpegの出力byteBufferからmediaUnitを取り出す動作
 	 * @param buffer
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Unit> getUnits(List<Unit> units) throws Exception;
+	public List<Unit> getUnits(ByteBuffer buffer) throws Exception;
 }

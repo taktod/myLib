@@ -2,11 +2,16 @@ package com.ttProject.transcode.ffmpeg.worker;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.log4j.Logger;
+
+import com.ttProject.media.Unit;
+import com.ttProject.transcode.ffmpeg.FfmpegTranscodeManager;
+import com.ttProject.transcode.ffmpeg.filestream.IUnitizer;
 
 /**
  * データの受信処理
@@ -21,11 +26,16 @@ public class DataReceiveWorker implements Runnable {
 	private boolean workFlg = true;
 	/** 動作させるexecutor */
 	private ExecutorService loopExecutor = null;
+	/** データを戻す処理本体 */
+	private final FfmpegTranscodeManager transcodeManager;
+	/** byteBufferのデータをunitに戻すプログラム */
+	private IUnitizer unitizer;
 	/**
 	 * コンストラクタ
 	 * @param outputChannel
 	 */
-	public DataReceiveWorker(ReadableByteChannel outputChannel) {
+	public DataReceiveWorker(FfmpegTranscodeManager transcodeManagaer, ReadableByteChannel outputChannel) {
+		this.transcodeManager = transcodeManagaer;
 		this.outputChannel = outputChannel;
 	}
 	/**
@@ -34,6 +44,9 @@ public class DataReceiveWorker implements Runnable {
 	 */
 	public void setExecutor(ExecutorService executor) {
 		loopExecutor = executor;
+	}
+	public void setUnitizer(IUnitizer unitizer) {
+		this.unitizer = unitizer;
 	}
 	/**
 	 * 開始します
@@ -55,7 +68,9 @@ public class DataReceiveWorker implements Runnable {
 			outputChannel.read(buffer);
 			buffer.flip();
 			readFlg = buffer.remaining() != 0;
-			// bufferはここから適当なリスナーに渡す必要あり。
+			// transcodeManagerにエンコード済みデータを応答する
+			transcodeManager.process(unitizer.getUnits(buffer));
+			// unit化を実行
 			logger.info("size:" + buffer.remaining());
 			if(workFlg) {
 				if(!readFlg) {

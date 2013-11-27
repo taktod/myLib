@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffers;
 
 import com.ttProject.media.Unit;
-import com.ttProject.transcode.ffmpeg.filestream.IUnitToStreamHandler;
+import com.ttProject.transcode.ffmpeg.filestream.IDeunitizer;
 import com.ttProject.transcode.ffmpeg.process.ProcessServer;
 
 /**
@@ -23,7 +23,7 @@ public class DataSendWorker implements Runnable {
 	/** 動作サーバー */
 	private final ProcessServer server;
 	/** Unitをstreamに変換するプログラム */
-	private IUnitToStreamHandler handler = null;
+	private IDeunitizer handler = null;
 	/** 転送データソース */
 	private final LinkedBlockingQueue<Unit> dataQueue = new LinkedBlockingQueue<Unit>();
 	/** 動作させるexecutor */
@@ -48,7 +48,7 @@ public class DataSendWorker implements Runnable {
 	 * unitをstreamBufferに変換するモジュール
 	 * @param handler
 	 */
-	public void setUnitToStreamHandler(IUnitToStreamHandler handler) {
+	public void setDeunitizer(IDeunitizer handler) {
 		this.handler = handler;
 	}
 	/**

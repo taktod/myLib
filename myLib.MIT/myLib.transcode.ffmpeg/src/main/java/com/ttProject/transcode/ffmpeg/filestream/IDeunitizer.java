@@ -10,7 +10,7 @@ import com.ttProject.transcode.exception.FormatChangeException;
  * こちらは音声のgapとかについて、よく考える必要あり。
  * @author taktod
  */
-public interface IUnitToStreamHandler {
+public interface IDeunitizer {
 	/**
 	 * mediaDataの正当性を確認します。
 	 * @param unit

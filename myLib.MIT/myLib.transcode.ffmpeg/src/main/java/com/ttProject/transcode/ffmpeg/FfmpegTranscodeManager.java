@@ -2,6 +2,7 @@ package com.ttProject.transcode.ffmpeg;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -10,8 +11,8 @@ import com.ttProject.media.Manager;
 import com.ttProject.media.Unit;
 import com.ttProject.transcode.ITrackManager;
 import com.ttProject.transcode.TranscodeManager;
-import com.ttProject.transcode.ffmpeg.filestream.IStreamToUnitHandler;
-import com.ttProject.transcode.ffmpeg.filestream.IUnitToStreamHandler;
+import com.ttProject.transcode.ffmpeg.filestream.IDeunitizer;
+import com.ttProject.transcode.ffmpeg.filestream.IUnitizer;
 import com.ttProject.transcode.ffmpeg.process.ProcessHandler;
 import com.ttProject.transcode.ffmpeg.process.ProcessServer;
 
@@ -28,7 +29,7 @@ import com.ttProject.transcode.ffmpeg.process.ProcessServer;
  * これが動作の流れ的なもの
  * @author taktod
  */
-public class FfmpegTranscodeManager extends TranscodeManager{
+public class FfmpegTranscodeManager extends TranscodeManager implements IFfmpegTranscodeManager {
 	/** 動作ロガー */
 	private final Logger logger = Logger.getLogger(FfmpegTranscodeManager.class);
 	/** 動作プロセス */
@@ -41,9 +42,8 @@ public class FfmpegTranscodeManager extends TranscodeManager{
 	private ProcessServer server = null;
 	// 出力用のデータ変換が複数必要か？トラックごとにつくっておいた方がよさそう。
 	/** streamデータからそれぞれのstreamのデータを抜き出す処理(映像 + 音声なら２つ、映像 + 映像 + 音声なら３ついる) */
-	private Set<IStreamToUnitHandler> unitHandlers;
+//	private Set<IStreamToUnitHandler> unitHandlers;
 	/** streamをunitに戻すmanager */
-	private Manager<?> manager;
 	/**
 	 * 静的初期化
 	 */
@@ -84,29 +84,9 @@ public class FfmpegTranscodeManager extends TranscodeManager{
 		if(handler != null) {
 			throw new Exception("すでにhandlerは定義済みです。");
 		}
-		handler = new ProcessHandler(portNumber);
+		handler = new ProcessHandler(this, portNumber);
 		handler.setCommand(command);
 		server.addKey(handler.getKey());
-	}
-	/**
-	 * unitデータをstreamに変換するプログラムを設置する
-	 * @param handler
-	 */
-	public void setUnitToStreamHandler(IUnitToStreamHandler handler) {
-		server.getSendWorker().setUnitToStreamHandler(handler);
-	}
-	/**
-	 * unitに戻すManager動作
-	 * @param manager
-	 */
-	public void setUnitManager(Manager<?> manager) {
-		this.manager = manager;
-	}
-	/**
-	 * streamデータをunitに戻すプログラムを書いておく
-	 * @param handler
-	 */
-	public void addStreamToUnitHandler(IStreamToUnitHandler handler) {
 	}
 	/**
 	 * 変換処理実行
@@ -120,6 +100,9 @@ public class FfmpegTranscodeManager extends TranscodeManager{
 			handler.executeProcess();
 		}
 		server.getSendWorker().send(unit);
+	}
+	public void process(List<Unit> units) throws Exception {
+		
 	}
 	/**
 	 * 終了処理
@@ -138,5 +121,12 @@ public class FfmpegTranscodeManager extends TranscodeManager{
 	@Override
 	protected ITrackManager makeTrackManager(int newId) {
 		return null;
+	}
+	@Override
+	public void setDeunitizer(IDeunitizer handler) {
+		server.getSendWorker().setDeunitizer(handler);
+	}
+	@Override
+	public void setUnitizer(IUnitizer handler) {
 	}
 }
