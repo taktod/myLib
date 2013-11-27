@@ -2,14 +2,12 @@ package com.ttProject.transcode.ffmpeg.worker;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.log4j.Logger;
 
-import com.ttProject.media.Unit;
 import com.ttProject.transcode.ffmpeg.FfmpegTranscodeManager;
 import com.ttProject.transcode.ffmpeg.filestream.IUnitizer;
 

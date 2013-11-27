@@ -49,6 +49,9 @@ public class ProcessHandler {
 	public String getKey() {
 		return key;
 	}
+	public DataReceiveWorker getReceiveWorker() {
+		return receiveWorker;
+	}
 	/**
 	 * 動作コマンドを設定する
 	 * @param command

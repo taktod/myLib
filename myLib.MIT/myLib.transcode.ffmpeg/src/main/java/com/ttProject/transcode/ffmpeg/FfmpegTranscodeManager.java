@@ -15,6 +15,7 @@ import com.ttProject.transcode.ffmpeg.filestream.IDeunitizer;
 import com.ttProject.transcode.ffmpeg.filestream.IUnitizer;
 import com.ttProject.transcode.ffmpeg.process.ProcessHandler;
 import com.ttProject.transcode.ffmpeg.process.ProcessServer;
+import com.ttProject.transcode.ffmpeg.track.FfmpegTrackManager;
 
 /**
  * ffmpeg経由で変換を実行するマネージャー
@@ -120,13 +121,15 @@ public class FfmpegTranscodeManager extends TranscodeManager implements IFfmpegT
 	}
 	@Override
 	protected ITrackManager makeTrackManager(int newId) {
-		return null;
+		FfmpegTrackManager trackManager = new FfmpegTrackManager(newId);
+		return trackManager;
 	}
 	@Override
-	public void setDeunitizer(IDeunitizer handler) {
-		server.getSendWorker().setDeunitizer(handler);
+	public void setDeunitizer(IDeunitizer deunitizer) {
+		server.getSendWorker().setDeunitizer(deunitizer);
 	}
 	@Override
-	public void setUnitizer(IUnitizer handler) {
+	public void setUnitizer(IUnitizer unitizer) {
+		this.handler.getReceiveWorker().setUnitizer(unitizer);
 	}
 }

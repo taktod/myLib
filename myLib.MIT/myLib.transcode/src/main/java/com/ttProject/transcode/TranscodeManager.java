@@ -26,7 +26,7 @@ public abstract class TranscodeManager implements ITranscodeManager {
 	 * 例外発行
 	 * @param e
 	 */
-	protected void reportException(Exception e) {
+	public void reportException(Exception e) {
 		if(expListener != null) {
 			expListener.exceptionCaught(e);
 		}
