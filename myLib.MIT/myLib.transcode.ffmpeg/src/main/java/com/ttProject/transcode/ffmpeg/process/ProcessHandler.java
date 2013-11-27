@@ -1,4 +1,4 @@
-package com.ttProject.transcode.ffmpeg;
+package com.ttProject.transcode.ffmpeg.process;
 
 import java.nio.channels.Channels;
 import java.util.Map;
@@ -9,9 +9,10 @@ import org.apache.log4j.Logger;
 import com.ttProject.transcode.ffmpeg.worker.DataReceiveWorker;
 
 /**
- * 変換プロセスコントロールハンドラー
+ * 変換プロセスをコントロールするプログラム
+ * 
+ * TODO こいつの終了まわりの定義をなんとかしておく必要あり。
  * @author taktod
- *
  */
 public class ProcessHandler {
 	/** ロガー */
@@ -26,8 +27,6 @@ public class ProcessHandler {
 	private String processCommand = null;
 	/** コマンド動作時に追加する追加環境変数 */
 	private Map<String, String> envExtra = null;
-	/** データ受け取り時のイベント処理 */
-//	private final Set<IConvertListener> listeners = new HashSet<IConvertListener>();
 	/** 動作プロセス */
 	private Process process = null;
 	/** データ受信処理 */
@@ -36,7 +35,7 @@ public class ProcessHandler {
 	 * コンストラクタ
 	 * @param port
 	 */
-	protected ProcessHandler(int port) {
+	public ProcessHandler(int port) {
 		this.port = port;
 		this.key = UUID.randomUUID().toString();
 	}
@@ -44,7 +43,7 @@ public class ProcessHandler {
 	 * キー参照
 	 * @return
 	 */
-	protected String getKey() {
+	public String getKey() {
 		return key;
 	}
 	/**
@@ -71,7 +70,7 @@ public class ProcessHandler {
 	/**
 	 * プロセスの実行
 	 */
-	protected void executeProcess() throws Exception {
+	public void executeProcess() throws Exception {
 		if(processCommand == null) {
 			logger.error("process用のコマンドが存在していないのに、動作させようとしました。");
 			throw new Exception("process用のコマンドが設定されていません。");
