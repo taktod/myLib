@@ -10,4 +10,11 @@
   <name>myLib.media.vp6</name>
   <description>vp6のフォーマット解析
 とりあえず縦横サイズを取り出したい。</description>
+  <dependencies>
+  	<dependency>
+  		<groupId>com.ttProject</groupId>
+  		<artifactId>myLib.media</artifactId>
+  		<version>0.0.2-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
 </project>
