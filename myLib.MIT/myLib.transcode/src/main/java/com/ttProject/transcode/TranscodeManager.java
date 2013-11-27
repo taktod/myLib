@@ -19,7 +19,7 @@ public abstract class TranscodeManager implements ITranscodeManager {
 	 * 例外捕捉
 	 */
 	@Override
-	public void addExceptionListener(IExceptionListener listener) {
+	public void setExceptionListener(IExceptionListener listener) {
 		expListener = listener;
 	}
 	/**
