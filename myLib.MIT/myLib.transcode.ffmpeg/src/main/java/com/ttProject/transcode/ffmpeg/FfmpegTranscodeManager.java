@@ -3,11 +3,10 @@ package com.ttProject.transcode.ffmpeg;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
 import java.util.List;
-import java.util.Set;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.ttProject.media.Manager;
 import com.ttProject.media.Unit;
 import com.ttProject.transcode.ITrackManager;
 import com.ttProject.transcode.TranscodeManager;
@@ -103,7 +102,14 @@ public class FfmpegTranscodeManager extends TranscodeManager implements IFfmpegT
 		server.getSendWorker().send(unit);
 	}
 	public void process(List<Unit> units) throws Exception {
-		
+		// このデータをすべてのTrackManagerに渡したい。
+		for(Entry<Integer, ITrackManager> entry : getTrackManagers().entrySet()) {
+			FfmpegTrackManager trackManager = (FfmpegTrackManager)entry.getValue();
+			for(Unit unit : units) {
+				trackManager.applyData(unit);
+			}
+			trackManager.commit();
+		}
 	}
 	/**
 	 * 終了処理
