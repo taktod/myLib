@@ -95,6 +95,7 @@ public class FlvPacketizer {
 				return getSpeexPacket(lastAudioTag, packet);
 			case PCM:
 			case ADPCM:
+			case LPCM:
 			case G711_A:
 			case G711_U:
 			case RESERVED:
@@ -401,6 +402,7 @@ public class FlvPacketizer {
 			break;
 		case PCM:
 		case ADPCM:
+		case LPCM:
 		case G711_A:
 		case G711_U:
 		case RESERVED:
@@ -483,6 +485,7 @@ public class FlvPacketizer {
 			return coder.getCodecID() == ID.CODEC_ID_NELLYMOSER;
 		case PCM:
 		case ADPCM:
+		case LPCM:
 		case G711_A:
 		case G711_U:
 		case RESERVED:

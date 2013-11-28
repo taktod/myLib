@@ -73,10 +73,10 @@ public class AudioTag extends Tag {
 		byte tagByte = 0x00;
 		// codec判定
 		switch(codec) {
-//		case PCM: tagByte = 0x00;
+		case PCM: 				tagByte = (byte)0x00;break;
 		case ADPCM:				tagByte = (byte)0x12;break;
 		case MP3: 				tagByte = (byte)0x22;break;
-		case PCM: 				tagByte = (byte)0x32;break; // pcmの場合は2がはいっているのはおかしいかも？
+		case LPCM: 				tagByte = (byte)0x32;break; // pcmの場合は2がはいっているのはおかしいかも？
 		case NELLY_16: 			tagByte = (byte)0x42;break;
 		case NELLY_8: 			tagByte = (byte)0x52;break;
 		case NELLY: 			tagByte = (byte)0x62;break;

@@ -31,7 +31,7 @@ public enum CodecType {
 	// 映像用コーデック
 	JPEG,H263,SCREEN,ON2VP6,ON2VP6_ALPHA,SCREEN_V2,AVC,
 	// 音声用コーデック
-	ADPCM,MP3,PCM,NELLY_16,NELLY_8,NELLY,G711_A,G711_U,RESERVED,AAC,SPEEX,MP3_8,DEVICE_SPECIFIC;
+	PCM,ADPCM,MP3,LPCM,NELLY_16,NELLY_8,NELLY,G711_A,G711_U,RESERVED,AAC,SPEEX,MP3_8,DEVICE_SPECIFIC;
 	/**
 	 * 音声用コーデック判定
 	 * @param tagByte
@@ -40,9 +40,9 @@ public enum CodecType {
 	public static CodecType getAudioCodecType(byte tagByte) {
 		switch((tagByte & 0xFF) >>> 4) {
 		case 0:  return PCM;
-		case 1:  return ADPCM;
+		case 1:  return ADPCM; // 1byte startPos? 2byte or 4byte 16bit?
 		case 2:  return MP3;
-		case 3:  return PCM;
+		case 3:  return LPCM; // little endian pcm
 		case 4:  return NELLY_16;
 		case 5:  return NELLY_8;
 		case 6:  return NELLY;

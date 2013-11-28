@@ -72,6 +72,7 @@ public class FlvAudioPacketizer implements IPacketizer {
 				dsi = null;
 				return getSpeexPacket(lastAudioTag, packet);
 			case PCM:
+			case LPCM:
 			case ADPCM:
 			case G711_A:
 			case G711_U:
@@ -236,6 +237,7 @@ public class FlvAudioPacketizer implements IPacketizer {
 			break;
 		case PCM:
 		case ADPCM:
+		case LPCM:
 		case G711_A:
 		case G711_U:
 		case RESERVED:
