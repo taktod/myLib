@@ -40,76 +40,6 @@ public class SetupForTest {
 	private int videoCounter = 0;
 
 	/**
-	 * ラの音のaudioデータをつくって応答する。
-	 * @return
-	 */
-	private IAudioSamples samples() {
-		// とりあえずラの音で1024サンプル数つくることにする。
-		int samplingRate = 44100;
-		int tone = 440;
-		int bit = 16;
-		int channels = 2;
-		int samplesNum = 1024;
-		ByteBuffer buffer = ByteBuffer.allocate((int)samplesNum * bit * channels / 8);
-		double rad = tone * 2 * Math.PI / samplingRate; // 各deltaごとの回転数
-		double max = (1 << (bit - 2)) - 1; // 振幅の大きさ(音の大きさ)
-		buffer.order(ByteOrder.LITTLE_ENDIAN); // xuggleで利用するデータはlittleEndianなのでlittleEndianを使うようにする。
-		long startPos = 1000 * audioCounter / 44100 * 1000;
-		for(int i = 0;i < samplesNum / 8;i ++, audioCounter ++) {
-			short data = (short)(Math.sin(rad * audioCounter) * max);
-			for(int j = 0;j < channels;j ++) {
-				buffer.putShort(data);
-			}
-		}
-		buffer.flip();
-		int snum = (int)(buffer.remaining() * 8/bit/channels);
-		IAudioSamples samples = IAudioSamples.make(snum, channels, Format.FMT_S16);
-		samples.getData().put(buffer.array(), 0, 0, buffer.remaining());
-		samples.setComplete(true, snum, samplingRate, channels, Format.FMT_S16, 0);
-		// このtimestampの設定は必要っぽい
-		samples.setTimeStamp(startPos);
-		// こっちはいらないっぽい。ただし別の関数っぽいので、やっとくに超したことはなさそうな・・・
-		samples.setPts(startPos);
-		return samples;
-	}
-	/**
-	 * 時間をベースにデータを応答してみる。
-	 * @return
-	 */
-	private IVideoPicture image() {
-		// とりあえずランダムな数値の表示されている画像をつくることにする。10fps
-		BufferedImage base = new BufferedImage(320, 240, BufferedImage.TYPE_3BYTE_BGR);
-		String message = Integer.toString((int)(Math.random() * 1000));
-		Graphics g = base.getGraphics();
-		g.setColor(Color.white);
-		g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 24));
-		g.drawString(message, 100, 100);
-		g.dispose();
-		IConverter converter = ConverterFactory.createConverter(base, IPixelFormat.Type.YUV420P);
-		IVideoPicture picture = converter.toPicture(base, 25000 * videoCounter);
-		// この時点ですでにtimestampは入力済みっぽいので、setPtsする必要はなさそう。
-		picture.setPts(25000 * videoCounter);
-		videoCounter ++;
-		return picture;
-	}
-	/**
-	 * ファイルを作成する
-	 * @param path
-	 * @param file
-	 * @return
-	 */
-	public String getTargetFile(String file) {
-		String[] data = file.split("/");
-		File f = new File(".");
-		f = new File(f.getAbsolutePath());
-		f = f.getParentFile().getParentFile();
-		for(String path : data) {
-			f = new File(f.getAbsolutePath(), path);
-		}
-		f.getParentFile().mkdirs();
-		return f.getAbsolutePath();
-	}
-	/**
 	 * mp3のテスト用データを作成する。
 	 * @throws Exception
 	 */
@@ -123,14 +53,27 @@ public class SetupForTest {
 		if(container.open(getTargetFile("../myLib.MIT/myLib.media.mp3/src/test/resources/test.mp3"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
-		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_MP3);
-		IStreamCoder audioEncoder = stream.getStreamCoder();
-		audioEncoder.setSampleRate(44100);
-		audioEncoder.setChannels(2);
-		audioEncoder.setBitRate(96000);
-
+		IStreamCoder audioEncoder = mp3(container);
 		processConvert(container, null, audioEncoder);
-
+		audioEncoder.close();
+		container.close();
+	}
+	/**
+	 * adpcmのflvを作成します
+	 * @throws Exception
+	 */
+//	@Test
+	public void adpcmSetup() throws Exception {
+		logger.info("adpcmのテスト用データを作成する。");
+		audioCounter = 0;
+		videoCounter = 0;
+		// flvデータを作ります。
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("../test.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("開けませんでした");
+		}
+		IStreamCoder audioEncoder = adpcm(container);
+		processConvert(container, null, audioEncoder);
 		audioEncoder.close();
 		container.close();
 	}
@@ -148,14 +91,8 @@ public class SetupForTest {
 		if(container.open(getTargetFile("../myLib.MIT/myLib.media.aac/src/test/resources/test.aac"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
-		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_AAC);
-		IStreamCoder audioEncoder = stream.getStreamCoder();
-		audioEncoder.setSampleRate(44100);
-		audioEncoder.setChannels(2);
-		audioEncoder.setBitRate(96000);
-
+		IStreamCoder audioEncoder = aac(container);
 		processConvert(container, null, audioEncoder);
-
 		audioEncoder.close();
 		container.close();
 	}
@@ -166,50 +103,14 @@ public class SetupForTest {
 	@Test
 	public void h264Setup() throws Exception {
 		logger.info("h264のテスト用データを作成する。");
-		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
 		IContainer container = IContainer.make();
 		if(container.open(getTargetFile("../myLib.MIT/myLib.media.h264/src/test/resources/test.flv"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
-		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_H264);
-		IStreamCoder videoEncoder = stream.getStreamCoder();
-		IRational frameRate = IRational.make(15, 1); // 15fps
-		videoEncoder.setNumPicturesInGroupOfPictures(5); // gopを5にしておく。keyframeが5枚ごとになる。
-		
-		videoEncoder.setBitRate(650000); // 650kbps
-		videoEncoder.setBitRateTolerance(9000);
-		videoEncoder.setWidth(320);
-		videoEncoder.setHeight(240);
-		videoEncoder.setGlobalQuality(10);
-		videoEncoder.setFrameRate(frameRate);
-		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
-		videoEncoder.setProperty("level", "30");
-		videoEncoder.setProperty("coder", "0");
-		videoEncoder.setProperty("qmin", "10");
-		videoEncoder.setProperty("bf", "0");
-		videoEncoder.setProperty("wprefp", "0");
-		videoEncoder.setProperty("cmp", "+chroma");
-		videoEncoder.setProperty("partitions", "-parti8x8+parti4x4+partp8x8+partp4x4-partb8x8");
-		videoEncoder.setProperty("me_method", "hex");
-		videoEncoder.setProperty("subq", "5");
-		videoEncoder.setProperty("me_range", "16");
-		videoEncoder.setProperty("keyint_min", "25");
-		videoEncoder.setProperty("sc_threshold", "40");
-		videoEncoder.setProperty("i_qfactor", "0.71");
-		videoEncoder.setProperty("b_strategy", "0");
-		videoEncoder.setProperty("qcomp", "0.6");
-		videoEncoder.setProperty("qmax", "30");
-		videoEncoder.setProperty("qdiff", "4");
-		videoEncoder.setProperty("directpred", "0");
-		videoEncoder.setProperty("profile", "main");
-		videoEncoder.setProperty("cqp", "0");
-		videoEncoder.setFlag(Flags.FLAG_LOOP_FILTER, true);
-		videoEncoder.setFlag(Flags.FLAG_CLOSED_GOP, true);
-
+		IStreamCoder videoEncoder = h264(container);
 		processConvert(container, videoEncoder, null);
-
 		videoEncoder.close();
 		container.close();
 	}
@@ -227,49 +128,9 @@ public class SetupForTest {
 		if(container.open(getTargetFile("../myLib.MIT/myLib.media.flv/src/test/resources/test.flv"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
-		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_H264);
-		IStreamCoder videoEncoder = stream.getStreamCoder();
-		IRational frameRate = IRational.make(15, 1); // 15fps
-		videoEncoder.setNumPicturesInGroupOfPictures(5); // gopを5にしておく。keyframeが5枚ごとになる。
-		
-		videoEncoder.setBitRate(650000); // 650kbps
-		videoEncoder.setBitRateTolerance(9000);
-		videoEncoder.setWidth(320);
-		videoEncoder.setHeight(240);
-		videoEncoder.setGlobalQuality(10);
-		videoEncoder.setFrameRate(frameRate);
-		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
-		videoEncoder.setProperty("level", "30");
-		videoEncoder.setProperty("coder", "0");
-		videoEncoder.setProperty("qmin", "10");
-		videoEncoder.setProperty("bf", "0");
-		videoEncoder.setProperty("wprefp", "0");
-		videoEncoder.setProperty("cmp", "+chroma");
-		videoEncoder.setProperty("partitions", "-parti8x8+parti4x4+partp8x8+partp4x4-partb8x8");
-		videoEncoder.setProperty("me_method", "hex");
-		videoEncoder.setProperty("subq", "5");
-		videoEncoder.setProperty("me_range", "16");
-		videoEncoder.setProperty("keyint_min", "25");
-		videoEncoder.setProperty("sc_threshold", "40");
-		videoEncoder.setProperty("i_qfactor", "0.71");
-		videoEncoder.setProperty("b_strategy", "0");
-		videoEncoder.setProperty("qcomp", "0.6");
-		videoEncoder.setProperty("qmax", "30");
-		videoEncoder.setProperty("qdiff", "4");
-		videoEncoder.setProperty("directpred", "0");
-		videoEncoder.setProperty("profile", "main");
-		videoEncoder.setProperty("cqp", "0");
-		videoEncoder.setFlag(Flags.FLAG_LOOP_FILTER, true);
-		videoEncoder.setFlag(Flags.FLAG_CLOSED_GOP, true);
-
-		stream = container.addNewStream(ICodec.ID.CODEC_ID_AAC);
-		IStreamCoder audioEncoder = stream.getStreamCoder();
-		audioEncoder.setSampleRate(44100);
-		audioEncoder.setChannels(2);
-		audioEncoder.setBitRate(96000);
-
+		IStreamCoder videoEncoder = h264(container);
+		IStreamCoder audioEncoder = aac(container);
 		processConvert(container, videoEncoder, audioEncoder);
-
 		audioEncoder.close();
 		videoEncoder.close();
 		container.close();
@@ -288,50 +149,9 @@ public class SetupForTest {
 		if(container.open(getTargetFile("../myLib.MIT/myLib.media.mpegts/src/test/resources/test.ts"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
-		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_H264);
-		IStreamCoder videoEncoder = stream.getStreamCoder();
-		IRational frameRate = IRational.make(15, 1); // 15fps
-		videoEncoder.setNumPicturesInGroupOfPictures(5); // gopを5にしておく。keyframeが5枚ごとになる。
-		
-		videoEncoder.setBitRate(650000); // 650kbps
-		videoEncoder.setBitRateTolerance(9000);
-		videoEncoder.setPixelType(IPixelFormat.Type.YUV420P);
-		videoEncoder.setWidth(320);
-		videoEncoder.setHeight(240);
-		videoEncoder.setGlobalQuality(10);
-		videoEncoder.setFrameRate(frameRate);
-		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
-		videoEncoder.setProperty("level", "30");
-		videoEncoder.setProperty("coder", "0");
-		videoEncoder.setProperty("qmin", "10");
-		videoEncoder.setProperty("bf", "0");
-		videoEncoder.setProperty("wprefp", "0");
-		videoEncoder.setProperty("cmp", "+chroma");
-		videoEncoder.setProperty("partitions", "-parti8x8+parti4x4+partp8x8+partp4x4-partb8x8");
-		videoEncoder.setProperty("me_method", "hex");
-		videoEncoder.setProperty("subq", "5");
-		videoEncoder.setProperty("me_range", "16");
-		videoEncoder.setProperty("keyint_min", "25");
-		videoEncoder.setProperty("sc_threshold", "40");
-		videoEncoder.setProperty("i_qfactor", "0.71");
-		videoEncoder.setProperty("b_strategy", "0");
-		videoEncoder.setProperty("qcomp", "0.6");
-		videoEncoder.setProperty("qmax", "30");
-		videoEncoder.setProperty("qdiff", "4");
-		videoEncoder.setProperty("directpred", "0");
-		videoEncoder.setProperty("profile", "main");
-		videoEncoder.setProperty("cqp", "0");
-		videoEncoder.setFlag(Flags.FLAG_LOOP_FILTER, true);
-		videoEncoder.setFlag(Flags.FLAG_CLOSED_GOP, true);
-
-		stream = container.addNewStream(ICodec.ID.CODEC_ID_AAC);
-		IStreamCoder audioEncoder = stream.getStreamCoder();
-		audioEncoder.setSampleRate(44100);
-		audioEncoder.setChannels(2);
-		audioEncoder.setBitRate(96000);
-		
+		IStreamCoder videoEncoder = h264(container);
+		IStreamCoder audioEncoder = aac(container);
 		processConvert(container, videoEncoder, audioEncoder);
-
 		audioEncoder.close();
 		videoEncoder.close();
 		container.close();
@@ -350,6 +170,195 @@ public class SetupForTest {
 		if(container.open(getTargetFile("../myLib.MIT/myLib.media.mp4/src/test/resources/test.mp4"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
+		IStreamCoder videoEncoder = h264(container);
+		IStreamCoder audioEncoder = aac(container);
+		processConvert(container, videoEncoder, audioEncoder);
+		audioEncoder.close();
+		videoEncoder.close();
+		container.close();
+	}
+	/**
+	 * mkvのテスト用データを生成する。
+	 * @throws Exception
+	 */
+	@Test
+	public void webmSetup() throws Exception {
+		logger.info("webmのテスト用データを作成する。");
+		audioCounter = 0;
+		videoCounter = 0;
+		// flvデータを作ります。
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("../myLib.MIT/myLib.media.mkv/src/test/resources/test.webm"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("開けませんでした");
+		}
+		IStreamCoder videoEncoder = vp8(container);
+		IStreamCoder audioEncoder = vorbis(container);
+		processConvert(container, videoEncoder, audioEncoder);
+		audioEncoder.close();
+		videoEncoder.close();
+		container.close();
+	}
+	/**
+	 * flv1のテスト用データを作成する。
+	 * @throws Exception
+	 */
+	@Test
+	public void flv1Setup() throws Exception {
+		logger.info("flv1のテスト用データを作成する。");
+		videoCounter = 0;
+		// flvデータを作ります。
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("../myLib.MIT/myLib.media.flv1/src/test/resources/test.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("開けませんでした");
+		}
+		IStreamCoder videoEncoder = flv1(container);
+		processConvert(container, videoEncoder, null);
+		videoEncoder.close();
+		container.close();
+	}
+	/**
+	 * mp3Chunkのテスト用データを作成する。
+	 * @throws Exception
+	 */
+	@Test
+	public void mp3ChunkSetup() throws Exception {
+		logger.info("mp3Chunkのテスト用データを作成する。");
+		audioCounter = 0;
+		videoCounter = 0;
+		// flvデータを作ります。
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("../myLib.MIT/myLib.chunk.mp3/src/test/resources/test.mp3"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("開けませんでした");
+		}
+		IStreamCoder audioEncoder = mp3(container);
+		processConvert(container, null, audioEncoder);
+		audioEncoder.close();
+		container.close();
+	}
+	/**
+	 * aacChunkのテスト用データを作成する。
+	 * @throws Exception
+	 */
+	@Test
+	public void aacChunkSetup() throws Exception {
+		logger.info("aacChunkのテスト用データを作成する。");
+		audioCounter = 0;
+		videoCounter = 0;
+		// aacデータを作ります。
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("../myLib.MIT/myLib.chunk.aac/src/test/resources/test.aac"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("開けませんでした");
+		}
+		IStreamCoder audioEncoder = aac(container);
+		processConvert(container, null, audioEncoder);
+		audioEncoder.close();
+		container.close();
+	}
+	/**
+	 * mpegtsChunkのテスト用データを作成する。
+	 * @throws Exception
+	 */
+	@Test
+	public void mpegtsChunkSetup() throws Exception {
+		logger.info("mpegtsChunkのテスト用データを作成する。");
+		audioCounter = 0;
+		videoCounter = 0;
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("../myLib.MIT/myLib.chunk.mpegts/src/test/resources/test.ts"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("開けませんでした");
+		}
+		IStreamCoder videoEncoder = h264(container);
+		IStreamCoder audioEncoder = aac(container);
+		processConvert(container, videoEncoder, audioEncoder);
+		audioEncoder.close();
+		videoEncoder.close();
+		container.close();
+
+		audioCounter = 0;
+		videoCounter = 0;
+		container = IContainer.make();
+		if(container.open(getTargetFile("../myLib.MIT/myLib.chunk.mpegts/src/test/resources/test.noaudio.ts"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("開けませんでした");
+		}
+		videoEncoder = h264(container);
+//		audioEncoder = aac(container);
+		processConvert(container, videoEncoder, null);
+//		audioEncoder.close();
+		videoEncoder.close();
+		container.close();
+
+		audioCounter = 0;
+		videoCounter = 0;
+		container = IContainer.make();
+		if(container.open(getTargetFile("../myLib.MIT/myLib.chunk.mpegts/src/test/resources/test.novideo.ts"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("開けませんでした");
+		}
+//		videoEncoder = h264(container);
+		audioEncoder = aac(container);
+		processConvert(container, null, audioEncoder);
+		audioEncoder.close();
+//		videoEncoder.close();
+		container.close();
+	}
+	// 以下エンコードの設定補助
+	/**
+	 * mp3
+	 * @param container
+	 * @return
+	 */
+	private IStreamCoder mp3(IContainer container) {
+		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_MP3);
+		IStreamCoder audioEncoder = stream.getStreamCoder();
+		audioEncoder.setSampleRate(44100);
+		audioEncoder.setChannels(2);
+		audioEncoder.setBitRate(96000);
+		return audioEncoder;
+	}
+	/**
+	 * adpcm
+	 * @param container
+	 * @return
+	 */
+	private IStreamCoder adpcm(IContainer container) {
+		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_ADPCM_SWF);
+		IStreamCoder audioEncoder = stream.getStreamCoder();
+		audioEncoder.setSampleRate(44100);
+		audioEncoder.setChannels(2);
+		audioEncoder.setBitRate(96000);
+		return audioEncoder;
+	}
+	/**
+	 * aac
+	 * @param container
+	 * @return
+	 */
+	private IStreamCoder aac(IContainer container) {
+		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_AAC);
+		IStreamCoder audioEncoder = stream.getStreamCoder();
+		audioEncoder.setSampleRate(44100);
+		audioEncoder.setChannels(2);
+		audioEncoder.setBitRate(96000);
+		return audioEncoder;
+	}
+	/**
+	 * vorbis
+	 * @param container
+	 * @return
+	 */
+	private IStreamCoder vorbis(IContainer container) {
+		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_VORBIS);
+		IStreamCoder audioEncoder = stream.getStreamCoder();
+		audioEncoder.setSampleRate(44100);
+		audioEncoder.setChannels(2);
+		audioEncoder.setBitRate(96000);
+		return audioEncoder;
+	}
+	/**
+	 * h264
+	 * @param container
+	 * @return
+	 */
+	private IStreamCoder h264(IContainer container) {
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_H264);
 		IStreamCoder videoEncoder = stream.getStreamCoder();
 		IRational frameRate = IRational.make(15, 1); // 15fps
@@ -357,7 +366,6 @@ public class SetupForTest {
 		
 		videoEncoder.setBitRate(650000); // 650kbps
 		videoEncoder.setBitRateTolerance(9000);
-		videoEncoder.setPixelType(IPixelFormat.Type.YUV420P);
 		videoEncoder.setWidth(320);
 		videoEncoder.setHeight(240);
 		videoEncoder.setGlobalQuality(10);
@@ -385,33 +393,14 @@ public class SetupForTest {
 		videoEncoder.setProperty("cqp", "0");
 		videoEncoder.setFlag(Flags.FLAG_LOOP_FILTER, true);
 		videoEncoder.setFlag(Flags.FLAG_CLOSED_GOP, true);
-		stream = container.addNewStream(ICodec.ID.CODEC_ID_MP3);
-		IStreamCoder audioEncoder = stream.getStreamCoder();
-		audioEncoder.setSampleRate(44100);
-		audioEncoder.setChannels(2);
-		audioEncoder.setBitRate(96000);
-
-		processConvert(container, videoEncoder, audioEncoder);
-
-		audioEncoder.close();
-		videoEncoder.close();
-		container.close();
+		return videoEncoder;
 	}
 	/**
-	 * mkvのテスト用データを生成する。
-	 * @throws Exception
+	 * vp8
+	 * @param container
+	 * @return
 	 */
-	@Test
-	public void webmSetup() throws Exception {
-		logger.info("mkvのテスト用データを作成する。");
-		audioCounter = 0;
-		videoCounter = 0;
-		// flvデータを作ります。
-		IContainer container = IContainer.make();
-		if(container.open(getTargetFile("../myLib.MIT/myLib.media.mkv/src/test/resources/test.webm"), IContainer.Type.WRITE, null) < 0) {
-			throw new Exception("開けませんでした");
-		}
-		
+	private IStreamCoder vp8(IContainer container) {
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_VP8);
 		IStreamCoder videoEncoder = stream.getStreamCoder();
 		IRational frameRate = IRational.make(15, 1); // 15fps
@@ -423,26 +412,36 @@ public class SetupForTest {
 		videoEncoder.setGlobalQuality(10);
 		videoEncoder.setFrameRate(frameRate);
 		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
-
-		stream = container.addNewStream(ICodec.ID.CODEC_ID_VORBIS);
-		IStreamCoder audioEncoder = stream.getStreamCoder();
-		audioEncoder.setSampleRate(44100);
-		audioEncoder.setChannels(2);
-		audioEncoder.setBitRate(96000);
-		
-		processConvert(container, videoEncoder, audioEncoder);
-		
-		audioEncoder.close();
-		videoEncoder.close();
-		container.close();
+		return videoEncoder;
 	}
+	/**
+	 * flv1
+	 * @return
+	 */
+	private IStreamCoder flv1(IContainer container) {
+		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_FLV1);
+		IStreamCoder videoEncoder = stream.getStreamCoder();
+		IRational frameRate = IRational.make(15, 1); // 15fps
+		videoEncoder.setNumPicturesInGroupOfPictures(5); // gopを5にしておく。keyframeが5枚ごとになる。
+		videoEncoder.setBitRate(650000); // 650kbps
+		videoEncoder.setBitRateTolerance(9000);
+		videoEncoder.setWidth(320);
+		videoEncoder.setHeight(240);
+		videoEncoder.setGlobalQuality(10);
+		videoEncoder.setFrameRate(frameRate);
+		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
+		return videoEncoder;
+	}
+	
+	
+	
 	/**
 	 * 変換の基幹部分を実行する動作
 	 * @param container
 	 * @param videoEncoder
 	 * @param audioEncoder
 	 */
-	public void processConvert(IContainer container, IStreamCoder videoEncoder, IStreamCoder audioEncoder) throws Exception {
+	private void processConvert(IContainer container, IStreamCoder videoEncoder, IStreamCoder audioEncoder) throws Exception {
 		IVideoResampler videoResampler = null;
 		IAudioResampler audioResampler = null;
 		if(videoEncoder != null) {
@@ -576,5 +575,75 @@ public class SetupForTest {
 			throw new Exception("tailerデータの書き込みが失敗しました。");
 		}
 		// おわり
+	}
+	/**
+	 * ラの音のaudioデータをつくって応答する。
+	 * @return
+	 */
+	private IAudioSamples samples() {
+		// とりあえずラの音で1024サンプル数つくることにする。
+		int samplingRate = 44100;
+		int tone = 440;
+		int bit = 16;
+		int channels = 2;
+		int samplesNum = 1024;
+		ByteBuffer buffer = ByteBuffer.allocate((int)samplesNum * bit * channels / 8);
+		double rad = tone * 2 * Math.PI / samplingRate; // 各deltaごとの回転数
+		double max = (1 << (bit - 2)) - 1; // 振幅の大きさ(音の大きさ)
+		buffer.order(ByteOrder.LITTLE_ENDIAN); // xuggleで利用するデータはlittleEndianなのでlittleEndianを使うようにする。
+		long startPos = 1000 * audioCounter / 44100 * 1000;
+		for(int i = 0;i < samplesNum / 8;i ++, audioCounter ++) {
+			short data = (short)(Math.sin(rad * audioCounter) * max);
+			for(int j = 0;j < channels;j ++) {
+				buffer.putShort(data);
+			}
+		}
+		buffer.flip();
+		int snum = (int)(buffer.remaining() * 8/bit/channels);
+		IAudioSamples samples = IAudioSamples.make(snum, channels, Format.FMT_S16);
+		samples.getData().put(buffer.array(), 0, 0, buffer.remaining());
+		samples.setComplete(true, snum, samplingRate, channels, Format.FMT_S16, 0);
+		// このtimestampの設定は必要っぽい
+		samples.setTimeStamp(startPos);
+		// こっちはいらないっぽい。ただし別の関数っぽいので、やっとくに超したことはなさそうな・・・
+		samples.setPts(startPos);
+		return samples;
+	}
+	/**
+	 * 時間をベースにデータを応答してみる。
+	 * @return
+	 */
+	private IVideoPicture image() {
+		// とりあえずランダムな数値の表示されている画像をつくることにする。10fps
+		BufferedImage base = new BufferedImage(320, 240, BufferedImage.TYPE_3BYTE_BGR);
+		String message = Integer.toString((int)(Math.random() * 1000));
+		Graphics g = base.getGraphics();
+		g.setColor(Color.white);
+		g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 24));
+		g.drawString(message, 100, 100);
+		g.dispose();
+		IConverter converter = ConverterFactory.createConverter(base, IPixelFormat.Type.YUV420P);
+		IVideoPicture picture = converter.toPicture(base, 25000 * videoCounter);
+		// この時点ですでにtimestampは入力済みっぽいので、setPtsする必要はなさそう。
+		picture.setPts(25000 * videoCounter);
+		videoCounter ++;
+		return picture;
+	}
+	/**
+	 * ファイルを作成する
+	 * @param path
+	 * @param file
+	 * @return
+	 */
+	private String getTargetFile(String file) {
+		String[] data = file.split("/");
+		File f = new File(".");
+		f = new File(f.getAbsolutePath());
+		f = f.getParentFile().getParentFile();
+		for(String path : data) {
+			f = new File(f.getAbsolutePath(), path);
+		}
+		f.getParentFile().mkdirs();
+		return f.getAbsolutePath();
 	}
 }
