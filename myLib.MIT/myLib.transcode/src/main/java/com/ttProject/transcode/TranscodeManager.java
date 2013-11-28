@@ -35,8 +35,12 @@ public abstract class TranscodeManager implements ITranscodeManager {
 		}
 	}
 	/**
-	 * trackManagerを取得します
+	 * trackManagerを生成
 	 * @return
+	 */
+	protected abstract ITrackManager makeTrackManager(int newId);
+	/**
+	 * trackManagerを取得します
 	 */
 	@Override
 	public ITrackManager getTrackManager(int id) {
@@ -47,8 +51,6 @@ public abstract class TranscodeManager implements ITranscodeManager {
 	}
 	/**
 	 * 新しいtrackManagerを生成します
-	 * @return
-	 * @throws Exception
 	 */
 	@Override
 	public ITrackManager addNewTrackManager() throws Exception {
@@ -61,13 +63,7 @@ public abstract class TranscodeManager implements ITranscodeManager {
 		return trackManager;
 	}
 	/**
-	 * 各TranscodeManager用のtrackManagerを作成する動作
-	 * @param newId
-	 * @return
-	 */
-	protected abstract ITrackManager makeTrackManager(int newId);
-	/**
-	 * trackManager全体を参照する
+	 * マネージャーを参照します
 	 * @return
 	 */
 	protected Map<Integer, ITrackManager> getTrackManagers() {

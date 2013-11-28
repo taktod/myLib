@@ -101,12 +101,17 @@ public class FfmpegTranscodeManager extends TranscodeManager implements IFfmpegT
 		}
 		server.getSendWorker().send(unit);
 	}
-	public void process(List<Unit> units) throws Exception {
+	public void process(List<?> units) throws Exception {
+		if(units == null) {
+			return;
+		}
 		// このデータをすべてのTrackManagerに渡したい。
 		for(Entry<Integer, ITrackManager> entry : getTrackManagers().entrySet()) {
 			FfmpegTrackManager trackManager = (FfmpegTrackManager)entry.getValue();
-			for(Unit unit : units) {
-				trackManager.applyData(unit);
+			for(Object obj : units) {
+				if(obj instanceof Unit) {
+					trackManager.applyData((Unit)obj);
+				}
 			}
 			trackManager.commit();
 		}
