@@ -32,7 +32,7 @@ public class FileTranscodeTest {
 	/**
 	 * 動作テスト
 	 */
-	@Test
+//	@Test
 	public void test() {
 		IFileReadChannel source = null;
 		IFfmpegTranscodeManager transcodeManager = null;
