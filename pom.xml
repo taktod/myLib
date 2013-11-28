@@ -16,6 +16,7 @@
   </parent>
   <modules>
     <module>myLib.GPLv3/myLib.setup</module>
+    <module>myLib.MIT/myLib.productHelper</module>
     <module>myLib.MIT/myLib.channels</module>
     <module>myLib.MIT/myLib.util</module>
     <module>myLib.MIT/myLib.packet</module>

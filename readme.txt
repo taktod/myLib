@@ -10,15 +10,13 @@
 
 下準備：
 
-1:maven2(maven3でもOK)とjava1.6以降、gitを準備します。
+1:maven3とjava1.6以降、gitを準備します。
+maven2でも動作しますが、remoteリポジトリの設定が合いません。
 2:myLibをcloneしてきます。
  $ git clone git://github.com/taktod/myLib.git
-3:myLib.m2eHelperのライブラリをインストールします
- $ cd myLib/myLib.m2eHelper
- $ mvn install
-4:myLibをいれます。
- $ cd ..
- $ mvn install
+3:myLibをコンパイルします。
+ $ cd myLib
+ $ mvn package install
 
 使い方：
 
@@ -72,6 +70,7 @@
  myLib.MIT/myLib.chunk.aac:aacベースのhttpLiveStreaming用
  myLib.MIT/myLib.transcode:変換支援
  myLib.MIT/myLib.transcode.ffmpeg:ffmpegベースの変換
+ myLib.MIT/myLib.transcode.ffmpeg.flv:flv読み込み支援
  myLib.GPLv3/myLib.transcode.xuggle:xuggleベースの変換
  myLib.GPLv3/myLib.transcode.xuggle.flv:flv読み込み支援
  myLib.GPLv3/myLib.transcode.xuggle.h264:h264読み込み支援
