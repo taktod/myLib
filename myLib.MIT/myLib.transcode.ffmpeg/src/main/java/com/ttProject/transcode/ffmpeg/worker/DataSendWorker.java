@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffers;
 
 import com.ttProject.media.Unit;
-import com.ttProject.transcode.ffmpeg.filestream.IDeunitizer;
 import com.ttProject.transcode.ffmpeg.process.ProcessServer;
+import com.ttProject.transcode.ffmpeg.unit.IDeunitizer;
 
 /**
  * データを送り込みます。

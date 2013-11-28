@@ -1,8 +1,8 @@
 package com.ttProject.transcode.ffmpeg;
 
 import com.ttProject.transcode.ITranscodeManager;
-import com.ttProject.transcode.ffmpeg.filestream.IUnitizer;
-import com.ttProject.transcode.ffmpeg.filestream.IDeunitizer;
+import com.ttProject.transcode.ffmpeg.unit.IDeunitizer;
+import com.ttProject.transcode.ffmpeg.unit.IUnitizer;
 
 /**
  * ffmpegに変換させる動作マネージャー

@@ -9,7 +9,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.log4j.Logger;
 
 import com.ttProject.transcode.ffmpeg.FfmpegTranscodeManager;
-import com.ttProject.transcode.ffmpeg.filestream.IUnitizer;
+import com.ttProject.transcode.ffmpeg.unit.IUnitizer;
 
 /**
  * データの受信処理

@@ -10,11 +10,11 @@ import org.apache.log4j.Logger;
 import com.ttProject.media.Unit;
 import com.ttProject.transcode.ITrackManager;
 import com.ttProject.transcode.TranscodeManager;
-import com.ttProject.transcode.ffmpeg.filestream.IDeunitizer;
-import com.ttProject.transcode.ffmpeg.filestream.IUnitizer;
 import com.ttProject.transcode.ffmpeg.process.ProcessHandler;
 import com.ttProject.transcode.ffmpeg.process.ProcessServer;
 import com.ttProject.transcode.ffmpeg.track.FfmpegTrackManager;
+import com.ttProject.transcode.ffmpeg.unit.IDeunitizer;
+import com.ttProject.transcode.ffmpeg.unit.IUnitizer;
 
 /**
  * ffmpeg経由で変換を実行するマネージャー

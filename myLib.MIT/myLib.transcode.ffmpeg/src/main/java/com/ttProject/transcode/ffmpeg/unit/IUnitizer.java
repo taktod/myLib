@@ -1,9 +1,7 @@
-package com.ttProject.transcode.ffmpeg.filestream;
+package com.ttProject.transcode.ffmpeg.unit;
 
 import java.nio.ByteBuffer;
 import java.util.List;
-
-import com.ttProject.media.Unit;
 
 /**
  * ffmpegの出力ストリームをUnitに変換するインターフェイス
@@ -17,5 +15,5 @@ public interface IUnitizer {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Unit> getUnits(ByteBuffer buffer) throws Exception;
+	public List<?> getUnits(ByteBuffer buffer) throws Exception;
 }
