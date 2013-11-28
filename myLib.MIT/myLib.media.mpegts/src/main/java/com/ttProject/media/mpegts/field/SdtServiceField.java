@@ -9,6 +9,7 @@ import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit6;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.media.mpegts.descriptor.Descriptor;
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -90,7 +91,8 @@ public class SdtServiceField {
 		freeCAMode = new Bit1();
 		Bit4 descriptorsLoopLength_1 = new Bit4();
 		Bit8 descriptorsLoopLength_2 = new Bit8();
-		Bit.bitLoader(ch, serviceId_1, serviceId_2, reservedFutureUse,
+		BitLoader bitLoader = new BitLoader(ch);
+		bitLoader.load(serviceId_1, serviceId_2, reservedFutureUse,
 				eitScheduleFlag, eitPresentFollowingFlag, runningStatus,
 				freeCAMode, descriptorsLoopLength_1, descriptorsLoopLength_2);
 		serviceId = (short)((serviceId_1.get() << 8) | serviceId_2.get());

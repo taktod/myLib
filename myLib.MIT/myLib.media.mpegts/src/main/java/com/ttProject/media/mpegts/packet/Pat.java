@@ -7,6 +7,7 @@ import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.media.mpegts.ProgramPacket;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -68,7 +69,8 @@ public class Pat extends ProgramPacket {
 		Bit5 programPid_1 = new Bit5();
 		Bit8 programPid_2 = new Bit8();
 		
-		Bit.bitLoader(ch, programNum_1, programNum_2,
+		BitLoader bitLoader = new BitLoader(ch);
+		bitLoader.load(programNum_1, programNum_2,
 				reserved, programPid_1, programPid_2);
 		programNum = (short)((programNum_1.get() << 8) | programNum_2.get());
 		programPid = (short)((programPid_1.get() << 8) | programPid_2.get());

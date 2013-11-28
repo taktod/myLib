@@ -3,10 +3,11 @@ package com.ttProject.media.aac;
 import java.nio.ByteBuffer;
 
 import com.ttProject.media.aac.frame.Aac;
-import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit5;
+import com.ttProject.media.extra.BitConnector;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
@@ -32,7 +33,8 @@ public class DecoderSpecificInfo {
 		extensionFlag = new Bit1();
 	}
 	public void analyze(IReadChannel channel) throws Exception {
-		Bit.bitLoader(channel, objectType1, frequencyIndex, channelConfiguration,
+		BitLoader bitLoader = new BitLoader(channel);
+		bitLoader.load(objectType1, frequencyIndex, channelConfiguration,
 				frameLengthFlag, dependsOnCoreCoder, extensionFlag);
 		if(objectType1.get() == 0x1F) {
 			// objectType2のデータ分 + 32が目標のプロファイルとなります。
@@ -51,7 +53,8 @@ public class DecoderSpecificInfo {
 		channelConfiguration = new Bit4(frame.getChannelConfiguration());
 	}
 	public ByteBuffer getInfoBuffer() throws Exception {
-		return Bit.bitConnector(objectType1, frequencyIndex, channelConfiguration,
+		BitConnector bitConnector = new BitConnector();
+		return bitConnector.connect(objectType1, frequencyIndex, channelConfiguration,
 				frameLengthFlag, dependsOnCoreCoder, extensionFlag);
 	}
 	public int getObjectType() {

@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
@@ -79,10 +80,12 @@ public class ServiceDescriptor extends Descriptor {
 	public void analyze(IReadChannel channel) throws Exception {
 		serviceType = new Bit8();
 		serviceProviderNameLength = new Bit8();
-		Bit.bitLoader(channel, serviceType, serviceProviderNameLength);
+		BitLoader bitLoader = new BitLoader(channel);
+		bitLoader.load(serviceType, serviceProviderNameLength);
 		serviceProviderName = new String(BufferUtil.safeRead(channel, serviceProviderNameLength.get()).array());
 		serviceNameLength = new Bit8();
-		Bit.bitLoader(channel, serviceNameLength);
+		bitLoader = new BitLoader(channel);
+		bitLoader.load(serviceNameLength);
 		serviceName = new String(BufferUtil.safeRead(channel, serviceNameLength.get()).array());
 	}
 	@Override

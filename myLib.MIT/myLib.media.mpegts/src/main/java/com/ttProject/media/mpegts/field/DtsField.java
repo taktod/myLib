@@ -9,6 +9,7 @@ import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit7;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.nio.channels.IReadChannel;
 
 public class DtsField {
@@ -25,7 +26,8 @@ public class DtsField {
 		Bit7 dts4 = new Bit7();
 		Bit8 dts5 = new Bit8();
 		Bit1 dtsFlag3 = new Bit1();
-		Bit.bitLoader(ch, signature, dts1, dtsFlag1, dts2, dts3, dtsFlag2, dts4, dts5, dtsFlag3);
+		BitLoader bitLoader = new BitLoader(ch);
+		bitLoader.load(signature, dts1, dtsFlag1, dts2, dts3, dtsFlag2, dts4, dts5, dtsFlag3);
 		if(dtsFlag1.get() != 0x01
 		|| dtsFlag2.get() != 0x01
 		|| dtsFlag3.get() != 0x01) {

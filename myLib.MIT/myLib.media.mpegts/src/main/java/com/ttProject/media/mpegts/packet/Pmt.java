@@ -9,6 +9,7 @@ import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.media.mpegts.ProgramPacket;
 import com.ttProject.media.mpegts.field.PmtElementaryField;
 import com.ttProject.nio.channels.ByteReadChannel;
@@ -146,7 +147,8 @@ public class Pmt extends ProgramPacket {
 		reserved2 = new Bit4();
 		Bit4 programInfoLength_1 = new Bit4();
 		Bit8 programInfoLength_2 = new Bit8();
-		Bit.bitLoader(ch, reserved1, pcrPid_1, pcrPid_2, reserved2, programInfoLength_1, programInfoLength_2);
+		BitLoader bitLoader = new BitLoader(ch);
+		bitLoader.load(reserved1, pcrPid_1, pcrPid_2, reserved2, programInfoLength_1, programInfoLength_2);
 		pcrPid = (short)((pcrPid_1.get() << 8) | pcrPid_2.get());
 		programInfoLength = (short)((programInfoLength_1.get() << 8) | programInfoLength_2.get());
 		// sectionLengthから残りのデータ量を見積もる。

@@ -12,6 +12,8 @@ import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitConnector;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.media.mpegts.CodecType;
 import com.ttProject.media.mpegts.Packet;
 import com.ttProject.media.mpegts.field.AdaptationField;
@@ -333,7 +335,8 @@ public class Pes extends Packet {
 			CRCFlag = new Bit1();
 			extensionFlag = new Bit1();
 			PESHeaederLength = new Bit8();
-			Bit.bitLoader(ch, prefix_1, prefix_2, prefix_3, streamId,
+			BitLoader bitLoader = new BitLoader(ch);
+			bitLoader.load(prefix_1, prefix_2, prefix_3, streamId,
 					pesPacketLength_1, pesPacketLength_2, markerBits, scramblingControl,
 					priority, dataAlignmentIndicator, copyright, originFlg,
 					ptsDtsIndicator, escrFlag, esRateFlag, DSMTrickModeFlag, additionalCopyInfoFlag,
@@ -495,10 +498,9 @@ public class Pes extends Packet {
 		ByteBuffer buffer = ByteBuffer.allocate(188);
 		// ここは持っているデータをそのまま書き込めばOK
 		// adaptationFieldの調整とか、出力データの調整はあとでnextPesでなんとかしておく。
-		// bitデータについて調整しておく。
-		List<Bit> bitsList = getBits();
 		// bitデータを書き込む
-		buffer.put(Bit.bitConnector(bitsList.toArray(new Bit[]{})));
+		BitConnector bitConnector = new BitConnector();
+		buffer.put(bitConnector.connect(getBits()));
 		// データを書き込む
 		int left = 188 - buffer.position();
 		byte[] data = new byte[left]; // 残りの長さがrawDataに入っているデータとしておきます。

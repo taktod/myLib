@@ -5,10 +5,10 @@ import java.nio.ByteBuffer;
 import com.ttProject.media.IAnalyzer;
 import com.ttProject.media.IVideoData;
 import com.ttProject.media.Unit;
-import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
 import com.ttProject.media.extra.Bit5;
+import com.ttProject.media.extra.BitConnector;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
@@ -69,7 +69,8 @@ public abstract class Frame extends Unit implements IVideoData {
 	}
 	public ByteBuffer getData() throws Exception {
 		ByteBuffer data = ByteBuffer.allocate(buffer.remaining() + 1);
-		data.put(Bit.bitConnector(forbiddenZeroBit, nalRefIdc, type));
+		BitConnector bitConnector = new BitConnector();
+		data.put(bitConnector.connect(forbiddenZeroBit, nalRefIdc, type));
 		data.put(buffer);
 		buffer.position(0);
 		data.flip();

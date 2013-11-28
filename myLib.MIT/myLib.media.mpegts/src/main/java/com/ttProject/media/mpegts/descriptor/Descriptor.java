@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
@@ -72,7 +73,8 @@ public abstract class Descriptor {
 		// 先頭のデータを読み込んでTagがなんであるかみておく。
 		Bit8 descriptorTag = new Bit8();
 		Bit8 descriptorLength = new Bit8();
-		Bit.bitLoader(channel, descriptorTag, descriptorLength);
+		BitLoader bitLoader = new BitLoader(channel);
+		bitLoader.load(descriptorTag, descriptorLength);
 		switch(DescriptorType.getType(descriptorTag.get())) {
 		case registration_descriptor:
 			RegistrationDescriptor registrationDescriptor = new RegistrationDescriptor(descriptorLength);

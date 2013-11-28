@@ -7,12 +7,12 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.ttProject.media.Manager;
-import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
 import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.media.mp3.frame.ID3;
 import com.ttProject.media.mp3.frame.Mp3;
 import com.ttProject.nio.channels.ByteReadChannel;
@@ -115,7 +115,8 @@ public class Mp3Manager extends Manager<Frame> {
 			Bit1 copyRight = new Bit1();
 			Bit1 originalFlg = new Bit1();
 			Bit2 emphasis = new Bit2();
-			Bit.bitLoader(byteChannel, syncBit_1, syncBit_2,
+			BitLoader bitLoader = new BitLoader(byteChannel);
+			bitLoader.load(syncBit_1, syncBit_2,
 					mpegVersion, layer, protectionBit, bitrateIndex, samplingRateIndex,
 					paddingBit, privateBit, channelMode, modeExtension, copyRight, 
 					originalFlg, emphasis);

@@ -12,6 +12,7 @@ import com.ttProject.media.extra.Bit2;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.media.mpegts.field.AdaptationField;
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -83,7 +84,8 @@ public abstract class Packet extends Unit {
 		adaptationFieldExist = new Bit1();
 		payloadFieldExist = new Bit1();
 		continuityCounter = new Bit4();
-		Bit.bitLoader(channel, syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority,
+		BitLoader bitLoader = new BitLoader(channel);
+		bitLoader.load(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority,
 				pid_1, pid_2, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
 		if(syncByte.get() != this.syncByte) {
 			throw new Exception("syncByteがおかしいです。");

@@ -6,13 +6,13 @@ import com.ttProject.media.IAudioData;
 import com.ttProject.media.aac.DecoderSpecificInfo;
 import com.ttProject.media.aac.Frame;
 import com.ttProject.media.aac.IFrameAnalyzer;
-import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
 import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitConnector;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
@@ -180,7 +180,6 @@ public class Aac extends Frame implements IAudioData {
 	 */
 	public void setData(ByteBuffer buffer) {
 		this.data = buffer.duplicate();
-		// TODO このタイミングでframeSizeとsizeを更新する必要あり。
 		setSize(7 + data.remaining());
 		this.frameSize = 7 + data.remaining();
 	}
@@ -191,7 +190,8 @@ public class Aac extends Frame implements IAudioData {
 	public ByteBuffer getBuffer() throws Exception {
 		ByteBuffer buffer = ByteBuffer.allocate(getSize());
 		// 先頭のデータもつくっておく。
-		buffer.put(Bit.bitConnector(
+		BitConnector bitConnector = new BitConnector();
+		buffer.put(bitConnector.connect(
 				new Bit4((syncWork >>> 8)), new Bit8((syncWork)), id, layer, protectionAbsent, profile, samplingFrequenceIndex,
 				privateBit, channelConfiguration, originalFlg, home,
 				copyrightIdentificationBit, copyrightIdentificationStart, new Bit5((frameSize >>> 8)), new Bit8((frameSize & 0xFF)),

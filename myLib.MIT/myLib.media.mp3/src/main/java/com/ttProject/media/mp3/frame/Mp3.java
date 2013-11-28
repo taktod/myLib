@@ -3,12 +3,12 @@ package com.ttProject.media.mp3.frame;
 import java.nio.ByteBuffer;
 
 import com.ttProject.media.IAudioData;
-import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
 import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitConnector;
 import com.ttProject.media.mp3.Frame;
 import com.ttProject.media.mp3.IFrameAnalyzer;
 import com.ttProject.nio.channels.IReadChannel;
@@ -198,7 +198,8 @@ public class Mp3 extends Frame implements IAudioData {
 	}
 	public ByteBuffer getBuffer() throws Exception {
 		ByteBuffer buffer = ByteBuffer.allocate(getSize());
-		buffer.put(Bit.bitConnector(
+		BitConnector bitConnector = new BitConnector();
+		buffer.put(bitConnector.connect(
 				new Bit3((byte)(syncBit >>> 8)), new Bit8((byte)(syncBit)),
 				mpegVersion, layer, protectionBit, bitrateIndex, samplingRateIndex, paddingBit,
 				privateBit, channelMode, modeExtension, copyRight, originalFlg, emphasis));

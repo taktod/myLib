@@ -6,13 +6,13 @@ import java.util.List;
 
 import com.ttProject.media.Manager;
 import com.ttProject.media.aac.frame.Aac;
-import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
 import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -74,7 +74,8 @@ public class AacManager extends Manager<Frame> {
 		Bit3 adtsBufferFullness_1 = new Bit3();
 		Bit8 adtsBufferFullness_2 = new Bit8();
 		Bit2 noRawDataBlocksInFrame = new Bit2();
-		Bit.bitLoader(source,
+		BitLoader bitLoader = new BitLoader(source);
+		bitLoader.load(
 			syncBit_1, syncBit_2, id, layer, protectionAbsent, profile, samplingFrequenceIndex,
 			privateBit, channelConfiguration, originalFlg, home,
 			copyrightIdentificationBit, copyrightIdentificationStart, frameSize_1, frameSize_2,

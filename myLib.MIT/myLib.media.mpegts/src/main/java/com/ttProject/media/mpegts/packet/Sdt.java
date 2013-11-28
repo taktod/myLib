@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.media.mpegts.ProgramPacket;
 import com.ttProject.media.mpegts.descriptor.Descriptor;
 import com.ttProject.media.mpegts.descriptor.ServiceDescriptor;
@@ -122,7 +123,8 @@ public class Sdt extends ProgramPacket {
 		Bit8 originalNetworkId_1 = new Bit8();
 		Bit8 originalNetworkId_2 = new Bit8();
 		reservedFutureUse2 = new Bit8();
-		Bit.bitLoader(ch, originalNetworkId_1, originalNetworkId_2,
+		BitLoader bitLoader = new BitLoader(ch);
+		bitLoader.load(originalNetworkId_1, originalNetworkId_2,
 				reservedFutureUse2);
 		originalNetworkId = (short)((originalNetworkId_1.get() << 8) | originalNetworkId_2.get());
 		// ループで読み込むべきサイズはsectionLength - 8

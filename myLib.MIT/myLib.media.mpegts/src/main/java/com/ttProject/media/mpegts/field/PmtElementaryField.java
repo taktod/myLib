@@ -8,6 +8,7 @@ import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.media.mpegts.CodecType;
 import com.ttProject.media.mpegts.descriptor.Descriptor;
 import com.ttProject.nio.channels.IReadChannel;
@@ -96,7 +97,8 @@ public class PmtElementaryField {
 		reserved2 = new Bit4();
 		Bit4 esInfoLength_1 = new Bit4();
 		Bit8 esInfoLength_2 = new Bit8();
-		Bit.bitLoader(ch, streamType, reserved1, pid_1, pid_2, reserved2,
+		BitLoader bitLoader = new BitLoader(ch);
+		bitLoader.load(streamType, reserved1, pid_1, pid_2, reserved2,
 				esInfoLength_1, esInfoLength_2);
 		pid = (short)((pid_1.get() << 8) | pid_2.get());
 		if(pid > nextTrackPid) {

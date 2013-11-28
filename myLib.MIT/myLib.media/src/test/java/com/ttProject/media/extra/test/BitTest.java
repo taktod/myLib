@@ -5,13 +5,13 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
 import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitConnector;
 import com.ttProject.media.extra.BitLoader;
 import com.ttProject.media.extra.Seg;
 import com.ttProject.media.extra.Ueg;
@@ -29,7 +29,7 @@ public class BitTest {
 	 * 読み込み書き込みテスト
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void test() throws Exception {
 		IReadChannel channel = new ByteReadChannel(new byte[] {
 				(byte)0xFF, (byte)0xF1, 0x50, (byte)0x80, 0x02, 0x1F, (byte)0xFC
@@ -52,14 +52,16 @@ public class BitTest {
 		Bit3 adtsBufferFullness1 = new Bit3();
 		Bit8 adtsBufferFullness2 = new Bit8();
 		Bit2 noRawDataBlocksInFrame = new Bit2();
-		Bit.bitLoader(channel,
+		BitLoader bitLoader = new BitLoader(channel);
+		bitLoader.load(
 			syncBit1, syncBit2, id, layer, protectionAbsent, profile, samplingFrequenceIndex,
 			privateBit, channelConfiguration, originalFlg, home,
 			copyrightIdentificationBit, copyrightIdentificationStart, frameSize1, frameSize2,
 			adtsBufferFullness1, adtsBufferFullness2, noRawDataBlocksInFrame);
 		channel.close();
 		
-		ByteBuffer buffer = Bit.bitConnector(
+		BitConnector bitConnector = new BitConnector();
+		ByteBuffer buffer = bitConnector.connect(
 				syncBit1, syncBit2, id, layer, protectionAbsent, profile, samplingFrequenceIndex,
 				privateBit, channelConfiguration, originalFlg, home,
 				copyrightIdentificationBit, copyrightIdentificationStart, frameSize1, frameSize2,

@@ -1,6 +1,7 @@
 package com.ttProject.media.extra;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 /**
  * bitデータのコネクト処理
@@ -32,5 +33,13 @@ public class BitConnector {
 		buffer.put((byte)((data >>> (8 - left)) & 0xFF));
 		buffer.flip();
 		return buffer;
+	}
+	/**
+	 * collectionFrameWorkの場合
+	 * @param bits
+	 * @return
+	 */
+	public ByteBuffer connect(List<Bit> bits) {
+		return connect(bits.toArray(new Bit[]{}));
 	}
 }

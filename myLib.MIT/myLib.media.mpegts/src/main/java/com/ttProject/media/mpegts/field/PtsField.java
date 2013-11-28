@@ -9,6 +9,7 @@ import com.ttProject.media.extra.Bit3;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit7;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.nio.channels.IReadChannel;
 
 public class PtsField {
@@ -27,7 +28,8 @@ public class PtsField {
 		Bit7 pts4 = new Bit7();
 		Bit8 pts5 = new Bit8();
 		Bit1 ptsFlag3 = new Bit1();
-		Bit.bitLoader(ch, signature, pts1, ptsFlag1, pts2, pts3, ptsFlag2, pts4, pts5, ptsFlag3);
+		BitLoader bitLoader = new BitLoader(ch);
+		bitLoader.load(signature, pts1, ptsFlag1, pts2, pts3, ptsFlag2, pts4, pts5, ptsFlag3);
 		if(ptsFlag1.get() != 0x01
 		|| ptsFlag2.get() != 0x01
 		|| ptsFlag3.get() != 0x01) {

@@ -9,6 +9,8 @@ import com.ttProject.media.extra.Bit2;
 import com.ttProject.media.extra.Bit4;
 import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitConnector;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
@@ -55,7 +57,8 @@ public abstract class ProgramPacket extends Packet {
 		currentNextOrder = new Bit1();
 		sectionNumber = new Bit8();
 		lastSectionNumber = new Bit8();
-		Bit.bitLoader(channel, pointerField, tableId, sectionSyntaxIndicator, reservedFutureUse1, reserved1,
+		BitLoader bitLoader = new BitLoader(channel);
+		bitLoader.load(pointerField, tableId, sectionSyntaxIndicator, reservedFutureUse1, reserved1,
 				sectionLength_1, sectionLength_2, programNumber_1, programNumber_2,
 				reserved2, versionNumber, currentNextOrder, sectionNumber, lastSectionNumber);
 		sectionLength = (short)((sectionLength_1.get() << 8) | sectionLength_2.get());
@@ -76,8 +79,8 @@ public abstract class ProgramPacket extends Packet {
 		// TODO counterの書き込みの部分は、データを作成したときに管理するのではなくて、データの書き出しを実施するときに管理した方がよさそう・・・
 		ByteBuffer result = ByteBuffer.allocate(188);
 		// 情報をbit配列に戻して応答する。
-		List<Bit> bitsList = getBits();
-		ByteBuffer buffer = Bit.bitConnector(bitsList.toArray(new Bit[]{}));
+		BitConnector bitConnector = new BitConnector();
+		ByteBuffer buffer = bitConnector.connect(getBits());
 		Crc32 crc32 = new Crc32();
 		while(buffer.remaining() > 0) {
 			byte data = buffer.get();

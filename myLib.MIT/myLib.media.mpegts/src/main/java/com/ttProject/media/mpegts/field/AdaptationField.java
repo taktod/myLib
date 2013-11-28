@@ -7,6 +7,7 @@ import com.ttProject.media.extra.Bit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit6;
 import com.ttProject.media.extra.Bit8;
+import com.ttProject.media.extra.BitLoader;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
@@ -65,7 +66,8 @@ public class AdaptationField {
 	public void analyze(IReadChannel channel) throws Exception {
 		// とりあえずlengthをみておく。
 		adaptationFieldLength = new Bit8();
-		Bit.bitLoader(channel, adaptationFieldLength);
+		BitLoader bitLoader = new BitLoader(channel);
+		bitLoader.load(adaptationFieldLength);
 		if(adaptationFieldLength.get() == 0x00) {
 			return;
 		}
@@ -78,7 +80,8 @@ public class AdaptationField {
 		splicingPointFlag = new Bit1();
 		transportPrivateDataFlag = new Bit1();
 		adaptationFieldExtensionFlag = new Bit1();
-		Bit.bitLoader(channel, discontinuityIndicator, randomAccessIndicator,
+		bitLoader = new BitLoader(channel);
+		bitLoader.load(discontinuityIndicator, randomAccessIndicator,
 				elementaryStreamPriorityIndicator, pcrFlag, opcrFlag, splicingPointFlag,
 				transportPrivateDataFlag, adaptationFieldExtensionFlag);
 		size --;
@@ -98,7 +101,8 @@ public class AdaptationField {
 			pcrPadding = new Bit6();
 			Bit1 pcrExtension_1 = new Bit1();
 			Bit8 pcrExtension_2 = new Bit8();
-			Bit.bitLoader(channel, pcrBase_1, pcrBase_2, pcrBase_3, pcrBase_4, pcrBase_5,
+			bitLoader = new BitLoader(channel);
+			bitLoader.load(pcrBase_1, pcrBase_2, pcrBase_3, pcrBase_4, pcrBase_5,
 					pcrPadding, pcrExtension_1, pcrExtension_2);
 			pcrBase = (((long)pcrBase_1.get()) << 32) | (((long)pcrBase_2.get()) << 24) | (pcrBase_3.get() << 16) | (pcrBase_4.get() << 8) | pcrBase_5.get();
 			pcrExtension = (short)((pcrExtension_1.get() << 8) | pcrExtension_2.get());
@@ -114,7 +118,8 @@ public class AdaptationField {
 			opcrPadding = new Bit6();
 			Bit1 opcrExtension_1 = new Bit1();
 			Bit8 opcrExtension_2 = new Bit8();
-			Bit.bitLoader(channel, opcrBase_1, opcrBase_2, opcrBase_3, opcrBase_4, opcrBase_5,
+			bitLoader = new BitLoader(channel);
+			bitLoader.load(opcrBase_1, opcrBase_2, opcrBase_3, opcrBase_4, opcrBase_5,
 					opcrPadding, opcrExtension_1, opcrExtension_2);
 			opcrBase = (((long)opcrBase_1.get()) << 32) | (((long)opcrBase_2.get()) << 24) | (opcrBase_3.get() << 16) | (opcrBase_4.get() << 8) | opcrBase_5.get();
 			opcrExtension = (short)((opcrExtension_1.get() << 8) | opcrExtension_2.get());
