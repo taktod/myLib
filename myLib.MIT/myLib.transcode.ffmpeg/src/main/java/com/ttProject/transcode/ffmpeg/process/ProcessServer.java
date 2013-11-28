@@ -21,6 +21,7 @@ import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
+import com.ttProject.transcode.ffmpeg.FfmpegTranscodeManager;
 import com.ttProject.transcode.ffmpeg.worker.DataSendWorker;
 
 /**
@@ -44,7 +45,7 @@ public class ProcessServer {
 	 * コンストラクタ
 	 * @param port
 	 */
-	public ProcessServer(int port) {
+	public ProcessServer(FfmpegTranscodeManager transcodeManager, int port) {
 		bootstrap = new ServerBootstrap(
 				new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
 		bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
@@ -56,7 +57,7 @@ public class ProcessServer {
 			}
 		});
 		serverChannel = bootstrap.bind(new InetSocketAddress(port));
-		sendWorker = new DataSendWorker(this);
+		sendWorker = new DataSendWorker(transcodeManager, this);
 	}
 	/**
 	 * データ送信モジュールを応答

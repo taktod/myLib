@@ -9,7 +9,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.log4j.Logger;
 
 import com.ttProject.transcode.ffmpeg.FfmpegTranscodeManager;
-import com.ttProject.transcode.ffmpeg.unit.IUnitizer;
 
 /**
  * データの受信処理
@@ -26,8 +25,6 @@ public class DataReceiveWorker implements Runnable {
 	private ExecutorService loopExecutor = null;
 	/** データを戻す処理本体 */
 	private final FfmpegTranscodeManager transcodeManager;
-	/** byteBufferのデータをunitに戻すプログラム */
-	private IUnitizer unitizer;
 	/**
 	 * コンストラクタ
 	 * @param outputChannel
@@ -42,9 +39,6 @@ public class DataReceiveWorker implements Runnable {
 	 */
 	public void setExecutor(ExecutorService executor) {
 		loopExecutor = executor;
-	}
-	public void setUnitizer(IUnitizer unitizer) {
-		this.unitizer = unitizer;
 	}
 	/**
 	 * 開始します
@@ -67,9 +61,8 @@ public class DataReceiveWorker implements Runnable {
 			buffer.flip();
 			readFlg = buffer.remaining() != 0;
 			// transcodeManagerにエンコード済みデータを応答する
-			transcodeManager.process(unitizer.getUnits(buffer));
 			// unit化を実行
-			logger.info("size:" + buffer.remaining());
+			transcodeManager.process(transcodeManager.getUnitizer().getUnits(buffer));
 			if(workFlg) {
 				if(!readFlg) {
 					if(loopExecutor instanceof ThreadPoolExecutor) {

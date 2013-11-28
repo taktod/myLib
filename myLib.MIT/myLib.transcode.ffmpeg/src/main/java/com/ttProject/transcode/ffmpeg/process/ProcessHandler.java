@@ -12,7 +12,6 @@ import com.ttProject.transcode.ffmpeg.worker.DataReceiveWorker;
 /**
  * 変換プロセスをコントロールするプログラム
  * 
- * TODO こいつの終了まわりの定義をなんとかしておく必要あり。
  * @author taktod
  */
 public class ProcessHandler {
@@ -32,6 +31,7 @@ public class ProcessHandler {
 	private Process process = null;
 	/** データ受信処理 */
 	private DataReceiveWorker receiveWorker = null;
+	/** 主体となるtranscodeManager */
 	private final FfmpegTranscodeManager transcodeManager;
 	/**
 	 * コンストラクタ

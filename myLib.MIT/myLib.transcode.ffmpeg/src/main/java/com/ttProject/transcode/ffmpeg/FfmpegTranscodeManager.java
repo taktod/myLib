@@ -40,6 +40,10 @@ public class FfmpegTranscodeManager extends TranscodeManager implements IFfmpegT
 	private int portNumber;
 	/** 動作サーバー */
 	private ProcessServer server = null;
+	/** unitをstreamに戻すときに利用するプログラム */
+	private IDeunitizer deunitizer = null;
+	/** streamをunitに戻すときに利用するプログラム */
+	private IUnitizer unitizer = null;
 	// 出力用のデータ変換が複数必要か？トラックごとにつくっておいた方がよさそう。
 	/** streamデータからそれぞれのstreamのデータを抜き出す処理(映像 + 音声なら２つ、映像 + 映像 + 音声なら３ついる) */
 //	private Set<IStreamToUnitHandler> unitHandlers;
@@ -63,7 +67,7 @@ public class FfmpegTranscodeManager extends TranscodeManager implements IFfmpegT
 		}
 		for(;portNumber < 65535;portNumber += 1000) {
 			try {
-				processServer = new ProcessServer(portNumber);
+				processServer = new ProcessServer(this, portNumber);
 				break;
 			}
 			catch(Exception e) {}
@@ -80,6 +84,7 @@ public class FfmpegTranscodeManager extends TranscodeManager implements IFfmpegT
 	 * 変換コマンドを設置する
 	 * @param command
 	 */
+	@Override
 	public void registerCommand(String command) throws Exception {
 		if(handler != null) {
 			throw new Exception("すでにhandlerは定義済みです。");
@@ -137,10 +142,16 @@ public class FfmpegTranscodeManager extends TranscodeManager implements IFfmpegT
 	}
 	@Override
 	public void setDeunitizer(IDeunitizer deunitizer) {
-		server.getSendWorker().setDeunitizer(deunitizer);
+		this.deunitizer = deunitizer;
 	}
 	@Override
 	public void setUnitizer(IUnitizer unitizer) {
-		this.handler.getReceiveWorker().setUnitizer(unitizer);
+		this.unitizer = unitizer;
+	}
+	public IDeunitizer getDeunitizer() {
+		return deunitizer;
+	}
+	public IUnitizer getUnitizer() {
+		return unitizer;
 	}
 }

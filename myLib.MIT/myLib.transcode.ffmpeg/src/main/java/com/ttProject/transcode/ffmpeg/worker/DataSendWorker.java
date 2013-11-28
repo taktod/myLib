@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffers;
 
 import com.ttProject.media.Unit;
+import com.ttProject.transcode.ffmpeg.FfmpegTranscodeManager;
 import com.ttProject.transcode.ffmpeg.process.ProcessServer;
-import com.ttProject.transcode.ffmpeg.unit.IDeunitizer;
 
 /**
  * データを送り込みます。
@@ -22,19 +22,19 @@ public class DataSendWorker implements Runnable {
 	private final Logger logger = Logger.getLogger(DataSendWorker.class);
 	/** 動作サーバー */
 	private final ProcessServer server;
-	/** Unitをstreamに変換するプログラム */
-	private IDeunitizer handler = null;
 	/** 転送データソース */
 	private final LinkedBlockingQueue<Unit> dataQueue = new LinkedBlockingQueue<Unit>();
 	/** 動作させるexecutor */
 	private ExecutorService loopExecutor = null;
+	private final FfmpegTranscodeManager transcodeManager;
 	/** 動作フラグ */
 	private boolean started = false;
 	/**
 	 * コンストラクタ
 	 * @param server
 	 */
-	public DataSendWorker(ProcessServer server) {
+	public DataSendWorker(FfmpegTranscodeManager transcodeManager, ProcessServer server) {
+		this.transcodeManager = transcodeManager;
 		this.server = server;
 	}
 	/**
@@ -43,13 +43,6 @@ public class DataSendWorker implements Runnable {
 	 */
 	public void setExecutor(ExecutorService executor) {
 		loopExecutor = executor;
-	}
-	/**
-	 * unitをstreamBufferに変換するモジュール
-	 * @param handler
-	 */
-	public void setDeunitizer(IDeunitizer handler) {
-		this.handler = handler;
 	}
 	/**
 	 * serverから開始準備ができたらキックされる動作
@@ -73,7 +66,7 @@ public class DataSendWorker implements Runnable {
 	 * とりあえずロックかけて、同期処理になるようにしておく。
 	 */
 	public synchronized void send(Unit unit) throws Exception {
-		if(!handler.check(unit)) {
+		if(!transcodeManager.getDeunitizer().check(unit)) {
 			return;
 		}
 		if(!started) {
@@ -101,7 +94,7 @@ public class DataSendWorker implements Runnable {
 			// どっちかというと、無限ループより、executor呼び合いの方がいいか・・・
 			Unit unit = dataQueue.poll(); // 即実行
 			// 送るbufferを作成する。
-			ByteBuffer buffer = handler.getBuffer(unit);
+			ByteBuffer buffer = transcodeManager.getDeunitizer().getBuffer(unit);
 			// clientにデータを送る。
 			if(buffer != null) {
 				server.sendData(ChannelBuffers.copiedBuffer(buffer));
