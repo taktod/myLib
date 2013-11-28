@@ -4,7 +4,7 @@ import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
+import org.junit.Assert;
 
 import com.ttProject.media.mpegts.IPacketAnalyzer;
 import com.ttProject.media.mpegts.Packet;
@@ -94,7 +94,7 @@ public class FileLoadTest {
 	 * パケットをつくる動作テスト
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void test() throws Exception {
 		logger.info("パケット生成テスト開始");
 		IReadChannel source = null;
@@ -134,6 +134,7 @@ public class FileLoadTest {
 		}
 		catch(Exception e) {
 			logger.error("エラーが発生しました。", e);
+			Assert.fail("例外が発生してしまいました。");
 		}
 		finally {
 			if(fos != null) {

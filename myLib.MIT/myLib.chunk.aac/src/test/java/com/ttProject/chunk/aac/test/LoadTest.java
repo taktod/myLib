@@ -3,6 +3,7 @@ package com.ttProject.chunk.aac.test;
 import java.io.FileOutputStream;
 
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.ttProject.chunk.IMediaChunk;
@@ -31,7 +32,7 @@ public class LoadTest {
 		try {
 			fos = new FileOutputStream("mario.aac");
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("mario.aac")
+					Thread.currentThread().getContextClassLoader().getResource("test.aac")
 			);
 			IMediaChunkManager chunkManager = new AacChunkManager();
 			chunkManager.setDuration(5);
@@ -50,6 +51,7 @@ public class LoadTest {
 		}
 		catch(Exception e) {
 			logger.warn("例外発生", e);
+			Assert.fail("例外が発生しました。");
 		}
 		finally {
 			if(source != null) {

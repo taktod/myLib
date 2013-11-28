@@ -37,7 +37,7 @@ public class LoadTest {
 		try {
 			// データソース
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("rtypeDelta.aac.ts")
+					Thread.currentThread().getContextClassLoader().getResource("test.ts")
 			);
 			IMediaChunkManager chunkManager = new MpegtsChunkManager();
 			// mpegtsのデータを投入するので、analyzerを設定しておく。
@@ -90,7 +90,7 @@ public class LoadTest {
 		try {
 			fos = new FileOutputStream("mario.nv.ts");
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("mario_novideo.ts")
+					Thread.currentThread().getContextClassLoader().getResource("test.novideo.ts")
 			);
 			IMediaChunkManager chunkManager = new MpegtsChunkManager();
 			// mpegtsのデータを投入するので、analyzerを設定しておく。
@@ -144,7 +144,7 @@ public class LoadTest {
 		try {
 			fos = new FileOutputStream("mario.na.ts");
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("mario_noaudio.ts")
+					Thread.currentThread().getContextClassLoader().getResource("test.noaudio.ts")
 			);
 			IMediaChunkManager chunkManager = new MpegtsChunkManager();
 			// mpegtsのデータを投入するので、analyzerを設定しておく。

@@ -3,6 +3,7 @@ package com.ttProject.chunk.mp3.test;
 import java.io.FileOutputStream;
 
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.ttProject.chunk.IMediaChunk;
@@ -27,9 +28,9 @@ public class LoadTest {
 		IReadChannel source = null;
 		FileOutputStream fos = null;
 		try {
-			fos = new FileOutputStream("rtype.mp3");
+			fos = new FileOutputStream("test.mp3");
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("rtypeDelta.mp3")
+					Thread.currentThread().getContextClassLoader().getResource("test.mp3")
 			);
 			IMediaChunkManager chunkManager = new Mp3ChunkManager();
 			chunkManager.setDuration(5);
@@ -48,6 +49,7 @@ public class LoadTest {
 		}
 		catch(Exception e) {
 			logger.warn("例外発生", e);
+			Assert.fail("例外が発生しました。");
 		}
 		finally {
 			if(source != null) {
