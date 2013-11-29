@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-import org.junit.Test;
 
 import com.ttProject.media.Unit;
 import com.ttProject.media.flv.FlvHeader;
@@ -33,7 +32,7 @@ public class FileTranscodeTest {
 	/**
 	 * 動作テスト
 	 */
-	@Test
+//	@Test
 	public void test() {
 		IFileReadChannel source = null;
 		IFfmpegTranscodeManager transcodeManager = null;
