@@ -1,6 +1,8 @@
 package com.ttProject.transcode.ffmpeg.worker;
 
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -17,6 +19,8 @@ import com.ttProject.transcode.ffmpeg.FfmpegTranscodeManager;
 public class DataReceiveWorker implements Runnable {
 	/** 動作ロガー */
 	private final Logger logger = Logger.getLogger(DataReceiveWorker.class);
+	/** 動作読み込みstream */
+	private final InputStream is;
 	/** 動作読み込みチャンネル */
 	private final ReadableByteChannel outputChannel;
 	/** 処理転送先listener */
@@ -25,13 +29,18 @@ public class DataReceiveWorker implements Runnable {
 	private ExecutorService loopExecutor = null;
 	/** データを戻す処理本体 */
 	private final FfmpegTranscodeManager transcodeManager;
+	/** 処理終了フラグ(このフラグが立っている状態で1秒データ転送がなければ殺します) */
+	private boolean endFlg = false;
+	/** 最終処理時刻 */
+	private long lastTaskTime = -1;
 	/**
 	 * コンストラクタ
 	 * @param outputChannel
 	 */
-	public DataReceiveWorker(FfmpegTranscodeManager transcodeManagaer, ReadableByteChannel outputChannel) {
+	public DataReceiveWorker(FfmpegTranscodeManager transcodeManagaer, InputStream is) {
 		this.transcodeManager = transcodeManagaer;
-		this.outputChannel = outputChannel;
+		this.is = is;
+		this.outputChannel = Channels.newChannel(is);
 	}
 	/**
 	 * 処理に利用するexecutorを設定
@@ -49,6 +58,16 @@ public class DataReceiveWorker implements Runnable {
 		}
 		loopExecutor.execute(this);
 	}
+	public void waitForEnd() {
+		System.out.println("おわりがみえた!?");
+		endFlg = true;
+	}
+	/**
+	 * 停止処理
+	 */
+	public void close() {
+		
+	}
 	/**
 	 * 動作実体
 	 */
@@ -56,13 +75,23 @@ public class DataReceiveWorker implements Runnable {
 	public void run() {
 		try {
 			boolean readFlg = false;
-			ByteBuffer buffer = ByteBuffer.allocate(65536);
-			outputChannel.read(buffer);
-			buffer.flip();
-			readFlg = buffer.remaining() != 0;
-			// transcodeManagerにエンコード済みデータを応答する
-			// unit化を実行
-			transcodeManager.process(transcodeManager.getUnitizer().getUnits(buffer));
+			if(is.available() != 0) {
+				ByteBuffer buffer = ByteBuffer.allocate(65536);
+				outputChannel.read(buffer); // このreadがlockするらしい。
+				buffer.flip();
+				readFlg = buffer.remaining() != 0;
+				if(readFlg) {
+					lastTaskTime = System.currentTimeMillis();
+				}
+				// unit化を実行
+				transcodeManager.process(transcodeManager.getUnitizer().getUnits(buffer));
+			}
+			if(endFlg && System.currentTimeMillis() - lastTaskTime > 1000) {
+				// 強制的におわらせます。
+				logger.info("データがこなくなってから1秒たったので、とめます。");
+				transcodeManager.close();
+				workFlg = false;
+			}
 			if(workFlg) {
 				if(!readFlg) {
 					if(loopExecutor instanceof ThreadPoolExecutor) {

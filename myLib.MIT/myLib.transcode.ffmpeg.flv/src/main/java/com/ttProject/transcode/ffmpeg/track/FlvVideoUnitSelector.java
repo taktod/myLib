@@ -13,4 +13,8 @@ public class FlvVideoUnitSelector implements IUnitSelector {
 	public boolean check(Unit unit) {
 		return unit instanceof VideoTag;
 	}
+	@Override
+	public void close() {
+		
+	}
 }

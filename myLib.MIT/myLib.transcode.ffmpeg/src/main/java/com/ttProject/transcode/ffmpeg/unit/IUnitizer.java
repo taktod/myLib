@@ -16,4 +16,8 @@ public interface IUnitizer {
 	 * @throws Exception
 	 */
 	public List<?> getUnits(ByteBuffer buffer) throws Exception;
+	/**
+	 * 必要なくなったときの動作
+	 */
+	public void close();
 }

@@ -1,6 +1,5 @@
 package com.ttProject.transcode.ffmpeg.process;
 
-import java.nio.channels.Channels;
 import java.util.Map;
 import java.util.UUID;
 
@@ -21,8 +20,6 @@ public class ProcessHandler {
 	private final String key;
 	/** アクセスポート番号 */
 	private final int port;
-	/** 子プロセスの標準出力受付thread */
-	private Thread thread = null;
 	/** 動作させるコマンド(標準入力でデータを渡して、標準出力に吐く必要あり) */
 	private String processCommand = null;
 	/** コマンド動作時に追加する追加環境変数 */
@@ -112,23 +109,26 @@ public class ProcessHandler {
 		process = processBuilder.start();
 		logger.info("プロセスを開始しました。");
 		// 応答読み取りスレッド
-		receiveWorker = new DataReceiveWorker(transcodeManager, Channels.newChannel(process.getInputStream()));
+		receiveWorker = new DataReceiveWorker(transcodeManager, 
+				process.getInputStream());
 		receiveWorker.start();
+		logger.info("ここまで");
+	}
+	public void waitForEnd() throws Exception {
+		System.out.println("processHandler");
+		if(receiveWorker != null) {
+			receiveWorker.waitForEnd();
+		}
+		if(process != null) {
+			process.waitFor();
+		}
 	}
 	/**
 	 * 閉じる処理
 	 */
 	public void close() {
-		// 管理リスナーを解放しておく。
-//		listeners.clear();
-		// 内部threadの処理を抜けさせる
-//		if(worker != null) {
-//			worker.stop();
-//		}
-		// Threadの解放
-		if(thread != null) {
-			thread.interrupt();
-			thread = null;
+		if(receiveWorker != null) {
+			receiveWorker.close();
 		}
 		// 作成プロセスをこわしておく
 		if(process != null) {

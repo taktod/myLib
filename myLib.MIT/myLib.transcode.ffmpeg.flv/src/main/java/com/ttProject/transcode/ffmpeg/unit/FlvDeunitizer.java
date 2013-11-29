@@ -49,4 +49,8 @@ public class FlvDeunitizer implements IDeunitizer {
 			return tag.getBuffer();
 		}
 	}
+	@Override
+	public void close() {
+		
+	}
 }

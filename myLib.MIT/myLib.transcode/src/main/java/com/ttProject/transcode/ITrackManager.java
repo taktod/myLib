@@ -11,12 +11,6 @@ public interface ITrackManager {
 	 */
 	public void setTrackListener(ITrackListener listener);
 	/**
-	 * 終了処理
-	 * 終了時になにかする動作をいれればよい
-	 * これは外から見えている必要はなさそう。
-	 * /
-	public void close();
-	/**
 	 * 動作ID参照
 	 * @return id番号
 	 */

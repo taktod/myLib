@@ -12,4 +12,8 @@ public class FlvAudioUnitSelector implements IUnitSelector {
 	public boolean check(Unit unit) {
 		return unit instanceof AudioTag;
 	}
+	@Override
+	public void close() {
+		
+	}
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.junit.Test;
 
 import com.ttProject.media.Unit;
 import com.ttProject.media.flv.FlvHeader;
@@ -16,6 +17,7 @@ import com.ttProject.transcode.IExceptionListener;
 import com.ttProject.transcode.ITrackListener;
 import com.ttProject.transcode.ffmpeg.FfmpegTranscodeManager;
 import com.ttProject.transcode.ffmpeg.IFfmpegTranscodeManager;
+import com.ttProject.transcode.ffmpeg.track.FlvAudioUnitSelector;
 import com.ttProject.transcode.ffmpeg.track.FlvVideoUnitSelector;
 import com.ttProject.transcode.ffmpeg.track.IFfmpegTrackManager;
 import com.ttProject.transcode.ffmpeg.unit.FlvDeunitizer;
@@ -31,7 +33,7 @@ public class FileTranscodeTest {
 	/**
 	 * 動作テスト
 	 */
-//	@Test
+	@Test
 	public void test() {
 		IFileReadChannel source = null;
 		IFfmpegTranscodeManager transcodeManager = null;
@@ -66,17 +68,28 @@ public class FileTranscodeTest {
 				
 				@Override
 				public void close() {
-					logger.info("終了");
+					logger.info("a終了");
+				}
+			});
+			trackManager = (IFfmpegTrackManager)transcodeManager.addNewTrackManager();
+			trackManager.setUnitSelector(new FlvAudioUnitSelector());
+			trackManager.setTrackListener(new ITrackListener() {
+				@Override
+				public void receiveData(List<Unit> units) {
+					logger.info(units);
+				}
+				@Override
+				public void close() {
+					logger.info("b終了");
 				}
 			});
 			
 			// データを変換マネージャーに流し込んで動作させる。
 			while((tag = analyzer.analyze(source)) != null) {
-//				logger.info(tag);
 				// データを送りつける。
 				transcodeManager.transcode(tag);
 			}
-			Thread.sleep(12000);
+			((FfmpegTranscodeManager)transcodeManager).waitForEnd();
 		}
 		catch(Exception e) {
 			logger.warn("例外が発生した。", e);

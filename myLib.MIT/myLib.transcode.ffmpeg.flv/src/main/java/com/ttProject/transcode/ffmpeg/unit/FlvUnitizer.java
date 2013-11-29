@@ -28,4 +28,8 @@ public class FlvUnitizer implements IUnitizer {
 		}
 		return 	flvManager.getUnits(buffer);
 	}
+	@Override
+	public void close() {
+		
+	}
 }

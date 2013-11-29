@@ -9,24 +9,21 @@ import com.ttProject.transcode.ITrackListener;
 /**
  * ffmpegのtrackManagerの動作定義
  * @author taktod
- *
  */
 public class FfmpegTrackManager implements IFfmpegTrackManager {
 	/** 動作ID */
 	private final int id;
 	/** 出来上がったデータを参照するlistener */
 	private ITrackListener trackListener = null;
-	/** 変換マネージャー(例外がでたときに、通知したかったんだが・・・必要ないかな・・・) */
-//	private final FfmpegTranscodeManager transcodeManager;
 	/** unit選択プログラム */
 	private IUnitSelector unitSelector = null;
+	/** 処理unit */
 	private List<Unit> units;
 	/**
 	 * コンストラクタ
 	 * @param id
 	 */
-	public FfmpegTrackManager(/*FfmpegTranscodeManager transcodeManager,*/ int id) {
-//		this.transcodeManager = transcodeManager;
+	public FfmpegTrackManager(int id) {
 		this.id = id;
 	}
 	/**
@@ -69,5 +66,22 @@ public class FfmpegTrackManager implements IFfmpegTrackManager {
 	public void commit() {
 		trackListener.receiveData(units);
 		units = null;
+	}
+	/**
+	 * 停止処理
+	 */
+	public void close() {
+		if(units != null) {
+			units.clear();
+			units = null;
+		}
+		if(unitSelector != null) {
+			unitSelector.close();
+			unitSelector = null;
+		}
+		if(trackListener != null) {
+			trackListener.close();
+			trackListener = null;
+		}
 	}
 }

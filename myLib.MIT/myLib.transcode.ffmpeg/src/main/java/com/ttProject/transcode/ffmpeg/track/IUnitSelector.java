@@ -13,4 +13,8 @@ public interface IUnitSelector {
 	 * @return true:このトラックで処理するデータ false:このトラックで処理しないデータ
 	 */
 	public boolean check(Unit unit);
+	/**
+	 * 終了処理
+	 */
+	public void close();
 }

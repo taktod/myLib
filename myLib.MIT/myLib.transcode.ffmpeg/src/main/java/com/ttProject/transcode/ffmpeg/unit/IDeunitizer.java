@@ -24,4 +24,8 @@ public interface IDeunitizer {
 	 * @return
 	 */
 	public ByteBuffer getBuffer(Unit unit) throws Exception;
+	/**
+	 * 必要なくなったときの動作
+	 */
+	public void close();
 }

@@ -125,7 +125,7 @@ public class FfmpegTranscodeManager extends TranscodeManager implements IFfmpegT
 	 * 終了処理
 	 */
 	@Override
-	public void close() {
+	public synchronized void close() {
 		if(handler != null) {
 			handler.close();
 			handler = null;
@@ -134,7 +134,23 @@ public class FfmpegTranscodeManager extends TranscodeManager implements IFfmpegT
 			server.closeServer();
 			server = null;
 		}
+		if(unitizer != null) {
+			unitizer.close();
+			unitizer = null;
+		}
+		if(deunitizer != null) {
+			deunitizer.close();
+			deunitizer = null;
+		}
+		for(Entry<Integer, ITrackManager> entry : getTrackManagers().entrySet()) {
+			FfmpegTrackManager trackManager = (FfmpegTrackManager)entry.getValue();
+			trackManager.close();
+		}
+		getTrackManagers().clear();
 	}
+	/**
+	 * 内部動作用のtrackをつくる必要がある
+	 */
 	@Override
 	protected ITrackManager makeTrackManager(int newId) {
 		FfmpegTrackManager trackManager = new FfmpegTrackManager(newId);
@@ -153,5 +169,12 @@ public class FfmpegTranscodeManager extends TranscodeManager implements IFfmpegT
 	}
 	public IUnitizer getUnitizer() {
 		return unitizer;
+	}
+	// wait中はデータがこなくなったらサーバーを殺す・・・がよさそう。
+	public void waitForEnd() throws Exception {
+		System.out.println("transcodeManager");
+		if(handler != null) {
+			handler.waitForEnd();
+		}
 	}
 }

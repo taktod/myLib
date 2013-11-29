@@ -95,6 +95,9 @@ public class ProcessServer {
 	 * サーバーを閉じる
 	 */
 	public void closeServer() {
+		if(sendWorker != null) {
+			sendWorker.close();
+		}
 		synchronized(channels) {
 			for(Channel channel : channels) {
 				channel.close();
