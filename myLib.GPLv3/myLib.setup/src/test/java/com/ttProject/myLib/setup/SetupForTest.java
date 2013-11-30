@@ -69,7 +69,7 @@ public class SetupForTest {
 		videoCounter = 0;
 		// flvデータを作ります。
 		IContainer container = IContainer.make();
-		if(container.open(getTargetFile("../myLib.MIT/myLib.media.adpcm_swf/src/test/resources/test.flv"), IContainer.Type.WRITE, null) < 0) {
+		if(container.open(getTargetFile("../myLib.MIT/myLib.media.adpcmswf/src/test/resources/test.flv"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
 		IStreamCoder audioEncoder = adpcm_swf(container);

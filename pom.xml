@@ -62,7 +62,7 @@
     <module>myLib.MIT/myLib.media.flv1</module>
     <module>myLib.MIT/myLib.media.vp6</module>
     <module>myLib.MIT/myLib.media.nellymoser</module>
-    <module>myLib.MIT/myLib.media.adpcm_swf</module>
+    <module>myLib.MIT/myLib.media.adpcmswf</module>
     <module>myLib.MIT/myLib.media.speex</module>
   </modules>
   <scm>
