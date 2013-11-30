@@ -11,10 +11,16 @@
   <description>vp6のフォーマット解析
 とりあえず縦横サイズを取り出したい。</description>
   <dependencies>
-  	<dependency>
-  		<groupId>com.ttProject</groupId>
-  		<artifactId>myLib.media</artifactId>
-  		<version>0.0.2-SNAPSHOT</version>
-  	</dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.media</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.media.flv</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

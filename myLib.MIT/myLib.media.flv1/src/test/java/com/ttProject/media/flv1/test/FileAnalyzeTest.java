@@ -1,4 +1,4 @@
-package com.ttProject.media.vp6.test;
+package com.ttProject.media.flv1.test;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -10,11 +10,21 @@ import com.ttProject.media.flv.TagAnalyzer;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
+/**
+ * fileデータを読み込む動作テスト
+ * @author taktod
+ */
 public class FileAnalyzeTest {
 	private Logger logger = Logger.getLogger(FileAnalyzeTest.class);
+	/**
+	 * ファイルを解析するテスト
+	 * @throws Exception
+	 */
 	@Test
-	public void test() throws Exception {
-		IFileReadChannel source = FileReadChannel.openFileReadChannel("http://red5.googlecode.com/svn-history/r4071/java/example/trunk/oflaDemo/www/streams/toystory3-vp6.flv");
+	public void fixedFileTest() throws Exception {
+		IFileReadChannel source = FileReadChannel.openFileReadChannel(
+				Thread.currentThread().getContextClassLoader().getResource("test.flv")
+		);
 		FlvHeader flvheader = new FlvHeader();
 		flvheader.analyze(source);
 		logger.info(flvheader);
