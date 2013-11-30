@@ -171,7 +171,8 @@ public class FlvVideoPacketizer implements IPacketizer {
 		}
 		ByteBuffer rawData = tag.getRawData();
 		rawData.position(3); // ３の位置に移動(ここからDataNalAnalyzerにいれるとnalが取り出せる)
-		DataNalAnalyzer dataAnalyzer = new DataNalAnalyzer();
+		DataNalAnalyzer dataAnalyzer = new DataNalAnalyzer(); // TODO これもglobal化しておいた方が本当はよい。ただし、ここでの動作はNALの解析ではなく、データの取り出しなので、globalでなくても問題ない。
+		// まぁnewするコストは無駄だけど。
 		IReadChannel rawDataChannel = new ByteReadChannel(rawData);
 		ByteBuffer buffer = null;
 		Frame avcFrame = null;

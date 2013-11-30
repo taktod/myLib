@@ -28,6 +28,8 @@ import com.xuggle.xuggler.IStreamCoder;
  * @author taktod
  */
 public class FlvDepacketizer implements IDepacketizer {
+	// NalのAnalyzer(h264)用をglobal化しました。
+	private NalAnalyzer nalAnalyzer = new NalAnalyzer();
 	/** h264の動作補助 sps */
 	private SequenceParameterSet sps = null;
 	/** h264の動作補助 pps */
@@ -88,7 +90,6 @@ public class FlvDepacketizer implements IDepacketizer {
 	 */
 	private List<Unit> getAVCTag(IPacket packet) throws Exception {
 		List<Unit> tagList = new ArrayList<Unit>();
-		NalAnalyzer nalAnalyzer = new NalAnalyzer();
 		IReadChannel byteDataChannel = new ByteReadChannel(packet.getData().getByteArray(0, packet.getSize()));
 		// キーパケットである場合
 		Frame frame = null;

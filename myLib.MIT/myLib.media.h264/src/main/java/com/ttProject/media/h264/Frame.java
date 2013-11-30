@@ -137,4 +137,12 @@ public abstract class Frame extends Unit implements IVideoData {
 		}
 		return -1;
 	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append(getClass().getSimpleName());
+		data.append(" width:").append(getWidth());
+		data.append(" height:").append(getHeight());
+		return data.toString();
+	}
 }

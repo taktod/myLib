@@ -27,21 +27,21 @@ public abstract class Frame extends Unit implements IVideoData {
 		this.qp = qp;
 		this.marker = marker;
 	}
+	public void setLastKeyFrame(IntraFrame frame) {
+		this.keyFrame = frame;
+	}
 	@Override
 	public long getPts() {
 		return 0;
 	}
-
 	@Override
 	public long getDts() {
 		return 0;
 	}
-
 	@Override
 	public double getTimebase() {
 		return 0;
 	}
-
 	@Override
 	public ByteBuffer getRawData() throws Exception {
 		return null;
@@ -68,5 +68,13 @@ public abstract class Frame extends Unit implements IVideoData {
 			return keyFrame.getWidth();
 		}
 		return -1;
+	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append(getClass().getSimpleName());
+		data.append(" width:").append(getWidth());
+		data.append(" height:").append(getHeight());
+		return data.toString();
 	}
 }

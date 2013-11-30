@@ -11,6 +11,7 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class InterFrame extends Frame {
+	@SuppressWarnings("unused")
 	private short offset; // 16bit
 	public InterFrame(Bit1 frameMode, Bit6 qp, Bit1 marker) {
 		super(frameMode, qp, marker);

@@ -15,11 +15,11 @@ import com.ttProject.media.flv.tag.VideoTag;
 import com.ttProject.media.h264.ConfigData;
 import com.ttProject.media.h264.DataNalAnalyzer;
 import com.ttProject.media.h264.Frame;
+import com.ttProject.media.h264.frame.SequenceParameterSet;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.util.HexUtil;
 
 public class FileAnalyzeTest {
 	private Logger logger = Logger.getLogger(FileAnalyzeTest.class);
@@ -56,15 +56,19 @@ public class FileAnalyzeTest {
 							List<Frame> frames = configData.getNals(configChannel);
 							for(Frame frame : frames) {
 								// spsとppsがとれているはず。
-								logger.info(HexUtil.toHex(frame.getData(), 0, 3, true));
+								if(frame instanceof SequenceParameterSet) {
+									dataNalAnalyzer.setLastSps((SequenceParameterSet)frame);
+								}
+								logger.info(frame);
 							}
 						}
 						else {
-							// 内容を解析して、mpegtsとして使えるIDRSliceとsliceがとれていることを願う
+							// 内容を解析して、mpegtsとして使えるSliceIDRとsliceがとれていることを願う
 							IReadChannel dataChannel = new ByteReadChannel(vTag.getRawData());
 							dataChannel.position(3);
 							Frame frame = dataNalAnalyzer.analyze(dataChannel);
-							logger.info(HexUtil.toHex(frame.getData(), 0, 5, true));
+//							logger.info(HexUtil.toHex(frame.getData(), 0, 5, true));
+							logger.info(frame);
 						}
 					}
 				}

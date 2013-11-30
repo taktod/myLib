@@ -7,7 +7,12 @@ import com.ttProject.media.vp6.frame.InterFrame;
 import com.ttProject.media.vp6.frame.IntraFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
+/**
+ * frameを解析する動作
+ * @author taktod
+ */
 public class FrameAnalyzer implements IFrameAnalyzer {
+	private IntraFrame lastKeyFrame = null;
 	@Override
 	public Frame analyze(IReadChannel ch) throws Exception {
 		BitLoader bitLoader = new BitLoader(ch);
@@ -19,9 +24,11 @@ public class FrameAnalyzer implements IFrameAnalyzer {
 		switch(frameMode.get()) {
 		case 0: // intraFrame
 			frame = new IntraFrame(frameMode, qp, marker);
+			lastKeyFrame = (IntraFrame) frame;
 			break;
 		case 1: // interFrame
 			frame = new InterFrame(frameMode, qp, marker);
+			frame.setLastKeyFrame(lastKeyFrame);
 			break;
 		default:
 			throw new Exception("frameTypeがおかしい値でした。");

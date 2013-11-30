@@ -17,27 +17,39 @@ import com.ttProject.util.BufferUtil;
  *
  */
 public class FrameAnalyzer implements IFrameAnalyzer {
+	private SequenceParameterSet lastSps = null;
+	public void setLastSps(SequenceParameterSet sps) {
+		this.lastSps = sps;
+	}
 	@Override
 	public Frame analyze(IReadChannel ch) throws Exception {
 		// 1バイト読み込んでフレームのタイプがなにであるか知る必要がある。
 		byte frameTypeData = BufferUtil.safeRead(ch, 1).get();
 		Type type = Type.getType(frameTypeData & 0x1F);
+		Frame frame = null;
 		switch(type) {
 		case Slice:
-			return new Slice(frameTypeData);
+			frame = new Slice(frameTypeData);
+			break;
 		case SliceIDR:
-			return new SliceIDR(frameTypeData);
+			frame = new SliceIDR(frameTypeData);
+			break;
 		case SequenceParameterSet:
-			return new SequenceParameterSet(frameTypeData);
+			frame = new SequenceParameterSet(frameTypeData);
+			lastSps = (SequenceParameterSet)frame;
+			return frame;
 		case PictureParameterSet:
-			return new PictureParameterSet(frameTypeData);
+			frame = new PictureParameterSet(frameTypeData);
+			break;
 		case SupplementalEnhancementInformation:
-			return new SupplementalEnhancementInformation(frameTypeData);
+			frame = new SupplementalEnhancementInformation(frameTypeData);
+			break;
 //		case AccessUnitDelimiter:
 //			break;
 		default:
 			throw new Exception("しらないデータタイプをうけとりました。:" + type);
 		}
-//		return null;
+		frame.setSps(lastSps);
+		return frame;
 	}
 }

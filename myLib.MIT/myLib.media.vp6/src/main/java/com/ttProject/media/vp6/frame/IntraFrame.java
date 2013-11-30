@@ -19,6 +19,7 @@ public class IntraFrame extends Frame {
 	private Bit2 version2;
 	private Bit1 interlace;
 
+	@SuppressWarnings("unused")
 	private short offset; // 16bit
 
 	private Bit8 dimY; // x16で縦幅
@@ -53,14 +54,6 @@ public class IntraFrame extends Frame {
 		renderY = new Bit8();
 		renderX = new Bit8();
 		bitLoader.load(dimY, dimX, renderY, renderX);
-	}
-	@Override
-	public String toString() {
-		StringBuilder data = new StringBuilder();
-		data.append(getClass().getSimpleName());
-		data.append(" width:").append(renderX.get() * 16);
-		data.append(" height:").append(renderY.get() * 16);
-		return data.toString();
 	}
 	@Override
 	public int getHeight() {
