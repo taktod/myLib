@@ -62,17 +62,86 @@ public class SetupForTest {
 	 * adpcmのflvを作成します
 	 * @throws Exception
 	 */
-//	@Test
-	public void adpcmSetup() throws Exception {
+	@Test
+	public void adpcmSwfSetup() throws Exception {
 		logger.info("adpcmのテスト用データを作成する。");
 		audioCounter = 0;
 		videoCounter = 0;
 		// flvデータを作ります。
 		IContainer container = IContainer.make();
-		if(container.open(getTargetFile("../test.flv"), IContainer.Type.WRITE, null) < 0) {
+		if(container.open(getTargetFile("../myLib.MIT/myLib.media.adpcm_swf/src/test/resources/test.flv"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("開けませんでした");
 		}
-		IStreamCoder audioEncoder = adpcm(container);
+		IStreamCoder audioEncoder = adpcm_swf(container);
+		processConvert(container, null, audioEncoder);
+		audioEncoder.close();
+		container.close();
+	}
+	/**
+	 * nellymoserのflvを作成します
+	 * @throws Exception
+	 */
+	@Test
+	public void nellymoserSetup() throws Exception {
+		logger.info("nellyMoserのテスト用データを作成する。");
+		audioCounter = 0;
+		videoCounter = 0;
+		// flvデータを作ります。
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("../myLib.MIT/myLib.media.nellymoser/src/test/resources/test.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("開けませんでした");
+		}
+		IStreamCoder audioEncoder = nellymoser(container);
+		audioEncoder.setChannels(1);
+		processConvert(container, null, audioEncoder);
+		audioEncoder.close();
+		container.close();
+		logger.info("nellyMoser8のテスト用データを作成する。");
+		audioCounter = 0;
+		videoCounter = 0;
+		// flvデータを作ります。
+		container = IContainer.make();
+		if(container.open(getTargetFile("../myLib.MIT/myLib.media.nellymoser/src/test/resources/test_8.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("開けませんでした");
+		}
+		audioEncoder = nellymoser(container);
+		audioEncoder.setSampleRate(8000);
+		audioEncoder.setChannels(1);
+		processConvert(container, null, audioEncoder);
+		audioEncoder.close();
+		container.close();
+		logger.info("nellyMoser16のテスト用データを作成する。");
+		audioCounter = 0;
+		videoCounter = 0;
+		// flvデータを作ります。
+		container = IContainer.make();
+		if(container.open(getTargetFile("../myLib.MIT/myLib.media.nellymoser/src/test/resources/test_16.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("開けませんでした");
+		}
+		audioEncoder = nellymoser(container);
+		audioEncoder.setSampleRate(16000);
+		audioEncoder.setChannels(1);
+		processConvert(container, null, audioEncoder);
+		audioEncoder.close();
+		container.close();
+	}
+	/**
+	 * speexのflvを作成します
+	 * @throws Exception
+	 */
+	@Test
+	public void speexSetup() throws Exception {
+		logger.info("speexのテスト用データを作成する。");
+		audioCounter = 0;
+		videoCounter = 0;
+		// flvデータを作ります。
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("../myLib.MIT/myLib.media.speex/src/test/resources/test.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("開けませんでした");
+		}
+		IStreamCoder audioEncoder = speex(container);
+		audioEncoder.setChannels(1);
+		audioEncoder.setSampleRate(16000);
 		processConvert(container, null, audioEncoder);
 		audioEncoder.close();
 		container.close();
@@ -319,8 +388,34 @@ public class SetupForTest {
 	 * @param container
 	 * @return
 	 */
-	private IStreamCoder adpcm(IContainer container) {
+	private IStreamCoder adpcm_swf(IContainer container) {
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_ADPCM_SWF);
+		IStreamCoder audioEncoder = stream.getStreamCoder();
+		audioEncoder.setSampleRate(44100);
+		audioEncoder.setChannels(2);
+		audioEncoder.setBitRate(96000);
+		return audioEncoder;
+	}
+	/**
+	 * nerrymoser
+	 * @param container
+	 * @return
+	 */
+	private IStreamCoder nellymoser(IContainer container) {
+		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_NELLYMOSER);
+		IStreamCoder audioEncoder = stream.getStreamCoder();
+		audioEncoder.setSampleRate(44100);
+		audioEncoder.setChannels(2);
+		audioEncoder.setBitRate(96000);
+		return audioEncoder;
+	}
+	/**
+	 * nerrymoser
+	 * @param container
+	 * @return
+	 */
+	private IStreamCoder speex(IContainer container) {
+		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_SPEEX);
 		IStreamCoder audioEncoder = stream.getStreamCoder();
 		audioEncoder.setSampleRate(44100);
 		audioEncoder.setChannels(2);
