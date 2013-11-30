@@ -35,6 +35,7 @@ import com.ttProject.nio.channels.IReadChannel;
  */
 public class SequenceParameterSet extends Frame {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(SequenceParameterSet.class);
 	// 先頭の３バイトからこのデータが取得可能
 	private Bit8 profileIdc;
@@ -78,7 +79,9 @@ public class SequenceParameterSet extends Frame {
 	private Ueg frameCropTopOffset;
 	private Ueg frameCropBottomOffset;
 	private Bit1 vuiParametersPresentFlag;
-	// 
+	
+	private int width = -1;
+	private int height = -1;
 	public SequenceParameterSet(int size, byte frameTypeData) {
 		super(size, frameTypeData);
 	}
@@ -190,14 +193,19 @@ public class SequenceParameterSet extends Frame {
 		if(vuiParametersPresentFlag.get() == 1) {
 			// parameterを読み込む
 		}
-		int width, height;
 		width = (picWidthInMbsMinus1.getData() + 1) * 16;
 		height = ((2 - frameMbsOnlyFlag.get()) * (picHeightInMapUnitsMinus1.getData() + 1) * 16);
 		if(frameCroppingFlag.get() == 1) {
 			width = width - frameCropLeftOffset.getData() * 2 - frameCropRightOffset.getData() * 2;
 			height = height - frameCropTopOffset.getData() * 2 - frameCropBottomOffset.getData() * 2;
 		}
-		logger.info("width:" + width);
-		logger.info("height:" + height);
+	}
+	@Override
+	public int getHeight() {
+		return height;
+	}
+	@Override
+	public int getWidth() {
+		return width;
 	}
 }

@@ -1,5 +1,8 @@
 package com.ttProject.media.flv1;
 
+import java.nio.ByteBuffer;
+
+import com.ttProject.media.IVideoData;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
 import com.ttProject.media.extra.Bit3;
@@ -12,7 +15,7 @@ import com.ttProject.media.extra.Bit8;
  * @author taktod
  */
 @SuppressWarnings("unused")
-public abstract class Frame {
+public abstract class Frame implements IVideoData {
 	private Bit8 pictureStartCode1;
 	private Bit8 pictureStartCode2;
 	private Bit1 pictureStartCode3;
@@ -78,5 +81,25 @@ public abstract class Frame {
 		data.append(" width:").append(width);
 		data.append(" height:").append(height);
 		return data.toString();
+	}
+	@Override
+	public long getDts() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public long getPts() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+	@Override
+	public ByteBuffer getRawData() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public double getTimebase() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

@@ -7,5 +7,14 @@ package com.ttProject.media;
  * audioとは違い、連続的にあるデータではないので、xuggleやffmpegの出力、ファイルデータのpts、dts値をそのまま使えば問題ないと思われます。
  */
 public interface IVideoData extends IMediaData {
-
+	/**
+	 * 横幅参照
+	 * @return
+	 */
+	public int getWidth();
+	/**
+	 * 縦幅参照
+	 * @return
+	 */
+	public int getHeight();
 }

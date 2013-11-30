@@ -62,4 +62,18 @@ public class IntraFrame extends Frame {
 		data.append(" height:").append(renderY.get() * 16);
 		return data.toString();
 	}
+	@Override
+	public int getHeight() {
+		if(renderY == null) {
+			return -1;
+		}
+		return renderY.get() * 16;
+	}
+	@Override
+	public int getWidth() {
+		if(renderX == null) {
+			return -1;
+		}
+		return renderX.get() * 16;
+	}
 }

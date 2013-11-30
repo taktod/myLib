@@ -6,6 +6,7 @@ import com.ttProject.media.IVideoData;
 import com.ttProject.media.Unit;
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit6;
+import com.ttProject.media.vp6.frame.IntraFrame;
 
 /**
  * on2Vp6のコーデックの映像の内容を解析します。
@@ -19,6 +20,7 @@ public abstract class Frame extends Unit implements IVideoData {
 	private Bit1 frameMode;
 	private Bit6 qp;
 	private Bit1 marker;
+	private IntraFrame keyFrame = null;
 	public Frame(Bit1 frameMode, Bit6 qp, Bit1 marker) {
 		super(0, 0);
 		this.frameMode = frameMode;
@@ -53,5 +55,18 @@ public abstract class Frame extends Unit implements IVideoData {
 	protected Bit1 getMarker() {
 		return marker;
 	}
-	
+	@Override
+	public int getHeight() {
+		if(keyFrame != null) {
+			return keyFrame.getHeight();
+		}
+		return -1;
+	}
+	@Override
+	public int getWidth() {
+		if(keyFrame != null) {
+			return keyFrame.getWidth();
+		}
+		return -1;
+	}
 }

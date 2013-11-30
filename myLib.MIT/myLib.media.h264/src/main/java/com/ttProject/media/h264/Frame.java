@@ -9,6 +9,7 @@ import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
 import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.BitConnector;
+import com.ttProject.media.h264.frame.SequenceParameterSet;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
@@ -44,12 +45,16 @@ public abstract class Frame extends Unit implements IVideoData {
 	private Bit2 nalRefIdc; // 0:ならなくてもいいやつ?数値のあるやつはdecodeに必須なnalなお0x09のadtはmpegtsには必要っぽい。
 	private Bit5 type; // typeで宣言している数値がはいるっぽい
 	private ByteBuffer buffer; // データ本体保持
+	private SequenceParameterSet sps = null;
 	
 	public Frame(final int size, byte frameTypeData) {
 		super(0, size);
 		forbiddenZeroBit = new Bit1(frameTypeData >>> 7);
 		nalRefIdc = new Bit2(frameTypeData >>> 5);
 		type = new Bit5(frameTypeData);
+	}
+	public void setSps(SequenceParameterSet sps) {
+		this.sps = sps;
 	}
 	// たぶんつかわん
 	public int getForbiddenZeroBit() {
@@ -117,5 +122,19 @@ public abstract class Frame extends Unit implements IVideoData {
 	}
 	public ByteBuffer getRawData() throws Exception {
 		return getData();
+	}
+	@Override
+	public int getHeight() {
+		if(sps != null) {
+			return sps.getHeight();
+		}
+		return -1;
+	}
+	@Override
+	public int getWidth() {
+		if(sps != null) {
+			return sps.getWidth();
+		}
+		return -1;
 	}
 }
