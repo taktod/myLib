@@ -36,6 +36,7 @@ public class FileAnalyzeTest {
 		ITagAnalyzer analyzer = new TagAnalyzer();
 		// sourceを解析していく
 		Tag tag = null;
+		DataNalAnalyzer dataNalAnalyzer = new DataNalAnalyzer();
 		try {
 			while((tag = analyzer.analyze(source)) != null) {
 				if(tag instanceof VideoTag) {
@@ -60,7 +61,6 @@ public class FileAnalyzeTest {
 						}
 						else {
 							// 内容を解析して、mpegtsとして使えるIDRSliceとsliceがとれていることを願う
-							DataNalAnalyzer dataNalAnalyzer = new DataNalAnalyzer();
 							IReadChannel dataChannel = new ByteReadChannel(vTag.getRawData());
 							dataChannel.position(3);
 							Frame frame = dataNalAnalyzer.analyze(dataChannel);
