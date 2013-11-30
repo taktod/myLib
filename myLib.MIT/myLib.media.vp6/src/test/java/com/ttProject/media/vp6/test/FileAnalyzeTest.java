@@ -35,7 +35,7 @@ public class FileAnalyzeTest {
 			if(tag instanceof VideoTag) {
 				VideoTag vTag = (VideoTag) tag;
 				if(vTag.getCodec() == CodecType.ON2VP6) {
-					logger.info(vTag);
+//					logger.info(vTag);
 					// 中身を解析する
 					ByteBuffer buffer = vTag.getRawData();
 					// vp6のデータはflvから取り出すときに先頭の1バイトを取り出して末端につける必要があり。

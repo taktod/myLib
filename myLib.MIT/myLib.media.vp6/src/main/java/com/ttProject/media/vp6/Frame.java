@@ -2,15 +2,10 @@ package com.ttProject.media.vp6;
 
 import java.nio.ByteBuffer;
 
-import com.ttProject.media.IAnalyzer;
 import com.ttProject.media.IVideoData;
 import com.ttProject.media.Unit;
 import com.ttProject.media.extra.Bit1;
-import com.ttProject.media.extra.Bit2;
-import com.ttProject.media.extra.Bit5;
 import com.ttProject.media.extra.Bit6;
-import com.ttProject.media.extra.Bit8;
-import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * on2Vp6のコーデックの映像の内容を解析します。
@@ -20,37 +15,43 @@ import com.ttProject.nio.channels.IReadChannel;
  * よって解析データは78から・・・となります。
  * @author taktod
  */
-public class Frame implements IVideoData {
+public abstract class Frame extends Unit implements IVideoData {
 	private Bit1 frameMode;
 	private Bit6 qp;
 	private Bit1 marker;
+	public Frame(Bit1 frameMode, Bit6 qp, Bit1 marker) {
+		super(0, 0);
+		this.frameMode = frameMode;
+		this.qp = qp;
+		this.marker = marker;
+	}
 	@Override
 	public long getPts() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public long getDts() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public double getTimebase() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public ByteBuffer getRawData() throws Exception {
-		// TODO Auto-generated method stub
 		return null;
 	}
-/*	@Override
-	public void analyze(IReadChannel ch, IAnalyzer<?> analyzer)
-			throws Exception {
-		// TODO Auto-generated method stub
-		
-	}*/
+	protected Bit1 getFrameMode() {
+		return frameMode;
+	}
+	protected Bit6 getQp() {
+		return qp;
+	}
+	protected Bit1 getMarker() {
+		return marker;
+	}
+	
 }
