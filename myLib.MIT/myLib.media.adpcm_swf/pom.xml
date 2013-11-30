@@ -7,4 +7,11 @@
     <relativePath>../../</relativePath>
   </parent>
   <artifactId>myLib.media.adpcm_swf</artifactId>
+  <dependencies>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.media</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 </project>

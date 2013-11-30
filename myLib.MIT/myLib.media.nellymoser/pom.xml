@@ -10,4 +10,11 @@
   <name>myLib.media.nellymoser</name>
   <description>nellymoserのframeを解析する動作
 といってもflv用の1chunkあたりのframe数を定義したいだけだが・・・</description>
+  <dependencies>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.media</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 </project>

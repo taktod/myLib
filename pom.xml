@@ -66,15 +66,15 @@
     <module>myLib.MIT/myLib.media.speex</module>
   </modules>
   <scm>
-  	<url>scm:git:git@github.com:taktod/myLib.git</url>
-  	<connection>scm:git:git@github.com:taktod/myLib.git</connection>
-  	<developerConnection>scm:git:git@github.com:taktod/myLib.git</developerConnection>
+    <url>scm:git:git@github.com:taktod/myLib.git</url>
+    <connection>scm:git:git@github.com:taktod/myLib.git</connection>
+    <developerConnection>scm:git:git@github.com:taktod/myLib.git</developerConnection>
   </scm>
   <distributionManagement>
     <repository>
-        <id>mvn-repo</id>
-        <name>mvn-repo用のローカルgitリポジトリ</name>
-        <url>file://${project.basedir}/../mvn-repo</url>
+      <id>mvn-repo</id>
+      <name>mvn-repo用のローカルgitリポジトリ</name>
+      <url>file://${project.basedir}/../mvn-repo</url>
     </repository>
   </distributionManagement>
   <name>myLib</name>
