@@ -20,27 +20,10 @@ import com.ttProject.nio.channels.IReadChannel;
  * よって解析データは78から・・・となります。
  * @author taktod
  */
-public class Frame extends Unit implements IVideoData {
+public class Frame implements IVideoData {
 	private Bit1 frameMode;
 	private Bit6 qp;
 	private Bit1 marker;
-	
-	private Bit5 version;
-	private Bit2 version2;
-	private Bit1 interlace;
-	
-	private short offset; // 16bit
-	
-	private Bit8 dimY; // x16で縦幅
-	private Bit8 dimX; // x16で横幅
-	private Bit8 renderY; // x16で縦幅
-	private Bit8 renderX; // x16で横幅
-	/**
-	 * コンストラクタ
-	 */
-	public Frame() {
-		super(0, 0);
-	}
 	@Override
 	public long getPts() {
 		// TODO Auto-generated method stub
@@ -64,12 +47,10 @@ public class Frame extends Unit implements IVideoData {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
+/*	@Override
 	public void analyze(IReadChannel ch, IAnalyzer<?> analyzer)
 			throws Exception {
 		// TODO Auto-generated method stub
 		
-	}
-
+	}*/
 }
