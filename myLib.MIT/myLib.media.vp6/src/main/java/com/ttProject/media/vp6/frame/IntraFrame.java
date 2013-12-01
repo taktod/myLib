@@ -35,6 +35,9 @@ public class IntraFrame extends Frame {
 	public IntraFrame(Bit1 frameMode, Bit6 qp, Bit1 marker) {
 		super(frameMode, qp, marker);
 	}
+	/**
+	 * 解析をすすめる動作
+	 */
 	@Override
 	public void analyze(IReadChannel ch, IAnalyzer<?> analyzer)
 			throws Exception {

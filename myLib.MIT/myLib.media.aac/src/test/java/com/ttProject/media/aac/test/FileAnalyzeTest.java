@@ -27,7 +27,7 @@ public class FileAnalyzeTest {
 			logger.info(frame);
 			counter ++;
 		}
-		logger.info((counter *1.024/ 44.1f));
+		logger.info((counter * 1.024/ 44.1f));
 		source.close();
 	}
 }

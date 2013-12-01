@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.media.Manager;
 import com.ttProject.media.aac.frame.Aac;
 import com.ttProject.media.extra.Bit1;
@@ -22,6 +24,8 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class AacManager extends Manager<Frame> {
+	/** ロガー */
+	private Logger logger = Logger.getLogger(AacManager.class);
 	/**
 	 * adtsの形式としてデータを取り出します。
 	 */
@@ -41,8 +45,7 @@ public class AacManager extends Manager<Frame> {
 				break;
 			}
 			frame.analyze(bufferChannel);
-			System.out.println("size:" + bufferChannel.size());
-			System.out.println("pos" + (position + frame.getSize()));
+			logger.info("size:" + bufferChannel.size() + " pos:" + (position + frame.getSize()));
 			bufferChannel.position(position + frame.getSize());
 			result.add(frame);
 		}
