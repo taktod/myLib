@@ -12,14 +12,14 @@ public class Mp3FrameAnalyzer implements IMp3FrameAnalyzer {
 	/** mp3のデータ保持オブジェクト */
 	private Mp3DataList mp3DataList;
 	/**
-	 * mp3DataListを設定します
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void setMp3DataList(Mp3DataList mp3DataList) {
 		this.mp3DataList = mp3DataList;
 	}
 	/**
-	 * 解析動作
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void analyze(Unit unit) {

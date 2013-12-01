@@ -26,7 +26,9 @@ import com.flazr.rtmp.message.Control;
  */
 @ChannelPipelineCoverage("one")
 public class RtmpEncoderEx extends SimpleChannelDownstreamHandler {
+	/** 動作ロガー */
 	private static final Logger logger = LoggerFactory.getLogger(RtmpEncoderEx.class);
+	/** 動作chunkSize */
 	private int chunkSize = 128;
 	private RtmpHeader[] channelPrevHeaders = new RtmpHeader[RtmpHeader.MAX_CHANNEL_ID];
 	private void clearPrevHeaders() {

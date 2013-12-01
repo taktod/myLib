@@ -11,6 +11,7 @@ import com.ttProject.jmx.JMXServerFactory;
  * @author taktod
  */
 public class JMXRemoteTest {
+	/** 動作ロガー */
 	private static Logger logger = Logger.getLogger(JMXRemoteTest.class);
 	/**
 	 * @param args

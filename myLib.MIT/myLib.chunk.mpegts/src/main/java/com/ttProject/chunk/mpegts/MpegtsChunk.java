@@ -8,7 +8,7 @@ import com.ttProject.chunk.MediaChunk;
  */
 public class MpegtsChunk extends MediaChunk {
 	/**
-	 * データ出力
+	 * {@inheritDoc}
 	 */
 	@Override
 	public String toString() {

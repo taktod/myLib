@@ -19,8 +19,11 @@ public class MpegtsPesAnalyzer implements IPesAnalyzer {
 	/** 動作ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MpegtsPesAnalyzer.class);
+	/** 動作pmt情報 */
 	private Pmt pmt;
+	/** video情報リスト */
 	private VideoDataList videoDataList;
+	/** 音声情報リスト */
 	private AudioDataList audioDataList;
 	/** audioDataの解析オブジェクト */
 	private IAudioDataAnalyzer audioDataAnalyzer = null;

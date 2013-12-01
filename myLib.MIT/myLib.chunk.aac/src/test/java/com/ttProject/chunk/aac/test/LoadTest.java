@@ -19,11 +19,13 @@ import com.ttProject.nio.channels.IReadChannel;
 /**
  * 動作テスト
  * @author taktod
- *
  */
 public class LoadTest {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(LoadTest.class);
+	/**
+	 * 通常の動作解析
+	 */
 	@Test
 	public void analyzeNormalData() {
 		logger.info("通常のmp3のchunk作成テスト");

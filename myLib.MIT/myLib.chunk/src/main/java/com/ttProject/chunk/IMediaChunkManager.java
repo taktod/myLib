@@ -13,6 +13,7 @@ public interface IMediaChunkManager {
 	 * chunkを作るのにデータが足りない場合はnullが帰ってきます。
 	 * @param unit
 	 * @return
+	 * @throws Exception
 	 */
 	public IMediaChunk getChunk(Unit unit) throws Exception;
 	/**
@@ -47,7 +48,7 @@ public interface IMediaChunkManager {
 	 */
 	public IMediaChunk close();
 	/**
-	 * 
+	 * 経過済みticを応答します。
 	 * @return
 	 */
 	public long getPassedTic();

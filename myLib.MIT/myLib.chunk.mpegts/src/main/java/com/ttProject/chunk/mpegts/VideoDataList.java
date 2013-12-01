@@ -73,6 +73,10 @@ public class VideoDataList extends MediaDataList {
 		Pes firstKeyFramePes = keyPesList.get(0);
 		return firstKeyFramePes.getPts().getPts();
 	}
+	/**
+	 * 2番目のデータのpts値(次のkeyFrame的な感じ)
+	 * @return
+	 */
 	public long getSecondDataPts() {
 		if(keyPesList.size() <= 1) {
 			return -1;
@@ -114,6 +118,9 @@ public class VideoDataList extends MediaDataList {
 			}
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		StringBuilder data = new StringBuilder();

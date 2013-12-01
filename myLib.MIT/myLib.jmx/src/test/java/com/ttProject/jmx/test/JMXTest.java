@@ -10,6 +10,7 @@ import com.ttProject.jmx.JMXFactory;
  * @author taktod
  */
 public class JMXTest {
+	/** 動作ロガー */
 	private static Logger logger = Logger.getLogger(JMXTest.class);
 	/**
 	 * エントリー

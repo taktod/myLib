@@ -25,7 +25,7 @@ public class Mp3Chunk extends MediaChunk {
 		return sampleRate;
 	}
 	/**
-	 * データ出力
+	 * {@inheritDoc}
 	 */
 	@Override
 	public String toString() {

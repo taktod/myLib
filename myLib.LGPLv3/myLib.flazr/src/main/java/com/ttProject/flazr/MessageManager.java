@@ -35,8 +35,6 @@ public class MessageManager {
 			return convertToAggregateTag(message);
 		}
 		else if(header.isAudio()) {
-			//TODO この部分でflvAtomを仲介しないようにしてしまえばtimestamp問題がなくなる模様ですね。
-			// ここでtimestampがおかしくなるので、なんとかしたいところ・・・
 			return convertToAudioTag((Audio)message);
 		}
 		else if(header.isVideo()) {
@@ -61,7 +59,6 @@ public class MessageManager {
 		int difference = -1;
 		final ChannelBuffer in = message.encode();
 		AggregateTag aTag = new AggregateTag();
-//		System.out.println("aTagのtimestamp:" + header.getTime());
 		while(in.readable()) {
 			// messageTypeとsizeと時刻がほしい。
 			final MessageType messageType = MessageType.valueToEnum(in.readByte());
@@ -103,6 +100,8 @@ public class MessageManager {
 			// この方法だとwidthとかheightがdoubleでとれていればいいけど、ちがったら困る。
 			// 文字列化してからparseDoubleする必要があるかも？
 			// →試して見たところ問題なさそう
+			
+			// データのwidthとheightを取りたい場合はIVideoDataのwidthとheightを変更したほうがいいと思う。
 			metaTag.putData(entry.getKey(), entry.getValue());
 		}
 		return metaTag;

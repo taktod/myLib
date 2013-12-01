@@ -82,6 +82,9 @@ public class AudioDataList extends MediaDataList {
 		sendedCounter -= audioData.getSampleNum();
 		audioDataList.add(0, audioData);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		StringBuilder data = new StringBuilder();

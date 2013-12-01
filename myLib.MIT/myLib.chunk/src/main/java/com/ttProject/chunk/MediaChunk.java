@@ -3,9 +3,8 @@ package com.ttProject.chunk;
 import java.nio.ByteBuffer;
 
 /**
- * mediaChunkの共通処理を一本化する
+ * mediaChunkの共通処理を一本化
  * @author taktod
- *
  */
 public abstract class MediaChunk implements IMediaChunk {
 	/** 保持データ実体 */
@@ -50,10 +49,16 @@ public abstract class MediaChunk implements IMediaChunk {
 	public void setDuration(float duration) {
 		this.duration = duration;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public float getDuration() {
 		return duration;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getRawBuffer() {
 		ByteBuffer buffer = this.buffer.duplicate();
@@ -61,7 +66,7 @@ public abstract class MediaChunk implements IMediaChunk {
 		return buffer;
 	}
 	/**
-	 * 生データ応答
+	 * {@inheritDoc}
 	 */
 	@Override
 	public byte[] getRawData() {
@@ -71,7 +76,7 @@ public abstract class MediaChunk implements IMediaChunk {
 		return data;
 	}
 	/**
-	 * timestampを参照する
+	 * {@inheritDoc}
 	 */
 	@Override
 	public long getTimestamp() {
@@ -85,14 +90,14 @@ public abstract class MediaChunk implements IMediaChunk {
 		timestamp = pts;
 	}
 	/**
-	 * headerであるか応答
+	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean isHeader() {
 		return false;
 	}
 	/**
-	 * 書き込みデータ登録
+	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean write(ByteBuffer data) {

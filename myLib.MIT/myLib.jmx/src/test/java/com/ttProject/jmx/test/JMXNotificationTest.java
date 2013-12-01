@@ -13,6 +13,7 @@ import com.ttProject.jmx.JMXServerFactory;
  * @author taktod
  */
 public class JMXNotificationTest {
+	/** 動作ロガー */
 	private static Logger logger = Logger.getLogger(JMXNotificationTest.class);
 	/**
 	 * @param args

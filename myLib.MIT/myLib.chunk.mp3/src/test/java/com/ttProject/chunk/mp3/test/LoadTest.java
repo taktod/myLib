@@ -16,6 +16,10 @@ import com.ttProject.media.mp3.IFrameAnalyzer;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
+/**
+ * 読み込み動作テスト
+ * @author taktod
+ */
 public class LoadTest {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(LoadTest.class);

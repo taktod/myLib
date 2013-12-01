@@ -11,7 +11,12 @@ import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
+/**
+ * bufferの動作テスト
+ * @author taktod
+ */
 public class BufferTest {
+	/** 動作ロガー */
 	private Logger logger = Logger.getLogger(BufferTest.class);
 //	@Test
 	public void test() throws Exception {

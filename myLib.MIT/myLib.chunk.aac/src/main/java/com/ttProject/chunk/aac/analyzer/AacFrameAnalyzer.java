@@ -19,7 +19,7 @@ public class AacFrameAnalyzer implements IAacFrameAnalyzer {
 		this.aacDataList = aacDataList;
 	}
 	/**
-	 * 解析動作
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void analyze(Unit unit) {

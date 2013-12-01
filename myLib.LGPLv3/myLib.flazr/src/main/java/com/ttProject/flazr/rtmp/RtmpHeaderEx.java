@@ -8,6 +8,11 @@ import com.flazr.rtmp.RtmpHeader;
 import com.flazr.rtmp.message.MessageType;
 import com.flazr.util.Utils;
 
+/**
+ * rtmpHeaderの処理を上書きする動作
+ * @author taktod
+ *
+ */
 public class RtmpHeaderEx extends RtmpHeader {
 	@SuppressWarnings("unused")
 	private Logger logger = LoggerFactory.getLogger(RtmpHeaderEx.class);

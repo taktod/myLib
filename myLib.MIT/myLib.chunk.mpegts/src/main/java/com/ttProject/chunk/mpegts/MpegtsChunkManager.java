@@ -455,14 +455,14 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		return null;
 	}
 	/**
-	 * 拡張子応答
+	 * {@inheritDoc}
 	 */
 	@Override
 	public String getExt() {
 		return "ts";
 	}
 	/**
-	 * mpegtsの分割では、headerという概念が存在しない
+	 * {@inheritDoc}
 	 */
 	@Override
 	@Deprecated
@@ -470,7 +470,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 		return "ts";
 	}
 	/**
-	 * 経過ptsを応答します。
+	 * {@inheritDoc}
 	 */
 	@Override
 	public long getPassedTic() {

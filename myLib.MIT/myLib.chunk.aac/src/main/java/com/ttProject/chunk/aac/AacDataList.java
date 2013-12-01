@@ -79,6 +79,9 @@ public class AacDataList {
 		sendedCounter -= frame.getSampleNum();
 		aacDataList.add(0, frame);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		StringBuilder data = new StringBuilder();

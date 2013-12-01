@@ -1,22 +1,22 @@
 package com.ttProject.chunk;
 
 /**
- * mediaChunkManagerの共通処理を一本化したい。
+ * mediaChunkManagerの共通処理を一本化
  * @author taktod
- *
  */
 public abstract class MediaChunkManager implements IMediaChunkManager {
 	/** 内部で設定されているduration値 */
 	private float duration = 2;
 	/**
-	 * 処理時間(秒数表記)
+	 * {@inheritDoc}
+	 * 秒数経過
 	 */
 	@Override
 	public float getDuration() {
 		return duration;
 	}
 	/**
-	 * chunkに設定されるべき時間
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void setDuration(float duration) {

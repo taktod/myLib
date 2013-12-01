@@ -7,7 +7,6 @@ import com.ttProject.nio.channels.IReadChannel;
 /**
  * ファイル上のデータにより高速にアクセスするためのバッファ
  * なるべくbufferからデータを取り出すことで高速アクセスを実現してみる。
- * TODO そろそろintのみではなく、他のデータも引き出せるようにしたい
  * @author taktod
  */
 public class CacheBuffer {
@@ -87,7 +86,6 @@ public class CacheBuffer {
 	private void resetData(int bytesLoad) throws Exception {
 		// buffer内のデータがまにあっているか確認する。
 		if(buffer == null || buffer.remaining() < bytesLoad) {
-			// TODO このデータの作り直しの部分だけなんとかしておけば、bufferの読み込み動作はいくらでもつくれそうな予感
 			// 残りデータが0だったらもうデータなし
 			if(remaining == 0 && buffer.remaining() == 0) {
 				throw new Exception("eof already");

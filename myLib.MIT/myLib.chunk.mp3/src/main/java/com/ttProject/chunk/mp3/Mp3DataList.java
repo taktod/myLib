@@ -80,6 +80,9 @@ public class Mp3DataList {
 		sendedCounter -= frame.getSampleNum();
 		mp3DataList.add(0, frame);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		StringBuilder data = new StringBuilder();

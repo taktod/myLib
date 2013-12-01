@@ -34,7 +34,7 @@ public class Mp3ChunkManager extends MediaChunkManager {
 		analyzers.add(frameAnalyzer);
 	}
 	/**
-	 * chunkを取り出します
+	 * {@inheritDoc}
 	 */
 	@Override
 	public IMediaChunk getChunk(Unit unit) throws Exception {
@@ -75,14 +75,14 @@ public class Mp3ChunkManager extends MediaChunkManager {
 		return null;
 	}
 	/**
-	 * 処理中のchunkの参照(chunkの処理中はありません)
+	 * {@inheritDoc}
 	 */
 	@Override
 	public IMediaChunk getCurrentChunk() {
 		return null;
 	}
 	/**
-	 * 残りデータがある場合はここで応答しないとだめ。(でないとVODできちんとした長さのデータにならなくなる。(欠損がでる))
+	 * {@inheritDoc}
 	 */
 	@Override
 	public IMediaChunk close() {
@@ -110,14 +110,14 @@ public class Mp3ChunkManager extends MediaChunkManager {
 		return null;
 	}
 	/**
-	 * 拡張子応答
+	 * {@inheritDoc}
 	 */
 	@Override
 	public String getExt() {
 		return "mp3";
 	}
 	/**
-	 * mp3の分割では、headerという概念が存在しない
+	 * {@inheritDoc}
 	 */
 	@Override
 	@Deprecated
@@ -125,7 +125,7 @@ public class Mp3ChunkManager extends MediaChunkManager {
 		return "mp3";
 	}
 	/**
-	 * 経過時刻を応答します
+	 * {@inheritDoc}
 	 */
 	@Override
 	public long getPassedTic() {

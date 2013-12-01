@@ -71,6 +71,5 @@ public class ByteReadChannel implements IReadChannel {
 	 */
 	@Override
 	public void close() throws IOException {
-
 	}
 }
