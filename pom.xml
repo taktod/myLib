@@ -64,6 +64,25 @@
     <module>myLib.MIT/myLib.media.nellymoser</module>
     <module>myLib.MIT/myLib.media.adpcmswf</module>
     <module>myLib.MIT/myLib.media.speex</module>
+    <module>myLib.MIT/myLib.unit</module>
+    <module>myLib.MIT/myLib.frame</module>
+    <module>myLib.MIT/myLib.frame.aac</module>
+    <module>myLib.MIT/myLib.frame.adpcmswf</module>
+    <module>myLib.MIT/myLib.frame.flv1</module>
+    <module>myLib.MIT/myLib.frame.h264</module>
+    <module>myLib.MIT/myLib.frame.mp3</module>
+    <module>myLib.MIT/myLib.frame.nellymoser</module>
+    <module>myLib.MIT/myLib.frame.speex</module>
+    <module>myLib.MIT/myLib.frame.vp6</module>
+    <module>myLib.MIT/myLib.frame.vp8</module>
+    <module>myLib.MIT/myLib.container</module>
+    <module>myLib.MIT/myLib.container.adts</module>
+    <module>myLib.MIT/myLib.container.flv</module>
+    <module>myLib.MIT/myLib.container.mkv</module>
+    <module>myLib.MIT/myLib.container.mp3</module>
+    <module>myLib.MIT/myLib.container.mp4</module>
+    <module>myLib.MIT/myLib.container.mpegts</module>
+    <module>myLib.MIT/myLib.container.webm</module>
   </modules>
   <scm>
     <url>scm:git:git@github.com:taktod/myLib.git</url>
