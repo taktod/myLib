@@ -8,4 +8,11 @@
   </parent>
   <artifactId>myLib.unit</artifactId>
   <name>myLib.unit</name>
+  <dependencies>
+  	<dependency>
+  		<groupId>com.ttProject</groupId>
+  		<artifactId>myLib.util</artifactId>
+  		<version>0.0.2-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
 </project>
