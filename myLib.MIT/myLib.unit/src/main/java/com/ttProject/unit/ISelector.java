@@ -7,5 +7,4 @@ package com.ttProject.unit;
  * @author taktod
  */
 public interface ISelector {
-
 }
