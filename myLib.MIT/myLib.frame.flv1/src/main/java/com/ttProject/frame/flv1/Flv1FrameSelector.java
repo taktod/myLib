@@ -20,7 +20,7 @@ import com.ttProject.unit.extra.BitLoader;
 public class Flv1FrameSelector implements ISelector {
 	/**
 	 * flv1のframeを決定します。
-	 * @param channel
+	 * @param channel (1frame分のデータが渡されることを期待します)
 	 * @return
 	 */
 	public IUnit select(IReadChannel channel) throws Exception {
@@ -94,16 +94,22 @@ public class Flv1FrameSelector implements ISelector {
 			extraInformation = new Bit8();
 			bitLoader.load(extraInformation);
 		}
+		Flv1Frame frame = null;
 		switch(pictureType.get()) {
 		case 0: // intraFrame
-			return new IntraFrame(pictureStartCode1, pictureStartCode2, pictureStartCode3, version, temporalReference, pictureSize, width, height, pictureType, deblockingFlag, quantizer, extraInformationFlag, extraInformation, bitLoader.getExtraBit());
+			frame = new IntraFrame(pictureStartCode1, pictureStartCode2, pictureStartCode3, version, temporalReference, pictureSize, width, height, pictureType, deblockingFlag, quantizer, extraInformationFlag, extraInformation, bitLoader.getExtraBit());
+			break;
 		case 1: // interFrame
-			return new InterFrame(pictureStartCode1, pictureStartCode2, pictureStartCode3, version, temporalReference, pictureSize, width, height, pictureType, deblockingFlag, quantizer, extraInformationFlag, extraInformation, bitLoader.getExtraBit());
+			frame = new InterFrame(pictureStartCode1, pictureStartCode2, pictureStartCode3, version, temporalReference, pictureSize, width, height, pictureType, deblockingFlag, quantizer, extraInformationFlag, extraInformation, bitLoader.getExtraBit());
+			break;
 		case 2: // disposableInterFrame
-			return new DisposableInterFrame(pictureStartCode1, pictureStartCode2, pictureStartCode3, version, temporalReference, pictureSize, width, height, pictureType, deblockingFlag, quantizer, extraInformationFlag, extraInformation, bitLoader.getExtraBit());
+			frame = new DisposableInterFrame(pictureStartCode1, pictureStartCode2, pictureStartCode3, version, temporalReference, pictureSize, width, height, pictureType, deblockingFlag, quantizer, extraInformationFlag, extraInformation, bitLoader.getExtraBit());
+			break;
 		case 3: // reserved
 		default:
 			throw new Exception("flv1想定外のフレームです。");
 		}
+		frame.setSize(channel.size());
+		return frame;
 	}
 }

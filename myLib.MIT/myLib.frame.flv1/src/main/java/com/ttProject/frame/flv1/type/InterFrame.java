@@ -1,7 +1,5 @@
 package com.ttProject.frame.flv1.type;
 
-import java.nio.ByteBuffer;
-
 import com.ttProject.frame.flv1.Flv1Frame;
 import com.ttProject.unit.extra.Bit;
 import com.ttProject.unit.extra.Bit1;
@@ -19,13 +17,5 @@ public class InterFrame extends Flv1Frame {
 				version, temporalReference, pictureSize, 
 				width, height, pictureType, deblockingFlag,
 				quantizer, extraInformationFlag, extraInformation, extra);
-	}
-	@Override
-	public ByteBuffer getData() {
-		return null;
-	}
-	@Override
-	public long getSize() {
-		return 0;
 	}
 }

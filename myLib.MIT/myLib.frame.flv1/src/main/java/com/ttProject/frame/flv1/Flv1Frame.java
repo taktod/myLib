@@ -1,5 +1,7 @@
 package com.ttProject.frame.flv1;
 
+import java.nio.ByteBuffer;
+
 import com.ttProject.frame.IVideoFrame;
 import com.ttProject.unit.extra.Bit;
 import com.ttProject.unit.extra.Bit1;
@@ -7,6 +9,7 @@ import com.ttProject.unit.extra.Bit2;
 import com.ttProject.unit.extra.Bit3;
 import com.ttProject.unit.extra.Bit5;
 import com.ttProject.unit.extra.Bit8;
+import com.ttProject.unit.extra.BitConnector;
 
 /**
  * flv1のframeのベース
@@ -31,7 +34,10 @@ public abstract class Flv1Frame implements IVideoFrame {
 	private Bit5 quantizer;
 	private Bit1 extraInformationFlag;
 	private Bit8 extraInformation;
-	private Bit extra; // 帳尻あわせよう
+	@SuppressWarnings("unused")
+	private Bit extra; // 帳尻あわせ用
+	private ByteBuffer buffer = null; // あとで読み込みさせたい場合にいれておく
+	private long size = -1;
 	public Flv1Frame(Bit8 pictureStartCode1, Bit8 pictureStartCode2, Bit1 pictureStartCode3,
 			Bit5 version, Bit8 temporalReference, Bit3 pictureSize,
 			int width, int height, Bit2 pictureType, Bit1 deblockingFlag,
@@ -93,5 +99,33 @@ public abstract class Flv1Frame implements IVideoFrame {
 	@Override
 	public long getTimestamp() {
 		return 0;
+	}
+	/**
+	 * 残りデータを登録しておく
+	 */
+	public void setRemainData(ByteBuffer buffer) {
+		this.buffer = buffer;
+	}
+	/**
+	 * 全体のデータを応答します。
+	 */
+	@Override
+	public ByteBuffer getData() throws Exception {
+		BitConnector bitConnector = new BitConnector();
+		return null;
+	}
+	/**
+	 * データサイズを設定します。
+	 * @param size
+	 */
+	public void setSize(long size) {
+		this.size = size;
+	}
+	/**
+	 * サイズを応答する
+	 */
+	@Override
+	public long getSize() {
+		return size;
 	}
 }

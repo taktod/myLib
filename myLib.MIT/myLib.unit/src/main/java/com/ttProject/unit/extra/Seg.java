@@ -18,6 +18,14 @@ public class Seg extends ExpGolomb {
 			return (value >>> 1);
 		}
 	}
+	public void setData(int val) {
+		if(val > 0) {
+			setValue(val << 1);
+		}
+		else {
+			setValue(val << 1 | 1);
+		}
+	}
 	/**
 	 * dump
 	 */

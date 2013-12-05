@@ -12,7 +12,7 @@ public abstract class ExpGolomb extends Bit {
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(ExpGolomb.class);
 	/** 保持データ */
-	private int value;
+	private int value = 0;
 	/** 先頭の0のカウント値 */
 	private int zeroCount = 0;
 	/** 先頭の1を見つけたときのフラグ */
@@ -25,6 +25,10 @@ public abstract class ExpGolomb extends Bit {
 	 */
 	protected int getValue() {
 		return value;
+	}
+	protected void setValue(int value) {
+		this.value = value;
+		// このタイミングで
 	}
 	/**
 	 * コンストラクタ
@@ -56,7 +60,11 @@ public abstract class ExpGolomb extends Bit {
 			value = (value << 1) | bit.get();
 			zeroCount --;
 		}
-		return zeroCount != 0;
+		boolean end = zeroCount != 0;
+		if(end) {
+			// bitCountについて、記録しておくべき
+		}
+		return end;
 	}
 	/**
 	 * dump

@@ -12,6 +12,9 @@ public class Ueg extends ExpGolomb {
 	public int getData() {
 		return getValue() - 1;
 	}
+	public void setData(int val) {
+		setValue(val + 1);
+	}
 	/**
 	 * dump
 	 */

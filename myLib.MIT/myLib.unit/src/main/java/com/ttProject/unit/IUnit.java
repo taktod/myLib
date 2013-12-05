@@ -21,6 +21,7 @@ public interface IUnit {
 	 * 保持データを応答します。
 	 * (中身が全部はいっているものとします)
 	 * @return
+	 * @throws Exception
 	 */
-	public ByteBuffer getData();
+	public ByteBuffer getData() throws Exception;
 }
