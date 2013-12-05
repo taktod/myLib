@@ -6,11 +6,15 @@ package com.ttProject.unit.extra;
  */
 public class Seg extends ExpGolomb {
 	/**
-	 * データを参照します
-	 * @return
+	 * dump
 	 */
-	public int getData() {
-		int value = getValue();
+	@Override
+	public String toString() {
+		return Integer.toString(get());
+	}
+	@Override
+	public int get() {
+		int value = super.get();
 		if((value & 0x01) == 1) {
 			return -1 * (value >>> 1);
 		}
@@ -18,19 +22,13 @@ public class Seg extends ExpGolomb {
 			return (value >>> 1);
 		}
 	}
-	public void setData(int val) {
-		if(val > 0) {
-			setValue(val << 1);
+	@Override
+	public void set(int value) {
+		if(value > 0) {
+			super.set(value << 1);
 		}
 		else {
-			setValue(val << 1 | 1);
+			super.set(value << 1 | 1);
 		}
-	}
-	/**
-	 * dump
-	 */
-	@Override
-	public String toString() {
-		return Integer.toString(getData());
 	}
 }

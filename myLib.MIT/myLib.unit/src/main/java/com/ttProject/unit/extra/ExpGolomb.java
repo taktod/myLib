@@ -1,5 +1,8 @@
 package com.ttProject.unit.extra;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -18,17 +21,60 @@ public abstract class ExpGolomb extends Bit {
 	/** 先頭の1を見つけたときのフラグ */
 	private boolean find1Flg = false;
 	/** 保持ビット数 */
-	private int bitCount;
+	private int bitCountTmp;
+	/**  */
+	protected int bitCount = 1;
+	protected final List<Bit> bits = new ArrayList<Bit>();
+	{
+		bits.add(new Bit1(1));
+	}
+	
 	/**
 	 * bitデータ参照
 	 * @return
 	 */
-	protected int getValue() {
+	@Override
+	public int get() {
 		return value;
 	}
-	protected void setValue(int value) {
+	@Override
+	public void set(int value) {
 		this.value = value;
-		// このタイミングで
+		bits.clear();
+		int data = value;
+		int i;
+		for(i = 0;data != 0; data >>= 1, i ++) {
+			bits.add(0, new Bit1(data & 0x01));
+		}
+		int zeroCount = i - 1;
+		for(;zeroCount >= 8;zeroCount -= 8) {
+			bits.add(0, new Bit8());
+		}
+		switch(zeroCount) {
+		case 1:
+			bits.add(0, new Bit1());
+			break;
+		case 2:
+			bits.add(0, new Bit2());
+			break;
+		case 3:
+			bits.add(0, new Bit3());
+			break;
+		case 4:
+			bits.add(0, new Bit4());
+			break;
+		case 5:
+			bits.add(0, new Bit5());
+			break;
+		case 6:
+			bits.add(0, new Bit6());
+			break;
+		case 7:
+			bits.add(0, new Bit7());
+			break;
+		default:
+			break;
+		}
 	}
 	/**
 	 * コンストラクタ
@@ -51,7 +97,7 @@ public abstract class ExpGolomb extends Bit {
 			else {
 				// みつけた。
 				find1Flg = true;
-				bitCount = zeroCount * 2 + 1;
+				bitCountTmp = zeroCount * 2 + 1;
 				// ここから先は実データ
 				value = 1;
 			}
@@ -63,6 +109,7 @@ public abstract class ExpGolomb extends Bit {
 		boolean end = zeroCount != 0;
 		if(end) {
 			// bitCountについて、記録しておくべき
+			set(value);
 		}
 		return end;
 	}
@@ -74,7 +121,12 @@ public abstract class ExpGolomb extends Bit {
 		StringBuilder data = new StringBuilder();
 		data.append(" zeroCount:").append(zeroCount);
 		data.append(" find1Flg:").append(find1Flg);
-		data.append(" bitCount:").append(bitCount);
+		data.append(" bitCount:").append(bitCountTmp);
+		return data.toString();
+	}
+	public String dump() {
+		StringBuilder data = new StringBuilder();
+		data.append(bits);
 		return data.toString();
 	}
 }

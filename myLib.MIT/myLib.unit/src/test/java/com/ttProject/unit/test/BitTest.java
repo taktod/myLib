@@ -110,11 +110,12 @@ public class BitTest {
 	}
 	@Test
 	public void test4() throws Exception {
-		int data = 5;
-		int i;
-		for(i = 0;data != 0; data >>= 1, i ++) {
-			System.out.println(i);
-		}
-		System.out.println(i);
+		logger.info("test4");
+		Seg seg = new Seg();
+		logger.info(seg.dump());
+		logger.info(seg.toString());
+		seg.set(5);
+		logger.info(seg.dump());
+		logger.info(seg.toString());
 	}
 }
