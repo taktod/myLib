@@ -6,18 +6,19 @@ import java.util.List;
 /**
  * bitデータのコネクト処理
  * TODO bitConnectorにgolombの対応が必要
+ * TODO 現状では、固定データをByteBufferにするのは対応しているが、追記しながら様子見つつというのはできてないね。
  * @author taktod
  */
 public class BitConnector {
-	private int data = 0;
-	private int left = 0;
+//	private int data = 0;
+//	private int left = 0;
 	/**
 	 * 接続します。
 	 * @param bits
 	 */
 	public ByteBuffer connect(Bit... bits) {
-		data = 0;
-		left = 0;
+		long data = 0;
+		int left = 0;
 		int size = 0;
 		for(Bit bit : bits) {
 			if(bit != null) {
@@ -29,11 +30,25 @@ public class BitConnector {
 			if(bit == null) {
 				continue;
 			}
-			data = (data << bit.bitCount) | bit.get();
-			left += bit.bitCount;
-			while(left > 8) {
-				left -= 8;
-				buffer.put((byte)((data >>> left) & 0xFF));
+			if(bit instanceof ExpGolomb) {
+				ExpGolomb eg = (ExpGolomb) bit;
+				for(Bit egBit : eg.bits) {
+					// TODO この部分下と重複している。
+					data = (data << egBit.bitCount) | egBit.get();
+					left += egBit.bitCount;
+					while(left > 8) {
+						left -= 8;
+						buffer.put((byte)((data >>> left) & 0xFF));
+					}
+				}
+			}
+			else {
+				data = (data << bit.bitCount) | bit.get();
+				left += bit.bitCount;
+				while(left > 8) {
+					left -= 8;
+					buffer.put((byte)((data >>> left) & 0xFF));
+				}
 			}
 		}
 		buffer.put((byte)((data >>> (8 - left)) & 0xFF));
