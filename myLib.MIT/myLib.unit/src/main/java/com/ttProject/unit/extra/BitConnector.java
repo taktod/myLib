@@ -5,7 +5,6 @@ import java.util.List;
 
 /**
  * bitデータのコネクト処理
- * TODO bitConnectorにgolombの対応が必要
  * TODO 現状では、固定データをByteBufferにするのは対応しているが、追記しながら様子見つつというのはできてないね。
  * @author taktod
  */

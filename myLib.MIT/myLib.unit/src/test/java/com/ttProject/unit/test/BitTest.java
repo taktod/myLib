@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import com.ttProject.unit.extra.Bit;
 import com.ttProject.unit.extra.Bit3;
 import com.ttProject.unit.extra.Bit4;
 import com.ttProject.unit.extra.Bit5;
@@ -29,6 +30,7 @@ public class BitTest {
 	private Logger logger = Logger.getLogger(BitTest.class);
 	@Test
 	public void test3() throws Exception {
+		logger.info("test3");
 		IReadChannel channel = new ByteReadChannel(new byte[]{
 			0x12, 0x34, 0x56, 0x78	
 		});
@@ -49,6 +51,7 @@ public class BitTest {
 	 */
 	@Test
 	public void test() throws Exception {
+		logger.info("test1");
 		IReadChannel channel = new ByteReadChannel(new byte[] {
 				(byte)0xFF, (byte)0xF1, 0x50, (byte)0x80, 0x02, 0x1F, (byte)0xFC
 		});
@@ -92,6 +95,7 @@ public class BitTest {
 	 */
 	@Test
 	public void test2() throws Exception {
+		logger.info("test2");
 		IReadChannel channel = new ByteReadChannel(new byte[] {
 				(byte)0xF7
 		});
@@ -114,8 +118,20 @@ public class BitTest {
 		Seg seg = new Seg();
 		logger.info(seg.dump());
 		logger.info(seg.toString());
-		seg.set(5);
+		seg.set(-5);
 		logger.info(seg.dump());
 		logger.info(seg.toString());
+	}
+	@Test
+	public void test5() throws Exception {
+		logger.info("test5");
+		Bit b1 = new Bit1(1);
+		Bit seg = new Seg();
+		seg.set(-5);
+		logger.info(b1);
+		logger.info(seg);
+		BitConnector connector = new BitConnector();
+		ByteBuffer buffer = connector.connect(b1, seg);
+		logger.info(HexUtil.toHex(buffer));
 	}
 }

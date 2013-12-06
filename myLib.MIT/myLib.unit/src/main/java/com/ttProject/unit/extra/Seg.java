@@ -28,7 +28,7 @@ public class Seg extends ExpGolomb {
 			super.set(value << 1);
 		}
 		else {
-			super.set(value << 1 | 1);
+			super.set((-1 * value) << 1 | 1);
 		}
 	}
 }
