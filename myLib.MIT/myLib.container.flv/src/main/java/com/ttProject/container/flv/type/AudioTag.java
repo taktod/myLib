@@ -18,6 +18,9 @@ public class AudioTag extends FlvTag {
 	private Bit1 bitCount;
 	private Bit1 channels;
 	private Bit8 sequenceHeaderFlag;
+	public AudioTag(Bit8 tagType) {
+		super(tagType);
+	}
 	/**
 	 * {@inheritDoc}
 	 */

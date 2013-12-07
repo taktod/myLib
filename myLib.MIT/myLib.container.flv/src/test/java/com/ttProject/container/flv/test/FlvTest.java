@@ -8,6 +8,7 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.IUnit;
+import com.ttProject.util.HexUtil;
 
 /**
  * flvの動作テスト
@@ -27,8 +28,11 @@ public class FlvTest {
 					Thread.currentThread().getContextClassLoader().getResource("test.flv").toURI().toURL()
 			);
 			IAnalyzer analyzer = new FlvTagAnalyzer();
-			IUnit unit = analyzer.analyze(source);
-			logger.info(unit);
+			IUnit unit = null;
+			while((unit = analyzer.analyze(source)) != null) {
+				logger.info(unit);
+				logger.info(HexUtil.toHex(unit.getData(), true));
+			}
 		}
 		catch(Exception e) {
 			logger.warn("例外発生", e);

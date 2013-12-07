@@ -3,7 +3,9 @@ package com.ttProject.container.flv;
 import java.nio.ByteBuffer;
 
 import com.ttProject.container.IContainer;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit8;
+import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.BitN.Bit24;
 import com.ttProject.unit.extra.BitN.Bit32;
 
@@ -21,8 +23,8 @@ public abstract class FlvTag implements IContainer {
 	/**
 	 * コンストラクタ
 	 */
-	public FlvTag() {
-		
+	public FlvTag(Bit8 tagType) {
+		this.tagType = tagType;
 	}
 	/**
 	 * {@inheritDoc}
@@ -39,7 +41,10 @@ public abstract class FlvTag implements IContainer {
 	 */
 	@Override
 	public long getSize() {
-		return 0;
+		if(dataSize == null) {
+			return -1;
+		}
+		return dataSize.get() + 11 + 4;
 	}
 	/**
 	 * {@inheritDoc}
@@ -63,5 +68,20 @@ public abstract class FlvTag implements IContainer {
 	@Override
 	public long getTimebase() {
 		return 1000L;
+	}
+	/**
+	 * 
+	 */
+	@Override
+	public void minimumLoad(IReadChannel channel) throws Exception {
+		// 先頭の11バイト読み込みます。
+		// コンストラクタを読み込んだときに、すでに1バイト読み込み済みなので、残りの10バイトとりあえず読んでおきたい。
+		BitLoader loader = new BitLoader(channel);
+		dataSize = new Bit24();
+		timestamp = new Bit24();
+		timestampExt = new Bit8();
+		streamId = new Bit24();
+		loader.load(dataSize, timestamp, timestampExt, streamId);
+		prevTagSize = new Bit32(dataSize.get() + 11);
 	}
 }

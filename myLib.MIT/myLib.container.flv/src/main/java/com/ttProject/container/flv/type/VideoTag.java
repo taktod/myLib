@@ -15,6 +15,9 @@ public class VideoTag extends FlvTag {
 	private Bit4 codecId;
 	private Bit8 packetType; // avcのみ
 	private Bit24 dts; // avcのみ
+	public VideoTag(Bit8 tagType) {
+		super(tagType);
+	}
 	/**
 	 * {@inheritDoc}
 	 */
