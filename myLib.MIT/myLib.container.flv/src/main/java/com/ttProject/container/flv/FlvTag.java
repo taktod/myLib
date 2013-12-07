@@ -3,13 +3,21 @@ package com.ttProject.container.flv;
 import java.nio.ByteBuffer;
 
 import com.ttProject.container.IContainer;
+import com.ttProject.unit.extra.Bit8;
+import com.ttProject.unit.extra.BitN.Bit24;
+import com.ttProject.unit.extra.BitN.Bit32;
 
 /**
  * flvデータのタグ
  * @author taktod
  */
 public abstract class FlvTag implements IContainer {
-	
+	private Bit8 tagType; // 8 9 12以外にもありえるのか？
+	private Bit24 dataSize;
+	private Bit24 timestamp;
+	private Bit8 timestampExt;
+	private Bit24 streamId;
+	private Bit32 prevTagSize;
 	/**
 	 * コンストラクタ
 	 */
