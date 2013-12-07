@@ -2,6 +2,8 @@ package com.ttProject.unit;
 
 import java.nio.ByteBuffer;
 
+import com.ttProject.nio.channels.IReadChannel;
+
 /**
  * 各unitの最少単位(flvのtagとかh264のframeとか)
  * @author taktod
@@ -31,4 +33,15 @@ public interface IUnit {
 	 * @return
 	 */
 	public long getTimebase();
+	/**
+	 * データを最小限、読み込む動作
+	 * @throws Exception
+	 */
+	public void minimumLoad(IReadChannel channel) throws Exception;
+	/**
+	 * データをすべて読み込む動作
+	 * @param channel
+	 * @throws Exception
+	 */
+	public void load(IReadChannel channel) throws Exception;
 }

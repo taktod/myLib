@@ -3,6 +3,7 @@ package com.ttProject.frame.flv1;
 import java.nio.ByteBuffer;
 
 import com.ttProject.frame.IVideoFrame;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit;
 import com.ttProject.unit.extra.Bit1;
 import com.ttProject.unit.extra.Bit2;
@@ -133,5 +134,19 @@ public abstract class Flv1Frame implements IVideoFrame {
 	@Override
 	public long getSize() {
 		return size;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void load(IReadChannel channel) throws Exception {
+		
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void minimumLoad(IReadChannel channel) throws Exception {
+		
 	}
 }

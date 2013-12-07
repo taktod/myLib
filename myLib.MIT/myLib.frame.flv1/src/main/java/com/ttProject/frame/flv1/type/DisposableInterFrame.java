@@ -1,6 +1,7 @@
 package com.ttProject.frame.flv1.type;
 
 import com.ttProject.frame.flv1.Flv1Frame;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit;
 import com.ttProject.unit.extra.Bit1;
 import com.ttProject.unit.extra.Bit2;

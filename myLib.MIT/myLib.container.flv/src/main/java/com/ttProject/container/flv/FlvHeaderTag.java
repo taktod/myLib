@@ -3,6 +3,7 @@ package com.ttProject.container.flv;
 import java.nio.ByteBuffer;
 
 import com.ttProject.container.IContainer;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit1;
 import com.ttProject.unit.extra.Bit5;
 import com.ttProject.unit.extra.Bit8;
@@ -56,5 +57,19 @@ public class FlvHeaderTag implements IContainer {
 	@Override
 	public long getTimebase() {
 		return 1000;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void load(IReadChannel channel) throws Exception {
+		
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void minimumLoad(IReadChannel channel) throws Exception {
+		
 	}
 }
