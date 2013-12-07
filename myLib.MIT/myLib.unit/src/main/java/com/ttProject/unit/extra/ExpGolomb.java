@@ -23,9 +23,9 @@ public abstract class ExpGolomb extends Bit {
 	/** 保持ビット数 */
 	private int bitCountTmp;
 	/**  */
-	protected int bitCount = 1;
 	protected final List<Bit> bits = new ArrayList<Bit>();
 	{
+		bitCount = 1;
 		bits.add(new Bit1(1));
 	}
 	

@@ -41,9 +41,14 @@ public class BitLoader {
 				load(bit1);
 			} while(golomb.addBit1(bit1));
 		}
+		else if(bit instanceof BitN) {
+			BitN bitn = (BitN)bit;
+			for(Bit b : bitn.bits) {
+				load(b);
+			}
+		}
 		else {
 			while(left < bit.bitCount) {
-//				floatData = (floatData << 8 | (buffer.get() & 0xFF));
 				floatData = (floatData << 8 | (BufferUtil.safeRead(channel, 1).get() & 0xFF));
 				left += 8;
 			}

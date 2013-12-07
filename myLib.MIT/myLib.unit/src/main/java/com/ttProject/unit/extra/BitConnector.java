@@ -41,6 +41,18 @@ public class BitConnector {
 					}
 				}
 			}
+			else if(bit instanceof BitN) {
+				BitN bitN = (BitN)bit;
+				for(Bit b : bitN.bits) {
+					// TODO この部分下と重複している。
+					data = (data << b.bitCount) | b.get();
+					left += b.bitCount;
+					while(left > 8) {
+						left -= 8;
+						buffer.put((byte)((data >>> left) & 0xFF));
+					}
+				}
+			}
 			else {
 				data = (data << bit.bitCount) | bit.get();
 				left += bit.bitCount;
