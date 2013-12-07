@@ -32,7 +32,7 @@ import com.xuggle.xuggler.video.IConverter;
  * 他のプロジェクト用のテストメディアデータも自動作成したいところ。
  * ただし、他のプロジェクトライブラリはほぼ使わない予定
  * @author taktod
- *
+ * 
  */
 public class SetupForTest {
 	private Logger logger = Logger.getLogger(SetupForTest.class);
