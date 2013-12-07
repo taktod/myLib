@@ -1,7 +1,6 @@
 package com.ttProject.container.flv;
 
-import java.nio.ByteBuffer;
-
+import com.ttProject.container.Container;
 import com.ttProject.container.IContainer;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit1;
@@ -16,7 +15,7 @@ import com.ttProject.unit.extra.BitN.Bit32;
  * flvのheader情報のtag
  * @author taktod
  */
-public class FlvHeaderTag implements IContainer {
+public class FlvHeaderTag extends Container implements IContainer {
 	private Bit24 signature = null;
 	private Bit8 version = null;
 	private Bit5 reserved1 = null;
@@ -31,43 +30,9 @@ public class FlvHeaderTag implements IContainer {
 	 */
 	public FlvHeaderTag(Bit24 signature) {
 		this.signature = signature;
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ByteBuffer getData() throws Exception {
-		BitConnector connector = new BitConnector();
-		return connector.connect(signature, version, reserved1,
-				audioFlag, reserved2, videoFlag, length, reserved3);
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getPosition() {
-		return 0;
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getSize() {
-		return 13;
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public long getPts() {
-		return 0;
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public long getTimebase() {
-		return 1000;
+		setPosition(0);
+		setPts(0);
+		setTimebase(1000);
 	}
 	/**
 	 * {@inheritDoc}
@@ -95,5 +60,11 @@ public class FlvHeaderTag implements IContainer {
 		reserved3 = new Bit32();
 		loader.load(version, reserved1, audioFlag, reserved2, videoFlag,
 				length, reserved3);
+		
+		BitConnector connector = new BitConnector();
+		setData(connector.connect(signature, version, reserved1,
+				audioFlag, reserved2, videoFlag, length, reserved3));
+		
+		setSize(13);
 	}
 }
