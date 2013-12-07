@@ -47,6 +47,7 @@ public class MetaTag extends FlvTag {
 		// metaデータのminimumLoadではなにもしない。
 		super.minimumLoad(channel);
 		// ここで読み込み位置を記録しておいて、あとで読み込む場合に、そこから読み込めばよいみたいな感じにしておきたいですね。
+		channel.position();
 	}
 	public void put(String key, Object value) {
 		rawData = null;

@@ -52,7 +52,7 @@ public class FlvHeaderTag implements IContainer {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public long getSize() {
+	public int getSize() {
 		return 13;
 	}
 	/**

@@ -40,7 +40,7 @@ public abstract class FlvTag implements IContainer {
 	 * flvは全体サイズとは別に２つのサイズがあるので注意
 	 */
 	@Override
-	public long getSize() {
+	public int getSize() {
 		if(dataSize == null) {
 			return -1;
 		}

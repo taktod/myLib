@@ -13,7 +13,7 @@ public interface IUnit {
 	 * サイズを応答します。
 	 * @return
 	 */
-	public long getSize();
+	public int getSize();
 	/**
 	 * 保持データを応答します。
 	 * (中身が全部はいっているものとします)

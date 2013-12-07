@@ -34,7 +34,8 @@ public abstract class Flv1Frame implements IVideoFrame {
 	private Bit8 extraInformation;
 	private Bit extra; // 帳尻あわせ用
 	private ByteBuffer buffer = null; // あとで読み込みさせたい場合にいれておく
-	private long size = -1;
+
+	private int size = -1;
 	public Flv1Frame(Bit17 pictureStartCode,
 			Bit5 version, Bit8 temporalReference, Bit3 pictureSize,
 			Bit customWidth, Bit customHeight,
@@ -125,14 +126,14 @@ public abstract class Flv1Frame implements IVideoFrame {
 	 * データサイズを設定します。
 	 * @param size
 	 */
-	public void setSize(long size) {
+	public void setSize(int size) {
 		this.size = size;
 	}
 	/**
 	 * サイズを応答する
 	 */
 	@Override
-	public long getSize() {
+	public int getSize() {
 		return size;
 	}
 	/**
