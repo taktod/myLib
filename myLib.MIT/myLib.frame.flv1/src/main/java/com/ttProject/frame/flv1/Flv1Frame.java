@@ -10,6 +10,7 @@ import com.ttProject.unit.extra.Bit3;
 import com.ttProject.unit.extra.Bit5;
 import com.ttProject.unit.extra.Bit8;
 import com.ttProject.unit.extra.BitConnector;
+import com.ttProject.unit.extra.BitN.Bit17;
 
 /**
  * flv1のframeのベース
@@ -18,11 +19,7 @@ import com.ttProject.unit.extra.BitConnector;
  */
 public abstract class Flv1Frame implements IVideoFrame {
 	@SuppressWarnings("unused")
-	private Bit8 pictureStartCode1;
-	@SuppressWarnings("unused")
-	private Bit8 pictureStartCode2;
-	@SuppressWarnings("unused")
-	private Bit1 pictureStartCode3;
+	private Bit17 pictureStartCode;
 	private Bit5 version;
 	private Bit8 temporalReference;
 	@SuppressWarnings("unused")
@@ -38,13 +35,11 @@ public abstract class Flv1Frame implements IVideoFrame {
 	private Bit extra; // 帳尻あわせ用
 	private ByteBuffer buffer = null; // あとで読み込みさせたい場合にいれておく
 	private long size = -1;
-	public Flv1Frame(Bit8 pictureStartCode1, Bit8 pictureStartCode2, Bit1 pictureStartCode3,
+	public Flv1Frame(Bit17 pictureStartCode,
 			Bit5 version, Bit8 temporalReference, Bit3 pictureSize,
 			int width, int height, Bit2 pictureType, Bit1 deblockingFlag,
 			Bit5 quantizer, Bit1 extraInformationFlag, Bit8 extraInformation, Bit extra) {
-		this.pictureStartCode1 = pictureStartCode1;
-		this.pictureStartCode2 = pictureStartCode2;
-		this.pictureStartCode3 = pictureStartCode3;
+		this.pictureStartCode = pictureStartCode;
 		this.version = version;
 		this.temporalReference = temporalReference;
 		this.pictureSize = pictureSize;

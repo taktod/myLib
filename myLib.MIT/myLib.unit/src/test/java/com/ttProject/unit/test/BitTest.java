@@ -12,6 +12,7 @@ import com.ttProject.unit.extra.Bit5;
 import com.ttProject.unit.extra.Bit8;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitN;
+import com.ttProject.unit.extra.BitN.Bit13;
 import com.ttProject.unit.extra.Seg;
 import com.ttProject.unit.extra.Ueg;
 import com.ttProject.nio.channels.ByteReadChannel;
@@ -139,14 +140,15 @@ public class BitTest {
 	public void test6() throws Exception {
 		logger.info("test6");
 		Bit3 bit3 = new Bit3(3);
-		BitN bitN = new BitN(new Bit5(3), new Bit8(250));
-		logger.info(bitN);
+		Bit13 bit13 = new Bit13(1025);
+		logger.info(bit3);
+		logger.info(bit13);
 		BitConnector connector = new BitConnector();
-		ByteBuffer buffer = connector.connect(bit3, bitN);
+		ByteBuffer buffer = connector.connect(bit3, bit13);
 		logger.info(HexUtil.toHex(buffer));
 		BitLoader loader = new BitLoader(new ByteReadChannel(buffer));
 		Bit4 bit4 = new Bit4();
-		bitN = new BitN(new Bit4(), new Bit8());
+		BitN bitN = new BitN(new Bit4(), new Bit8());
 		loader.load(bit4, bitN);
 		logger.info(bit4);
 		logger.info(bitN);

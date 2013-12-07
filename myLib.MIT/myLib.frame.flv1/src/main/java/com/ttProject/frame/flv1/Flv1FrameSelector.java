@@ -12,6 +12,7 @@ import com.ttProject.unit.extra.Bit3;
 import com.ttProject.unit.extra.Bit5;
 import com.ttProject.unit.extra.Bit8;
 import com.ttProject.unit.extra.BitLoader;
+import com.ttProject.unit.extra.BitN.Bit17;
 
 /**
  * flv1のframeを選択する動作
@@ -25,17 +26,13 @@ public class Flv1FrameSelector implements ISelector {
 	 */
 	public IUnit select(IReadChannel channel) throws Exception {
 		BitLoader bitLoader = new BitLoader(channel);
-		Bit8 pictureStartCode1 = new Bit8();
-		Bit8 pictureStartCode2 = new Bit8();
-		Bit1 pictureStartCode3 = new Bit1();
+		Bit17 pictureStartCode = new Bit17();
 		Bit5 version = new Bit5();
 		Bit8 temporalReference = new Bit8();
 		Bit3 pictureSize = new Bit3();
-		bitLoader.load(pictureStartCode1, pictureStartCode2, pictureStartCode3,
+		bitLoader.load(pictureStartCode,
 				version, temporalReference, pictureSize);
-		if(pictureStartCode1.get() != 0 ||
-				pictureStartCode2.get() != 0 ||
-				pictureStartCode3.get() != 1) {
+		if(pictureStartCode.get() != 1) {
 			throw new Exception("開始タグが想定外です。");
 		}
 		int width = 0;
@@ -97,13 +94,13 @@ public class Flv1FrameSelector implements ISelector {
 		Flv1Frame frame = null;
 		switch(pictureType.get()) {
 		case 0: // intraFrame
-			frame = new IntraFrame(pictureStartCode1, pictureStartCode2, pictureStartCode3, version, temporalReference, pictureSize, width, height, pictureType, deblockingFlag, quantizer, extraInformationFlag, extraInformation, bitLoader.getExtraBit());
+			frame = new IntraFrame(pictureStartCode, version, temporalReference, pictureSize, width, height, pictureType, deblockingFlag, quantizer, extraInformationFlag, extraInformation, bitLoader.getExtraBit());
 			break;
 		case 1: // interFrame
-			frame = new InterFrame(pictureStartCode1, pictureStartCode2, pictureStartCode3, version, temporalReference, pictureSize, width, height, pictureType, deblockingFlag, quantizer, extraInformationFlag, extraInformation, bitLoader.getExtraBit());
+			frame = new InterFrame(pictureStartCode, version, temporalReference, pictureSize, width, height, pictureType, deblockingFlag, quantizer, extraInformationFlag, extraInformation, bitLoader.getExtraBit());
 			break;
 		case 2: // disposableInterFrame
-			frame = new DisposableInterFrame(pictureStartCode1, pictureStartCode2, pictureStartCode3, version, temporalReference, pictureSize, width, height, pictureType, deblockingFlag, quantizer, extraInformationFlag, extraInformation, bitLoader.getExtraBit());
+			frame = new DisposableInterFrame(pictureStartCode, version, temporalReference, pictureSize, width, height, pictureType, deblockingFlag, quantizer, extraInformationFlag, extraInformation, bitLoader.getExtraBit());
 			break;
 		case 3: // reserved
 		default:

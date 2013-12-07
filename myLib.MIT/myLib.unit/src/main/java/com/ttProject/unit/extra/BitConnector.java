@@ -45,6 +45,7 @@ public class BitConnector {
 				BitN bitN = (BitN)bit;
 				for(Bit b : bitN.bits) {
 					// TODO この部分下と重複している。
+					System.out.println(b);
 					data = (data << b.bitCount) | b.get();
 					left += b.bitCount;
 					while(left > 8) {
