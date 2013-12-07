@@ -6,12 +6,14 @@ import com.ttProject.frame.flv1.type.IntraFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
+import com.ttProject.unit.extra.Bit;
 import com.ttProject.unit.extra.Bit1;
 import com.ttProject.unit.extra.Bit2;
 import com.ttProject.unit.extra.Bit3;
 import com.ttProject.unit.extra.Bit5;
 import com.ttProject.unit.extra.Bit8;
 import com.ttProject.unit.extra.BitLoader;
+import com.ttProject.unit.extra.BitN.Bit16;
 import com.ttProject.unit.extra.BitN.Bit17;
 
 /**
@@ -37,26 +39,22 @@ public class Flv1FrameSelector implements ISelector {
 		}
 		int width = 0;
 		int height = 0;
-		Bit8 width1 = null;
-		Bit8 width2 = null;
-		Bit8 height1 = null;
-		Bit8 height2 = null;
+		Bit customWidth = null;
+		Bit customHeight = null;
 		switch(pictureSize.get()) {
 		case 0: // custom1
-			width1 = new Bit8();
-			height1 = new Bit8();
-			bitLoader.load(width1, height1);
-			width = width1.get();
-			height = height1.get();
+			customWidth = new Bit8();
+			customHeight = new Bit8();
+			bitLoader.load(customWidth, customHeight);
+			width = customWidth.get();
+			height = customHeight.get();
 			break;
 		case 1: // custom2
-			width1 = new Bit8();
-			width2 = new Bit8();
-			height1 = new Bit8();
-			height2 = new Bit8();
-			bitLoader.load(width1, width2, height1, height2);
-			width = ((width1.get() << 8) | width2.get());
-			height = ((height1.get() << 8) | height2.get());
+			customWidth = new Bit16();
+			customHeight = new Bit16();
+			bitLoader.load(customWidth, customHeight);
+			width = customWidth.get();
+			height = customHeight.get();
 			break;
 		case 2: // CIF
 			width = 352;
@@ -94,13 +92,22 @@ public class Flv1FrameSelector implements ISelector {
 		Flv1Frame frame = null;
 		switch(pictureType.get()) {
 		case 0: // intraFrame
-			frame = new IntraFrame(pictureStartCode, version, temporalReference, pictureSize, width, height, pictureType, deblockingFlag, quantizer, extraInformationFlag, extraInformation, bitLoader.getExtraBit());
+			frame = new IntraFrame(pictureStartCode, version, temporalReference,
+					pictureSize, customWidth, customHeight, width, height,
+					pictureType, deblockingFlag, quantizer, extraInformationFlag,
+					extraInformation, bitLoader.getExtraBit());
 			break;
 		case 1: // interFrame
-			frame = new InterFrame(pictureStartCode, version, temporalReference, pictureSize, width, height, pictureType, deblockingFlag, quantizer, extraInformationFlag, extraInformation, bitLoader.getExtraBit());
+			frame = new InterFrame(pictureStartCode, version, temporalReference,
+					pictureSize, customWidth, customHeight, width, height,
+					pictureType, deblockingFlag, quantizer, extraInformationFlag,
+					extraInformation, bitLoader.getExtraBit());
 			break;
 		case 2: // disposableInterFrame
-			frame = new DisposableInterFrame(pictureStartCode, version, temporalReference, pictureSize, width, height, pictureType, deblockingFlag, quantizer, extraInformationFlag, extraInformation, bitLoader.getExtraBit());
+			frame = new DisposableInterFrame(pictureStartCode, version, temporalReference,
+					pictureSize, customWidth, customHeight, width, height,
+					pictureType, deblockingFlag, quantizer, extraInformationFlag,
+					extraInformation, bitLoader.getExtraBit());
 			break;
 		case 3: // reserved
 		default:

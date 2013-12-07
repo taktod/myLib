@@ -18,12 +18,12 @@ import com.ttProject.unit.extra.BitN.Bit17;
  * @author taktod
  */
 public abstract class Flv1Frame implements IVideoFrame {
-	@SuppressWarnings("unused")
 	private Bit17 pictureStartCode;
 	private Bit5 version;
 	private Bit8 temporalReference;
-	@SuppressWarnings("unused")
 	private Bit3 pictureSize;
+	private Bit customWidth;
+	private Bit customHeight;
 	private int width;
 	private int height;
 	private Bit2 pictureType;
@@ -31,18 +31,20 @@ public abstract class Flv1Frame implements IVideoFrame {
 	private Bit5 quantizer;
 	private Bit1 extraInformationFlag;
 	private Bit8 extraInformation;
-	@SuppressWarnings("unused")
 	private Bit extra; // 帳尻あわせ用
 	private ByteBuffer buffer = null; // あとで読み込みさせたい場合にいれておく
 	private long size = -1;
 	public Flv1Frame(Bit17 pictureStartCode,
 			Bit5 version, Bit8 temporalReference, Bit3 pictureSize,
+			Bit customWidth, Bit customHeight,
 			int width, int height, Bit2 pictureType, Bit1 deblockingFlag,
 			Bit5 quantizer, Bit1 extraInformationFlag, Bit8 extraInformation, Bit extra) {
 		this.pictureStartCode = pictureStartCode;
 		this.version = version;
 		this.temporalReference = temporalReference;
 		this.pictureSize = pictureSize;
+		this.customWidth = customWidth;
+		this.customHeight = customHeight;
 		this.width = width;
 		this.height = height;
 		this.pictureType = pictureType;
@@ -106,8 +108,21 @@ public abstract class Flv1Frame implements IVideoFrame {
 	 */
 	@Override
 	public ByteBuffer getData() throws Exception {
+		if(buffer == null) {
+			throw new Exception("本体データが設定されていません。");
+		}
+		// まず保持しているbitデータを結合します。
 		BitConnector bitConnector = new BitConnector();
-		return null;
+		ByteBuffer bitData = bitConnector.connect(pictureStartCode, version, temporalReference,
+				pictureSize, customWidth, customHeight,
+				pictureType, deblockingFlag, quantizer,
+				extraInformationFlag, extraInformation, extra);
+		int size = bitData.remaining() + buffer.remaining();
+		ByteBuffer data = ByteBuffer.allocate(size);
+		data.put(bitData);
+		data.put(buffer.duplicate());
+		data.flip();
+		return data;
 	}
 	/**
 	 * データサイズを設定します。
