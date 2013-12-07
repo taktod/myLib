@@ -9,6 +9,7 @@ import java.util.List;
  * @author taktod
  */
 public class BitN extends Bit {
+	/** 表現用の内部bit */
 	protected final List<Bit> bits = new ArrayList<Bit>();
 	/**
 	 * コンストラクタ
@@ -24,7 +25,7 @@ public class BitN extends Bit {
 		bitCount = count;
 	}
 	/**
-	 * 数値で応答する
+	 * {@inheritDoc}
 	 */
 	@Override
 	public int get() {
@@ -35,6 +36,9 @@ public class BitN extends Bit {
 		}
 		return value;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void set(int value) {
 		int size = bits.size();
@@ -44,6 +48,9 @@ public class BitN extends Bit {
 			value >>>= bit.bitCount;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		StringBuilder data = new StringBuilder();
@@ -52,6 +59,7 @@ public class BitN extends Bit {
 		}
 		return data.toString();
 	}
+	// 以下各々のbit数の設定
 	public static class Bit9  extends BitN {public Bit9(int value)  {this();set(value);}public Bit9()  {super(new Bit1(), new Bit8());}}
 	public static class Bit10 extends BitN {public Bit10(int value) {this();set(value);}public Bit10() {super(new Bit2(), new Bit8());}}
 	public static class Bit11 extends BitN {public Bit11(int value) {this();set(value);}public Bit11() {super(new Bit3(), new Bit8());}}

@@ -19,6 +19,9 @@ public class Bit2 extends Bit {
 		super(2);
 		set(value);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void set(int value) {
 		super.set(value & 0x03);

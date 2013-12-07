@@ -14,7 +14,6 @@ public class BitLoader {
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(BitLoader.class);
 	/** 動作buffer */
-//	private final CacheBuffer buffer;
 	private final IReadChannel channel;
 	/** 中途処理バッファ */
 	private int floatData = 0;
@@ -25,7 +24,6 @@ public class BitLoader {
 	 * @param channel
 	 */
 	public BitLoader(IReadChannel channel) throws Exception {
-//		buffer = new CacheBuffer(channel);
 		this.channel = channel;
 	}
 	/**

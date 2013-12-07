@@ -20,9 +20,9 @@ public class Bit7 extends Bit {
 		set(value);
 	}
 	/**
-	 * データ設定
-	 * @param value
+	 * {@inheritDoc}
 	 */
+	@Override
 	public void set(int value) {
 		super.set(value & 0x7F);
 	}

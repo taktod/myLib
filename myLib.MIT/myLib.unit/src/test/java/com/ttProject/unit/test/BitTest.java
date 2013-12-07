@@ -118,10 +118,8 @@ public class BitTest {
 	public void test4() throws Exception {
 		logger.info("test4");
 		Seg seg = new Seg();
-		logger.info(seg.dump());
 		logger.info(seg.toString());
 		seg.set(-5);
-		logger.info(seg.dump());
 		logger.info(seg.toString());
 	}
 	@Test

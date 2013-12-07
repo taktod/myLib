@@ -20,9 +20,9 @@ public class Bit5 extends Bit {
 		set(value);
 	}
 	/**
-	 * データ設定
-	 * @param value
+	 * {@inheritDoc}
 	 */
+	@Override
 	public void set(int value) {
 		super.set(value & 0x1F);
 	}

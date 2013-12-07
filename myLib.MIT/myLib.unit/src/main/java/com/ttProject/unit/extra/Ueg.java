@@ -6,20 +6,17 @@ package com.ttProject.unit.extra;
  */
 public class Ueg extends ExpGolomb {
 	/**
-	 * データを参照します
-	 * @return
+	 * {@inheritDoc}
 	 */
+	@Override
 	public int get() {
 		return super.get() - 1;
 	}
-	public void set(int val) {
-		super.set(val + 1);
-	}
 	/**
-	 * dump
+	 * {@inheritDoc}
 	 */
 	@Override
-	public String toString() {
-		return Integer.toString(get());
+	public void set(int val) {
+		super.set(val + 1);
 	}
 }

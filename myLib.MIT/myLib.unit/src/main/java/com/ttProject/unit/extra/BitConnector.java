@@ -9,8 +9,6 @@ import java.util.List;
  * @author taktod
  */
 public class BitConnector {
-//	private int data = 0;
-//	private int left = 0;
 	/**
 	 * 接続します。
 	 * @param bits

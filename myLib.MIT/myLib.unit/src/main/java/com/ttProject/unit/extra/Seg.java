@@ -6,12 +6,8 @@ package com.ttProject.unit.extra;
  */
 public class Seg extends ExpGolomb {
 	/**
-	 * dump
+	 * {@inheritDoc}
 	 */
-	@Override
-	public String toString() {
-		return Integer.toString(get());
-	}
 	@Override
 	public int get() {
 		int value = super.get();
@@ -22,6 +18,9 @@ public class Seg extends ExpGolomb {
 			return (value >>> 1);
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void set(int value) {
 		if(value > 0) {
