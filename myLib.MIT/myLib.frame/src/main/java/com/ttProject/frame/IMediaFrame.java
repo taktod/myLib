@@ -7,6 +7,4 @@ import com.ttProject.unit.IUnit;
  * @author taktod
  */
 public interface IMediaFrame extends IUnit {
-	public long getPts();
-	public long getTimebase();
 }

@@ -93,10 +93,6 @@ public abstract class Flv1Frame implements IVideoFrame {
 	public long getTimebase() {
 		return 0;
 	}
-	@Override
-	public long getTimestamp() {
-		return 0;
-	}
 	/**
 	 * 残りデータを登録しておく
 	 */
