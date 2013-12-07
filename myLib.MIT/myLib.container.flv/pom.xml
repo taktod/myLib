@@ -8,4 +8,16 @@
   </parent>
   <artifactId>myLib.container.flv</artifactId>
   <name>myLib.container.flv</name>
+  <dependencies>
+  	<dependency>
+  		<groupId>com.ttProject</groupId>
+  		<artifactId>myLib.container</artifactId>
+  		<version>0.0.2-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.ttProject</groupId>
+  		<artifactId>myLib.frame.flv1</artifactId>
+  		<version>0.0.2-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
 </project>
