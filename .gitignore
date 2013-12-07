@@ -1,5 +1,6 @@
 *
-!*.java
+!**/*/src/main
+!**/*/src/test/java
 !*.pom
 !*.properties
 /target
