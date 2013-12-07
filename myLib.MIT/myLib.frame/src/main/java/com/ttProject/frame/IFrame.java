@@ -6,5 +6,5 @@ import com.ttProject.unit.IUnit;
  * メディアデータのフレームインターフェイス
  * @author taktod
  */
-public interface IMediaFrame extends IUnit {
+public interface IFrame extends IUnit {
 }

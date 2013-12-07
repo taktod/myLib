@@ -1,6 +1,6 @@
 package com.ttProject.frame;
 
-public interface IAudioFrame extends IMediaFrame {
+public interface IAudioFrame extends IFrame {
 	/**
 	 * unitの持つサンプル数を応答します
 	 * @return
