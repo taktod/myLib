@@ -1,47 +1,21 @@
 package com.ttProject.container;
 
-import java.nio.ByteBuffer;
-
-import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.Unit;
 
 /**
  * コンテナの基本となるクラス
  */
-public abstract class Container implements IContainer {
-	private int size;
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getSize() {
-		return 0;
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ByteBuffer getData() throws Exception {
-		return null;
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public long getPts() {
-		return 0;
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public long getTimebase() {
-		return 0;
-	}
+public abstract class Container extends Unit implements IContainer {
+	/** channel上の開始位置保持 */
+	private int position;
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public int getPosition() {
-		return 0;
+		return position;
+	}
+	protected void setPosition(int position) {
+		this.position = position;
 	}
 }
