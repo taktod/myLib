@@ -1,5 +1,6 @@
 package com.ttProject.frame.mp3;
 
+import com.ttProject.frame.mp3.type.ID3Frame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
@@ -20,8 +21,10 @@ public class Mp3FrameSelector implements ISelector {
 		Bit8 firstByte = new Bit8();
 		BitLoader loader = new BitLoader(channel);
 		loader.load(firstByte);
+		Mp3Frame frame = null;
 		switch(firstByte.get()) {
 		case 'I': // ID3?
+			frame = new ID3Frame();
 			break;
 		case 'T': // TAG?
 			break;
@@ -30,6 +33,7 @@ public class Mp3FrameSelector implements ISelector {
 		default:
 			throw new Exception("解析不能なデータです");
 		}
-		return null;
+		frame.minimumLoad(channel);
+		return frame;
 	}
 }
