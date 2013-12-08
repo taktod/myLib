@@ -114,7 +114,7 @@ public class Flv1FrameSelector implements ISelector {
 		default:
 			throw new Exception("flv1想定外のフレームです。");
 		}
-		frame.setSize(channel.size());
+		frame.minimumLoad(channel);
 		return frame;
 	}
 }

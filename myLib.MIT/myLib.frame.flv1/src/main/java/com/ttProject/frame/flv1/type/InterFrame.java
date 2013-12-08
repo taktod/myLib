@@ -9,6 +9,10 @@ import com.ttProject.unit.extra.Bit5;
 import com.ttProject.unit.extra.Bit8;
 import com.ttProject.unit.extra.BitN.Bit17;
 
+/**
+ * 中間フレーム
+ * @author taktod
+ */
 public class InterFrame extends Flv1Frame {
 	public InterFrame(Bit17 pictureStartCode,
 			Bit5 version, Bit8 temporalReference, Bit3 pictureSize,

@@ -37,14 +37,14 @@ public abstract class FlvTag extends Container implements IContainer {
 		// 先頭の11バイト読み込みます。
 		// コンストラクタを読み込んだときに、すでに1バイト読み込み済みなので、残りの10バイトとりあえず読んでおきたい。
 		// 1つ前の位置を保持しておく。
-		setPosition(channel.position() - 1);
+		super.setPosition(channel.position() - 1);
 		// データの読み込みを進める
 		BitLoader loader = new BitLoader(channel);
 		loader.load(dataSize, timestamp, timestampExt, streamId);
 		prevTagSize = new Bit32(dataSize.get() + 11);
 		super.setPts(timestampExt.get() << 24 | timestamp.get());
 		super.setSize(dataSize.get() + 11 + 4);
-		update();
+		super.update();
 	}
 	protected ByteBuffer getStartBuffer() {
 		BitConnector connector = new BitConnector();

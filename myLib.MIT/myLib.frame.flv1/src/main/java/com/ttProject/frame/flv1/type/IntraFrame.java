@@ -9,6 +9,10 @@ import com.ttProject.unit.extra.Bit5;
 import com.ttProject.unit.extra.Bit8;
 import com.ttProject.unit.extra.BitN.Bit17;
 
+/**
+ * キーフレーム
+ * @author taktod
+ */
 public class IntraFrame extends Flv1Frame {
 	public IntraFrame(Bit17 pictureStartCode,
 			Bit5 version, Bit8 temporalReference, Bit3 pictureSize,

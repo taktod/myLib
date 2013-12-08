@@ -123,12 +123,9 @@ public class MetaTag extends FlvTag {
 	 * @throws Exception
 	 */
 	private void updateData() throws Exception {
-		ByteBuffer titleBuffer = Amf0Value.getValueBuffer(title);
-		ByteBuffer dataBuffer = Amf0Value.getValueBuffer(data);
-		rawBuffer = ByteBuffer.allocate(titleBuffer.remaining() + dataBuffer.remaining());
-		rawBuffer.put(titleBuffer);
-		rawBuffer.put(dataBuffer);
-		rawBuffer.flip();
+		rawBuffer = BufferUtil.connect(
+				Amf0Value.getValueBuffer(title),
+				Amf0Value.getValueBuffer(data));
 		setSize(rawBuffer.remaining() + 15);
 		update();
 	}
