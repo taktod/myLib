@@ -20,18 +20,18 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public abstract class Flv1Frame extends VideoFrame {
-	private Bit17 pictureStartCode;
-	private Bit5 version;
-	private Bit8 temporalReference;
-	private Bit3 pictureSize;
-	private Bit customWidth;
-	private Bit customHeight;
-	private Bit2 pictureType;
-	private Bit1 deblockingFlag;
-	private Bit5 quantizer;
-	private Bit1 extraInformationFlag;
-	private Bit8 extraInformation;
-	private Bit extra; // 帳尻あわせ用
+	private final Bit17 pictureStartCode;
+	private final Bit5 version;
+	private final Bit8 temporalReference;
+	private final Bit3 pictureSize;
+	private final Bit customWidth;
+	private final Bit customHeight;
+	private final Bit2 pictureType;
+	private final Bit1 deblockingFlag;
+	private final Bit5 quantizer;
+	private final Bit1 extraInformationFlag;
+	private final Bit8 extraInformation;
+	private final Bit extra; // 帳尻あわせ用
 	private ByteBuffer buffer = null; // あとで読み込みさせたい場合にいれておく
 
 	public Flv1Frame(Bit17 pictureStartCode,
