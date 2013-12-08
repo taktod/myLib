@@ -33,6 +33,6 @@ public class AudioTag extends FlvTag {
 	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		
+		super.minimumLoad(channel);
 	}
 }

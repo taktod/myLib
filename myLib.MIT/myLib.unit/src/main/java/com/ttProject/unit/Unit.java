@@ -16,6 +16,19 @@ public abstract class Unit implements IUnit {
 	private long pts;
 	/** timebase値*/
 	private long timebase;
+	/** データの更新を実施したかフラグ */
+	private boolean update = false;
+	/**
+	 * なにか更新したときに印をつけておく
+	 */
+	protected final void update() {
+		update = true;
+	}
+	/**
+	 * データの更新がある場合にdataの中身の更新要求
+	 * @throws Exception
+	 */
+	protected abstract void requestUpdate() throws Exception;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -28,6 +41,9 @@ public abstract class Unit implements IUnit {
 	 */
 	@Override
 	public ByteBuffer getData() throws Exception {
+		if(update) {
+			requestUpdate();
+		}
 		return data;
 	}
 	/**
@@ -49,6 +65,7 @@ public abstract class Unit implements IUnit {
 	}
 	protected void setData(ByteBuffer data) {
 		this.data = data;
+		update = false;
 	}
 	protected void setPts(long pts) {
 		this.pts = pts;

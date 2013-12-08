@@ -1,5 +1,7 @@
 package com.ttProject.container.flv;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.container.Container;
 import com.ttProject.container.IContainer;
 import com.ttProject.nio.channels.IReadChannel;
@@ -16,6 +18,9 @@ import com.ttProject.unit.extra.BitN.Bit32;
  * @author taktod
  */
 public class FlvHeaderTag extends Container implements IContainer {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(FlvHeaderTag.class);
 	private Bit24 signature = null;
 	private Bit8 version = null;
 	private Bit5 reserved1 = null;
@@ -60,11 +65,16 @@ public class FlvHeaderTag extends Container implements IContainer {
 		reserved3 = new Bit32();
 		loader.load(version, reserved1, audioFlag, reserved2, videoFlag,
 				length, reserved3);
-		
+		update();
+		setSize(13);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void requestUpdate() throws Exception {
 		BitConnector connector = new BitConnector();
 		setData(connector.connect(signature, version, reserved1,
 				audioFlag, reserved2, videoFlag, length, reserved3));
-		
-		setSize(13);
 	}
 }

@@ -13,7 +13,9 @@ import com.ttProject.unit.IUnit;
  */
 public class FlvTagAnalyzer implements IAnalyzer {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(FlvTagAnalyzer.class);
+	/** tagSelector */
 	private ISelector selector = new FlvTagSelector();
 	/**
 	 * {@inheritDoc}
