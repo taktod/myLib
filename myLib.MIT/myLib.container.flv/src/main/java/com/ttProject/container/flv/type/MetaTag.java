@@ -37,13 +37,19 @@ public class MetaTag extends FlvTag {
 	/** メタデータの中身 */
 	private final Map<String, Object> data = new LinkedHashMap<String, Object>();
 	/** 生データ部分 */
-	private ByteBuffer rawBuffer;
+	private ByteBuffer rawBuffer = null;
 	/**
 	 * コンストラクタ
 	 * @param tagType
 	 */
 	public MetaTag(Bit8 tagType) {
 		super(tagType);
+	}
+	/**
+	 * コンストラクタ
+	 */
+	public MetaTag() {
+		this(new Bit8(0x12));
 	}
 	/**
 	 * {@inheritDoc}

@@ -16,18 +16,18 @@ import com.ttProject.unit.extra.BitN.Bit32;
  * @author taktod
  */
 public abstract class FlvTag extends Container implements IContainer {
-	private Bit8 tagType; // 8 9 12以外にもありえるのか？
-	private Bit24 dataSize;
-	private Bit24 timestamp;
-	private Bit8 timestampExt;
-	private Bit24 streamId;
-	private Bit32 prevTagSize;
+	private final Bit8 tagType; // 8 9 12以外にもありえるのか？
+	private Bit24 dataSize = new Bit24();
+	private Bit24 timestamp = new Bit24();
+	private Bit8 timestampExt =new Bit8();
+	private Bit24 streamId = new Bit24();
+	private Bit32 prevTagSize = new Bit32();
 	/**
 	 * コンストラクタ
 	 */
 	public FlvTag(Bit8 tagType) {
 		this.tagType = tagType;
-		setTimebase(1000); // flvはtimebaseがかならず1000になります。
+		super.setTimebase(1000); // flvはtimebaseがかならず1000になります。
 	}
 	/**
 	 * {@inheritDoc}
@@ -40,14 +40,10 @@ public abstract class FlvTag extends Container implements IContainer {
 		setPosition(channel.position() - 1);
 		// データの読み込みを進める
 		BitLoader loader = new BitLoader(channel);
-		dataSize = new Bit24();
-		timestamp = new Bit24();
-		timestampExt = new Bit8();
-		streamId = new Bit24();
 		loader.load(dataSize, timestamp, timestampExt, streamId);
 		prevTagSize = new Bit32(dataSize.get() + 11);
-		setPts(timestampExt.get() << 24 | timestamp.get());
-		setSize(dataSize.get() + 11 + 4);
+		super.setPts(timestampExt.get() << 24 | timestamp.get());
+		super.setSize(dataSize.get() + 11 + 4);
 		update();
 	}
 	protected ByteBuffer getStartBuffer() {
@@ -60,6 +56,18 @@ public abstract class FlvTag extends Container implements IContainer {
 	}
 	protected int getPrevTagSize() {
 		return prevTagSize.get();
+	}
+	@Override
+	protected void setData(ByteBuffer data) {
+		dataSize.set(data.remaining() - 11 - 4);
+		prevTagSize = new Bit32(dataSize.get() + 11);
+		super.setData(data);
+	}
+	@Override
+	protected void setPts(long pts) {
+		timestamp.set((int)(pts & 0x00FFFFFF));
+		timestampExt.set((int)(pts >>> 24) & 0xFF);
+		super.setPts(pts);
 	}
 	@Override
 	protected void requestUpdate() throws Exception {

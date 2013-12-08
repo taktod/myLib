@@ -35,8 +35,8 @@ public enum CodecType {
 	 * @param tagByte
 	 * @return
 	 */
-	public static CodecType getAudioCodecType(byte tagByte) {
-		switch((tagByte & 0xFF) >>> 4) {
+	public static CodecType getAudioCodecType(int codecId) {
+		switch(codecId) {
 		case 0:  return PCM;
 		case 1:  return ADPCM; // 1byte startPos? 2byte or 4byte 16bit?
 		case 2:  return MP3;
@@ -63,8 +63,8 @@ public enum CodecType {
 	 * @param tagByte
 	 * @return
 	 */
-	public static CodecType getVideoCodecType(byte tagByte) {
-		switch(tagByte & 0x0F) {
+	public static CodecType getVideoCodecType(int codecId) {
+		switch(codecId) {
 		case 1: return JPEG;
 		case 2: return H263;
 		case 3: return SCREEN;
