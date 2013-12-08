@@ -1,8 +1,8 @@
 *
 !**/*/src/main
 !**/*/src/test/java
-!*.pom
-!*.properties
+!**/*/src/test/resources/log4j.properties
+!pom.xml
 /target
 /*/target
 /*/*/target
