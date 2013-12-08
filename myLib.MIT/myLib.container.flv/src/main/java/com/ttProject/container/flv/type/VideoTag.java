@@ -6,15 +6,17 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.flv.CodecType;
 import com.ttProject.container.flv.FlvTag;
+import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.flv1.Flv1FrameAnalyzer;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IUnit;
+import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.extra.Bit4;
 import com.ttProject.unit.extra.Bit8;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.BitN.Bit24;
 import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtil;
 
 /**
  * 映像用のtag
@@ -28,7 +30,8 @@ public class VideoTag extends FlvTag {
 	private Bit8 packetType = null; // avcのみ
 	private Bit24 dts = null; // avcのみ
 	private ByteBuffer frameBuffer = null; // フレームデータ
-	private IUnit frame = null; // 動作対象フレーム
+	private IVideoFrame frame = null; // 動作対象フレーム
+	private IAnalyzer frameAnalyzer = null;
 	public VideoTag(Bit8 tagType) {
 		super(tagType);
 	}
@@ -52,7 +55,6 @@ public class VideoTag extends FlvTag {
 				frameBuffer = BufferUtil.safeRead(channel, getSize() - 12 - 4);
 				break;
 			}
-			logger.info(HexUtil.toHex(frameBuffer, 0, 20, true));
 		}
 		// prevTagSizeを確認しておく。
 		if(getPrevTagSize() != BufferUtil.safeRead(channel, 4).getInt()) {
@@ -109,5 +111,40 @@ public class VideoTag extends FlvTag {
 			// frameから復元する必要あり。
 		}
 		return frameBuffer.duplicate();
+	}
+	public void analyzeFrame() throws Exception {
+		if(frameBuffer == null) {
+			throw new Exception("frameデータが読み込まれていません");
+		}
+		switch(getCodec()) {
+		case JPEG:
+			frameAnalyzer = null;
+			break;
+		case FLV1:
+			frameAnalyzer = new Flv1FrameAnalyzer();
+			break;
+		case SCREEN:
+			frameAnalyzer = null;
+			break;
+		case ON2VP6:
+			frameAnalyzer = null;
+			break;
+		case ON2VP6_ALPHA:
+			frameAnalyzer = null;
+			break;
+		case SCREEN_V2:
+			frameAnalyzer = null;
+			break;
+		case H264:
+			frameAnalyzer = null;
+			break;
+		default:
+			break;
+		}
+		if(frameAnalyzer == null) {
+			throw new Exception("frameの解析プログラムが設定されていません。");
+		}
+		frame = (IVideoFrame)frameAnalyzer.analyze(new ByteReadChannel(frameBuffer));
+		logger.info("width:" + frame.getWidth() + " height:" + frame.getHeight());
 	}
 }

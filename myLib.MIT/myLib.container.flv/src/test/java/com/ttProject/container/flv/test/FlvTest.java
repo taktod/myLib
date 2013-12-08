@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.container.flv.FlvTagAnalyzer;
+import com.ttProject.container.flv.type.VideoTag;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.unit.IAnalyzer;
@@ -31,7 +32,10 @@ public class FlvTest {
 			IUnit unit = null;
 			while((unit = analyzer.analyze(source)) != null) {
 				logger.info(unit);
-				logger.info(HexUtil.toHex(unit.getData(), 0, 11, true));
+				if(unit instanceof VideoTag) {
+					VideoTag vTag = (VideoTag)unit;
+					vTag.analyzeFrame();
+				}
 			}
 		}
 		catch(Exception e) {
