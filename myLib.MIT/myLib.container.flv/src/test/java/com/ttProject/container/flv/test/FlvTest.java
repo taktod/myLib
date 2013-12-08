@@ -9,7 +9,6 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.IUnit;
-import com.ttProject.util.HexUtil;
 
 /**
  * flvの動作テスト
