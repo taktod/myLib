@@ -14,6 +14,7 @@ import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.BitN.Bit24;
 import com.ttProject.util.BufferUtil;
+import com.ttProject.util.HexUtil;
 
 /**
  * 映像用のtag
@@ -51,6 +52,7 @@ public class VideoTag extends FlvTag {
 				frameBuffer = BufferUtil.safeRead(channel, getSize() - 12 - 4);
 				break;
 			}
+			logger.info(HexUtil.toHex(frameBuffer, 0, 20, true));
 		}
 		// prevTagSizeを確認しておく。
 		if(getPrevTagSize() != BufferUtil.safeRead(channel, 4).getInt()) {
