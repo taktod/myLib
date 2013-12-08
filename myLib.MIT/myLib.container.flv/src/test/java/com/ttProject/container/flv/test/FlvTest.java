@@ -33,7 +33,7 @@ public class FlvTest {
 				logger.info(unit);
 				if(unit instanceof VideoTag) {
 					VideoTag vTag = (VideoTag)unit;
-					vTag.analyzeFrame();
+					logger.info(vTag.getWidth() + "x" + vTag.getHeight());
 				}
 			}
 		}

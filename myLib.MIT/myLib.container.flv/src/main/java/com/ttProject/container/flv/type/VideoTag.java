@@ -145,6 +145,17 @@ public class VideoTag extends FlvTag {
 			throw new Exception("frameの解析プログラムが設定されていません。");
 		}
 		frame = (IVideoFrame)frameAnalyzer.analyze(new ByteReadChannel(frameBuffer));
-		logger.info("width:" + frame.getWidth() + " height:" + frame.getHeight());
+	}
+	public int getWidth() throws Exception {
+		if(frame == null) {
+			analyzeFrame();
+		}
+		return frame.getWidth();
+	}
+	public int getHeight() throws Exception {
+		if(frame == null) {
+			analyzeFrame();
+		}
+		return frame.getHeight();
 	}
 }

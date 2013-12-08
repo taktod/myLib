@@ -6,8 +6,10 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.flv.CodecType;
 import com.ttProject.container.flv.FlvTag;
+import com.ttProject.frame.IAudioFrame;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IUnit;
+import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.extra.Bit1;
 import com.ttProject.unit.extra.Bit2;
 import com.ttProject.unit.extra.Bit4;
@@ -19,7 +21,8 @@ import com.ttProject.util.BufferUtil;
 /**
  * 音声用のtag
  * @author taktod
- *
+ * nellymoserの16や8の場合はsampleRate 0 bitCount 1 channels 0になるっぽいです。
+ * speexは16khzのはずだけど、sampleRate 1 bitCount 1 channels 0になるっぽいです。
  */
 public class AudioTag extends FlvTag {
 	/** ロガー */
@@ -30,12 +33,65 @@ public class AudioTag extends FlvTag {
 	private Bit1 channels = null;
 	private Bit8 sequenceHeaderFlag = null;
 	private ByteBuffer frameBuffer = null;
-	private IUnit frame = null;
+	private IAudioFrame frame = null;
+	private IAnalyzer frameAnalyzer = null;
 	public AudioTag(Bit8 tagType) {
 		super(tagType);
 	}
 	public AudioTag() {
 		this(new Bit8(0x08));
+	}
+	public int getSampleRate() throws Exception {
+		if(frame == null) {
+			switch(getCodec()) {
+			case NELLY_16:
+				return 16000;
+			case NELLY_8:
+			case MP3_8:
+				return 8000;
+			default:
+				switch(sampleRate.get()) {
+				case 0:
+					return 5512;
+				case 1:
+					return 11025;
+				case 2:
+					return 22050;
+				case 3:
+					return 44100;
+				default:
+					throw new Exception("想定外の数値がでました。");
+				}
+			}
+		}
+		return frame.getSampleRate();
+	}
+	public int getSampleNum() throws Exception {
+		if(frame == null) {
+		}
+		return frame.getSampleNum();
+	}
+	public int getChannels() {
+		if(frame == null) {
+			if(channels.get() == 1) {
+				return 2;
+			}
+			else {
+				return 1;
+			}
+		}
+		return frame.getChannel();
+	}
+	public int getBitCount() {
+		if(frame == null) {
+			if(bitCount.get() == 1) {
+				return 16;
+			}
+			else {
+				return 8;
+			}
+		}
+		return frame.getBit();
 	}
 	/**
 	 * {@inheritDoc}
@@ -107,5 +163,60 @@ public class AudioTag extends FlvTag {
 			// frameから復元する必要あり
 		}
 		return frameBuffer.duplicate();
+	}
+	public void analyzeFrame() throws Exception {
+		if(frameBuffer == null) {
+			throw new Exception("frameデータが読み込まれていません");
+		}
+		switch(getCodec()) {
+		case PCM:
+			frameAnalyzer = null;
+			break;
+		case ADPCM:
+			frameAnalyzer = null;
+			break;
+		case MP3:
+			frameAnalyzer = null;
+			break;
+		case LPCM:
+			frameAnalyzer = null;
+			break;
+		case NELLY_16:
+			frameAnalyzer = null;
+			break;
+		case NELLY_8:
+			frameAnalyzer = null;
+			break;
+		case NELLY:
+			frameAnalyzer = null;
+			break;
+		case G711_A:
+			frameAnalyzer = null;
+			break;
+		case G711_U:
+			frameAnalyzer = null;
+			break;
+		case RESERVED:
+			frameAnalyzer = null;
+			break;
+		case AAC:
+			frameAnalyzer = null;
+			break;
+		case SPEEX:
+			frameAnalyzer = null;
+			break;
+		case MP3_8:
+			frameAnalyzer = null;
+			break;
+		case DEVICE_SPECIFIC:
+			frameAnalyzer = null;
+			break;
+		default:
+			break;
+		}
+		if(frameAnalyzer == null) {
+			throw new Exception("frameの解析プログラムが設定されていません。");
+		}
+		frame = (IAudioFrame)frameAnalyzer.analyze(new ByteReadChannel(frameBuffer));
 	}
 }
