@@ -1,5 +1,9 @@
 package com.ttProject.frame;
 
+/**
+ * 音声フレームのインターフェイス定義
+ * @author taktod
+ */
 public interface IAudioFrame extends IFrame {
 	/**
 	 * unitの持つサンプル数を応答します
