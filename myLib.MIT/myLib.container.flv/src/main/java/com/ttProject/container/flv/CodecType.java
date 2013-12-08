@@ -73,8 +73,7 @@ public enum CodecType {
 		case 6: return SCREEN_V2;
 		case 7: return H264;
 
-		case 0: // 不明(もしくは未設定)
-			return NONE;
+		case 0: // 不明
 		default:
 			throw new RuntimeException("判定不能なコーデック");
 		}

@@ -40,17 +40,17 @@ public class VideoTag extends FlvTag {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		// こちら側のloadが実行された場合は、読み込みデータをとりにいく。
-		switch(getCodec()) {
-		case NONE:
-			return;
-		case H264:
-			channel.position(getPosition() + 16);
-			frameBuffer = BufferUtil.safeRead(channel, getSize() - 16 - 4);
-			break;
-		default:
-			channel.position(getPosition() + 12);
-			frameBuffer = BufferUtil.safeRead(channel, getSize() - 12 - 4);
-			break;
+		if(codecId != null) {
+			switch(getCodec()) {
+			case H264:
+				channel.position(getPosition() + 16);
+				frameBuffer = BufferUtil.safeRead(channel, getSize() - 16 - 4);
+				break;
+			default:
+				channel.position(getPosition() + 12);
+				frameBuffer = BufferUtil.safeRead(channel, getSize() - 12 - 4);
+				break;
+			}
 		}
 		// prevTagSizeを確認しておく。
 		if(getPrevTagSize() != BufferUtil.safeRead(channel, 4).getInt()) {
@@ -76,22 +76,11 @@ public class VideoTag extends FlvTag {
 		frameType = new Bit4();
 		codecId = new Bit4();
 		loader.load(frameType, codecId);
-		switch(getCodec()) {
-		case JPEG:
-		case FLV1:
-		case SCREEN:
-		case ON2VP6:
-		case ON2VP6_ALPHA:
-		case SCREEN_V2:
-			break;
-		case H264:
+		if(getCodec() == CodecType.H264) {
 			// h264用の特殊データも読み込んでおく。
 			packetType = new Bit8();
 			dts = new Bit24();
 			loader.load(packetType, dts);
-			break;
-		default:
-			break;
 		}
 	}
 	@Override
@@ -102,10 +91,7 @@ public class VideoTag extends FlvTag {
 		BitConnector connector = new BitConnector();
 		ByteBuffer startBuffer = getStartBuffer();
 		ByteBuffer videoInfoBuffer = connector.connect(
-				frameType,
-				codecId,
-				packetType,
-				dts
+				frameType, codecId, packetType, dts
 		);
 		ByteBuffer frameBuffer = getFrameBuffer();
 		ByteBuffer tailBuffer = getTailBuffer();
