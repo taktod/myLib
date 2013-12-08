@@ -12,13 +12,13 @@ import java.nio.ByteBuffer;
  */
 public abstract class Unit implements IUnit {
 	/** データサイズ */
-	private int size;
+	private int size = 0;
 	/** 保持データ */
-	private ByteBuffer data;
+	private ByteBuffer data = null;
 	/** pts値 */
-	private long pts;
+	private long pts = 0L;
 	/** timebase値*/
-	private long timebase;
+	private long timebase = 1000L;
 	/** データの更新を実施したかフラグ */
 	private boolean update = false;
 	/**
