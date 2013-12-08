@@ -1,5 +1,6 @@
 package com.ttProject.frame.mp3;
 
+import com.ttProject.frame.mp3.type.Frame;
 import com.ttProject.frame.mp3.type.ID3Frame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
@@ -12,6 +13,9 @@ import com.ttProject.unit.extra.BitLoader;
  * @author taktod
  */
 public class Mp3FrameSelector implements ISelector {
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		if(channel.size() - channel.position() < 1) {
@@ -29,6 +33,7 @@ public class Mp3FrameSelector implements ISelector {
 		case 'T': // TAG?
 			break;
 		case 0xFF: // Frame
+			frame = new Frame();
 			break;
 		default:
 			throw new Exception("解析不能なデータです");
