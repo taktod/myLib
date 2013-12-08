@@ -2,7 +2,6 @@ package com.ttProject.frame.flv1;
 
 import java.nio.ByteBuffer;
 
-import com.ttProject.frame.IVideoFrame;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit;
@@ -20,7 +19,7 @@ import com.ttProject.util.BufferUtil;
  * @see http://hkpr.info/flash/swf/index.php?%E3%83%93%E3%83%87%E3%82%AA%2FSorenson%20H.263%20%E3%83%93%E3%83%83%E3%83%88%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%A0%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88
  * @author taktod
  */
-public abstract class Flv1Frame extends VideoFrame implements IVideoFrame {
+public abstract class Flv1Frame extends VideoFrame {
 	private Bit17 pictureStartCode;
 	private Bit5 version;
 	private Bit8 temporalReference;
