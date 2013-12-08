@@ -27,7 +27,7 @@ http://blog-imgs-18-origin.fc2.com/n/a/n/nanncyatte/aacfileheader.png
 public enum CodecType {
 	NONE,
 	// 映像用コーデック
-	JPEG,H263,SCREEN,ON2VP6,ON2VP6_ALPHA,SCREEN_V2,AVC,
+	JPEG,FLV1,SCREEN,ON2VP6,ON2VP6_ALPHA,SCREEN_V2,H264,
 	// 音声用コーデック
 	PCM,ADPCM,MP3,LPCM,NELLY_16,NELLY_8,NELLY,G711_A,G711_U,RESERVED,AAC,SPEEX,MP3_8,DEVICE_SPECIFIC;
 	/**
@@ -66,14 +66,15 @@ public enum CodecType {
 	public static CodecType getVideoCodecType(int codecId) {
 		switch(codecId) {
 		case 1: return JPEG;
-		case 2: return H263;
+		case 2: return FLV1;
 		case 3: return SCREEN;
 		case 4: return ON2VP6;
 		case 5: return ON2VP6_ALPHA;
 		case 6: return SCREEN_V2;
-		case 7: return AVC;
+		case 7: return H264;
 
-		case 0: // 不明
+		case 0: // 不明(もしくは未設定)
+			return NONE;
 		default:
 			throw new RuntimeException("判定不能なコーデック");
 		}
@@ -87,12 +88,12 @@ public enum CodecType {
 	public static byte getVideoByte(CodecType codec) throws Exception {
 		switch(codec) {
 		case JPEG:         return 1;
-		case H263:         return 2;
+		case FLV1:         return 2;
 		case SCREEN:       return 3;
 		case ON2VP6:       return 4;
 		case ON2VP6_ALPHA: return 5;
 		case SCREEN_V2:    return 6;
-		case AVC:          return 7;
+		case H264:         return 7;
 		case NONE:         return 0;
 		default:
 			throw new Exception("映像コーデックではありません。");

@@ -100,15 +100,14 @@ public class MetaTag extends FlvTag {
 			throw new Exception("データ更新の要求がありましたが、内部データが決定していません");
 		}
 		ByteBuffer startBuffer = getStartBuffer();
+		// この部分は、rawBufferのポインターがずれてもかまわない。更新したときのみに作り直す形になっているため。
+//		ByteBuffer rawBuffer = this.rawBuffer.duplicate();
 		ByteBuffer tailBuffer = getTailBuffer();
-		ByteBuffer data = ByteBuffer.allocate(startBuffer.remaining() +
-				rawBuffer.remaining() +
-				tailBuffer.remaining());
-		data.put(startBuffer);
-		data.put(rawBuffer);
-		data.put(tailBuffer);
-		data.flip();
-		setData(data);
+		setData(BufferUtil.connect(
+				startBuffer,
+				rawBuffer,
+				tailBuffer
+		));
 	}
 	public void put(String key, Object value) throws Exception {
 		data.put(key, value);

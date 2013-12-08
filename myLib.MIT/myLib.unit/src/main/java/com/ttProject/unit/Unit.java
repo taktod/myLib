@@ -5,6 +5,9 @@ import java.nio.ByteBuffer;
 /**
  * すべてのメディアunitの基本となるクラス
  * こういうクラスの参照データは、abstractクラスに持たせておいたほうが見通しがよくなりそう。
+ * 内容構成bitデータは、絶対に入るものは、宣言時にbitを構築しておく。
+ * 必要があれば入るものは、nullをいれておく。
+ * コンストラクタで入るものは、finalをつけておく。
  * @author taktod
  */
 public abstract class Unit implements IUnit {

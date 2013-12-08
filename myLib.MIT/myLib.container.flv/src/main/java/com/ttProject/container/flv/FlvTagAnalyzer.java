@@ -23,7 +23,9 @@ public class FlvTagAnalyzer implements IAnalyzer {
 	@Override
 	public IUnit analyze(IReadChannel channel) throws Exception {
 		IUnit unit = selector.select(channel);
-		unit.load(channel);
+		if(unit != null) {
+			unit.load(channel);
+		}
 		return unit;
 	}
 }

@@ -31,7 +31,7 @@ public class FlvTest {
 			IUnit unit = null;
 			while((unit = analyzer.analyze(source)) != null) {
 				logger.info(unit);
-				logger.info(HexUtil.toHex(unit.getData(), true));
+				logger.info(HexUtil.toHex(unit.getData(), 0, 11, true));
 			}
 		}
 		catch(Exception e) {

@@ -153,4 +153,21 @@ public class BufferUtil {
 		src.get(data);
 		return data;
 	}
+	/**
+	 * 複数のByteBufferを結合する
+	 * @param buffers
+	 * @return
+	 */
+	public static ByteBuffer connect(ByteBuffer ... buffers) {
+		int length = 0;
+		for(ByteBuffer buf : buffers) {
+			length += buf.remaining();
+		}
+		ByteBuffer result = ByteBuffer.allocate(length);
+		for(ByteBuffer buf : buffers) {
+			result.put(buf);
+		}
+		result.flip();
+		return result;
+	}
 }

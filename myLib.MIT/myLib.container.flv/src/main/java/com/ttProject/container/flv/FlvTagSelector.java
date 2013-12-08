@@ -19,12 +19,17 @@ import com.ttProject.unit.extra.BitN.Bit24;
  */
 public class FlvTagSelector implements ISelector {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(FlvTagSelector.class);
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
+		if(channel.position() == channel.size()) {
+			// もうおわり
+			return null;
+		}
 		// 始めの8bitを見ればなんのデータか一応わかる。
 		Bit8 firstByte = new Bit8();
 		BitLoader loader = new BitLoader(channel);
@@ -41,7 +46,6 @@ public class FlvTagSelector implements ISelector {
 		}
 		else {
 			// その他のtagであると思われる。
-			logger.info("別のタグ" + firstByte.get());
 			switch(firstByte.get()) {
 			case 0x12:
 				unit = new MetaTag(firstByte);
