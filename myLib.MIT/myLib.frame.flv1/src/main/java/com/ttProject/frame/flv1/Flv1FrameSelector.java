@@ -28,6 +28,10 @@ public class Flv1FrameSelector implements ISelector {
 	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
+		if(channel.size() - channel.position() < 4) {
+			// 32bit以上ないと処理できないものとする。
+			return null;
+		}
 		BitLoader bitLoader = new BitLoader(channel);
 		Bit17 pictureStartCode = new Bit17();
 		Bit5 version = new Bit5();
