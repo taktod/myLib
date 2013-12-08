@@ -8,4 +8,11 @@
   </parent>
   <artifactId>myLib.frame.nellymoser</artifactId>
   <name>myLib.frame.nellymoser</name>
+  <dependencies>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.frame</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 </project>

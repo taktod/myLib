@@ -8,4 +8,11 @@
   </parent>
   <artifactId>myLib.frame.aac</artifactId>
   <name>myLib.frame.aac</name>
+  <dependencies>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.frame</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 </project>
