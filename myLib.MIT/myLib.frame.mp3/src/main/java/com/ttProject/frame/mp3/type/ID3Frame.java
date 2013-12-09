@@ -41,7 +41,7 @@ public class ID3Frame extends Mp3Frame {
 		loader.load(signature, version, flag,
 				dummy1, size1, dummy2, size2, dummy3, size3, dummy4, size4);
 		this.signature.set('I' << 16 | signature.get());
-		super.setSize(size1.get() << 21 | size2.get() << 14 | size3.get() << 7 | size4.get());
+		super.setSize(10 + (size1.get() << 21 | size2.get() << 14 | size3.get() << 7 | size4.get()));
 		super.update();
 	}
 	/**

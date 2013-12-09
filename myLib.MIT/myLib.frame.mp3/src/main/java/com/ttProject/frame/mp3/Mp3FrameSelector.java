@@ -1,5 +1,7 @@
 package com.ttProject.frame.mp3;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.mp3.type.Frame;
 import com.ttProject.frame.mp3.type.ID3Frame;
 import com.ttProject.nio.channels.IReadChannel;
@@ -13,6 +15,9 @@ import com.ttProject.unit.extra.BitLoader;
  * @author taktod
  */
 public class Mp3FrameSelector implements ISelector {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(Mp3FrameSelector.class);
 	/**
 	 * {@inheritDoc}
 	 */
