@@ -1,6 +1,8 @@
 package com.ttProject.unit.test;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -30,29 +32,12 @@ import com.ttProject.util.HexUtil;
 public class BitTest {
 	/** 動作ロガー */
 	private Logger logger = Logger.getLogger(BitTest.class);
-	@Test
-	public void test3() throws Exception {
-		logger.info("test3");
-		IReadChannel channel = new ByteReadChannel(new byte[]{
-			0x12, 0x34, 0x56, 0x78	
-		});
-		BitLoader bitLoader = new BitLoader(channel);
-		Bit1 bit1 = new Bit1();
-		Bit2 bit2 = new Bit2();
-		Bit6 bit5 = new Bit6();
-		bitLoader.load(bit1, bit2, bit5);
-		logger.info(bit1);
-		logger.info(bit2);
-		logger.info(bitLoader.getExtraBit());
-		logger.info(channel.position());
-		logger.info(channel.size());
-	}
 	/**
 	 * 読み込み書き込みテスト
 	 * @throws Exception
 	 */
 	@Test
-	public void test() throws Exception {
+	public void test1() throws Exception {
 		logger.info("test1");
 		IReadChannel channel = new ByteReadChannel(new byte[] {
 				(byte)0xFF, (byte)0xF1, 0x50, (byte)0x80, 0x02, 0x1F, (byte)0xFC
@@ -115,6 +100,23 @@ public class BitTest {
 		logger.info(seg);
 	}
 	@Test
+	public void test3() throws Exception {
+		logger.info("test3");
+		IReadChannel channel = new ByteReadChannel(new byte[]{
+			0x12, 0x34, 0x56, 0x78	
+		});
+		BitLoader bitLoader = new BitLoader(channel);
+		Bit1 bit1 = new Bit1();
+		Bit2 bit2 = new Bit2();
+		Bit6 bit5 = new Bit6();
+		bitLoader.load(bit1, bit2, bit5);
+		logger.info(bit1);
+		logger.info(bit2);
+		logger.info(bitLoader.getExtraBit());
+		logger.info(channel.position());
+		logger.info(channel.size());
+	}
+	@Test
 	public void test4() throws Exception {
 		logger.info("test4");
 		Seg seg = new Seg();
@@ -150,5 +152,19 @@ public class BitTest {
 		loader.load(bit4, bitN);
 		logger.info(bit4);
 		logger.info(bitN);
+	}
+	@Test
+	public void test7() throws Exception {
+		logger.info("test7");
+		BitConnector connector = new BitConnector();
+		List<Bit> bits = new ArrayList<Bit>();
+		bits.add(new Bit1(1));
+		bits.add(new Bit1(0));
+		bits.add(new Bit1(1));
+		bits.add(new Bit1(0));
+		bits.add(new Bit4(1));
+		connector.feed(bits);
+		connector.feed(new Bit2(), new Bit4(4), new Bit1(), new Bit1());
+		logger.info(HexUtil.toHex(connector.connect(), true));
 	}
 }

@@ -1,6 +1,7 @@
 package com.ttProject.unit.extra;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -9,6 +10,8 @@ import java.util.List;
  * @author taktod
  */
 public class BitConnector {
+	/** feedしていくbitリスト */
+	private List<Bit> bits = null;
 	/**
 	 * 接続します。
 	 * @param bits
@@ -71,5 +74,37 @@ public class BitConnector {
 	 */
 	public ByteBuffer connect(List<Bit> bits) {
 		return connect(bits.toArray(new Bit[]{}));
+	}
+	/**
+	 * 追記していくデータ
+	 * @param bits
+	 */
+	public void feed(List<Bit> bits) {
+		if(this.bits == null) {
+			this.bits = new ArrayList<Bit>();
+		}
+		this.bits.addAll(bits);
+	}
+	/**
+	 * 追記していくデータ
+	 * @param bits
+	 */
+	public void feed(Bit ... bits) {
+		if(this.bits == null) {
+			this.bits = new ArrayList<Bit>();
+		}
+		for(Bit bit : bits) {
+			this.bits.add(bit);
+		}
+	}
+	/**
+	 * 追記したデータ接続
+	 * @return
+	 */
+	public ByteBuffer connect() {
+		if(bits == null) {
+			return null;
+		}
+		return connect(bits);
 	}
 }
