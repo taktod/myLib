@@ -3,6 +3,10 @@ package com.ttProject.frame.mp3.type;
 import com.ttProject.frame.mp3.Mp3Frame;
 import com.ttProject.nio.channels.IReadChannel;
 
+/**
+ * ID3Tagは作成する必要あり。(とりあえずあとまわし)
+ * @author taktod
+ */
 public class TagFrame extends Mp3Frame {
 	/**
 	 * {@inheritDoc}
