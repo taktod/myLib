@@ -26,4 +26,14 @@ public class Frame extends SetupBase {
 		}
 		processConvert(container, Encoder.flv1(container), null);
 	}
+	@Test
+	public void mp3() throws Exception {
+		logger.info("mp3準備");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.frame.mp3", "test.mp3"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.mp3(container));
+	}
 }
