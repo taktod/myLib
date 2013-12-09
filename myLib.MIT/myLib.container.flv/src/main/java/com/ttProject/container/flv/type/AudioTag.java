@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.flv.CodecType;
 import com.ttProject.container.flv.FlvTag;
 import com.ttProject.frame.IAudioFrame;
+import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IAnalyzer;
@@ -176,7 +177,7 @@ public class AudioTag extends FlvTag {
 			frameAnalyzer = null;
 			break;
 		case MP3:
-			frameAnalyzer = null;
+			frameAnalyzer = new Mp3FrameAnalyzer();
 			break;
 		case LPCM:
 			frameAnalyzer = null;
