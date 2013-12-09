@@ -25,7 +25,8 @@ public class FlvTest {
 		IFileReadChannel source = null;
 		try {
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("test.flv").toURI().toURL()
+//					Thread.currentThread().getContextClassLoader().getResource("test.flv").toURI().toURL()
+					"http://red5.googlecode.com/svn-history/r4071/java/example/trunk/oflaDemo/www/streams/toystory3-vp6.flv"
 			);
 			IAnalyzer analyzer = new FlvTagAnalyzer();
 			IUnit unit = null;

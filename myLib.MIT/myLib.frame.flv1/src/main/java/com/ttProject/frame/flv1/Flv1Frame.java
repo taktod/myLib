@@ -82,7 +82,7 @@ public abstract class Flv1Frame extends VideoFrame {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		// detail読み込みでは、必要なデータを読み込みます。
-		channel.position(getReadPosition());
+		channel.position(super.getReadPosition());
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
 	}
 	/**
@@ -91,7 +91,7 @@ public abstract class Flv1Frame extends VideoFrame {
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		// 小規模読み込みの動作は特にすることなし。
-		setReadPosition(channel.position());
+		super.setReadPosition(channel.position());
 		super.setSize(channel.size());
 		super.update();
 	}

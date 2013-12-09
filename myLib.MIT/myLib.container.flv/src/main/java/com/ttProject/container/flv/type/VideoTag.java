@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.flv.CodecType;
 import com.ttProject.container.flv.FlvTag;
 import com.ttProject.frame.IVideoFrame;
-import com.ttProject.frame.flv1.Flv1FrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IAnalyzer;
@@ -37,6 +36,9 @@ public class VideoTag extends FlvTag {
 	}
 	public VideoTag() {
 		this(new Bit8(0x09));
+	}
+	public void setFrameAnalyzer(IAnalyzer analyzer) {
+		this.frameAnalyzer = analyzer;
 	}
 	/**
 	 * {@inheritDoc}
@@ -116,18 +118,24 @@ public class VideoTag extends FlvTag {
 		if(frameBuffer == null) {
 			throw new Exception("frameデータが読み込まれていません");
 		}
+		ByteBuffer buffer = frameBuffer;
 		switch(getCodec()) {
 		case JPEG:
 			frameAnalyzer = null;
 			break;
 		case FLV1:
-			frameAnalyzer = new Flv1FrameAnalyzer();
 			break;
 		case SCREEN:
 			frameAnalyzer = null;
 			break;
 		case ON2VP6:
-			frameAnalyzer = null;
+			// vp6の場合は、先頭のデータを終端にもってくる必要あり。
+			ByteBuffer frameBuffer = buffer.duplicate();
+			buffer = ByteBuffer.allocate(frameBuffer.remaining());
+			byte firstByte = frameBuffer.get();
+			buffer.put(frameBuffer);
+			buffer.put(firstByte);
+			buffer.flip();
 			break;
 		case ON2VP6_ALPHA:
 			frameAnalyzer = null;
@@ -144,7 +152,8 @@ public class VideoTag extends FlvTag {
 		if(frameAnalyzer == null) {
 			throw new Exception("frameの解析プログラムが設定されていません。");
 		}
-		frame = (IVideoFrame)frameAnalyzer.analyze(new ByteReadChannel(frameBuffer));
+		frame = (IVideoFrame)frameAnalyzer.analyze(new ByteReadChannel(buffer));
+		logger.info("frame:" + frame);
 	}
 	public int getWidth() throws Exception {
 		if(frame == null) {

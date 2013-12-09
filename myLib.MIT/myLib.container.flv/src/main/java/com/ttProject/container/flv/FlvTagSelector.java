@@ -5,13 +5,18 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.MetaTag;
 import com.ttProject.container.flv.type.VideoTag;
+import com.ttProject.frame.flv1.Flv1FrameAnalyzer;
+import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
+import com.ttProject.frame.vp6.Vp6FrameAnalyzer;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.Bit8;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.BitN.Bit16;
 import com.ttProject.unit.extra.BitN.Bit24;
+
 
 /**
  * flvのtagを解析して取り出すselector
@@ -21,6 +26,8 @@ public class FlvTagSelector implements ISelector {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(FlvTagSelector.class);
+	private IAnalyzer videoFrameAnalyzer = null;
+	private IAnalyzer audioFrameAnalyzer = null;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -48,19 +55,81 @@ public class FlvTagSelector implements ISelector {
 			// その他のtagであると思われる。
 			switch(firstByte.get()) {
 			case 0x12:
-				unit = new MetaTag(firstByte);
-				break;
+				MetaTag metaTag = new MetaTag(firstByte);
+				metaTag.minimumLoad(channel);
+				return metaTag;
 			case 0x09:
-				unit = new VideoTag(firstByte);
-				break;
+				VideoTag videoTag = new VideoTag(firstByte);
+				videoTag.minimumLoad(channel);
+				switch(videoTag.getCodec()) {
+				case JPEG:
+					break;
+				case FLV1:
+					if(videoFrameAnalyzer == null || !(videoFrameAnalyzer instanceof Flv1FrameAnalyzer)) {
+						videoFrameAnalyzer = new Flv1FrameAnalyzer();
+					}
+					break;
+				case SCREEN:
+					break;
+				case ON2VP6:
+					if(videoFrameAnalyzer == null || !(videoFrameAnalyzer instanceof Vp6FrameAnalyzer)) {
+						videoFrameAnalyzer = new Vp6FrameAnalyzer();
+					}
+					break;
+				case ON2VP6_ALPHA:
+					break;
+				case SCREEN_V2:
+					break;
+				case H264:
+					break;
+				default:
+					break;
+				}
+				videoTag.setFrameAnalyzer(videoFrameAnalyzer);
+				return videoTag;
 			case 0x08:
-				unit = new AudioTag(firstByte);
-				break;
+				AudioTag audioTag = new AudioTag(firstByte);
+				audioTag.minimumLoad(channel);
+				switch(audioTag.getCodec()) {
+				case PCM:
+					break;
+				case ADPCM:
+					break;
+				case MP3:
+					if(audioFrameAnalyzer == null || !(audioFrameAnalyzer instanceof Mp3FrameAnalyzer)) {
+						audioFrameAnalyzer = new Mp3FrameAnalyzer();
+					}
+					break;
+				case LPCM:
+					break;
+				case NELLY_16:
+					break;
+				case NELLY_8:
+					break;
+				case NELLY:
+					break;
+				case G711_A:
+					break;
+				case G711_U:
+					break;
+				case RESERVED:
+					break;
+				case AAC:
+					break;
+				case SPEEX:
+					break;
+				case MP3_8:
+					break;
+				case DEVICE_SPECIFIC:
+					break;
+				default:
+					break;
+				}
+				audioTag.setFrameAnalyzer(audioFrameAnalyzer);
+				return audioTag;
 			default:
 				throw new Exception("想定外のtagです。");
 			}
-			unit.minimumLoad(channel);
-			return unit;
 		}
 	}
 }

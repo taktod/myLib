@@ -167,4 +167,10 @@ public class BitTest {
 		connector.feed(new Bit2(), new Bit4(4), new Bit1(), new Bit1());
 		logger.info(HexUtil.toHex(connector.connect(), true));
 	}
+	@Test
+	public void test8() throws Exception {
+		logger.info("test8");
+		BitConnector connector = new BitConnector();
+		logger.info(HexUtil.toHex(connector.connect((Bit)null)));
+	}
 }

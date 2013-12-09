@@ -22,4 +22,8 @@ public class AggregateTag extends FlvTag {
 	public void load(IReadChannel channel) throws Exception {
 
 	}
+	@Override
+	protected void requestUpdate() throws Exception {
+		
+	}
 }

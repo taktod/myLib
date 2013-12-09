@@ -1,9 +1,12 @@
 package com.ttProject.frame.vp6;
 
+import java.nio.ByteBuffer;
+
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.vp6.type.IntraFrame;
 import com.ttProject.unit.extra.Bit1;
 import com.ttProject.unit.extra.Bit6;
+import com.ttProject.unit.extra.BitConnector;
 
 /**
  * on2Vp6のコーデックの映像の内容を解析します。
@@ -22,5 +25,20 @@ public abstract class Vp6Frame extends VideoFrame {
 		this.frameMode = frameMode;
 		this.qp = qp;
 		this.marker = marker;
+	}
+	public void setKeyFrame(IntraFrame keyFrame) {
+		this.keyFrame = keyFrame;
+		super.setWidth(keyFrame.getWidth());
+		super.setHeight(keyFrame.getHeight());
+	}
+	protected Bit1 getMarker() {
+		return marker;
+	}
+	protected IntraFrame getKeyFrame() {
+		return keyFrame;
+	}
+	protected ByteBuffer getHeaderBuffer() {
+		BitConnector connector = new BitConnector();
+		return connector.connect(frameMode, qp, marker);
 	}
 }

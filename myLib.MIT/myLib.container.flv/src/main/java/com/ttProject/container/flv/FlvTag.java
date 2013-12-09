@@ -69,8 +69,4 @@ public abstract class FlvTag extends Container implements IContainer {
 		timestampExt.set((int)(pts >>> 24) & 0xFF);
 		super.setPts(pts);
 	}
-	@Override
-	protected void requestUpdate() throws Exception {
-		
-	}
 }

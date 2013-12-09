@@ -63,7 +63,9 @@ public class BitConnector {
 				}
 			}
 		}
-		buffer.put((byte)((data >>> (8 - left)) & 0xFF));
+		if(buffer.position() != buffer.limit()) {
+			buffer.put((byte)((data >>> (8 - left)) & 0xFF));
+		}
 		buffer.flip();
 		return buffer;
 	}
