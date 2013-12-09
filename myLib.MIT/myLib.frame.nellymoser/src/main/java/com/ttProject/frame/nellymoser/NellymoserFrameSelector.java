@@ -26,7 +26,8 @@ public class NellymoserFrameSelector implements ISelector {
 			MultiFrame frame = new MultiFrame();
 			for(int i = 0;i < count;i ++) {
 				NellymoserFrame innerFrame = new Frame();
-				innerFrame.minimumLoad(channel); // minimumloadで全部読み込むのでこうできる
+				innerFrame.minimumLoad(channel);
+				innerFrame.load(channel); // minimumloadだけですべてとれないので、通常のloadも実行してしまいます。
 				frame.add(innerFrame);
 			}
 			frame.minimumLoad(channel);

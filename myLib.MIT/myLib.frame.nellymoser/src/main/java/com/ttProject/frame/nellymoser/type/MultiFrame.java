@@ -27,6 +27,8 @@ public class MultiFrame extends NellymoserFrame {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
+		setSize(64 * frameList.size());
+		setSampleNum(256 * frameList.size());
 	}
 	/**
 	 * {@inheritDoc}
