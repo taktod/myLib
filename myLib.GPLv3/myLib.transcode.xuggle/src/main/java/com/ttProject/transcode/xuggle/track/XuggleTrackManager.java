@@ -133,6 +133,10 @@ public class XuggleTrackManager implements IXuggleTrackManager {
 			encoder.close();
 			encoder = null;
 		}
+		if(trackListener != null) {
+			trackListener.close();
+			trackListener = null;
+		}
 	}
 	/**
 	 * 変換処理のベース

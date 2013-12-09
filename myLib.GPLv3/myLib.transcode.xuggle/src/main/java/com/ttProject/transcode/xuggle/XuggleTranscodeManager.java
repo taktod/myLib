@@ -87,10 +87,18 @@ public class XuggleTranscodeManager extends TranscodeManager implements IXuggleT
 	 * 停止処理
 	 */
 	@Override
-	public void close() {
+	public synchronized void close() {
+		if(packetizer != null) {
+			packetizer.close();
+			packetizer = null;
+		}
 		if(decoder != null) {
 			decoder.close();
 			decoder = null;
+		}
+		for(Entry<Integer, ITrackManager> entry : getTrackManagers().entrySet()) {
+			XuggleTrackManager trackManager = (XuggleTrackManager)entry.getValue();
+			trackManager.close();
 		}
 	}
 	/**
