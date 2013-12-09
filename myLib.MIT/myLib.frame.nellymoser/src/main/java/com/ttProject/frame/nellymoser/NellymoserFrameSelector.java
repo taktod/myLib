@@ -1,6 +1,7 @@
 package com.ttProject.frame.nellymoser;
 
 import com.ttProject.frame.nellymoser.type.Frame;
+import com.ttProject.frame.nellymoser.type.MultiFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
@@ -16,8 +17,25 @@ public class NellymoserFrameSelector implements ISelector {
 	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
-		NellymoserFrame frame = new Frame();
-		frame.minimumLoad(channel);
-		return frame;
+		// frameをいくつ保持しているか確認する。
+		if(channel.size() % 64 != 0) {
+			throw new Exception("保持チャンネル数がおかしいです。");
+		}
+		int count = channel.size() / 64;
+		if(count != 1) {
+			MultiFrame frame = new MultiFrame();
+			for(int i = 0;i < count;i ++) {
+				NellymoserFrame innerFrame = new Frame();
+				innerFrame.minimumLoad(channel); // minimumloadで全部読み込むのでこうできる
+				frame.add(innerFrame);
+			}
+			frame.minimumLoad(channel);
+			return frame;
+		}
+		else {
+			NellymoserFrame frame = new Frame();
+			frame.minimumLoad(channel);
+			return frame;
+		}
 	}
 }
