@@ -1,7 +1,5 @@
 package com.ttProject.unit;
 
-import java.nio.ByteBuffer;
-
 /**
  * すべてのメディアunitの基本となるクラス
  * こういうクラスの参照データは、abstractクラスに持たせておいたほうが見通しがよくなりそう。
@@ -10,45 +8,11 @@ import java.nio.ByteBuffer;
  * コンストラクタで入るものは、finalをつけておく。
  * @author taktod
  */
-public abstract class Unit implements IUnit {
-	/** データサイズ */
-	private int size = 0;
-	/** 保持データ */
-	private ByteBuffer data = null;
+public abstract class Unit extends Data implements IUnit {
 	/** pts値 */
 	private long pts = 0L;
 	/** timebase値*/
 	private long timebase = 1000L;
-	/** データの更新を実施したかフラグ */
-	private boolean update = false;
-	/**
-	 * なにか更新したときに印をつけておく
-	 */
-	protected final void update() {
-		update = true;
-	}
-	/**
-	 * データの更新がある場合にdataの中身の更新要求
-	 * @throws Exception
-	 */
-	protected abstract void requestUpdate() throws Exception;
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int getSize() {
-		return size;
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public ByteBuffer getData() throws Exception {
-		if(update) {
-			requestUpdate();
-		}
-		return data;
-	}
 	/**
 	 * {@inheritDoc}
 	 */
@@ -62,13 +26,6 @@ public abstract class Unit implements IUnit {
 	@Override
 	public long getTimebase() {
 		return timebase;
-	}
-	protected void setSize(int size) {
-		this.size = size;
-	}
-	protected void setData(ByteBuffer data) {
-		this.data = data;
-		update = false;
 	}
 	protected void setPts(long pts) {
 		this.pts = pts;
