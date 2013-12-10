@@ -8,20 +8,20 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.unit.extra.Bit;
-import com.ttProject.unit.extra.Bit3;
-import com.ttProject.unit.extra.Bit4;
-import com.ttProject.unit.extra.Bit5;
-import com.ttProject.unit.extra.Bit8;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitN;
 import com.ttProject.unit.extra.BitN.Bit13;
+import com.ttProject.unit.extra.bit.Bit1;
+import com.ttProject.unit.extra.bit.Bit2;
+import com.ttProject.unit.extra.bit.Bit3;
+import com.ttProject.unit.extra.bit.Bit4;
+import com.ttProject.unit.extra.bit.Bit5;
+import com.ttProject.unit.extra.bit.Bit6;
+import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.unit.extra.Seg;
 import com.ttProject.unit.extra.Ueg;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.extra.Bit1;
-import com.ttProject.unit.extra.Bit2;
-import com.ttProject.unit.extra.Bit6;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.util.HexUtil;
 

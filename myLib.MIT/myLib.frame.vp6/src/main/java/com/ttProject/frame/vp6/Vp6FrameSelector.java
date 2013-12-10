@@ -5,9 +5,9 @@ import com.ttProject.frame.vp6.type.IntraFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
-import com.ttProject.unit.extra.Bit1;
-import com.ttProject.unit.extra.Bit6;
 import com.ttProject.unit.extra.BitLoader;
+import com.ttProject.unit.extra.bit.Bit1;
+import com.ttProject.unit.extra.bit.Bit6;
 
 public class Vp6FrameSelector implements ISelector {
 	/** 前回解析したkeyFrame情報は保持しておいて、interFrameに紐づける必要あり。 */

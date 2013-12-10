@@ -7,14 +7,14 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.Bit;
-import com.ttProject.unit.extra.Bit1;
-import com.ttProject.unit.extra.Bit2;
-import com.ttProject.unit.extra.Bit3;
-import com.ttProject.unit.extra.Bit5;
-import com.ttProject.unit.extra.Bit8;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.BitN.Bit16;
 import com.ttProject.unit.extra.BitN.Bit17;
+import com.ttProject.unit.extra.bit.Bit1;
+import com.ttProject.unit.extra.bit.Bit2;
+import com.ttProject.unit.extra.bit.Bit3;
+import com.ttProject.unit.extra.bit.Bit5;
+import com.ttProject.unit.extra.bit.Bit8;
 
 /**
  * flv1のframeを選択する動作

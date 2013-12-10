@@ -1,22 +1,24 @@
-package com.ttProject.unit.extra;
+package com.ttProject.unit.extra.bit;
+
+import com.ttProject.unit.extra.Bit;
 
 /**
- * 3ビットを表現する型
+ * 6ビットを表現する型
  * @author taktod
  */
-public class Bit3 extends Bit {
+public class Bit6 extends Bit {
 	/**
 	 * コンストラクタ
 	 */
-	public Bit3() {
+	public Bit6() {
 		this(0);
 	}
 	/**
 	 * コンストラクタ
 	 * @param value
 	 */
-	public Bit3(int value) {
-		super(3);
+	public Bit6(int value) {
+		super(6);
 		set(value);
 	}
 	/**
@@ -24,6 +26,6 @@ public class Bit3 extends Bit {
 	 */
 	@Override
 	public void set(int value) {
-		super.set(value & 0x07);
+		super.set(value & 0x3F);
 	}
 }

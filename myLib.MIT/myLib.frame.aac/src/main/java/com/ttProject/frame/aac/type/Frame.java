@@ -5,15 +5,15 @@ import java.nio.ByteBuffer;
 import com.ttProject.frame.aac.AacFrame;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.extra.Bit1;
-import com.ttProject.unit.extra.Bit2;
-import com.ttProject.unit.extra.Bit3;
-import com.ttProject.unit.extra.Bit4;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.BitN.Bit11;
 import com.ttProject.unit.extra.BitN.Bit12;
 import com.ttProject.unit.extra.BitN.Bit13;
+import com.ttProject.unit.extra.bit.Bit1;
+import com.ttProject.unit.extra.bit.Bit2;
+import com.ttProject.unit.extra.bit.Bit3;
+import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.util.BufferUtil;
 
 /**

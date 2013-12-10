@@ -4,13 +4,13 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.frame.mp3.Mp3Frame;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.extra.Bit1;
-import com.ttProject.unit.extra.Bit7;
-import com.ttProject.unit.extra.Bit8;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.BitN.Bit16;
 import com.ttProject.unit.extra.BitN.Bit24;
+import com.ttProject.unit.extra.bit.Bit1;
+import com.ttProject.unit.extra.bit.Bit7;
+import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**

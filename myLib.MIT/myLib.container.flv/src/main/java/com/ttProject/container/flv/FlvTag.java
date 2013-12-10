@@ -5,11 +5,11 @@ import java.nio.ByteBuffer;
 import com.ttProject.container.Container;
 import com.ttProject.container.IContainer;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.extra.Bit8;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.BitN.Bit24;
 import com.ttProject.unit.extra.BitN.Bit32;
+import com.ttProject.unit.extra.bit.Bit8;
 
 /**
  * flvデータのタグ

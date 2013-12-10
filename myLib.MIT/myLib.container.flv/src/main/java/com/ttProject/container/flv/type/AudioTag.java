@@ -10,12 +10,12 @@ import com.ttProject.frame.IAudioFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IAnalyzer;
-import com.ttProject.unit.extra.Bit1;
-import com.ttProject.unit.extra.Bit2;
-import com.ttProject.unit.extra.Bit4;
-import com.ttProject.unit.extra.Bit8;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
+import com.ttProject.unit.extra.bit.Bit1;
+import com.ttProject.unit.extra.bit.Bit2;
+import com.ttProject.unit.extra.bit.Bit4;
+import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**

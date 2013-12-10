@@ -6,25 +6,17 @@ import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit5;
 
-public class PictureParameterSet extends H264Frame {
-	public PictureParameterSet(Bit1 forbiddenZeroBit,
-			Bit2 nalRefIdc,
-			Bit5 type) {
+public class SliceIDR extends H264Frame {
+	public SliceIDR(Bit1 forbiddenZeroBit, Bit2 nalRefIdc, Bit5 type) {
 		super(forbiddenZeroBit, nalRefIdc, type);
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-
 	}
-
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-
 	}
-
 	@Override
 	protected void requestUpdate() throws Exception {
-
 	}
-
 }

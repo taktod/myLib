@@ -7,8 +7,8 @@ import com.ttProject.frame.mp3.type.ID3Frame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
-import com.ttProject.unit.extra.Bit8;
 import com.ttProject.unit.extra.BitLoader;
+import com.ttProject.unit.extra.bit.Bit8;
 
 /**
  * mp3のframeを選択するプログラム

@@ -3,12 +3,12 @@ package com.ttProject.frame.aac;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.Data;
 import com.ttProject.unit.extra.Bit;
-import com.ttProject.unit.extra.Bit4;
-import com.ttProject.unit.extra.Bit5;
-import com.ttProject.unit.extra.Bit6;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.BitN.Bit24;
+import com.ttProject.unit.extra.bit.Bit4;
+import com.ttProject.unit.extra.bit.Bit5;
+import com.ttProject.unit.extra.bit.Bit6;
 
 /**
  * aacのdecode specific infoのデータから

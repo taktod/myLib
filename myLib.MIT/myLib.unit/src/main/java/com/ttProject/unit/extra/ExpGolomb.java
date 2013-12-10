@@ -5,6 +5,15 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.unit.extra.bit.Bit1;
+import com.ttProject.unit.extra.bit.Bit2;
+import com.ttProject.unit.extra.bit.Bit3;
+import com.ttProject.unit.extra.bit.Bit4;
+import com.ttProject.unit.extra.bit.Bit5;
+import com.ttProject.unit.extra.bit.Bit6;
+import com.ttProject.unit.extra.bit.Bit7;
+import com.ttProject.unit.extra.bit.Bit8;
+
 /**
  * h264のexpGolomb値を取得する動作
  * @see http://en.wikipedia.org/wiki/Exponential-Golomb_coding

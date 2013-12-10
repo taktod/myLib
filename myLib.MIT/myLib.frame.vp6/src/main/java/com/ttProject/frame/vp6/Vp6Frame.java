@@ -4,9 +4,9 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.vp6.type.IntraFrame;
-import com.ttProject.unit.extra.Bit1;
-import com.ttProject.unit.extra.Bit6;
 import com.ttProject.unit.extra.BitConnector;
+import com.ttProject.unit.extra.bit.Bit1;
+import com.ttProject.unit.extra.bit.Bit6;
 
 /**
  * on2Vp6のコーデックの映像の内容を解析します。

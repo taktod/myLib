@@ -60,14 +60,14 @@ public class BitN extends Bit {
 		return data.toString();
 	}
 	// 以下各々のbit数の設定
-	public static class Bit1  extends com.ttProject.unit.extra.Bit1 {};
-	public static class Bit2  extends com.ttProject.unit.extra.Bit2 {};
-	public static class Bit3  extends com.ttProject.unit.extra.Bit3 {};
-	public static class Bit4  extends com.ttProject.unit.extra.Bit4 {};
-	public static class Bit5  extends com.ttProject.unit.extra.Bit5 {};
-	public static class Bit6  extends com.ttProject.unit.extra.Bit6 {};
-	public static class Bit7  extends com.ttProject.unit.extra.Bit7 {};
-	public static class Bit8  extends com.ttProject.unit.extra.Bit8 {};
+	public static class Bit1  extends com.ttProject.unit.extra.bit.Bit1 {};
+	public static class Bit2  extends com.ttProject.unit.extra.bit.Bit2 {};
+	public static class Bit3  extends com.ttProject.unit.extra.bit.Bit3 {};
+	public static class Bit4  extends com.ttProject.unit.extra.bit.Bit4 {};
+	public static class Bit5  extends com.ttProject.unit.extra.bit.Bit5 {};
+	public static class Bit6  extends com.ttProject.unit.extra.bit.Bit6 {};
+	public static class Bit7  extends com.ttProject.unit.extra.bit.Bit7 {};
+	public static class Bit8  extends com.ttProject.unit.extra.bit.Bit8 {};
 	public static class Bit9  extends BitN {public Bit9(int value)  {this();set(value);}public Bit9()  {super(new Bit1(), new Bit8());}}
 	public static class Bit10 extends BitN {public Bit10(int value) {this();set(value);}public Bit10() {super(new Bit2(), new Bit8());}}
 	public static class Bit11 extends BitN {public Bit11(int value) {this();set(value);}public Bit11() {super(new Bit3(), new Bit8());}}

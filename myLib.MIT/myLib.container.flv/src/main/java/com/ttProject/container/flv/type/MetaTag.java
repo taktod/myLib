@@ -11,7 +11,7 @@ import com.ttProject.container.flv.FlvTag;
 import com.ttProject.container.flv.amf.Amf0Value;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.extra.Bit8;
+import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**

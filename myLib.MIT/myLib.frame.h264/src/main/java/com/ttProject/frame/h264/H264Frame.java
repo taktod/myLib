@@ -3,10 +3,10 @@ package com.ttProject.frame.h264;
 import java.nio.ByteBuffer;
 
 import com.ttProject.frame.VideoFrame;
-import com.ttProject.unit.extra.Bit1;
-import com.ttProject.unit.extra.Bit2;
-import com.ttProject.unit.extra.Bit5;
 import com.ttProject.unit.extra.BitConnector;
+import com.ttProject.unit.extra.bit.Bit1;
+import com.ttProject.unit.extra.bit.Bit2;
+import com.ttProject.unit.extra.bit.Bit5;
 
 public abstract class H264Frame extends VideoFrame {
 	private final Bit1 forbiddenZeroBit;
