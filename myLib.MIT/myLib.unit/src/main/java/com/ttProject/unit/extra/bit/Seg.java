@@ -1,4 +1,6 @@
-package com.ttProject.unit.extra;
+package com.ttProject.unit.extra.bit;
+
+import com.ttProject.unit.extra.ExpGolomb;
 
 /**
  * signed exp-golomb

@@ -2,7 +2,7 @@ package com.ttProject.frame.flv1.type;
 
 import com.ttProject.frame.flv1.Flv1Frame;
 import com.ttProject.unit.extra.Bit;
-import com.ttProject.unit.extra.BitN.Bit17;
+import com.ttProject.unit.extra.bit.Bit17;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit3;

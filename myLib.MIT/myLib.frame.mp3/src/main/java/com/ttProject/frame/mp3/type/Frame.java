@@ -8,7 +8,7 @@ import com.ttProject.frame.mp3.Mp3Frame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
-import com.ttProject.unit.extra.BitN.Bit11;
+import com.ttProject.unit.extra.bit.Bit11;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit3;

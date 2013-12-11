@@ -13,8 +13,8 @@ import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.BitLoader;
-import com.ttProject.unit.extra.BitN.Bit16;
-import com.ttProject.unit.extra.BitN.Bit24;
+import com.ttProject.unit.extra.bit.Bit16;
+import com.ttProject.unit.extra.bit.Bit24;
 import com.ttProject.unit.extra.bit.Bit8;
 
 

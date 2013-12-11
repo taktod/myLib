@@ -6,7 +6,7 @@ import com.ttProject.frame.VideoFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit;
 import com.ttProject.unit.extra.BitConnector;
-import com.ttProject.unit.extra.BitN.Bit17;
+import com.ttProject.unit.extra.bit.Bit17;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit3;

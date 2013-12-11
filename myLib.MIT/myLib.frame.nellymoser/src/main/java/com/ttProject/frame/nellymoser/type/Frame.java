@@ -4,7 +4,7 @@ import com.ttProject.frame.nellymoser.NellymoserFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.BitN;
-import com.ttProject.unit.extra.BitN.Bit64;
+import com.ttProject.unit.extra.bit.Bit64;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit6;
 
