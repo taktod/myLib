@@ -3,6 +3,7 @@ package com.ttProject.frame.h264;
 import java.nio.ByteBuffer;
 
 import com.ttProject.frame.VideoFrame;
+import com.ttProject.frame.h264.type.SequenceParameterSet;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit2;
@@ -21,5 +22,11 @@ public abstract class H264Frame extends VideoFrame {
 		BitConnector connector = new BitConnector();
 		return connector.connect(forbiddenZeroBit,
 				nalRefIdc, type);
+	}
+	public void setSps(SequenceParameterSet sps) {
+		if(sps != null) {
+			setWidth(sps.getWidth());
+			setHeight(sps.getHeight());
+		}
 	}
 }
