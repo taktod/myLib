@@ -84,6 +84,7 @@
     <module>myLib.MIT/myLib.container.mp4</module>
     <module>myLib.MIT/myLib.container.mpegts</module>
     <module>myLib.MIT/myLib.container.webm</module>
+    <module>myLib.MIT/myLib.container.ogg</module>
   </modules>
   <scm>
     <url>scm:git:git@github.com:taktod/myLib.git</url>
