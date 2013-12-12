@@ -15,8 +15,9 @@ package com.ttProject.container.ogg;
  * 4バイト:pageChecksum headerから導くCRC値らしい
  * 1バイト:ページが保持するsegmentsの数
  * 以下セグメントデータ
- *  1バイト:セグメントサイズ(Nとする)
- *  Nバイト:セグメント実体
+ *  1バイト:セグメントサイズ(Nとする) ←segmentsの数だけならぶ
+ *  Nバイト:セグメント実体 ←segmentsの数だけならぶ
+ * みたいな感じになってる。
  * 
  * 以下これの繰り返しっぽい。
  * avconvでつくったoggデータの確認しつつやってみた結果。
