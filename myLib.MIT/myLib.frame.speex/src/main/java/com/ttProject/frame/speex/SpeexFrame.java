@@ -1,4 +1,6 @@
-package com.ttProject.frame;
+package com.ttProject.frame.speex;
+
+import com.ttProject.frame.AudioFrame;
 
 /**
  * speexのframe
@@ -36,4 +38,7 @@ package com.ttProject.frame;
  * @author taktod
  */
 public abstract class SpeexFrame extends AudioFrame {
+	private String speexString;
+	private String speexVersion;
+
 }

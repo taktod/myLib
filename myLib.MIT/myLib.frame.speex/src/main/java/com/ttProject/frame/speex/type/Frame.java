@@ -1,6 +1,6 @@
-package com.ttProject.frame.type;
+package com.ttProject.frame.speex.type;
 
-import com.ttProject.frame.SpeexFrame;
+import com.ttProject.frame.speex.SpeexFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
 public class Frame extends SpeexFrame {

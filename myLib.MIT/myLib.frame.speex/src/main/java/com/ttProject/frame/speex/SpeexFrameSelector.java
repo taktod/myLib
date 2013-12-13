@@ -1,4 +1,4 @@
-package com.ttProject.frame;
+package com.ttProject.frame.speex;
 
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
