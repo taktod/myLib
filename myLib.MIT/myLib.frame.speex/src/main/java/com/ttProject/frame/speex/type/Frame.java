@@ -57,7 +57,7 @@ public class Frame extends SpeexFrame {
 	/**
 	 * flvのデフォルトデータですべて初期化する
 	 */
-	public void fillWithFlvDefault() {
+	public void fillWithFlvDefault(IReadChannel channel) throws Exception {
 		speexString = "Speex   ";
 		speexVersion = "1.2rc1";
 		speexVersionId = 1;
@@ -73,6 +73,9 @@ public class Frame extends SpeexFrame {
 		extraHeaders = 0;
 		reserved1 = 0;
 		reserved2 = 0;
+		super.setSampleNum(frameSize);
+		super.setReadPosition(channel.position());
+		super.setSize(channel.size());
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
