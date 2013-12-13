@@ -59,7 +59,7 @@ public class Encoder {
 	public static IStreamCoder speex(IContainer container) {
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_SPEEX);
 		IStreamCoder audioEncoder = stream.getStreamCoder();
-		audioEncoder.setSampleRate(44100);
+		audioEncoder.setSampleRate(32000);
 		audioEncoder.setChannels(2);
 		audioEncoder.setBitRate(96000);
 		return audioEncoder;
