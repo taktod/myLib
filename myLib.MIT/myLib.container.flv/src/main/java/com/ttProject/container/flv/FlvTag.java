@@ -3,7 +3,6 @@ package com.ttProject.container.flv;
 import java.nio.ByteBuffer;
 
 import com.ttProject.container.Container;
-import com.ttProject.container.IContainer;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
@@ -15,7 +14,7 @@ import com.ttProject.unit.extra.bit.Bit8;
  * flvデータのタグ
  * @author taktod
  */
-public abstract class FlvTag extends Container implements IContainer {
+public abstract class FlvTag extends Container {
 	private final Bit8 tagType; // 8 9 12以外にもありえるのか？
 	private Bit24 dataSize = new Bit24();
 	private Bit24 timestamp = new Bit24();
