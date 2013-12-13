@@ -14,6 +14,11 @@
   		<artifactId>myLib.unit</artifactId>
   		<version>0.0.2-SNAPSHOT</version>
   	</dependency>
+  	<dependency>
+  		<groupId>com.ttProject</groupId>
+  		<artifactId>myLib.container</artifactId>
+  		<version>0.0.2-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
   <description>oggコンテナの解析</description>
 </project>
