@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.xuggle.xuggler.IContainer;
+import com.xuggle.xuggler.IStreamCoder;
 
 public class Container extends SetupBase {
 	/** ロガー */
@@ -28,18 +29,79 @@ public class Container extends SetupBase {
 	 */
 	@Test
 	public void flv() throws Exception {
-		logger.info("flv準備");
+		logger.info("flv準備 (flv1)");
 		init();
 		IContainer container = IContainer.make();
 		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.flv"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("コンテナが開けませんでした");
 		}
 		processConvert(container, Encoder.flv1(container), null);
+		logger.info("flv準備 (flv1 / mp3)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.flv1mp3.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		processConvert(container, Encoder.flv1(container), Encoder.mp3(container));
+		logger.info("flv準備 (flv1 / adpcmswf)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.flv1adpcmswf.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		processConvert(container, Encoder.flv1(container), Encoder.adpcm_swf(container));
+		logger.info("flv準備 (flv1 / nelly8)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.flv1nelly8.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		IStreamCoder coder = Encoder.nellymoser(container);
+		coder.setSampleRate(8000);
+		coder.setChannels(1);
+		processConvert(container, Encoder.flv1(container), coder);
+		logger.info("flv準備 (flv1 / nelly16)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.flv1nelly16.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		coder = Encoder.nellymoser(container);
+		coder.setSampleRate(16000);
+		coder.setChannels(1);
+		processConvert(container, Encoder.flv1(container), coder);
+		logger.info("flv準備 (flv1 / nelly)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.flv1nelly.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		coder = Encoder.nellymoser(container);
+		coder.setChannels(1);
+		processConvert(container, Encoder.flv1(container), coder);
+		logger.info("flv準備 (h264 / aac)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.h264aac.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		processConvert(container, Encoder.h264(container), Encoder.aac(container));
+		logger.info("flv準備 (h264 / speex)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.h264speex.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		coder = Encoder.speex(container);
+		coder.setSampleRate(16000);
+		coder.setChannels(1);
+		processConvert(container, Encoder.h264(container), coder);
 	}
 	/**
 	 * mkvの検証用データ
 	 * @throws Exception
 	 */
+	@Test
 	public void mkv() throws Exception {
 		logger.info("mkv準備");
 		init();
@@ -67,6 +129,7 @@ public class Container extends SetupBase {
 	 * mp4の検証用データ
 	 * @throws Exception
 	 */
+	@Test
 	public void mp4() throws Exception {
 		logger.info("mp4準備");
 		init();
@@ -80,6 +143,7 @@ public class Container extends SetupBase {
 	 * mpegtsの検証用データ
 	 * @throws Exception
 	 */
+	@Test
 	public void mpegts() throws Exception {
 		logger.info("mpegts準備");
 		init();
@@ -114,6 +178,7 @@ public class Container extends SetupBase {
 	 * webmの検証用データ
 	 * @throws Exception
 	 */
+	@Test
 	public void webm() throws Exception {
 		logger.info("webm準備");
 		init();
