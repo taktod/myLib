@@ -1,5 +1,7 @@
 package com.ttProject.container.ogg.type;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.container.ogg.OggPage;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.bit.Bit1;
@@ -33,6 +35,8 @@ import com.ttProject.unit.extra.bit.Bit8;
  * @author taktod
  */
 public class Page extends OggPage {
+	/** ロガー */
+	private Logger logger = Logger.getLogger(Page.class);
 	/**
 	 * コンストラクタ
 	 * @param version
@@ -48,11 +52,14 @@ public class Page extends OggPage {
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		
+		super.minimumLoad(channel);
+		logger.info("minimumload");
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		
+		logger.info("load");
+		// 中身のデータはそれぞれのframeとして読み込まないとだめ。ただし、frameがoggからは何であるかわかるすべがないっぽい。
+		channel.position(getPosition() + getSize());
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
