@@ -2,6 +2,8 @@ package com.ttProject.frame.aac.type;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.aac.AacFrame;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
 import com.ttProject.nio.channels.IReadChannel;
@@ -23,6 +25,9 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Frame extends AacFrame {
+	/** 動作ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(Frame.class);
 	private Bit12 syncBit = new Bit12(0x0FFF);
 	private Bit1 id = new Bit1();
 	private Bit2 layer = new Bit2();
@@ -39,7 +44,15 @@ public class Frame extends AacFrame {
 	private Bit11 adtsBufferFullness = new Bit11(0x7FF);
 	private Bit2 noRawDataBlocksInFrame = new Bit2();
 	private ByteBuffer buffer = null;
+	/**
+	 * コンストラクタ
+	 */
 	public Frame() {}
+	/**
+	 * コンストラクタ with dsi
+	 * @param size
+	 * @param dsi
+	 */
 	public Frame(int size, DecoderSpecificInfo dsi) {
 		frameSize.set(size);
 		profile.set(dsi.getObjectType() - 1);
@@ -55,7 +68,7 @@ public class Frame extends AacFrame {
 				originalFlg, home, copyrightIdentificationBit,
 				copyrightIdentificationStart, frameSize, adtsBufferFullness,
 				noRawDataBlocksInFrame);
-		super.setSize(7 + frameSize.get());
+		super.setSize(frameSize.get());
 		super.update();
 		super.setReadPosition(channel.position());
 	}
