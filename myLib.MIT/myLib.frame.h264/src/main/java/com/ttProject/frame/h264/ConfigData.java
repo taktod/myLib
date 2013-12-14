@@ -29,6 +29,14 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class ConfigData {
+	private H264FrameSelector selector = null;
+	/**
+	 * セレクターの設定
+	 * @param selector
+	 */
+	public void setSelector(H264FrameSelector selector) {
+		this.selector = selector;
+	}
 	/**
 	 * spsとppsを取り出す
 	 * @param channel
@@ -36,7 +44,13 @@ public class ConfigData {
 	 * @throws Exception
 	 */
 	public List<IUnit> getNals(IReadChannel channel) throws Exception {
-		ISelector selector = new H264FrameSelector();
+		ISelector selector = null;
+		if(this.selector != null) {
+			selector = this.selector;
+		}
+		else {
+			selector = new H264FrameSelector();
+		}
 		List<IUnit> list = new ArrayList<IUnit>();
 		if(channel.size() - channel.position() < 8) {
 			throw new Exception("先頭データの読み込み部のサイズが小さすぎます。");
