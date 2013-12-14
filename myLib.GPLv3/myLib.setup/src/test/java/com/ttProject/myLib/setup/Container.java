@@ -79,6 +79,13 @@ public class Container extends SetupBase {
 		coder = Encoder.nellymoser(container);
 		coder.setChannels(1);
 		processConvert(container, Encoder.flv1(container), coder);
+		logger.info("flv準備 (h264 / mp3)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.h264mp3.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		processConvert(container, Encoder.h264(container), Encoder.mp3(container));
 		logger.info("flv準備 (h264 / aac)");
 		init();
 		container = IContainer.make();
