@@ -54,6 +54,7 @@ public class Page extends OggPage {
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
 		logger.info("minimumload");
+		super.update();
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {

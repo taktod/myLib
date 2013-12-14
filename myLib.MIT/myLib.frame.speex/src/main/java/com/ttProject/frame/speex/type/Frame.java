@@ -37,51 +37,11 @@ import com.ttProject.nio.channels.IReadChannel;
  * 4byte: reserved2							00 00 00 00
  * 
  * @author taktod
+ * speexはheaderとdataにわけておいた方が扱いがいいかもしれない。
  */
 public class Frame extends SpeexFrame {
-	private String speexString;
-	private String speexVersion;
-	private int speexVersionId;
-	private int headerSize;
-	private int rate; // samplingRate
-	private int mode;
-	private int modeBitstreamVersion;
-	private int nbChannels;
-	private int bitRate;
-	private int frameSize;
-	private int vbr;
-	private int framesPerPacket;
-	private int extraHeaders;
-	private int reserved1;
-	private int reserved2;
-	/**
-	 * flvのデフォルトデータですべて初期化する
-	 */
-	public void fillWithFlvDefault(IReadChannel channel) throws Exception {
-		speexString = "Speex   ";
-		speexVersion = "1.2rc1";
-		speexVersionId = 1;
-		headerSize = 0x50;
-		rate = 0x3E80;
-		mode = 1;
-		modeBitstreamVersion = 4;
-		nbChannels = 1;
-		bitRate = 0x6C98; // flvにあわせて変更すべき？
-		frameSize = 0x140; // 固定っぽい
-		vbr = 0;
-		framesPerPacket = 1;
-		extraHeaders = 0;
-		reserved1 = 0;
-		reserved2 = 0;
-		super.setSampleNum(frameSize);
-		super.setReadPosition(channel.position());
-		super.setSize(channel.size());
-	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		super.setReadPosition(channel.position());
-		super.setSize(channel.size());
-		super.setSampleNum(320);
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
