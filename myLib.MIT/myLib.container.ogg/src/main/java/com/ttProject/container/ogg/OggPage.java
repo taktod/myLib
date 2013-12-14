@@ -56,6 +56,9 @@ public abstract class OggPage extends Container {
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.setPosition(channel.position() - 13);
+		logger.info(logicEndFlag);
+		logger.info(logicStartFlag);
+		logger.info(packetContinurousFlag);
 		// データを読み込む
 		ByteBuffer buffer = BufferUtil.safeRead(channel, 20);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
