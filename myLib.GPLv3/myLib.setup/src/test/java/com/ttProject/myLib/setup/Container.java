@@ -36,8 +36,18 @@ public class Container extends SetupBase {
 		}
 		processConvert(container, Encoder.flv1(container), null);
 	}
+	/**
+	 * mkvの検証用データ
+	 * @throws Exception
+	 */
 	public void mkv() throws Exception {
-		
+		logger.info("mkv準備");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.mkv", "test.mkv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		processConvert(container, Encoder.h264(container), Encoder.mp3(container));
 	}
 	/**
 	 * mp3検証用データ
@@ -53,11 +63,31 @@ public class Container extends SetupBase {
 		}
 		processConvert(container, null, Encoder.mp3(container));
 	}
+	/**
+	 * mp4の検証用データ
+	 * @throws Exception
+	 */
 	public void mp4() throws Exception {
-		
+		logger.info("mp4準備");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.mp4", "test.mp4"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		processConvert(container, Encoder.h264(container), Encoder.aac(container));
 	}
+	/**
+	 * mpegtsの検証用データ
+	 * @throws Exception
+	 */
 	public void mpegts() throws Exception {
-		
+		logger.info("mpegts準備");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.mpegts", "test.ts"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		processConvert(container, Encoder.h264(container), Encoder.aac(container));
 	}
 	/**
 	 * oggの検証用データ
@@ -80,7 +110,17 @@ public class Container extends SetupBase {
 		}
 		processConvert(container, null, Encoder.speex(container));
 	}
+	/**
+	 * webmの検証用データ
+	 * @throws Exception
+	 */
 	public void webm() throws Exception {
-		
+		logger.info("webm準備");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.webm", "test.webm"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		processConvert(container, Encoder.vp8(container), Encoder.vorbis(container));
 	}
 }
