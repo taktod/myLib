@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.container.flv.FlvTagAnalyzer;
-import com.ttProject.container.flv.type.VideoTag;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.unit.IAnalyzer;
@@ -25,17 +24,39 @@ public class FlvTest {
 		IFileReadChannel source = null;
 		try {
 			source = FileReadChannel.openFileReadChannel(
-//					Thread.currentThread().getContextClassLoader().getResource("test.flv").toURI().toURL()
-					"http://red5.googlecode.com/svn-history/r4071/java/example/trunk/oflaDemo/www/streams/toystory3-vp6.flv"
+					Thread.currentThread().getContextClassLoader().getResource("test.flv")
 			);
 			IAnalyzer analyzer = new FlvTagAnalyzer();
 			IUnit unit = null;
 			while((unit = analyzer.analyze(source)) != null) {
 				logger.info(unit);
-				if(unit instanceof VideoTag) {
-					VideoTag vTag = (VideoTag)unit;
-					logger.info(vTag.getWidth() + "x" + vTag.getHeight());
+			}
+		}
+		catch(Exception e) {
+			logger.warn("例外発生", e);
+		}
+		finally {
+			if(source != null) {
+				try {
+					source.close();
 				}
+				catch(Exception e) {}
+				source = null;
+			}
+		}
+	}
+	@Test
+	public void vp6Test() throws Exception {
+		analyzerTest(
+				FileReadChannel.openFileReadChannel("http://red5.googlecode.com/svn-history/r4071/java/example/trunk/oflaDemo/www/streams/toystory3-vp6.flv")
+		);
+	}
+	private void analyzerTest(IFileReadChannel source) {
+		try {
+			IAnalyzer analyzer = new FlvTagAnalyzer();
+			IUnit unit = null;
+			while((unit = analyzer.analyze(source)) != null) {
+				logger.info(unit);
 			}
 		}
 		catch(Exception e) {

@@ -221,4 +221,12 @@ public class AudioTag extends FlvTag {
 		}
 		frame = (IAudioFrame)frameAnalyzer.analyze(new ByteReadChannel(frameBuffer));
 	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append("audioTag:");
+		data.append(" timestamp:").append(getPts());
+		data.append(" codec:").append(getCodec());
+		return data.toString();
+	}
 }

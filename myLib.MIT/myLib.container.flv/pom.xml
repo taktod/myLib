@@ -29,5 +29,15 @@
   		<artifactId>myLib.frame.vp6</artifactId>
   		<version>0.0.2-SNAPSHOT</version>
   	</dependency>
+  	<dependency>
+  	  <groupId>com.ttProject</groupId>
+  	  <artifactId>myLib.frame.aac</artifactId>
+  	  <version>0.0.2-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  	  <groupId>com.ttProject</groupId>
+  	  <artifactId>myLib.frame.h264</artifactId>
+  	  <version>0.0.2-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
 </project>
