@@ -18,7 +18,6 @@ import com.ttProject.unit.extra.bit.Bit24;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtil;
 
 /**
  * 映像用のtag
@@ -32,6 +31,7 @@ public class VideoTag extends FlvTag {
 	private Bit8 packetType = null; // avcのみ
 	private Bit24 dts = null; // avcのみ
 	private ByteBuffer frameBuffer = null; // フレームデータ
+	// TODO このframeの部分h264のために、複数データを同時に持てるようにしてやった方がよさそう。
 	private IVideoFrame frame = null; // 動作対象フレーム
 	private IAnalyzer frameAnalyzer = null;
 	public VideoTag(Bit8 tagType) {
@@ -55,7 +55,6 @@ public class VideoTag extends FlvTag {
 				channel.position(getPosition() + 16);
 				frameBuffer = BufferUtil.safeRead(channel, getSize() - 16 - 4);
 				if(packetType.get() == 0) {
-					logger.info(HexUtil.toHex(frameBuffer, true));
 					// mshの場合はconfigDataを構築しておく。
 					ConfigData configData = new ConfigData();
 					configData.setSelector(((DataNalAnalyzer)frameAnalyzer).getSelector());

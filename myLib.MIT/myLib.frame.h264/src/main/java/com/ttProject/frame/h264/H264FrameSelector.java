@@ -5,6 +5,7 @@ import com.ttProject.frame.h264.type.PictureParameterSet;
 import com.ttProject.frame.h264.type.SequenceParameterSet;
 import com.ttProject.frame.h264.type.Slice;
 import com.ttProject.frame.h264.type.SliceIDR;
+import com.ttProject.frame.h264.type.SupplementalEnhancementInformation;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
@@ -46,6 +47,10 @@ public class H264FrameSelector implements ISelector {
 			break;
 		case SliceIDR: // keyFrame
 			frame = new SliceIDR(forbiddenZeroBit, nalRefIdc, type);
+			frame.setSps(sps);
+			break;
+		case SupplementalEnhancementInformation:
+			frame = new SupplementalEnhancementInformation(forbiddenZeroBit, nalRefIdc, type);
 			frame.setSps(sps);
 			break;
 		default:
