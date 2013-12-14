@@ -24,7 +24,7 @@ public class FileLoadTest {
 		IFileReadChannel source = null;
 		try {
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("test.mp3").toURI().toURL()
+					Thread.currentThread().getContextClassLoader().getResource("test.mp3")
 			);
 			IAnalyzer analyzer = new Mp3FrameAnalyzer();
 			IUnit unit = null;
