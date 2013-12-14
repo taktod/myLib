@@ -21,7 +21,6 @@ import com.ttProject.util.BufferUtil;
  * profile, the MPEG-4 Audio Object Type minus 1
  * 
  * @author taktod
- *
  */
 public class Frame extends AacFrame {
 	private Bit12 syncBit = new Bit12(0x0FFF);
