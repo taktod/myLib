@@ -36,18 +36,10 @@ public abstract class ExpGolomb extends Bit {
 		bitCount = 1;
 		bits.add(new Bit1(1));
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public int get() {
+	protected int getData() {
 		return value;
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void set(int value) {
+	protected void setData(int value) {
 		this.value = value;
 		bits.clear();
 		int data = value;
@@ -109,6 +101,7 @@ public abstract class ExpGolomb extends Bit {
 			else {
 				// みつけた。
 				find1Flg = true;
+//				bitCount = zeroCount * 2 + 1;
 				// ここから先は実データ
 				value = 1;
 			}
@@ -117,12 +110,12 @@ public abstract class ExpGolomb extends Bit {
 			value = (value << 1) | bit.get();
 			zeroCount --;
 		}
-		boolean end = zeroCount != 0;
+		boolean end = zeroCount == 0;
 		if(end) {
 			// bitCountについて、記録しておくべき
-			set(value);
+			setData(value);
 		}
-		return end;
+		return !end;
 	}
 	/**
 	 * {@inheritDoc}

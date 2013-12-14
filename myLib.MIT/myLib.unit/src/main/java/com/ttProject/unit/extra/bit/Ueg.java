@@ -12,13 +12,13 @@ public class Ueg extends ExpGolomb {
 	 */
 	@Override
 	public int get() {
-		return super.get() - 1;
+		return super.getData() - 1;
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void set(int val) {
-		super.set(val + 1);
+		super.setData(val + 1);
 	}
 }

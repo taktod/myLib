@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.flv.CodecType;
 import com.ttProject.container.flv.FlvTag;
 import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.h264.ConfigData;
+import com.ttProject.frame.h264.DataNalAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IAnalyzer;
@@ -16,6 +18,7 @@ import com.ttProject.unit.extra.bit.Bit24;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
+import com.ttProject.util.HexUtil;
 
 /**
  * 映像用のtag
@@ -51,6 +54,13 @@ public class VideoTag extends FlvTag {
 			case H264:
 				channel.position(getPosition() + 16);
 				frameBuffer = BufferUtil.safeRead(channel, getSize() - 16 - 4);
+				if(packetType.get() == 0) {
+					logger.info(HexUtil.toHex(frameBuffer, true));
+					// mshの場合はconfigDataを構築しておく。
+					ConfigData configData = new ConfigData();
+					configData.setSelector(((DataNalAnalyzer)frameAnalyzer).getSelector());
+					configData.getNals(new ByteReadChannel(frameBuffer));
+				}
 				break;
 			default:
 				channel.position(getPosition() + 12);
@@ -144,7 +154,6 @@ public class VideoTag extends FlvTag {
 			frameAnalyzer = null;
 			break;
 		case H264:
-			frameAnalyzer = null;
 			break;
 		default:
 			break;

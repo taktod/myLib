@@ -12,7 +12,7 @@ public class Seg extends ExpGolomb {
 	 */
 	@Override
 	public int get() {
-		int value = super.get();
+		int value = super.getData();
 		if((value & 0x01) == 1) {
 			return -1 * (value >>> 1);
 		}
@@ -26,10 +26,10 @@ public class Seg extends ExpGolomb {
 	@Override
 	public void set(int value) {
 		if(value > 0) {
-			super.set(value << 1);
+			super.setData(value << 1);
 		}
 		else {
-			super.set((-1 * value) << 1 | 1);
+			super.setData((-1 * value) << 1 | 1);
 		}
 	}
 }

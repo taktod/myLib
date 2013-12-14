@@ -171,51 +171,6 @@ public class AudioTag extends FlvTag {
 		if(frameBuffer == null) {
 			throw new Exception("frameデータが読み込まれていません");
 		}
-		switch(getCodec()) {
-		case PCM:
-			frameAnalyzer = null;
-			break;
-		case ADPCM:
-			frameAnalyzer = null;
-			break;
-		case MP3:
-			break;
-		case LPCM:
-			frameAnalyzer = null;
-			break;
-		case NELLY_16:
-			frameAnalyzer = null;
-			break;
-		case NELLY_8:
-			frameAnalyzer = null;
-			break;
-		case NELLY:
-			frameAnalyzer = null;
-			break;
-		case G711_A:
-			frameAnalyzer = null;
-			break;
-		case G711_U:
-			frameAnalyzer = null;
-			break;
-		case RESERVED:
-			frameAnalyzer = null;
-			break;
-		case AAC:
-			frameAnalyzer = null;
-			break;
-		case SPEEX:
-			frameAnalyzer = null;
-			break;
-		case MP3_8:
-			frameAnalyzer = null;
-			break;
-		case DEVICE_SPECIFIC:
-			frameAnalyzer = null;
-			break;
-		default:
-			break;
-		}
 		if(frameAnalyzer == null) {
 			throw new Exception("frameの解析プログラムが設定されていません。");
 		}
@@ -227,6 +182,13 @@ public class AudioTag extends FlvTag {
 		data.append("audioTag:");
 		data.append(" timestamp:").append(getPts());
 		data.append(" codec:").append(getCodec());
+/*		try {
+			analyzeFrame();
+			data.append(" frame:").append(frame);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}*/
 		return data.toString();
 	}
 }

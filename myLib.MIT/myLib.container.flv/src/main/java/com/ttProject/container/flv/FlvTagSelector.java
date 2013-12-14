@@ -6,6 +6,7 @@ import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.MetaTag;
 import com.ttProject.container.flv.type.VideoTag;
 import com.ttProject.frame.flv1.Flv1FrameAnalyzer;
+import com.ttProject.frame.h264.DataNalAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
 import com.ttProject.frame.vp6.Vp6FrameAnalyzer;
 import com.ttProject.nio.channels.IReadChannel;
@@ -16,7 +17,6 @@ import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit16;
 import com.ttProject.unit.extra.bit.Bit24;
 import com.ttProject.unit.extra.bit.Bit8;
-
 
 /**
  * flvのtagを解析して取り出すselector
@@ -81,6 +81,10 @@ public class FlvTagSelector implements ISelector {
 				case SCREEN_V2:
 					break;
 				case H264:
+					// h264のときのための特殊な読み込みanalyzerをつくっておくべきっぽいですね。
+					if(videoFrameAnalyzer == null || !(videoFrameAnalyzer instanceof DataNalAnalyzer)) {
+						videoFrameAnalyzer = new DataNalAnalyzer(); // これはminimumLoadの時点でいれなきゃだめなのか・・・そりゃむりだ
+					}
 					break;
 				default:
 					break;

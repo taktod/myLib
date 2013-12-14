@@ -3,7 +3,6 @@ package com.ttProject.frame.h264;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IAnalyzer;
-import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 import com.ttProject.util.BufferUtil;
 
@@ -14,7 +13,14 @@ import com.ttProject.util.BufferUtil;
  */
 public class DataNalAnalyzer implements IAnalyzer {
 	/** セレクター */
-	private ISelector selector = new H264FrameSelector();
+	private H264FrameSelector selector = new H264FrameSelector();
+	/**
+	 * セレクター参照
+	 * @return
+	 */
+	public H264FrameSelector getSelector() {
+		return selector;
+	}
 	/**
 	 * {@inheritDoc}
 	 */

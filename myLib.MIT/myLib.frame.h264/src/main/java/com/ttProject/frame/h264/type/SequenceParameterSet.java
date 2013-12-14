@@ -33,6 +33,9 @@ import com.ttProject.util.BufferUtil;
  * 
  * あってますね。640x380とれました。
  * 
+ * 67 4D 40 1E  D9 01 41 FA 10 00 00 03 00 10 00 00 7D 00 F1 62 E4 80
+ * 
+ * 
  * @see http://stackoverflow.com/questions/6394874/fetching-the-dimensions-of-a-h264video-stream
  * 
  * @author taktod
@@ -135,7 +138,7 @@ public class SequenceParameterSet extends H264Frame {
 			log2MaxPicOrderCntLsbMinus4 = new Ueg();
 			loader.load(log2MaxPicOrderCntLsbMinus4);
 		}
-		else {
+		else if(picOrderCntType.get() == 1){
 			deltaPicOrderAlwaysZeroFlag = new Bit1();
 			offsetForNonRefPic = new Seg();
 			offsetForTopToBottomField = new Seg();
