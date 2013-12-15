@@ -59,11 +59,19 @@ public class FlvTest {
 			)
 		);
 	}
-	@Test
+//	@Test
 	public void h264aacTest() throws Exception {
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("test.h264aac.flv")
+			)
+		);
+	}
+	@Test
+	public void flv1nellyTest() throws Exception {
+		analyzerTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("test.flv1nelly.flv")
 			)
 		);
 	}
