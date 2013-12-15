@@ -76,6 +76,7 @@ public class AudioTag extends FlvTag {
 	}
 	public int getSampleNum() throws Exception {
 		if(frame == null) {
+			analyzeFrame(); // 解析させる
 		}
 		return frame.getSampleNum();
 	}
