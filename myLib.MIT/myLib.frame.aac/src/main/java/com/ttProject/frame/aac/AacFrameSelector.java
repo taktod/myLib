@@ -2,12 +2,12 @@ package com.ttProject.frame.aac;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.aac.type.Frame;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 
-public class AacFrameSelector implements ISelector {
+public class AacFrameSelector extends AudioSelector {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(AacFrameSelector.class);
@@ -22,6 +22,7 @@ public class AacFrameSelector implements ISelector {
 		}
 		AacFrame frame = null;
 		frame = new Frame();
+		setup(frame);
 		frame.minimumLoad(channel);
 		return frame;
 	}

@@ -2,16 +2,16 @@ package com.ttProject.frame.aac;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.aac.type.Frame;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 
 /**
  * dsiベースのaacのframeを選択する動作
  * @author taktod
  */
-public class AacDsiFrameSelector implements ISelector {
+public class AacDsiFrameSelector extends AudioSelector {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(AacDsiFrameSelector.class);
@@ -33,6 +33,7 @@ public class AacDsiFrameSelector implements ISelector {
 			throw new Exception("dsiが未定義なので処理を進めることができません");
 		}
 		Frame frame = new Frame();
+		setup(frame);
 		frame.loadDecoderSpecificInfo(channel.size(), dsi, channel);
 		return frame;
 	}

@@ -1,8 +1,8 @@
 package com.ttProject.frame.nellymoser;
 
+import com.ttProject.frame.AudioSelector;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IAnalyzer;
-import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 
 /**
@@ -11,7 +11,10 @@ import com.ttProject.unit.IUnit;
  */
 public class NellymoserFrameAnalyzer implements IAnalyzer {
 	/** selector */
-	private ISelector selector = new NellymoserFrameSelector();
+	private AudioSelector selector = new NellymoserFrameSelector();
+	public AudioSelector getSelector() {
+		return selector;
+	}
 	/**
 	 * {@inheritDoc}
 	 */

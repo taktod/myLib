@@ -1,8 +1,8 @@
 package com.ttProject.frame.mp3;
 
+import com.ttProject.frame.AudioSelector;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IAnalyzer;
-import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 
 /**
@@ -11,7 +11,10 @@ import com.ttProject.unit.IUnit;
  */
 public class Mp3FrameAnalyzer implements IAnalyzer {
 	/** frameSelector */
-	private ISelector selector = new Mp3FrameSelector();
+	private AudioSelector selector = new Mp3FrameSelector();
+	public AudioSelector getSelector() {
+		return selector;
+	}
 	/**
 	 * {@inheritDoc}
 	 */

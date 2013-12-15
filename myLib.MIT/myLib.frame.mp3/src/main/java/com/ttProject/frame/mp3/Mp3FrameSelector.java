@@ -2,10 +2,10 @@ package com.ttProject.frame.mp3;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.mp3.type.Frame;
 import com.ttProject.frame.mp3.type.ID3Frame;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit8;
@@ -14,7 +14,7 @@ import com.ttProject.unit.extra.bit.Bit8;
  * mp3のframeを選択するプログラム
  * @author taktod
  */
-public class Mp3FrameSelector implements ISelector {
+public class Mp3FrameSelector extends AudioSelector {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Mp3FrameSelector.class);
@@ -43,6 +43,7 @@ public class Mp3FrameSelector implements ISelector {
 		default:
 			throw new Exception("解析不能なデータです");
 		}
+		setup(frame);
 		frame.minimumLoad(channel);
 		return frame;
 	}

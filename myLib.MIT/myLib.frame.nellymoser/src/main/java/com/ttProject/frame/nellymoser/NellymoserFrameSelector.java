@@ -1,8 +1,8 @@
 package com.ttProject.frame.nellymoser;
 
+import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.nellymoser.type.Frame;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 
 /**
@@ -10,7 +10,7 @@ import com.ttProject.unit.IUnit;
  * @author taktod
  *
  */
-public class NellymoserFrameSelector implements ISelector {
+public class NellymoserFrameSelector extends AudioSelector {
 	/**
 	 * {@inheritDoc}
 	 */
@@ -21,6 +21,7 @@ public class NellymoserFrameSelector implements ISelector {
 			throw new Exception("保持チャンネル数がおかしいです。");
 		}
 		NellymoserFrame frame = new Frame();
+		setup(frame);
 		frame.minimumLoad(channel);
 		return frame;
 	}
