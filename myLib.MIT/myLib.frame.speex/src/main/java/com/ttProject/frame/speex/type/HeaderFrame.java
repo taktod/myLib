@@ -38,7 +38,7 @@ import com.ttProject.nio.channels.IReadChannel;
  * 
  * @author taktod
  */
-public class Header extends SpeexFrame {
+public class HeaderFrame extends SpeexFrame {
 	private String speexString;
 	private String speexVersion;
 	private int speexVersionId;

@@ -1,5 +1,7 @@
 package com.ttProject.container.ogg.type;
 
+import java.nio.ByteBuffer;
+
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.ogg.OggPage;
@@ -7,6 +9,8 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
+import com.ttProject.util.BufferUtil;
+import com.ttProject.util.HexUtil;
 
 /**
  * startPage(speexとかのheader情報がはいっているっぽい。)
@@ -37,7 +41,12 @@ public class StartPage extends OggPage {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		logger.info("load on startPage");
-		channel.position(getPosition() + 27);
+		logger.info(getPosition());
+		logger.info(getSegmentSizeList().size());
+		channel.position(getPosition() + 27 + getSegmentSizeList().size());
+		logger.info(channel.position());
+		ByteBuffer buffer = BufferUtil.safeRead(channel, 10);
+		logger.info(HexUtil.toHex(buffer, true));
 		// 次の位置に強制割り当てしている
 		channel.position(getPosition() + getSize());
 	}
