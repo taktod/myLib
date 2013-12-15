@@ -32,7 +32,8 @@ public class AacDsiFrameSelector implements ISelector {
 		if(dsi == null) {
 			throw new Exception("dsiが未定義なので処理を進めることができません");
 		}
-		Frame frame = new Frame(channel.size(), dsi, channel);
+		Frame frame = new Frame();
+		frame.loadDecoderSpecificInfo(channel.size(), dsi, channel);
 		return frame;
 	}
 }

@@ -45,18 +45,13 @@ public class Frame extends AacFrame {
 	private Bit2 noRawDataBlocksInFrame = new Bit2();
 	private ByteBuffer buffer = null;
 	/**
-	 * コンストラクタ
-	 */
-	public Frame() {
-		setSampleNum(1024);
-	}
-	/**
-	 * コンストラクタ with dsi
+	 * dsiの読み込み
 	 * @param size
 	 * @param dsi
+	 * @param channel
+	 * @throws Exception
 	 */
-	public Frame(int size, DecoderSpecificInfo dsi, IReadChannel channel) throws Exception {
-		this();
+	public void loadDecoderSpecificInfo(int size, DecoderSpecificInfo dsi, IReadChannel channel) throws Exception {
 		frameSize.set(7 + size);
 		profile.set(dsi.getObjectType() - 1);
 		samplingFrequenceIndex.set(dsi.getFrequencyIndex());
@@ -64,6 +59,7 @@ public class Frame extends AacFrame {
 		super.setSize(7 + size);
 		super.update();
 		super.setReadPosition(channel.position());
+		super.setSampleNum(1024);
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
@@ -76,6 +72,7 @@ public class Frame extends AacFrame {
 		super.setSize(frameSize.get());
 		super.update();
 		super.setReadPosition(channel.position());
+		super.setSampleNum(1024);
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
