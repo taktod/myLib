@@ -39,5 +39,10 @@
   	  <artifactId>myLib.frame.h264</artifactId>
   	  <version>0.0.2-SNAPSHOT</version>
   	</dependency>
+  	<dependency>
+  		<groupId>com.ttProject</groupId>
+  		<artifactId>myLib.frame.nellymoser</artifactId>
+  		<version>0.0.2-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
 </project>

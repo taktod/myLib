@@ -9,6 +9,7 @@ import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
 import com.ttProject.frame.flv1.Flv1FrameAnalyzer;
 import com.ttProject.frame.h264.DataNalAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
+import com.ttProject.frame.nellymoser.NellymoserFrameAnalyzer;
 import com.ttProject.frame.vp6.Vp6FrameAnalyzer;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IAnalyzer;
@@ -112,6 +113,9 @@ public class FlvTagSelector implements ISelector {
 				case NELLY_8:
 					break;
 				case NELLY:
+					if(audioFrameAnalyzer == null || !(audioFrameAnalyzer instanceof NellymoserFrameAnalyzer)) {
+						audioFrameAnalyzer = new NellymoserFrameAnalyzer();
+					}
 					break;
 				case G711_A:
 					break;

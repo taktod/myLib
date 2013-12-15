@@ -9,6 +9,7 @@ import com.ttProject.container.flv.FlvTag;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
+import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IAnalyzer;
@@ -188,7 +189,20 @@ public class AudioTag extends FlvTag {
 		if(frameAnalyzer == null) {
 			throw new Exception("frameの解析プログラムが設定されていません。");
 		}
-		frame = (IAudioFrame)frameAnalyzer.analyze(new ByteReadChannel(frameBuffer));
+		IReadChannel channel = new ByteReadChannel(frameBuffer);
+		do {
+			if(frame != null) {
+				if(!(frame instanceof AudioMultiFrame)) {
+					AudioMultiFrame multiFrame = new AudioMultiFrame();
+					multiFrame.addFrame(frame);
+					frame = multiFrame;
+				}
+				((AudioMultiFrame)frame).addFrame((IAudioFrame)frameAnalyzer.analyze(channel));
+			}
+			else {
+				frame = (IAudioFrame)frameAnalyzer.analyze(channel);
+			}
+		} while(channel.size() != channel.position());
 	}
 	@Override
 	public String toString() {

@@ -32,7 +32,6 @@ public class VideoTag extends FlvTag {
 	private Bit8 packetType = null; // avcのみ
 	private Bit24 dts = null; // avcのみ
 	private ByteBuffer frameBuffer = null; // フレームデータ
-	// TODO このframeの部分h264のために、複数データを同時に持てるようにしてやった方がよさそう。
 	private IVideoFrame frame = null; // 動作対象フレーム
 	private IAnalyzer frameAnalyzer = null;
 	public VideoTag(Bit8 tagType) {
@@ -131,12 +130,10 @@ public class VideoTag extends FlvTag {
 		ByteBuffer buffer = frameBuffer;
 		switch(getCodec()) {
 		case JPEG:
-			frameAnalyzer = null;
 			break;
 		case FLV1:
 			break;
 		case SCREEN:
-			frameAnalyzer = null;
 			break;
 		case ON2VP6:
 			// vp6の場合は、先頭のデータを終端にもってくる必要あり。
@@ -148,10 +145,8 @@ public class VideoTag extends FlvTag {
 			buffer.flip();
 			break;
 		case ON2VP6_ALPHA:
-			frameAnalyzer = null;
 			break;
 		case SCREEN_V2:
-			frameAnalyzer = null;
 			break;
 		case H264:
 			break;
@@ -165,8 +160,8 @@ public class VideoTag extends FlvTag {
 		do {
 			if(frame != null) {
 				if(!(frame instanceof VideoMultiFrame)) {
-					IVideoFrame multiFrame = new VideoMultiFrame();
-					((VideoMultiFrame)multiFrame).addFrame(frame);
+					VideoMultiFrame multiFrame = new VideoMultiFrame();
+					multiFrame.addFrame(frame);
 					frame = multiFrame;
 				}
 				((VideoMultiFrame)frame).addFrame((IVideoFrame)frameAnalyzer.analyze(channel));
