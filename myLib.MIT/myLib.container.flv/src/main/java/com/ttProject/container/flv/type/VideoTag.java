@@ -7,12 +7,12 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.flv.CodecType;
 import com.ttProject.container.flv.FlvTag;
 import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.h264.ConfigData;
-import com.ttProject.frame.h264.DataNalAnalyzer;
+import com.ttProject.frame.h264.H264FrameSelector;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit24;
@@ -33,14 +33,14 @@ public class VideoTag extends FlvTag {
 	private Bit24 dts = null; // avcのみ
 	private ByteBuffer frameBuffer = null; // フレームデータ
 	private IVideoFrame frame = null; // 動作対象フレーム
-	private IAnalyzer frameAnalyzer = null;
+	private VideoAnalyzer frameAnalyzer = null;
 	public VideoTag(Bit8 tagType) {
 		super(tagType);
 	}
 	public VideoTag() {
 		this(new Bit8(0x09));
 	}
-	public void setFrameAnalyzer(IAnalyzer analyzer) {
+	public void setFrameAnalyzer(VideoAnalyzer analyzer) {
 		this.frameAnalyzer = analyzer;
 	}
 	/**
@@ -57,7 +57,7 @@ public class VideoTag extends FlvTag {
 				if(packetType.get() == 0) {
 					// mshの場合はconfigDataを構築しておく。
 					ConfigData configData = new ConfigData();
-					configData.setSelector(((DataNalAnalyzer)frameAnalyzer).getSelector());
+					configData.setSelector((H264FrameSelector)frameAnalyzer.getSelector());
 					configData.getNals(new ByteReadChannel(frameBuffer));
 				}
 				break;

@@ -6,13 +6,14 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.flv.CodecType;
 import com.ttProject.container.flv.FlvTag;
+import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
+import com.ttProject.frame.aac.AacDsiFrameSelector;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
@@ -37,7 +38,7 @@ public class AudioTag extends FlvTag {
 	private Bit8 sequenceHeaderFlag = null;
 	private ByteBuffer frameBuffer = null;
 	private IAudioFrame frame = null;
-	private IAnalyzer frameAnalyzer = null;
+	private AudioAnalyzer frameAnalyzer = null;
 /*	public IAudioFrame getFrame() {
 		return frame;
 	}*/
@@ -47,7 +48,7 @@ public class AudioTag extends FlvTag {
 	public AudioTag() {
 		this(new Bit8(0x08));
 	}
-	public void setFrameAnalyzer(IAnalyzer analyzer) {
+	public void setFrameAnalyzer(AudioAnalyzer analyzer) {
 		this.frameAnalyzer = analyzer;
 	}
 	public int getSampleRate() throws Exception {
@@ -119,7 +120,7 @@ public class AudioTag extends FlvTag {
 					}
 					DecoderSpecificInfo dsi = new DecoderSpecificInfo();
 					dsi.minimumLoad(new ByteReadChannel(frameBuffer));
-					((AacDsiFrameAnalyzer)frameAnalyzer).getSelector().setDecoderSpecificInfo(dsi);
+					((AacDsiFrameSelector)frameAnalyzer.getSelector()).setDecoderSpecificInfo(dsi);
 				}
 				break;
 			default:

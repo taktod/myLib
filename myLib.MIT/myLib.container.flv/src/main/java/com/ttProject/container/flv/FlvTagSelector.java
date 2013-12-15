@@ -5,6 +5,8 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.MetaTag;
 import com.ttProject.container.flv.type.VideoTag;
+import com.ttProject.frame.AudioAnalyzer;
+import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
 import com.ttProject.frame.flv1.Flv1FrameAnalyzer;
 import com.ttProject.frame.h264.DataNalAnalyzer;
@@ -12,7 +14,6 @@ import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
 import com.ttProject.frame.nellymoser.NellymoserFrameAnalyzer;
 import com.ttProject.frame.vp6.Vp6FrameAnalyzer;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.BitLoader;
@@ -28,8 +29,8 @@ public class FlvTagSelector implements ISelector {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(FlvTagSelector.class);
-	private IAnalyzer videoFrameAnalyzer = null;
-	private IAnalyzer audioFrameAnalyzer = null;
+	private VideoAnalyzer videoFrameAnalyzer = null;
+	private AudioAnalyzer audioFrameAnalyzer = null;
 	/**
 	 * {@inheritDoc}
 	 */
