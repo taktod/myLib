@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.flv.CodecType;
 import com.ttProject.container.flv.FlvTag;
 import com.ttProject.frame.IAudioFrame;
+import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
+import com.ttProject.frame.aac.DecoderSpecificInfo;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IAnalyzer;
@@ -35,6 +37,9 @@ public class AudioTag extends FlvTag {
 	private ByteBuffer frameBuffer = null;
 	private IAudioFrame frame = null;
 	private IAnalyzer frameAnalyzer = null;
+/*	public IAudioFrame getFrame() {
+		return frame;
+	}*/
 	public AudioTag(Bit8 tagType) {
 		super(tagType);
 	}
@@ -106,6 +111,14 @@ public class AudioTag extends FlvTag {
 			case AAC:
 				channel.position(getPosition() + 13);
 				frameBuffer = BufferUtil.safeRead(channel, getSize() - 13 - 4);
+				if(sequenceHeaderFlag.get() == 0) {
+					if(!(frameAnalyzer instanceof AacDsiFrameAnalyzer)) {
+						throw new Exception("frameAnalyzerがaac(dsi)対応ではないみたいです。");
+					}
+					DecoderSpecificInfo dsi = new DecoderSpecificInfo();
+					dsi.minimumLoad(new ByteReadChannel(frameBuffer));
+					((AacDsiFrameAnalyzer)frameAnalyzer).getSelector().setDecoderSpecificInfo(dsi);
+				}
 				break;
 			default:
 				channel.position(getPosition() + 12);
@@ -182,13 +195,13 @@ public class AudioTag extends FlvTag {
 		data.append("audioTag:");
 		data.append(" timestamp:").append(getPts());
 		data.append(" codec:").append(getCodec());
-/*		try {
+		try {
 			analyzeFrame();
 			data.append(" frame:").append(frame);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
-		}*/
+		}
 		return data.toString();
 	}
 }

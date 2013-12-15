@@ -73,6 +73,10 @@ public class FlvTest {
 			IUnit unit = null;
 			while((unit = analyzer.analyze(source)) != null) {
 				logger.info(unit);
+/*				if(unit instanceof AudioTag) {
+					IAudioFrame frame = ((AudioTag)unit).getFrame();
+					logger.info(HexUtil.toHex(frame.getData()));
+				}*/
 			}
 		}
 		catch(Exception e) {

@@ -1,5 +1,8 @@
 package com.ttProject.frame.aac;
 
+import org.apache.log4j.Logger;
+
+import com.ttProject.frame.aac.type.Frame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
@@ -9,6 +12,9 @@ import com.ttProject.unit.IUnit;
  * @author taktod
  */
 public class AacDsiFrameSelector implements ISelector {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(AacDsiFrameSelector.class);
 	/** 処理のdsi */
 	private DecoderSpecificInfo dsi = null;
 	/**
@@ -26,6 +32,7 @@ public class AacDsiFrameSelector implements ISelector {
 		if(dsi == null) {
 			throw new Exception("dsiが未定義なので処理を進めることができません");
 		}
-		return null;
+		Frame frame = new Frame(channel.size(), dsi, channel);
+		return frame;
 	}
 }

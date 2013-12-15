@@ -19,7 +19,6 @@ public class DecoderSpecificInfoTest {
 		IReadChannel channel = new ByteReadChannel(HexUtil.makeBuffer("1210"));
 		DecoderSpecificInfo specificInfo = new DecoderSpecificInfo();
 		specificInfo.minimumLoad(channel);
-		//decoderSpecificInfo: ot:00010 fi:0100 cc:0010 flf:0 docc0 ef:0
 		logger.info(specificInfo);
 	}
 }

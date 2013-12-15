@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.MetaTag;
 import com.ttProject.container.flv.type.VideoTag;
+import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
 import com.ttProject.frame.flv1.Flv1FrameAnalyzer;
 import com.ttProject.frame.h264.DataNalAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
@@ -119,10 +120,16 @@ public class FlvTagSelector implements ISelector {
 				case RESERVED:
 					break;
 				case AAC:
+					if(audioFrameAnalyzer == null || !(audioFrameAnalyzer instanceof AacDsiFrameAnalyzer)) {
+						audioFrameAnalyzer = new AacDsiFrameAnalyzer();
+					}
 					break;
 				case SPEEX:
 					break;
 				case MP3_8:
+					if(audioFrameAnalyzer == null || !(audioFrameAnalyzer instanceof Mp3FrameAnalyzer)) {
+						audioFrameAnalyzer = new Mp3FrameAnalyzer();
+					}
 					break;
 				case DEVICE_SPECIFIC:
 					break;

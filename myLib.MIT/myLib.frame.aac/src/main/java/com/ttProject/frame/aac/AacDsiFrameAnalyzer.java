@@ -10,8 +10,8 @@ import com.ttProject.unit.IUnit;
  * @author taktod
  */
 public class AacDsiFrameAnalyzer implements IAnalyzer {
+	/** selector */
 	private AacDsiFrameSelector selector = new AacDsiFrameSelector();
-	
 	/**
 	 * selector参照
 	 * @return
@@ -19,6 +19,9 @@ public class AacDsiFrameAnalyzer implements IAnalyzer {
 	public AacDsiFrameSelector getSelector() {
 		return selector;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public IUnit analyze(IReadChannel channel) throws Exception {
 		IUnit unit = selector.select(channel);
