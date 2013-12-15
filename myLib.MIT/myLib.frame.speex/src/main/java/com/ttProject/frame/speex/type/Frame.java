@@ -38,6 +38,9 @@ import com.ttProject.nio.channels.IReadChannel;
  * 
  * @author taktod
  * speexはheaderとdataにわけておいた方が扱いがいいかもしれない。
+ * 
+ * speexにもcommentHeaderみたいなのがあるっぽい
+ * ほぼvorbisと同じただし行末に01がついていなかった。
  */
 public class Frame extends SpeexFrame {
 	@Override
