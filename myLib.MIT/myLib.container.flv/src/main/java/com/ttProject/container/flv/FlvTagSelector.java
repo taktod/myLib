@@ -110,9 +110,7 @@ public class FlvTagSelector implements ISelector {
 				case LPCM:
 					break;
 				case NELLY_16:
-					break;
 				case NELLY_8:
-					break;
 				case NELLY:
 					if(audioFrameAnalyzer == null || !(audioFrameAnalyzer instanceof NellymoserFrameAnalyzer)) {
 						audioFrameAnalyzer = new NellymoserFrameAnalyzer();

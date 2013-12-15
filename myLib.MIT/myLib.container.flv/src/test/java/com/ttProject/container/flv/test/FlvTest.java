@@ -67,11 +67,35 @@ public class FlvTest {
 			)
 		);
 	}
-	@Test
+//	@Test
 	public void flv1nellyTest() throws Exception {
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("test.flv1nelly.flv")
+			)
+		);
+	}
+//	@Test
+	public void flv1nelly8Test() throws Exception {
+		analyzerTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("test.flv1nelly8.flv")
+			)
+		);
+	}
+//	@Test
+	public void flv1nelly16Test() throws Exception { // このテストだけフレーム値があってなくないか？
+		analyzerTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("test.flv1nelly16.flv")
+			)
+		);
+	}
+	@Test
+	public void h264speexTest() throws Exception {
+		analyzerTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("test.h264speex.flv")
 			)
 		);
 	}

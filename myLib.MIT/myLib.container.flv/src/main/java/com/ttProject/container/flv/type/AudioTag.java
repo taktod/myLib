@@ -56,6 +56,7 @@ public class AudioTag extends FlvTag {
 		if(frame == null) {
 			switch(getCodec()) {
 			case NELLY_16:
+			case SPEEX:
 				return 16000;
 			case NELLY_8:
 			case MP3_8:
