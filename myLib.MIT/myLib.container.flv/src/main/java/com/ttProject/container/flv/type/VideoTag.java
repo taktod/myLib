@@ -157,6 +157,7 @@ public class VideoTag extends FlvTag {
 			throw new Exception("frameの解析プログラムが設定されていません。");
 		}
 		IReadChannel channel = new ByteReadChannel(buffer);
+		// video側はコンテナからwidthとheightの情報取得できないので、放置しておく。
 		do {
 			if(frame != null) {
 				if(!(frame instanceof VideoMultiFrame)) {

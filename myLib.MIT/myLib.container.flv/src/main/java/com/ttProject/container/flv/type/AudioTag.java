@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.flv.CodecType;
 import com.ttProject.container.flv.FlvTag;
 import com.ttProject.frame.AudioAnalyzer;
+import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
 import com.ttProject.frame.aac.AacDsiFrameSelector;
@@ -191,6 +192,11 @@ public class AudioTag extends FlvTag {
 			throw new Exception("frameの解析プログラムが設定されていません。");
 		}
 		IReadChannel channel = new ByteReadChannel(frameBuffer);
+		AudioSelector selector = frameAnalyzer.getSelector();
+		selector.setBit(getBitCount());
+		selector.setChannel(getChannels());
+//		selector.setSampleNum(getSampleNum()); // sampleNumは無限ループになるのでやらない
+		selector.setSampleRate(getSampleRate());
 		do {
 			if(frame != null) {
 				if(!(frame instanceof AudioMultiFrame)) {
