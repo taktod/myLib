@@ -15,7 +15,24 @@ import com.ttProject.nio.channels.IReadChannel;
 public class VideoMultiFrame extends VideoFrame {
 	/** 保持フレーム */
 	private List<IVideoFrame> frameList = new ArrayList<IVideoFrame>();
-	public void addFrame(IVideoFrame frame) {
+	/**
+	 * フレームを追加します
+	 * @param frame
+	 * @throws Exception
+	 */
+	public void addFrame(IVideoFrame frame) throws Exception {
+		if(frameList.size() == 0) {
+			setPts(frame.getPts());
+			setTimebase(frame.getTimebase());
+			setWidth(frame.getWidth());
+			setHeight(frame.getHeight());
+		}
+		else {
+			// とりあえずデータの不一致についてはいまは目をつむっておく。
+//			if(frame.getWidth() != getWidth() || frame.getHeight() != getHeight()) {
+//				throw new Exception("値の違うframeが同じデータとして追加されました。");
+//			}
+		}
 		frameList.add(frame);
 	}
 	@Override

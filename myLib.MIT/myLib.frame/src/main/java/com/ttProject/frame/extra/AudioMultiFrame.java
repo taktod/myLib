@@ -17,8 +17,21 @@ public class AudioMultiFrame extends AudioFrame {
 	/**
 	 * フレームを追加します
 	 * @param frame
+	 * @throws Exception
 	 */
-	public void addFrame(IAudioFrame frame) {
+	public void addFrame(IAudioFrame frame) throws Exception {
+		if(frameList.size() == 0) {
+			setBit(frame.getBit());
+			setChannel(frame.getChannel());
+			setPts(frame.getPts());
+			setTimebase(frame.getTimebase());
+			setSampleRate(getSampleRate());
+			setSampleNum(frame.getSampleNum());
+		}
+		else {
+			// データの不一致はいまのところほっとく。
+			setSampleNum(frame.getSampleNum() + getSampleNum()); // サンプル数は足していく。
+		}
 		frameList.add(frame);
 	}
 	@Override
