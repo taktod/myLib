@@ -39,6 +39,7 @@ public class Frame extends NellymoserFrame {
 		super.setReadPosition(channel.position());
 		super.setSize(64);
 		super.setSampleNum(256);
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
@@ -53,7 +54,6 @@ public class Frame extends NellymoserFrame {
 		loader.load(deltaTable);
 		loader.load(payload1);
 		loader.load(payload2);
-		super.update();
 	}
 	@Override
 	public void setBit(int bit) {
