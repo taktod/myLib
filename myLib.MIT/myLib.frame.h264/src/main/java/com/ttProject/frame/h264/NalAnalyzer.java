@@ -2,9 +2,9 @@ package com.ttProject.frame.h264;
 
 import java.nio.ByteBuffer;
 
+import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.IUnit;
 import com.ttProject.util.BufferUtil;
 
@@ -13,15 +13,9 @@ import com.ttProject.util.BufferUtil;
  * 実体の読み込みまで実施します。
  * @author taktod
  */
-public class NalAnalyzer implements IAnalyzer {
-	/** selector */
-	private H264FrameSelector selector = new H264FrameSelector();
-	/**
-	 * セレクター参照
-	 * @return
-	 */
-	public H264FrameSelector getSelector() {
-		return selector;
+public class NalAnalyzer extends VideoAnalyzer {
+	public NalAnalyzer() {
+		super(new H264FrameSelector());
 	}
 	/**
 	 * {@inheritDoc}
@@ -102,7 +96,7 @@ public class NalAnalyzer implements IAnalyzer {
 	}
 	private IUnit setupFrame(ByteBuffer buffer) throws Exception {
 		IReadChannel channel = new ByteReadChannel(buffer);
-		IUnit unit = selector.select(channel);
+		IUnit unit = getSelector().select(channel);
 		unit.load(channel);
 		return unit;
 	}

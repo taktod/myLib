@@ -1,8 +1,8 @@
 package com.ttProject.frame.h264;
 
+import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.IUnit;
 import com.ttProject.util.BufferUtil;
 
@@ -11,15 +11,9 @@ import com.ttProject.util.BufferUtil;
  * 実体の読み込みまで実施します。
  * @author taktod
  */
-public class DataNalAnalyzer implements IAnalyzer {
-	/** セレクター */
-	private H264FrameSelector selector = new H264FrameSelector();
-	/**
-	 * セレクター参照
-	 * @return
-	 */
-	public H264FrameSelector getSelector() {
-		return selector;
+public class DataNalAnalyzer extends VideoAnalyzer {
+	public DataNalAnalyzer() {
+		super(new H264FrameSelector());
 	}
 	/**
 	 * {@inheritDoc}
@@ -37,7 +31,7 @@ public class DataNalAnalyzer implements IAnalyzer {
 			throw new Exception("データが足りません");
 		}
 		IReadChannel byteChannel = new ByteReadChannel(BufferUtil.safeRead(channel, size));
-		IUnit unit = selector.select(byteChannel);
+		IUnit unit = getSelector().select(byteChannel);
 		unit.load(byteChannel);
 		return unit;
 	}
