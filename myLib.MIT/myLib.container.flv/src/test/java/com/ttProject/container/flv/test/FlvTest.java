@@ -51,11 +51,19 @@ public class FlvTest {
 				FileReadChannel.openFileReadChannel("http://red5.googlecode.com/svn-history/r4071/java/example/trunk/oflaDemo/www/streams/toystory3-vp6.flv")
 		);
 	}
-	@Test
+//	@Test
 	public void h264mp3Test() throws Exception {
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("test.h264mp3.flv")
+			)
+		);
+	}
+	@Test
+	public void h264aacTest() throws Exception {
+		analyzerTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("test.h264aac.flv")
 			)
 		);
 	}

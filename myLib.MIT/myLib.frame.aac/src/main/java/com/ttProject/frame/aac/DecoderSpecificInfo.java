@@ -70,4 +70,12 @@ public class DecoderSpecificInfo extends Data {
 	public int getChannelConfiguration() {
 		return channelConfiguration.get();
 	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder("decoderSpecificInfo:");
+		data.append(" ot:").append(objectType1);
+		data.append(" fi:").append(frequencyIndex);
+		data.append(" cc:").append(channelConfiguration);
+		return data.toString();
+	}
 }

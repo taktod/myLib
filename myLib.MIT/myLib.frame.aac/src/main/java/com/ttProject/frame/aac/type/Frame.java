@@ -53,12 +53,14 @@ public class Frame extends AacFrame {
 	 * @param size
 	 * @param dsi
 	 */
-	public Frame(int size, DecoderSpecificInfo dsi) {
-		frameSize.set(size);
+	public Frame(int size, DecoderSpecificInfo dsi, IReadChannel channel) throws Exception {
+		frameSize.set(7 + size);
 		profile.set(dsi.getObjectType() - 1);
 		samplingFrequenceIndex.set(dsi.getFrequencyIndex());
 		channelConfiguration.set(dsi.getChannelConfiguration());
 		super.setSize(7 + size);
+		super.update();
+		super.setReadPosition(channel.position());
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
