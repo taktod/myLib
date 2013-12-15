@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.flv.CodecType;
 import com.ttProject.container.flv.FlvTag;
 import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.h264.ConfigData;
 import com.ttProject.frame.h264.DataNalAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
@@ -160,7 +161,20 @@ public class VideoTag extends FlvTag {
 		if(frameAnalyzer == null) {
 			throw new Exception("frameの解析プログラムが設定されていません。");
 		}
-		frame = (IVideoFrame)frameAnalyzer.analyze(new ByteReadChannel(buffer));
+		IReadChannel channel = new ByteReadChannel(buffer);
+		do {
+			if(frame != null) {
+				if(!(frame instanceof VideoMultiFrame)) {
+					IVideoFrame multiFrame = new VideoMultiFrame();
+					((VideoMultiFrame)multiFrame).addFrame(frame);
+					frame = multiFrame;
+				}
+				((VideoMultiFrame)frame).addFrame((IVideoFrame)frameAnalyzer.analyze(channel));
+			}
+			else {
+				frame = (IVideoFrame)frameAnalyzer.analyze(channel);
+			}
+		} while(channel.size() != channel.position());
 	}
 	public int getWidth() throws Exception {
 		if(frame == null) {
