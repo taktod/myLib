@@ -41,6 +41,11 @@ import com.ttProject.nio.channels.IReadChannel;
  * 
  * speexにもcommentHeaderみたいなのがあるっぽい
  * ほぼvorbisと同じただし行末に01がついていなかった。
+ * 
+ * commentのあとはframe実体みたい。
+ * ただし、pageの中の実体１つ１つがspeexのpacketにあたるっぽい。
+ * packetの集合がpageみたいな感じ。
+ * その点注意して組まないとだめかも・・・
  */
 public class Frame extends SpeexFrame {
 	@Override

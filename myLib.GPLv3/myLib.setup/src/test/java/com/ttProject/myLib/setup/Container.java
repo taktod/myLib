@@ -103,6 +103,27 @@ public class Container extends SetupBase {
 		coder.setSampleRate(16000);
 		coder.setChannels(1);
 		processConvert(container, Encoder.h264(container), coder);
+		
+		logger.info("flv準備 (speex)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.speex.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		coder = Encoder.speex(container);
+		coder.setSampleRate(16000);
+		coder.setChannels(1);
+		processConvert(container, null, coder);
+		logger.info("ogg準備 (speex)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.speex.ogg"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		coder = Encoder.speex(container);
+		coder.setSampleRate(16000);
+		coder.setChannels(1);
+		processConvert(container, null, coder);
 	}
 	/**
 	 * mkvの検証用データ
