@@ -197,11 +197,13 @@ public class AudioTag extends FlvTag {
 		data.append(" timestamp:").append(getPts());
 		data.append(" codec:").append(getCodec());
 		try {
-			analyzeFrame();
-			data.append(" frame:").append(frame);
+			int sampleRate = getSampleRate();
+			data.append(" sampleRate:").append(sampleRate);
+			int sampleNum = getSampleNum();
+			data.append(" sampleNum:").append(sampleNum);
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
 		}
 		return data.toString();
 	}

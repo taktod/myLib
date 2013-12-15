@@ -47,13 +47,16 @@ public class Frame extends AacFrame {
 	/**
 	 * コンストラクタ
 	 */
-	public Frame() {}
+	public Frame() {
+		setSampleNum(1024);
+	}
 	/**
 	 * コンストラクタ with dsi
 	 * @param size
 	 * @param dsi
 	 */
 	public Frame(int size, DecoderSpecificInfo dsi, IReadChannel channel) throws Exception {
+		this();
 		frameSize.set(7 + size);
 		profile.set(dsi.getObjectType() - 1);
 		samplingFrequenceIndex.set(dsi.getFrequencyIndex());
