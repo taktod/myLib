@@ -1,7 +1,9 @@
 package com.ttProject.frame.extra;
 
-import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -10,22 +12,14 @@ import com.ttProject.nio.channels.IReadChannel;
  * flvのaudioTagのnellymoserとかで利用します。(nellymoserでは、1,2,4ユニットが混じった動作とかあるので)
  * @author taktod
  */
-public class AudioMultiFrame implements IAudioFrame {
-	@Override
-	public long getPts() {
-		return 0;
-	}
-	@Override
-	public long getTimebase() {
-		return 0;
-	}
-	@Override
-	public ByteBuffer getData() throws Exception {
-		return null;
-	}
-	@Override
-	public int getSize() {
-		return 0;
+public class AudioMultiFrame extends AudioFrame {
+	private List<IAudioFrame> frameList = new ArrayList<IAudioFrame>();
+	/**
+	 * フレームを追加します
+	 * @param frame
+	 */
+	public void addFrame(IAudioFrame frame) {
+		frameList.add(frame);
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
@@ -36,19 +30,7 @@ public class AudioMultiFrame implements IAudioFrame {
 
 	}
 	@Override
-	public int getSampleNum() {
-		return 0;
-	}
-	@Override
-	public int getSampleRate() {
-		return 0;
-	}
-	@Override
-	public int getChannel() {
-		return 0;
-	}
-	@Override
-	public int getBit() {
-		return 0;
+	protected void requestUpdate() throws Exception {
+		
 	}
 }
