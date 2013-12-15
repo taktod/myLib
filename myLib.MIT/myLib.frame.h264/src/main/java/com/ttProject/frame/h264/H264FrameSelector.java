@@ -1,5 +1,6 @@
 package com.ttProject.frame.h264;
 
+import com.ttProject.frame.VideoSelector;
 import com.ttProject.frame.h264.type.AccessUnitDelimiter;
 import com.ttProject.frame.h264.type.PictureParameterSet;
 import com.ttProject.frame.h264.type.SequenceParameterSet;
@@ -7,7 +8,6 @@ import com.ttProject.frame.h264.type.Slice;
 import com.ttProject.frame.h264.type.SliceIDR;
 import com.ttProject.frame.h264.type.SupplementalEnhancementInformation;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
@@ -18,7 +18,7 @@ import com.ttProject.unit.extra.bit.Bit5;
  * h264のframeを選択します
  * @author taktod
  */
-public class H264FrameSelector implements ISelector {
+public class H264FrameSelector extends VideoSelector {
 	private SequenceParameterSet sps = null;
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
@@ -56,6 +56,7 @@ public class H264FrameSelector implements ISelector {
 		default:
 			throw new Exception("想定外のフレームを検知しました。");
 		}
+		setup(frame);
 		frame.minimumLoad(channel);
 		return frame;
 	}

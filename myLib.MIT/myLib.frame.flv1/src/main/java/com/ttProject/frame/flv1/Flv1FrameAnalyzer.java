@@ -1,8 +1,9 @@
 package com.ttProject.frame.flv1;
 
+
+import com.ttProject.frame.VideoSelector;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IAnalyzer;
-import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 
 /**
@@ -11,7 +12,10 @@ import com.ttProject.unit.IUnit;
  */
 public class Flv1FrameAnalyzer implements IAnalyzer {
 	/** frameSelector */
-	private ISelector selector = new Flv1FrameSelector();
+	private VideoSelector selector = new Flv1FrameSelector();
+	public VideoSelector getSelector() {
+		return selector;
+	}
 	/**
 	 * {@inheritDoc}
 	 */

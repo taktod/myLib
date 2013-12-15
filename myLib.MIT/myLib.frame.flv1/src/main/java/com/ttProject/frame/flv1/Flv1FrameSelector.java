@@ -1,10 +1,10 @@
 package com.ttProject.frame.flv1;
 
+import com.ttProject.frame.VideoSelector;
 import com.ttProject.frame.flv1.type.DisposableInterFrame;
 import com.ttProject.frame.flv1.type.InterFrame;
 import com.ttProject.frame.flv1.type.IntraFrame;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.Bit;
 import com.ttProject.unit.extra.BitLoader;
@@ -20,7 +20,7 @@ import com.ttProject.unit.extra.bit.Bit8;
  * flv1のframeを選択する動作
  * @author taktod
  */
-public class Flv1FrameSelector implements ISelector {
+public class Flv1FrameSelector extends VideoSelector {
 	/**
 	 * flv1のframeを決定します。
 	 * @param channel (1frame分のデータが渡されることを期待します)
@@ -118,6 +118,7 @@ public class Flv1FrameSelector implements ISelector {
 		default:
 			throw new Exception("flv1想定外のフレームです。");
 		}
+		setup(frame);
 		frame.minimumLoad(channel);
 		return frame;
 	}

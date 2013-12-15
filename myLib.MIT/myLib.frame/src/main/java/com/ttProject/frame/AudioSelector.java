@@ -21,12 +21,11 @@ public abstract class AudioSelector implements ISelector {
 	 * @param frame
 	 * @return
 	 */
-	public AudioFrame setup(AudioFrame frame) {
+	public void setup(AudioFrame frame) {
 		frame.setChannel(channel);
 		frame.setBit(bit);
 		frame.setSampleRate(sampleRate);
 		frame.setSampleNum(sampleNum);
-		return frame;
 	}
 	public void setChannel(int channel) {
 		this.channel = channel;

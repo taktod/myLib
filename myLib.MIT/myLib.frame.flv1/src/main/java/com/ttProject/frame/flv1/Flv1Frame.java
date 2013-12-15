@@ -33,6 +33,7 @@ public abstract class Flv1Frame extends VideoFrame {
 	private final Bit8 extraInformation;
 	private final Bit extra; // 帳尻あわせ用
 	private ByteBuffer buffer = null; // あとで読み込みさせたい場合にいれておく
+	private int width, height;
 
 	public Flv1Frame(Bit17 pictureStartCode,
 			Bit5 version, Bit8 temporalReference, Bit3 pictureSize,
@@ -51,9 +52,9 @@ public abstract class Flv1Frame extends VideoFrame {
 		this.extraInformationFlag = extraInformationFlag;
 		this.extraInformation = extraInformation;
 		this.extra = extra;
-		setWidth(width);
-		setHeight(height);
-		setDts(0);
+		
+		this.width = width;
+		this.height = height;
 	}
 	/**
 	 * 全体のデータを応答します。
@@ -91,6 +92,9 @@ public abstract class Flv1Frame extends VideoFrame {
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		// 小規模読み込みの動作は特にすることなし。
+		super.setWidth(width);
+		super.setHeight(height);
+		super.setDts(0);
 		super.setReadPosition(channel.position());
 		super.setSize(channel.size());
 		super.update();

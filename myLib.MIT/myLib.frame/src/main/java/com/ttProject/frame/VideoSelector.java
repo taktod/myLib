@@ -15,9 +15,8 @@ public abstract class VideoSelector implements ISelector {
 	public void setHeight(int height) {
 		this.height = height;
 	}
-	public VideoFrame setup(VideoFrame frame) {
+	public void setup(VideoFrame frame) {
 		frame.setWidth(width);
 		frame.setHeight(height);
-		return frame;
 	}
 }
