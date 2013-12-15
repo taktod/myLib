@@ -1,18 +1,9 @@
 package com.ttProject.frame.vorbis;
 
-import com.ttProject.frame.AudioSelector;
-import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IAnalyzer;
-import com.ttProject.unit.IUnit;
+import com.ttProject.frame.AudioAnalyzer;
 
-public class VorbisFrameAnalyzer implements IAnalyzer {
-	private AudioSelector selector = new VorbisFrameSelector();
-	public AudioSelector getSelector() {
-		return selector;
+public class VorbisFrameAnalyzer extends AudioAnalyzer {
+	public VorbisFrameAnalyzer() {
+		super(new VorbisFrameSelector());
 	}
-	@Override
-	public IUnit analyze(IReadChannel channel) throws Exception {
-		return null;
-	}
-
 }
