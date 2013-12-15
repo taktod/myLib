@@ -85,6 +85,8 @@ public class Header extends SpeexFrame {
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
+		// データを解析する。
+		super.update();
 	}
 	@Override
 	protected void requestUpdate() throws Exception {

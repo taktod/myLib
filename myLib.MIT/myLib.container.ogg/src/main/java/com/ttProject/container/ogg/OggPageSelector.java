@@ -3,6 +3,7 @@ package com.ttProject.container.ogg;
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.ogg.type.Page;
+import com.ttProject.container.ogg.type.StartPage;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
@@ -46,7 +47,12 @@ public class OggPageSelector implements ISelector {
 				packetContinurousFlag);
 		// 必要なpage作成
 		OggPage page = null;
-		page = new Page(version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag);
+		if(logicStartFlag.get() == 1) {
+			page = new StartPage(version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag);
+		}
+		else {
+			page = new Page(version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag);
+		}
 		page.minimumLoad(channel);
 		return page;
 	}

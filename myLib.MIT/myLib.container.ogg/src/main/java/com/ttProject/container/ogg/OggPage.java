@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.Container;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;
@@ -76,5 +77,28 @@ public abstract class OggPage extends Container {
 			segmentSizeList.add(segmentSize);
 		}
 		super.setSize(size + channel.position() - getPosition());
+	}
+	protected ByteBuffer getHeaderBuffer() {
+		ByteBuffer result = ByteBuffer.allocate(27 + segmentCount.get());
+		result.order(ByteOrder.LITTLE_ENDIAN);
+		result.put(capturePattern.getBytes());
+		BitConnector connector = new BitConnector();
+		result.put(connector.connect(
+				version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag
+		));
+		result.putLong(absoluteGranulePosition);
+		result.putInt(streamSerialNumber);
+		result.putInt(pageSequenceNo);
+		result.putInt(pageChecksum);
+		connector.feed(segmentCount);
+		for(Bit8 bit : segmentSizeList) {
+			connector.feed(bit);
+		}
+		result.put(connector.connect());
+		result.flip();
+		return result;
+	}
+	protected List<Bit8> getSegmentSizeList() {
+		return segmentSizeList;
 	}
 }

@@ -25,7 +25,7 @@ public class OggTest {
 		IFileReadChannel source = null;
 		try {
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("test.vorbis.ogg")
+					Thread.currentThread().getContextClassLoader().getResource("test.speex.ogg")
 			);
 			IAnalyzer analyzer = new OggPageAnalyzer();
 			IUnit unit = null;
