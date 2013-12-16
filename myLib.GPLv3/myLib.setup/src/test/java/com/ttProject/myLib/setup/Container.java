@@ -201,6 +201,13 @@ public class Container extends SetupBase {
 			throw new Exception("コンテナが開けませんでした");
 		}
 		processConvert(container, null, Encoder.speex(container));
+		logger.info("ogg準備 (theora / vorbis)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.ogg", "test.theoravorbis.ogg"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		processConvert(container, Encoder.theora(container), Encoder.speex(container));
 	}
 	/**
 	 * webmの検証用データ

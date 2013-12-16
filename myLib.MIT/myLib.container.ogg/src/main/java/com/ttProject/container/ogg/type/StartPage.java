@@ -5,7 +5,11 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.ogg.OggPage;
+import com.ttProject.frame.speex.SpeexFrameAnalyzer;
+import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
@@ -19,6 +23,8 @@ import com.ttProject.util.HexUtil;
 public class StartPage extends OggPage {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(StartPage.class);
+	/** 解析プログラム */
+	private IAnalyzer analyzer = null;
 	/**
 	 * コンストラクタ
 	 * @param version
@@ -40,27 +46,39 @@ public class StartPage extends OggPage {
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
+		boolean isFirstData = true;
 		logger.info("load on startPage");
-		logger.info(getPosition());
-		logger.info(getSegmentSizeList().size());
 		channel.position(getPosition() + 27 + getSegmentSizeList().size());
-		logger.info(channel.position());
+		for(Bit8 size : getSegmentSizeList()) {
+			logger.info("size");
+			logger.info(size.get());
+			ByteBuffer buffer = BufferUtil.safeRead(channel, size.get());
+			if(isFirstData) {
+				// はじめのデータの場合はコーデックheaderがあると思われるので、なんのコーデックか判定する必要あり。
+				switch(buffer.get()) {
+				case 0x01:
+					logger.info("vorbis?");
+					analyzer = new VorbisFrameAnalyzer();
+					break;
+				case 'S':
+					logger.info("speex?");
+					analyzer = new SpeexFrameAnalyzer();
+					break;
+					// Theoraは？
+				default:
+					throw new Exception("知らないコーデックデータを検知しました。");
+				}
+				buffer.position(0);
+			}
+			isFirstData = false;
+			IReadChannel bufferChannel = new ByteReadChannel(buffer);
+			analyzer.analyze(bufferChannel);
+			// bufferChannelの中身がなくなるまで読み込ませる必要あり。
+		}
 		// データを1byte読み込んで調べてみる。
 		// vorbisなら0x01がくるはず 0x01 [vorbis]...
 		// speexなら'S'がくるはず [Speex   ]
 		// あたりをつけて残りのデータを読み込んで決定したい。
-		byte firstByte = BufferUtil.safeRead(channel, 1).get();
-		if(firstByte == 0x01) {
-			// vorbis?
-			logger.info("vorbis?");
-		}
-		else if(firstByte == 'S') {
-			// speex?
-			logger.info("speex?");
-		}
-		else {
-			throw new Exception("知らないデータを受け取りました。");
-		}
 		// 次の位置に強制割り当てしている
 		channel.position(getPosition() + getSize());
 	}

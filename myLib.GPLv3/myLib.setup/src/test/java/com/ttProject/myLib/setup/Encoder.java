@@ -169,4 +169,22 @@ public class Encoder {
 		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
 		return videoEncoder;
 	}
+	/**
+	 * theora
+	 * @return
+	 */
+	public static IStreamCoder theora(IContainer container) {
+		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_THEORA);
+		IStreamCoder videoEncoder = stream.getStreamCoder();
+		IRational frameRate = IRational.make(15, 1); // 15fps
+		videoEncoder.setNumPicturesInGroupOfPictures(5); // gopを5にしておく。keyframeが5枚ごとになる。
+		videoEncoder.setBitRate(650000); // 650kbps
+		videoEncoder.setBitRateTolerance(9000);
+		videoEncoder.setWidth(320);
+		videoEncoder.setHeight(240);
+		videoEncoder.setGlobalQuality(10);
+		videoEncoder.setFrameRate(frameRate);
+		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
+		return videoEncoder;
+	}
 }

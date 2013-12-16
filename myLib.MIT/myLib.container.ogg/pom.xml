@@ -11,12 +11,17 @@
   <dependencies>
   	<dependency>
   		<groupId>com.ttProject</groupId>
-  		<artifactId>myLib.unit</artifactId>
+  		<artifactId>myLib.container</artifactId>
   		<version>0.0.2-SNAPSHOT</version>
   	</dependency>
   	<dependency>
   		<groupId>com.ttProject</groupId>
-  		<artifactId>myLib.container</artifactId>
+  		<artifactId>myLib.frame.speex</artifactId>
+  		<version>0.0.2-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.ttProject</groupId>
+  		<artifactId>myLib.frame.vorbis</artifactId>
   		<version>0.0.2-SNAPSHOT</version>
   	</dependency>
   </dependencies>

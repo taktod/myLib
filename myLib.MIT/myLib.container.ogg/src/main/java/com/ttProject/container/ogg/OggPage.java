@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.Container;
+import com.ttProject.frame.IFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
@@ -37,6 +38,8 @@ public abstract class OggPage extends Container {
 	private int pageChecksum;
 	private Bit8 segmentCount = new Bit8();
 	private List<Bit8> segmentSizeList = new ArrayList<Bit8>();
+	private List<ByteBuffer> bufferList = new ArrayList<ByteBuffer>();
+	private List<IFrame> frameList = new ArrayList<IFrame>();
 	/**
 	 * コンストラクタ
 	 * @param version
@@ -100,5 +103,11 @@ public abstract class OggPage extends Container {
 	}
 	protected List<Bit8> getSegmentSizeList() {
 		return segmentSizeList;
+	}
+	protected List<ByteBuffer> getBufferList() {
+		return bufferList;
+	}
+	protected List<IFrame> getFrameList() {
+		return frameList;
 	}
 }
