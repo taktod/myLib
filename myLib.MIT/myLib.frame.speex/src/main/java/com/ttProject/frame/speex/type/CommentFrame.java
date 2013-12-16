@@ -1,5 +1,8 @@
 package com.ttProject.frame.speex.type;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.ttProject.frame.speex.SpeexFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -15,6 +18,8 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class CommentFrame extends SpeexFrame {
+	private String venderName;
+	private List<String> elementList = new ArrayList<String>();
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 	}

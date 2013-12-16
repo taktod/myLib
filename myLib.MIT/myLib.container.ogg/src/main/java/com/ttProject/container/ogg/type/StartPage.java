@@ -45,8 +45,22 @@ public class StartPage extends OggPage {
 		logger.info(getSegmentSizeList().size());
 		channel.position(getPosition() + 27 + getSegmentSizeList().size());
 		logger.info(channel.position());
-		ByteBuffer buffer = BufferUtil.safeRead(channel, 10);
-		logger.info(HexUtil.toHex(buffer, true));
+		// データを1byte読み込んで調べてみる。
+		// vorbisなら0x01がくるはず 0x01 [vorbis]...
+		// speexなら'S'がくるはず [Speex   ]
+		// あたりをつけて残りのデータを読み込んで決定したい。
+		byte firstByte = BufferUtil.safeRead(channel, 1).get();
+		if(firstByte == 0x01) {
+			// vorbis?
+			logger.info("vorbis?");
+		}
+		else if(firstByte == 'S') {
+			// speex?
+			logger.info("speex?");
+		}
+		else {
+			throw new Exception("知らないデータを受け取りました。");
+		}
 		// 次の位置に強制割り当てしている
 		channel.position(getPosition() + getSize());
 	}
