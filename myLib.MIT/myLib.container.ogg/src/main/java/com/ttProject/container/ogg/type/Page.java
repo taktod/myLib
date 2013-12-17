@@ -60,6 +60,8 @@ public class Page extends OggPage {
 	public void load(IReadChannel channel) throws Exception {
 		logger.info("load");
 		// 中身のデータはそれぞれのframeとして読み込まないとだめ。ただし、frameがoggからは何であるかわかるすべがないっぽい。
+		logger.info("analyzer:" + getStartPage().getAnalyzer().toString());
+		// analyzerをつかって開く
 		channel.position(getPosition() + getSize());
 	}
 	@Override

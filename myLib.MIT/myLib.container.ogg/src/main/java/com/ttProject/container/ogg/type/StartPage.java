@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.ogg.OggPage;
 import com.ttProject.frame.speex.SpeexFrameAnalyzer;
+import com.ttProject.frame.theora.TheoraFrameAnalyzer;
 import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -14,7 +15,6 @@ import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtil;
 
 /**
  * startPage(speexとかのheader情報がはいっているっぽい。)
@@ -47,11 +47,8 @@ public class StartPage extends OggPage {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		boolean isFirstData = true;
-		logger.info("load on startPage");
 		channel.position(getPosition() + 27 + getSegmentSizeList().size());
 		for(Bit8 size : getSegmentSizeList()) {
-			logger.info("size");
-			logger.info(size.get());
 			ByteBuffer buffer = BufferUtil.safeRead(channel, size.get());
 			if(isFirstData) {
 				// はじめのデータの場合はコーデックheaderがあると思われるので、なんのコーデックか判定する必要あり。
@@ -67,6 +64,7 @@ public class StartPage extends OggPage {
 					// Theoraは？
 				case (byte)0x80:
 					logger.info("theora?");
+					analyzer = new TheoraFrameAnalyzer();
 					break;
 				default:
 					throw new Exception("知らないコーデックデータを検知しました。");
@@ -87,5 +85,12 @@ public class StartPage extends OggPage {
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
+	}
+	/**
+	 * 解析analyzer参照
+	 * @return
+	 */
+	public IAnalyzer getAnalyzer() {
+		return analyzer;
 	}
 }

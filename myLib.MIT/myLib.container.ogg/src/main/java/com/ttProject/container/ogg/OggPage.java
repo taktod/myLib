@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.Container;
+import com.ttProject.container.ogg.type.StartPage;
 import com.ttProject.frame.IFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitConnector;
@@ -40,6 +41,7 @@ public abstract class OggPage extends Container {
 	private List<Bit8> segmentSizeList = new ArrayList<Bit8>();
 	private List<ByteBuffer> bufferList = new ArrayList<ByteBuffer>();
 	private List<IFrame> frameList = new ArrayList<IFrame>();
+	private StartPage startPage = null;
 	/**
 	 * コンストラクタ
 	 * @param version
@@ -109,5 +111,18 @@ public abstract class OggPage extends Container {
 	}
 	protected List<IFrame> getFrameList() {
 		return frameList;
+	}
+	/**
+	 * シリアル番号を応答する
+	 * @return
+	 */
+	public Integer getStreamSerialNumber() {
+		return streamSerialNumber;
+	}
+	public void setStartPage(StartPage startPage) {
+		this.startPage = startPage;
+	}
+	protected StartPage getStartPage() {
+		return startPage;
 	}
 }

@@ -1,5 +1,8 @@
 package com.ttProject.container.ogg;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.ogg.type.Page;
@@ -20,6 +23,8 @@ import com.ttProject.util.BufferUtil;
 public class OggPageSelector implements ISelector {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(OggPageSelector.class);
+	/** startPageMap */
+	private Map<Integer, StartPage> startPageMap = new HashMap<Integer, StartPage>();
 	/**
 	 * {@inheritDoc}
 	 */
@@ -54,6 +59,12 @@ public class OggPageSelector implements ISelector {
 			page = new Page(version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag);
 		}
 		page.minimumLoad(channel);
+		if(page instanceof StartPage) {
+			startPageMap.put(page.getStreamSerialNumber(), (StartPage)page);
+		}
+		else {
+			page.setStartPage(startPageMap.get(page.getStreamSerialNumber()));
+		}
 		return page;
 	}
 }
