@@ -161,11 +161,15 @@ public class BufferUtil {
 	public static ByteBuffer connect(ByteBuffer ... buffers) {
 		int length = 0;
 		for(ByteBuffer buf : buffers) {
-			length += buf.remaining();
+			if(buf != null) {
+				length += buf.remaining();
+			}
 		}
 		ByteBuffer result = ByteBuffer.allocate(length);
 		for(ByteBuffer buf : buffers) {
-			result.put(buf);
+			if(buf != null) {
+				result.put(buf);
+			}
 		}
 		result.flip();
 		return result;

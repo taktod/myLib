@@ -80,6 +80,9 @@ public class FlvTagSelector implements ISelector {
 					}
 					break;
 				case ON2VP6_ALPHA:
+					if(videoFrameAnalyzer == null || !(videoFrameAnalyzer instanceof Vp6FrameAnalyzer)) {
+						videoFrameAnalyzer = new Vp6FrameAnalyzer();
+					}
 					break;
 				case SCREEN_V2:
 					break;

@@ -14,6 +14,12 @@ import com.ttProject.unit.extra.bit.Bit6;
  * 00 78 46 0F 14 0F 14 3F 6E E8 CB 01 8D C9 89 26 9E AD 53 6F 33 FD DD F2 BF AB F6 ED FB 1C
  * flvにはいっているvp6のデータの先頭は、終端にくる必要があるらしい。
  * よって解析データは78から・・・となります。
+ * 
+ * @see http://hkpr.info/flash/swf/index.php?%E3%83%93%E3%83%87%E3%82%AA%2FOn2%20Truemotion%20VP6%20%E3%83%93%E3%83%83%E3%83%88%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%A0%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88
+ * on2vp6alphaも
+ * はじめの00の部分はalignのずれ設定みたいですね。
+ * データは捨てた方がよさそう・・・
+ * 
  * @author taktod
  */
 public abstract class Vp6Frame extends VideoFrame {

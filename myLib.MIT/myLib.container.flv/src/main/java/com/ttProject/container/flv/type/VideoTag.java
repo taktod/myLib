@@ -16,6 +16,7 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit24;
+import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
@@ -27,11 +28,15 @@ import com.ttProject.util.BufferUtil;
 public class VideoTag extends FlvTag {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(VideoTag.class);
-	private Bit4 frameType = null;
-	private Bit4 codecId = null;
+	private Bit4 frameType = new Bit4();
+	private Bit4 codecId = new Bit4();
+	private Bit4 horizontalAdjustment = null; // vp6のみ
+	private Bit4 verticalAdjustment = null; // vp6のみ
+	private Bit32 offsetToAlpha = null; // vp6aのみ
 	private Bit8 packetType = null; // avcのみ
 	private Bit24 dts = null; // avcのみ
 	private ByteBuffer frameBuffer = null; // フレームデータ
+	private ByteBuffer alphaData = null; // vp6a用のalphaデータ
 	private IVideoFrame frame = null; // 動作対象フレーム
 	private VideoAnalyzer frameAnalyzer = null;
 	public VideoTag(Bit8 tagType) {
@@ -50,6 +55,7 @@ public class VideoTag extends FlvTag {
 	public void load(IReadChannel channel) throws Exception {
 		// こちら側のloadが実行された場合は、読み込みデータをとりにいく。
 		if(codecId != null) {
+			BitLoader loader = null;
 			switch(getCodec()) {
 			case H264:
 				channel.position(getPosition() + 16);
@@ -60,6 +66,21 @@ public class VideoTag extends FlvTag {
 					configData.setSelector((H264FrameSelector)frameAnalyzer.getSelector());
 					configData.getNals(new ByteReadChannel(frameBuffer));
 				}
+				break;
+			case ON2VP6:
+				horizontalAdjustment = new Bit4();
+				verticalAdjustment = new Bit4();
+				loader = new BitLoader(channel);
+				loader.load(horizontalAdjustment, verticalAdjustment);
+				frameBuffer = BufferUtil.safeRead(channel, getSize() - 13 - 4);
+				break;
+			case ON2VP6_ALPHA:
+				offsetToAlpha = new Bit32();
+				loader = new BitLoader(channel);
+				loader.load(offsetToAlpha);
+				int offset = offsetToAlpha.get();
+				frameBuffer = BufferUtil.safeRead(channel, offset);
+				alphaData = BufferUtil.safeRead(channel, getSize() - 16 - 4 - offset);
 				break;
 			default:
 				channel.position(getPosition() + 12);
@@ -88,8 +109,6 @@ public class VideoTag extends FlvTag {
 		}
 		// コーデック情報等を取得する必要あり
 		BitLoader loader = new BitLoader(channel);
-		frameType = new Bit4();
-		codecId = new Bit4();
 		loader.load(frameType, codecId);
 		if(getCodec() == CodecType.H264) {
 			// h264用の特殊データも読み込んでおく。
@@ -106,7 +125,10 @@ public class VideoTag extends FlvTag {
 		BitConnector connector = new BitConnector();
 		ByteBuffer startBuffer = getStartBuffer();
 		ByteBuffer videoInfoBuffer = connector.connect(
-				frameType, codecId, packetType, dts
+				frameType, codecId, 
+				horizontalAdjustment, verticalAdjustment, // vp6
+				offsetToAlpha, // vp6a
+				packetType, dts // avc
 		);
 		ByteBuffer frameBuffer = getFrameBuffer();
 		ByteBuffer tailBuffer = getTailBuffer();
@@ -114,6 +136,7 @@ public class VideoTag extends FlvTag {
 				startBuffer,
 				videoInfoBuffer,
 				frameBuffer,
+				alphaData,
 				tailBuffer
 		));
 	}
@@ -128,7 +151,7 @@ public class VideoTag extends FlvTag {
 			throw new Exception("frameデータが読み込まれていません");
 		}
 		ByteBuffer buffer = frameBuffer;
-		switch(getCodec()) {
+/*		switch(getCodec()) {
 		case JPEG:
 			break;
 		case FLV1:
@@ -136,15 +159,26 @@ public class VideoTag extends FlvTag {
 		case SCREEN:
 			break;
 		case ON2VP6:
-			// vp6の場合は、先頭のデータを終端にもってくる必要あり。
-			ByteBuffer frameBuffer = buffer.duplicate();
-			buffer = ByteBuffer.allocate(frameBuffer.remaining());
-			byte firstByte = frameBuffer.get();
-			buffer.put(frameBuffer);
-			buffer.put(firstByte);
-			buffer.flip();
+			{
+				// vp6の場合は、先頭のデータを終端にもってくる必要あり。
+				ByteBuffer frameBuffer = buffer.duplicate();
+				buffer = ByteBuffer.allocate(frameBuffer.remaining());
+				byte firstByte = frameBuffer.get();
+				buffer.put(frameBuffer);
+				buffer.put(firstByte);
+				buffer.flip();
+			}
 			break;
 		case ON2VP6_ALPHA:
+			{
+				// vp6の場合は、先頭のデータを終端にもってくる必要あり。
+				ByteBuffer frameBuffer = buffer.duplicate();
+				buffer = ByteBuffer.allocate(frameBuffer.remaining());
+				int firstByte = frameBuffer.getInt();
+				buffer.put(frameBuffer);
+				buffer.putInt(firstByte);
+				buffer.flip();
+			}
 			break;
 		case SCREEN_V2:
 			break;
@@ -152,7 +186,7 @@ public class VideoTag extends FlvTag {
 			break;
 		default:
 			break;
-		}
+		}*/
 		if(frameAnalyzer == null) {
 			throw new Exception("frameの解析プログラムが設定されていません。");
 		}
