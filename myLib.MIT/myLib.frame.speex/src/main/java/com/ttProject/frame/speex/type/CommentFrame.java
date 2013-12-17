@@ -1,5 +1,7 @@
 package com.ttProject.frame.speex.type;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.frame.speex.SpeexFrame;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.util.BufferUtil;
 
 /**
  * speexのCommentFrame(metaデータみたいなものかな)
@@ -32,6 +35,21 @@ public class CommentFrame extends SpeexFrame {
 	public void load(IReadChannel channel) throws Exception {
 		logger.info("load");
 		// ここでデータを読み込んで処理する。
+		ByteBuffer buffer = BufferUtil.safeRead(channel, 4);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		int venderLength = buffer.getInt();
+		venderName = new String(BufferUtil.safeRead(channel, venderLength).array());
+		buffer = BufferUtil.safeRead(channel, 4);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		int elementCount = buffer.getInt();
+		for(int i = 0;i < elementCount;i ++) {
+			buffer = BufferUtil.safeRead(channel, 4);
+			buffer.order(ByteOrder.LITTLE_ENDIAN);
+			int elementLength = buffer.getInt();
+			elementList.add(new String(BufferUtil.safeRead(channel, elementLength).array()));
+		}
+		logger.info(venderName);
+		logger.info(elementList);
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
