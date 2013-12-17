@@ -1,7 +1,12 @@
 package com.ttProject.frame.speex.type;
 
+import java.nio.ByteBuffer;
+
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.speex.SpeexFrame;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.util.BufferUtil;
 
 /**
  * speexのframe
@@ -25,13 +30,24 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class Frame extends SpeexFrame {
+	private Logger logger = Logger.getLogger(Frame.class);
+	private ByteBuffer frameBuffer = null;
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
+		logger.info("minimumLoad");
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
+		logger.info("load");
+		// そのままデータを保持しておいておわり。
+		frameBuffer = BufferUtil.safeRead(channel, channel.size());
+		super.update();
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
+		if(frameBuffer == null) {
+			throw new Exception("frameBufferがnullでした。先に解析してください。");
+		}
+		super.setData(frameBuffer);
 	}
 }

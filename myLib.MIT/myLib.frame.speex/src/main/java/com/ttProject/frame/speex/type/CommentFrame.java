@@ -53,5 +53,6 @@ public class CommentFrame extends SpeexFrame {
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
+		// 結合は特に問題ないので、あとでつくっておくことにします。
 	}
 }
