@@ -87,6 +87,7 @@ public class HeaderFrame extends SpeexFrame {
 		super.setSampleNum(frameSize);
 		super.setSampleRate(rate);
 		super.setChannel(nbChannels);
+		super.update();
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
@@ -116,13 +117,39 @@ public class HeaderFrame extends SpeexFrame {
 		super.setSampleNum(frameSize);
 		super.setSampleRate(rate);
 		super.setChannel(nbChannels);
-	}
-	@Override
-	public void load(IReadChannel channel) throws Exception {
-		// データを解析する。
 		super.update();
 	}
 	@Override
+	public void load(IReadChannel channel) throws Exception {
+		// 読み込むデータは特になし。
+	}
+	@Override
 	protected void requestUpdate() throws Exception {
+		// データを結合してByteBufferを登録しておきたい。
+		ByteBuffer buffer = ByteBuffer.allocate(80);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		buffer.put(speexString.getBytes());
+		while(buffer.position() < 8) {
+			buffer.put((byte)0x00);
+		}
+		buffer.put(speexVersion.getBytes());
+		while(buffer.position() < 20) {
+			buffer.put((byte)0x00);
+		}
+		buffer.putInt(speexVersionId);
+		buffer.putInt(headerSize);
+		buffer.putInt(rate);
+		buffer.putInt(mode);
+		buffer.putInt(modeBitstreamVersion);
+		buffer.putInt(nbChannels);
+		buffer.putInt(bitRate);
+		buffer.putInt(frameSize);
+		buffer.putInt(vbr);
+		buffer.putInt(framesPerPacket);
+		buffer.putInt(extraHeaders);
+		buffer.putInt(reserved1);
+		buffer.putInt(reserved2);
+		buffer.flip();
+		super.setData(buffer);
 	}
 }
