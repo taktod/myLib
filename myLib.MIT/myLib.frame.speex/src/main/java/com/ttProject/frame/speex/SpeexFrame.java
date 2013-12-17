@@ -12,6 +12,10 @@ public abstract class SpeexFrame extends AudioFrame {
 	private HeaderFrame headerFrame = null;
 	public void setHeaderFrame(HeaderFrame headerFrame) {
 		this.headerFrame = headerFrame;
+		super.setBit(headerFrame.getBit());
+		super.setChannel(headerFrame.getChannel());
+		super.setSampleNum(headerFrame.getSampleNum());
+		super.setSampleRate(headerFrame.getSampleRate());
 	}
 	protected HeaderFrame getHeaderFrame() {
 		return headerFrame;

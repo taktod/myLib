@@ -30,15 +30,15 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Frame extends SpeexFrame {
+	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Frame.class);
 	private ByteBuffer frameBuffer = null;
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		logger.info("minimumLoad");
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		logger.info("load");
 		// そのままデータを保持しておいておわり。
 		frameBuffer = BufferUtil.safeRead(channel, channel.size());
 		super.update();
