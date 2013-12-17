@@ -45,7 +45,7 @@ public class FlvTest {
 			}
 		}
 	}
-	@Test
+//	@Test
 	public void vp6mp3Test() throws Exception {
 		analyzerTest(
 				FileReadChannel.openFileReadChannel("http://red5.googlecode.com/svn-history/r4071/java/example/trunk/oflaDemo/www/streams/toystory3-vp6.flv")
@@ -91,7 +91,7 @@ public class FlvTest {
 			)
 		);
 	}
-//	@Test
+	@Test
 	public void h264speexTest() throws Exception {
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(

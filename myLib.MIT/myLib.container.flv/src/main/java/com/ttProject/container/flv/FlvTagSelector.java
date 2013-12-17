@@ -12,6 +12,10 @@ import com.ttProject.frame.flv1.Flv1FrameAnalyzer;
 import com.ttProject.frame.h264.DataNalAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
 import com.ttProject.frame.nellymoser.NellymoserFrameAnalyzer;
+import com.ttProject.frame.speex.SpeexFrameAnalyzer;
+import com.ttProject.frame.speex.SpeexFrameSelector;
+import com.ttProject.frame.speex.type.CommentFrame;
+import com.ttProject.frame.speex.type.HeaderFrame;
 import com.ttProject.frame.vp6.Vp6FrameAnalyzer;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
@@ -66,6 +70,7 @@ public class FlvTagSelector implements ISelector {
 				videoTag.minimumLoad(channel);
 				switch(videoTag.getCodec()) {
 				case JPEG:
+					// flvのjpegフォーマットはもう利用されていないらしい。
 					break;
 				case FLV1:
 					if(videoFrameAnalyzer == null || !(videoFrameAnalyzer instanceof Flv1FrameAnalyzer)) {
@@ -131,6 +136,15 @@ public class FlvTagSelector implements ISelector {
 					}
 					break;
 				case SPEEX:
+					if(audioFrameAnalyzer == null || !(audioFrameAnalyzer instanceof SpeexFrameAnalyzer)) {
+						audioFrameAnalyzer = new SpeexFrameAnalyzer();
+						SpeexFrameSelector speexFrameSelector = (SpeexFrameSelector)audioFrameAnalyzer.getSelector();
+						// headerFrameとcommentFrameを設定しておく。
+						HeaderFrame headerFrame = new HeaderFrame();
+						headerFrame.fillWithFlvDefault();
+						speexFrameSelector.setHeaderFrame(headerFrame);
+						speexFrameSelector.setCommentFrame(new CommentFrame());
+					}
 					break;
 				case MP3_8:
 					if(audioFrameAnalyzer == null || !(audioFrameAnalyzer instanceof Mp3FrameAnalyzer)) {
