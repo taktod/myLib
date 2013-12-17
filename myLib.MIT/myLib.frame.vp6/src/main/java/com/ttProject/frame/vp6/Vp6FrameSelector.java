@@ -28,7 +28,6 @@ public class Vp6FrameSelector extends VideoSelector {
 		switch(frameMode.get()) {
 		case 1: // interFrame
 			frame = new InterFrame(frameMode, qp, marker);
-			frame.setKeyFrame(keyFrame);
 			break;
 		case 0: // intraFrame(keyFrame)
 			frame = new IntraFrame(frameMode, qp, marker);
@@ -38,6 +37,9 @@ public class Vp6FrameSelector extends VideoSelector {
 			throw new Exception("解析不能なデータです。");
 		}
 		setup(frame);
+		if(!(frame instanceof IntraFrame)) {
+			frame.setKeyFrame(keyFrame);
+		}
 		frame.minimumLoad(channel);
 		return frame;
 	}

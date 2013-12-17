@@ -31,11 +31,9 @@ public class H264FrameSelector extends VideoSelector {
 		switch(Type.getType(type.get())) {
 		case AccessUnitDelimiter:
 			frame = new AccessUnitDelimiter(forbiddenZeroBit, nalRefIdc, type);
-			frame.setSps(sps);
 			break;
 		case PictureParameterSet:
 			frame = new PictureParameterSet(forbiddenZeroBit, nalRefIdc, type);
-			frame.setSps(sps);
 			break;
 		case SequenceParameterSet:
 			frame = new SequenceParameterSet(forbiddenZeroBit, nalRefIdc, type);
@@ -43,20 +41,20 @@ public class H264FrameSelector extends VideoSelector {
 			break;
 		case Slice: // innerFrame
 			frame = new Slice(forbiddenZeroBit, nalRefIdc, type);
-			frame.setSps(sps);
 			break;
 		case SliceIDR: // keyFrame
 			frame = new SliceIDR(forbiddenZeroBit, nalRefIdc, type);
-			frame.setSps(sps);
 			break;
 		case SupplementalEnhancementInformation:
 			frame = new SupplementalEnhancementInformation(forbiddenZeroBit, nalRefIdc, type);
-			frame.setSps(sps);
 			break;
 		default:
 			throw new Exception("想定外のフレームを検知しました。");
 		}
 		setup(frame);
+		if(!(frame instanceof SequenceParameterSet)) {
+			frame.setSps(sps);
+		}
 		frame.minimumLoad(channel);
 		return frame;
 	}
