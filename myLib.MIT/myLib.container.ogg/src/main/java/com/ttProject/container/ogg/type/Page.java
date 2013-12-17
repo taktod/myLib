@@ -1,12 +1,19 @@
 package com.ttProject.container.ogg.type;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.ogg.OggPage;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
+import com.ttProject.util.BufferUtil;
 
 /**
  * oggの基本単位のpage
@@ -37,6 +44,7 @@ import com.ttProject.unit.extra.bit.Bit8;
 public class Page extends OggPage {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(Page.class);
+	private List<IUnit> frameList = new ArrayList<IUnit>();
 	/**
 	 * コンストラクタ
 	 * @param version
@@ -59,8 +67,13 @@ public class Page extends OggPage {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		logger.info("load");
-		// 中身のデータはそれぞれのframeとして読み込まないとだめ。ただし、frameがoggからは何であるかわかるすべがないっぽい。
-		logger.info("analyzer:" + getStartPage().getAnalyzer().toString());
+		channel.position(getPosition() + 27 + getSegmentSizeList().size());
+		for(Bit8 size : getSegmentSizeList()) {
+			ByteBuffer buffer = BufferUtil.safeRead(channel, size.get());
+			// 解析したい。
+			IReadChannel bufferChannel = new ByteReadChannel(buffer);
+			frameList.add(getStartPage().getAnalyzer().analyze(bufferChannel));
+		}
 		// analyzerをつかって開く
 		channel.position(getPosition() + getSize());
 	}

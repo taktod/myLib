@@ -1,6 +1,8 @@
 package com.ttProject.container.ogg.type;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -11,6 +13,7 @@ import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IAnalyzer;
+import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
@@ -25,6 +28,7 @@ public class StartPage extends OggPage {
 	private Logger logger = Logger.getLogger(StartPage.class);
 	/** 解析プログラム */
 	private IAnalyzer analyzer = null;
+	private List<IUnit> frameList = new ArrayList<IUnit>();
 	/**
 	 * コンストラクタ
 	 * @param version
@@ -73,7 +77,7 @@ public class StartPage extends OggPage {
 			}
 			isFirstData = false;
 			IReadChannel bufferChannel = new ByteReadChannel(buffer);
-			analyzer.analyze(bufferChannel);
+			frameList.add(analyzer.analyze(bufferChannel));
 			// bufferChannelの中身がなくなるまで読み込ませる必要あり。
 		}
 		// データを1byte読み込んで調べてみる。
