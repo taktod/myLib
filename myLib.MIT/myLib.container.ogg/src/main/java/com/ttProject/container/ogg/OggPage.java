@@ -74,6 +74,7 @@ public abstract class OggPage extends Container {
 		pageChecksum = buffer.getInt();
 		BitLoader loader = new BitLoader(channel);
 		loader.load(segmentCount);
+		logger.info(segmentCount.get());
 		int size = 0;
 		for(int i = 0;i < segmentCount.get();i ++) {
 			Bit8 segmentSize = new Bit8();

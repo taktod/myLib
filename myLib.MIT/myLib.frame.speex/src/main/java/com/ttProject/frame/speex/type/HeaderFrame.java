@@ -1,7 +1,13 @@
 package com.ttProject.frame.speex.type;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.speex.SpeexFrame;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.util.BufferUtil;
 
 /**
  * speexのheader情報
@@ -39,6 +45,9 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class HeaderFrame extends SpeexFrame {
+	/** ロガー */
+	private Logger logger = Logger.getLogger(HeaderFrame.class);
+	
 	private String speexString;
 	private String speexVersion;
 	private int speexVersionId;
@@ -73,15 +82,40 @@ public class HeaderFrame extends SpeexFrame {
 		extraHeaders = 0;
 		reserved1 = 0;
 		reserved2 = 0;
-		super.setSampleNum(frameSize);
 		super.setReadPosition(channel.position());
 		super.setSize(channel.size());
+		super.setSampleNum(frameSize);
+		super.setSampleRate(rate);
+		super.setChannel(nbChannels);
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
+		speexString = new String(BufferUtil.safeRead(channel, 8).array());
+		speexVersion = new String(BufferUtil.safeRead(channel, 20).array());
+		ByteBuffer buffer = BufferUtil.safeRead(channel, 52);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		speexVersionId = buffer.getInt();
+		headerSize = buffer.getInt();
+		rate = buffer.getInt();
+		mode = buffer.getInt();
+		modeBitstreamVersion = buffer.getInt();
+		nbChannels = buffer.getInt();
+		bitRate = buffer.getInt();
+		frameSize = buffer.getInt(); // sampleNumのことっぽい 320固定だとおもってたけど・・・
+		vbr = buffer.getInt();
+		framesPerPacket = buffer.getInt(); // これが1以外になったことはないから、sampleNumに影響あるんだろうか？
+		extraHeaders = buffer.getInt();
+		reserved1 = buffer.getInt();
+		reserved2 = buffer.getInt();
+		logger.info(rate);
+		logger.info(frameSize);
+		logger.info(framesPerPacket);
+		// ここでデータの読み込みを実行する。
 		super.setReadPosition(channel.position());
 		super.setSize(channel.size());
-		super.setSampleNum(320);
+		super.setSampleNum(frameSize);
+		super.setSampleRate(rate);
+		super.setChannel(nbChannels);
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
