@@ -52,6 +52,14 @@ public class FlvTest {
 		);
 	}
 //	@Test
+	public void flv1mp3Test() throws Exception {
+		analyzerTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("test.flv1mp3.flv")
+			)
+		);
+	}
+//	@Test
 	public void h264mp3Test() throws Exception {
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(
@@ -96,6 +104,14 @@ public class FlvTest {
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("test.h264speex.flv")
+			)
+		);
+	}
+	@Test
+	public void flv1adpcmswfTest() throws Exception {
+		analyzerTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("test.flv1adpcmswf.flv")
 			)
 		);
 	}
