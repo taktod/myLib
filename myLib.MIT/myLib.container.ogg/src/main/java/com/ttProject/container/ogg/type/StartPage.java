@@ -65,6 +65,9 @@ public class StartPage extends OggPage {
 					analyzer = new SpeexFrameAnalyzer();
 					break;
 					// Theoraは？
+				case (byte)0x80:
+					logger.info("theora?");
+					break;
 				default:
 					throw new Exception("知らないコーデックデータを検知しました。");
 				}

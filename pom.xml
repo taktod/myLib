@@ -76,6 +76,7 @@
     <module>myLib.MIT/myLib.frame.vp6</module>
     <module>myLib.MIT/myLib.frame.vp8</module>
     <module>myLib.MIT/myLib.frame.vorbis</module>
+    <module>myLib.MIT/myLib.frame.theora</module>
     <module>myLib.MIT/myLib.container</module>
     <module>myLib.MIT/myLib.container.adts</module>
     <module>myLib.MIT/myLib.container.flv</module>
