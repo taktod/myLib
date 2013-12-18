@@ -8,6 +8,7 @@ import com.ttProject.container.flv.type.VideoTag;
 import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
+import com.ttProject.frame.adpcmswf.AdpcmswfFrameAnalyzer;
 import com.ttProject.frame.flv1.Flv1FrameAnalyzer;
 import com.ttProject.frame.h264.DataNalAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
@@ -109,6 +110,9 @@ public class FlvTagSelector implements ISelector {
 				case PCM:
 					break;
 				case ADPCM:
+					if(audioFrameAnalyzer == null || !(audioFrameAnalyzer instanceof AdpcmswfFrameAnalyzer)) {
+						audioFrameAnalyzer = new AdpcmswfFrameAnalyzer();
+					}
 					break;
 				case MP3:
 					if(audioFrameAnalyzer == null || !(audioFrameAnalyzer instanceof Mp3FrameAnalyzer)) {
