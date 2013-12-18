@@ -10,6 +10,11 @@ import com.ttProject.util.BufferUtil;
 
 /**
  * adpcmswfのframeデータ
+ * とりあえずsampleNumだけ取得したい。
+ * adpcmCodeSizeを取得してから
+ * (byte数 - 0埋めbits) / (adpcmCodeSize + 2) / (channel数) + 1でsampleNumを取得したい。
+ * 最終byteを確認して0でうまっている部分はできるだけ排除
+ * にすれば、より正確になりそう。
  * @author taktod
  */
 public class Frame extends AdpcmswfFrame {

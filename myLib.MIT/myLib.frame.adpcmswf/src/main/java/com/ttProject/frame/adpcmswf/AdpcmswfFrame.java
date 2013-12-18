@@ -62,7 +62,7 @@ import com.ttProject.frame.AudioFrame;
  * 16bit initSample(ステレオの場合)
  * 6bit initialIndex(ステレオの場合)
  * 
- * ((sample数 - 1) * (adpcmCodeSize * 2) * (channel数))bit adpcm差分データ
+ * ((sample数 - 1) * (adpcmCodeSize + 2) * (channel数))bit adpcm差分データ
  * byteに満たない場合は0でうめる
  * 
  * という形になっているっぽい。
