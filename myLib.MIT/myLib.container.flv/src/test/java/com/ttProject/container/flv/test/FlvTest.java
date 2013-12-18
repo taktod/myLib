@@ -99,7 +99,7 @@ public class FlvTest {
 			)
 		);
 	}
-	@Test
+//	@Test
 	public void h264speexTest() throws Exception {
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(
