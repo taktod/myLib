@@ -86,6 +86,8 @@
     <module>myLib.MIT/myLib.container.mpegts</module>
     <module>myLib.MIT/myLib.container.webm</module>
     <module>myLib.MIT/myLib.container.ogg</module>
+    <module>myLib.GPLv3/myLib.xuggle.frame</module>
+    <module>myLib.GPLv3/myLib.xuggle.test</module>
   </modules>
   <scm>
     <url>scm:git:git@github.com:taktod/myLib.git</url>
