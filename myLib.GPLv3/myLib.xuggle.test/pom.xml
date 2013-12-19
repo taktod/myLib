@@ -20,44 +20,64 @@
    <version>5.4</version>
   </dependency>
   <dependency>
-    <groupId>com.ttProject</groupId>
-    <artifactId>myLib.util</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+  	<groupId>com.ttProject</groupId>
+  	<artifactId>myLib.xuggle.frame</artifactId>
+  	<version>0.0.2-SNAPSHOT</version>
   </dependency>
   <dependency>
-    <groupId>com.ttProject</groupId>
-    <artifactId>myLib.media.flv</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
-    <scope>test</scope>
+  	<groupId>com.ttProject</groupId>
+  	<artifactId>myLib.frame.aac</artifactId>
+  	<version>0.0.2-SNAPSHOT</version>
   </dependency>
   <dependency>
-    <groupId>com.ttProject</groupId>
-    <artifactId>myLib.media.mp4</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
-    <scope>test</scope>
+  	<groupId>com.ttProject</groupId>
+  	<artifactId>myLib.frame.adpcmswf</artifactId>
+  	<version>0.0.2-SNAPSHOT</version>
   </dependency>
   <dependency>
-    <groupId>com.ttProject</groupId>
-    <artifactId>myLib.media.extra</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
-    <scope>test</scope>
+  	<groupId>com.ttProject</groupId>
+  	<artifactId>myLib.frame.flv1</artifactId>
+  	<version>0.0.2-SNAPSHOT</version>
   </dependency>
   <dependency>
-    <groupId>com.ttProject</groupId>
-    <artifactId>myLib.media.h264</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
-    <scope>test</scope>
+  	<groupId>com.ttProject</groupId>
+  	<artifactId>myLib.frame.h264</artifactId>
+  	<version>0.0.2-SNAPSHOT</version>
   </dependency>
   <dependency>
-    <groupId>com.ttProject</groupId>
-    <artifactId>myLib.media.aac</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
-    <scope>test</scope>
+  	<groupId>com.ttProject</groupId>
+  	<artifactId>myLib.frame.mp3</artifactId>
+  	<version>0.0.2-SNAPSHOT</version>
   </dependency>
   <dependency>
-    <groupId>com.ttProject</groupId>
-    <artifactId>myLib.transcode</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+  	<groupId>com.ttProject</groupId>
+  	<artifactId>myLib.frame.nellymoser</artifactId>
+  	<version>0.0.2-SNAPSHOT</version>
+  </dependency>
+  <dependency>
+  	<groupId>com.ttProject</groupId>
+  	<artifactId>myLib.frame.speex</artifactId>
+  	<version>0.0.2-SNAPSHOT</version>
+  </dependency>
+  <dependency>
+  	<groupId>com.ttProject</groupId>
+  	<artifactId>myLib.frame.theora</artifactId>
+  	<version>0.0.2-SNAPSHOT</version>
+  </dependency>
+  <dependency>
+  	<groupId>com.ttProject</groupId>
+  	<artifactId>myLib.frame.vorbis</artifactId>
+  	<version>0.0.2-SNAPSHOT</version>
+  </dependency>
+  <dependency>
+  	<groupId>com.ttProject</groupId>
+  	<artifactId>myLib.frame.vp6</artifactId>
+  	<version>0.0.2-SNAPSHOT</version>
+  </dependency>
+  <dependency>
+  	<groupId>com.ttProject</groupId>
+  	<artifactId>myLib.frame.vp8</artifactId>
+  	<version>0.0.2-SNAPSHOT</version>
   </dependency>
  </dependencies>
  <name>myLib.xuggle.test</name>

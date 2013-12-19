@@ -11,6 +11,8 @@ public abstract class VideoFrame extends Frame implements IVideoFrame {
 	private int width;
 	/** 縦幅 */
 	private int height;
+	/** データ間隔(予想) */
+	private float duration;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -32,6 +34,10 @@ public abstract class VideoFrame extends Frame implements IVideoFrame {
 	public int getHeight() {
 		return height;
 	}
+	@Override
+	public float getDuration() {
+		return duration;
+	}
 	protected void setDts(long dts) {
 		this.dts = dts;
 	}
@@ -40,5 +46,8 @@ public abstract class VideoFrame extends Frame implements IVideoFrame {
 	}
 	protected void setHeight(int height) {
 		this.height = height;
+	}
+	public void setDuration(float duration) {
+		this.duration = duration;
 	}
 }

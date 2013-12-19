@@ -152,4 +152,8 @@ public class HeaderFrame extends SpeexFrame {
 		buffer.flip();
 		super.setData(buffer);
 	}
+	@Override
+	public ByteBuffer getPackBuffer() {
+		return null;
+	}
 }

@@ -63,4 +63,8 @@ public class IntraFrame extends Vp6Frame {
 	public Bit2 getVersion2() {
 		return version2;
 	}
+	@Override
+	public ByteBuffer getPackBuffer() {
+		return null;
+	}
 }

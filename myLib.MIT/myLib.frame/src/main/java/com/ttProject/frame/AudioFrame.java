@@ -41,6 +41,10 @@ public abstract class AudioFrame extends Frame implements IAudioFrame {
 	public int getBit() {
 		return bit;
 	}
+	@Override
+	public float getDuration() {
+		return 1.0f * getSampleNum() / getSampleRate();
+	}
 	protected void setSampleNum(int sampleNum) {
 		this.sampleNum = sampleNum;
 	}

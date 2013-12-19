@@ -48,4 +48,8 @@ public class InterFrame extends Vp6Frame {
 				connector.connect(offset),
 				buffer));
 	}
+	@Override
+	public ByteBuffer getPackBuffer() {
+		return null;
+	}
 }

@@ -1,5 +1,6 @@
 package com.ttProject.frame.extra;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,5 +46,9 @@ public class AudioMultiFrame extends AudioFrame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		
+	}
+	@Override
+	public ByteBuffer getPackBuffer() {
+		throw new RuntimeException("マルチフレームはpackBuffer未対応");
 	}
 }

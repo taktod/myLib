@@ -20,44 +20,9 @@
    <version>5.4</version>
   </dependency>
   <dependency>
-    <groupId>com.ttProject</groupId>
-    <artifactId>myLib.util</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
-  </dependency>
-  <dependency>
-    <groupId>com.ttProject</groupId>
-    <artifactId>myLib.media.flv</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
-    <scope>test</scope>
-  </dependency>
-  <dependency>
-    <groupId>com.ttProject</groupId>
-    <artifactId>myLib.media.mp4</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
-    <scope>test</scope>
-  </dependency>
-  <dependency>
-    <groupId>com.ttProject</groupId>
-    <artifactId>myLib.media.extra</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
-    <scope>test</scope>
-  </dependency>
-  <dependency>
-    <groupId>com.ttProject</groupId>
-    <artifactId>myLib.media.h264</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
-    <scope>test</scope>
-  </dependency>
-  <dependency>
-    <groupId>com.ttProject</groupId>
-    <artifactId>myLib.media.aac</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
-    <scope>test</scope>
-  </dependency>
-  <dependency>
-    <groupId>com.ttProject</groupId>
-    <artifactId>myLib.transcode</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+  	<groupId>com.ttProject</groupId>
+  	<artifactId>myLib.frame</artifactId>
+  	<version>0.0.2-SNAPSHOT</version>
   </dependency>
  </dependencies>
  <name>myLib.xuggle.frame</name>

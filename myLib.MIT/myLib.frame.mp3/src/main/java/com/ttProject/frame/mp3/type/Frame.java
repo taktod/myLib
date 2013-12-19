@@ -163,4 +163,8 @@ public class Frame extends Mp3Frame {
 						channelMode, modeExtension, copyRight, originalFlag, emphasis),
 				rawBuffer));
 	}
+	@Override
+	public ByteBuffer getPackBuffer() {
+		return null;
+	}
 }

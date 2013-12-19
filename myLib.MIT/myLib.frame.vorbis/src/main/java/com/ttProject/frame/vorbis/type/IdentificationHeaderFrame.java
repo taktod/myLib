@@ -1,5 +1,7 @@
 package com.ttProject.frame.vorbis.type;
 
+import java.nio.ByteBuffer;
+
 import com.ttProject.frame.vorbis.VorbisFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -40,4 +42,8 @@ public class IdentificationHeaderFrame extends VorbisFrame {
 		
 	}
 	
+	@Override
+	public ByteBuffer getPackBuffer() {
+		return null;
+	}
 }

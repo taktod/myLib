@@ -1,5 +1,7 @@
 package com.ttProject.frame.nellymoser.type;
 
+import java.nio.ByteBuffer;
+
 import com.ttProject.frame.nellymoser.NellymoserFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
@@ -77,5 +79,9 @@ public class Frame extends NellymoserFrame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		// ここでbitconnectorが繰り返して追記ができるようにしないとだめっぽい・・・
+	}
+	@Override
+	public ByteBuffer getPackBuffer() {
+		return null;
 	}
 }

@@ -55,4 +55,8 @@ public class CommentFrame extends SpeexFrame {
 	protected void requestUpdate() throws Exception {
 		// 結合は特に問題ないので、あとでつくっておくことにします。
 	}
+	@Override
+	public ByteBuffer getPackBuffer() {
+		return null;
+	}
 }

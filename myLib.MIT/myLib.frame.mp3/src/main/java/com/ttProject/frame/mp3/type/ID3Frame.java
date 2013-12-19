@@ -69,4 +69,8 @@ public class ID3Frame extends Mp3Frame {
 						dummy3, size3, dummy4, size4),
 				rawBuffer));
 	}
+	@Override
+	public ByteBuffer getPackBuffer() {
+		return null;
+	}
 }

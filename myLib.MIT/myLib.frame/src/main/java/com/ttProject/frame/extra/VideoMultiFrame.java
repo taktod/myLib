@@ -1,5 +1,6 @@
 package com.ttProject.frame.extra;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,5 +45,13 @@ public class VideoMultiFrame extends VideoFrame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		
+	}
+	@Override
+	public float getDuration() {
+		return 0;
+	}
+	@Override
+	public ByteBuffer getPackBuffer() {
+		return null;
 	}
 }

@@ -1,5 +1,7 @@
 package com.ttProject.frame.mp3.type;
 
+import java.nio.ByteBuffer;
+
 import com.ttProject.frame.mp3.Mp3Frame;
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -26,5 +28,9 @@ public class TagFrame extends Mp3Frame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		
+	}
+	@Override
+	public ByteBuffer getPackBuffer() {
+		return null;
 	}
 }

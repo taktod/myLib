@@ -229,4 +229,8 @@ public class SequenceParameterSet extends H264Frame {
 				connector.connect(),
 				buffer));
 	}
+	@Override
+	public ByteBuffer getPackBuffer() {
+		return null;
+	}
 }

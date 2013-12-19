@@ -3,7 +3,7 @@ package com.ttProject.frame.vp8;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
-public class Vp8Frame extends VideoFrame {
+public abstract class Vp8Frame extends VideoFrame {
 
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {

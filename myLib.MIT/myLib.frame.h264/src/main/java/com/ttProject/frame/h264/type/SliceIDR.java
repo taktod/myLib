@@ -31,4 +31,8 @@ public class SliceIDR extends H264Frame {
 		setData(BufferUtil.connect(getTypeBuffer(),
 				buffer));
 	}
+	@Override
+	public ByteBuffer getPackBuffer() {
+		return null;
+	}
 }

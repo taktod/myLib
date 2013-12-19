@@ -96,4 +96,8 @@ public class Frame extends AacFrame {
 						noRawDataBlocksInFrame),
 				buffer));
 	}
+	@Override
+	public ByteBuffer getPackBuffer() {
+		return null;
+	}
 }

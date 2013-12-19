@@ -67,4 +67,9 @@ public class Frame extends AdpcmswfFrame {
 	@Override
 	protected void requestUpdate() throws Exception {
 	}
+	@Override
+	public ByteBuffer getPackBuffer() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
