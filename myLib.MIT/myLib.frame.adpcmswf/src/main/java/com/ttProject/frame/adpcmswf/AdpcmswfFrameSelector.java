@@ -9,6 +9,7 @@ public class AdpcmswfFrameSelector extends AudioSelector {
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		AdpcmswfFrame frame = new Frame();
+		setup(frame);
 		frame.minimumLoad(channel);
 		return frame;
 	}

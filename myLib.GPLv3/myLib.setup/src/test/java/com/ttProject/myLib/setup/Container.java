@@ -104,24 +104,64 @@ public class Container extends SetupBase {
 		coder.setChannels(1);
 		processConvert(container, Encoder.h264(container), coder);
 		
-		logger.info("flv準備 (speex)");
+		logger.info("flv準備 (adpcm44_2)");
 		init();
 		container = IContainer.make();
-		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.speex.flv"), IContainer.Type.WRITE, null) < 0) {
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.adpcm44_2.flv"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("コンテナが開けませんでした");
 		}
-		coder = Encoder.speex(container);
-		coder.setSampleRate(16000);
+		coder = Encoder.adpcm_swf(container);
+		coder.setSampleRate(44100);
+		coder.setChannels(2);
+		processConvert(container, null, coder);
+		logger.info("flv準備 (adpcm44_1)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.adpcm44_1.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		coder = Encoder.adpcm_swf(container);
+		coder.setSampleRate(44100);
 		coder.setChannels(1);
 		processConvert(container, null, coder);
-		logger.info("ogg準備 (speex)");
+		logger.info("flv準備 (adpcm22_2)");
 		init();
 		container = IContainer.make();
-		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.speex.ogg"), IContainer.Type.WRITE, null) < 0) {
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.adpcm22_2.flv"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("コンテナが開けませんでした");
 		}
-		coder = Encoder.speex(container);
-		coder.setSampleRate(16000);
+		coder = Encoder.adpcm_swf(container);
+		coder.setSampleRate(22050);
+		coder.setChannels(2);
+		processConvert(container, null, coder);
+		logger.info("flv準備 (adpcm22_1)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.adpcm22_1.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		coder = Encoder.adpcm_swf(container);
+		coder.setSampleRate(22050);
+		coder.setChannels(1);
+		processConvert(container, null, coder);
+		logger.info("flv準備 (adpcm11_2)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.adpcm11_2.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		coder = Encoder.adpcm_swf(container);
+		coder.setSampleRate(11025);
+		coder.setChannels(2);
+		processConvert(container, null, coder);
+		logger.info("flv準備 (adpcm11_1)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.adpcm11_1.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		coder = Encoder.adpcm_swf(container);
+		coder.setSampleRate(11025);
 		coder.setChannels(1);
 		processConvert(container, null, coder);
 	}

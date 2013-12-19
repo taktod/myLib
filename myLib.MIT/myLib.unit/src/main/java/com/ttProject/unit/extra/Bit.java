@@ -32,6 +32,9 @@ public abstract class Bit {
 	public int get() {
 		return value & 0xFF;
 	}
+	public int getBitCount() {
+		return bitCount;
+	}
 	/**
 	 * データDump
 	 * @return 

@@ -107,11 +107,27 @@ public class FlvTest {
 			)
 		);
 	}
-	@Test
+//	@Test
 	public void flv1adpcmswfTest() throws Exception {
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("test.flv1adpcmswf.flv")
+			)
+		);
+	}
+	@Test
+	public void adpcm11_1Test() throws Exception {
+		analyzerTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("test.adpcm44_1.flv")
+			)
+		);
+	}
+	@Test
+	public void adpcm11_2Test() throws Exception {
+		analyzerTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("test.adpcm44_2.flv")
 			)
 		);
 	}
