@@ -20,6 +20,7 @@ import com.ttProject.unit.extra.bit.Bit5;
  */
 public class H264FrameSelector extends VideoSelector {
 	private SequenceParameterSet sps = null;
+	private PictureParameterSet pps = null;
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		BitLoader loader = new BitLoader(channel);
@@ -34,6 +35,7 @@ public class H264FrameSelector extends VideoSelector {
 			break;
 		case PictureParameterSet:
 			frame = new PictureParameterSet(forbiddenZeroBit, nalRefIdc, type);
+			pps = (PictureParameterSet)frame;
 			break;
 		case SequenceParameterSet:
 			frame = new SequenceParameterSet(forbiddenZeroBit, nalRefIdc, type);
@@ -54,6 +56,9 @@ public class H264FrameSelector extends VideoSelector {
 		setup(frame);
 		if(!(frame instanceof SequenceParameterSet)) {
 			frame.setSps(sps);
+			if(!(frame instanceof PictureParameterSet)) {
+				frame.setPps(pps);
+			}
 		}
 		frame.minimumLoad(channel);
 		return frame;
