@@ -6,7 +6,7 @@
     <version>0.0.2-SNAPSHOT</version>
     <relativePath>../../</relativePath>
   </parent>
-  <artifactId>myLib.xuggle.frame</artifactId>
+  <artifactId>myLib.xuggle.frame.vp6</artifactId>
   <repositories>
     <repository>
       <id>xuggle repo</id>
@@ -20,11 +20,11 @@
    <version>5.4</version>
   </dependency>
   <dependency>
-  	<groupId>com.ttProject</groupId>
-  	<artifactId>myLib.frame</artifactId>
-  	<version>0.0.2-SNAPSHOT</version>
+    <groupId>com.ttProject</groupId>
+    <artifactId>myLib.frame.vp6</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
   </dependency>
  </dependencies>
- <name>myLib.xuggle.frame</name>
+ <name>myLib.xuggle.frame.vp6</name>
  <description>myLib.frameの継承クラスのデータをxuggleで扱える形に変更する。</description>
 </project>

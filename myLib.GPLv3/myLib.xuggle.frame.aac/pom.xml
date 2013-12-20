@@ -6,7 +6,7 @@
     <version>0.0.2-SNAPSHOT</version>
     <relativePath>../../</relativePath>
   </parent>
-  <artifactId>myLib.xuggle.test</artifactId>
+  <artifactId>myLib.xuggle.frame.aac</artifactId>
   <repositories>
     <repository>
       <id>xuggle repo</id>
@@ -21,15 +21,10 @@
   </dependency>
   <dependency>
     <groupId>com.ttProject</groupId>
-    <artifactId>myLib.container.flv</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
-  </dependency>
-  <dependency>
-    <groupId>com.ttProject</groupId>
-    <artifactId>myLib.xuggle.frame.flv1</artifactId>
+    <artifactId>myLib.frame.aac</artifactId>
     <version>0.0.2-SNAPSHOT</version>
   </dependency>
  </dependencies>
- <name>myLib.xuggle.test</name>
- <description>xuggleの変換動作のテスト用</description>
+ <name>myLib.xuggle.frame.aac</name>
+ <description>myLib.frameの継承クラスのデータをxuggleで扱える形に変更する。</description>
 </project>
