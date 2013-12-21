@@ -46,5 +46,19 @@ public class XuggleFrameTest extends SetupBase {
 			throw new Exception("ファイルが開けませんでした");
 		}
 		processConvert(container, null, Encoder.mp3(container));
+		logger.info("mp3(mp4)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "mp3.mp4"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.mp3(container));
+		logger.info("mp3(mkv)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "mp3.mkv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.mp3(container));
 	}
 }
