@@ -95,6 +95,7 @@ public class XuggleHelper {
 	 * @return
 	 */
 	public static IFrame getFrame(IPacket packet) {
+		// TODO これをつくるにはIStreamCoderが必要。(どのコーデックかは、packetからはわからない。)
 		return null;
 	}
 }
