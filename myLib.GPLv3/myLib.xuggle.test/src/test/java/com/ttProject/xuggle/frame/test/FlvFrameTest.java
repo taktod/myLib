@@ -34,7 +34,7 @@ public class FlvFrameTest {
 				if(unit instanceof VideoTag) {
 					VideoTag vTag = (VideoTag)unit;
 					logger.info(vTag.getFrame());
-					XuggleHelper.getPacket(vTag.getFrame());
+					XuggleHelper.getPackets(vTag.getFrame());
 				}
 			}
 		}

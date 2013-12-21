@@ -44,7 +44,7 @@ public abstract class VideoFrame extends Frame implements IVideoFrame {
 	public boolean isKeyFrame() {
 		return isKeyFrame;
 	}
-	protected void setDts(long dts) {
+	public void setDts(long dts) {
 		this.dts = dts;
 	}
 	protected void setWidth(int width) {

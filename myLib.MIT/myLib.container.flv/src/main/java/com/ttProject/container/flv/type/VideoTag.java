@@ -152,42 +152,6 @@ public class VideoTag extends FlvTag {
 			throw new Exception("frameデータが読み込まれていません");
 		}
 		ByteBuffer buffer = frameBuffer;
-/*		switch(getCodec()) {
-		case JPEG:
-			break;
-		case FLV1:
-			break;
-		case SCREEN:
-			break;
-		case ON2VP6:
-			{
-				// vp6の場合は、先頭のデータを終端にもってくる必要あり。
-				ByteBuffer frameBuffer = buffer.duplicate();
-				buffer = ByteBuffer.allocate(frameBuffer.remaining());
-				byte firstByte = frameBuffer.get();
-				buffer.put(frameBuffer);
-				buffer.put(firstByte);
-				buffer.flip();
-			}
-			break;
-		case ON2VP6_ALPHA:
-			{
-				// vp6の場合は、先頭のデータを終端にもってくる必要あり。
-				ByteBuffer frameBuffer = buffer.duplicate();
-				buffer = ByteBuffer.allocate(frameBuffer.remaining());
-				int firstByte = frameBuffer.getInt();
-				buffer.put(frameBuffer);
-				buffer.putInt(firstByte);
-				buffer.flip();
-			}
-			break;
-		case SCREEN_V2:
-			break;
-		case H264:
-			break;
-		default:
-			break;
-		}*/
 		if(frameAnalyzer == null) {
 			throw new Exception("frameの解析プログラムが設定されていません。");
 		}

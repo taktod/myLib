@@ -1,8 +1,12 @@
 package com.ttProject.xuggle.frame;
 
+import java.util.List;
+
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.extra.AudioMultiFrame;
+import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.util.HexUtil;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStreamCoder;
@@ -17,8 +21,11 @@ public class XuggleHelper {
 	 * @param frame
 	 * @return
 	 */
-	public static IPacket getPacket(IFrame frame) throws Exception {
+	public static List<IPacket> getPackets(IFrame frame) throws Exception {
 		// packetからbyteBufferを取り出してあとは適当に処理する。
+		if(frame instanceof AudioMultiFrame || frame instanceof VideoMultiFrame) {
+			throw new Exception("マルチフレームからは情報がとれないようになっています");
+		}
 		if(frame instanceof IAudioFrame) {
 			// 音声frame
 		}
@@ -32,6 +39,15 @@ public class XuggleHelper {
 			// timestampは別途設定してもらわないとどうしようもない。
 		}
 		// その他
+		return null;
+	}
+	/**
+	 * 各packetを取り出します。
+	 * @param frame
+	 * @return
+	 * @throws Exception
+	 */
+	private static IPacket getPacket(IFrame frame) throws Exception {
 		return null;
 	}
 	/**

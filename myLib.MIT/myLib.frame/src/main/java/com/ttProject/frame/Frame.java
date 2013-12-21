@@ -15,4 +15,12 @@ public abstract class Frame extends Unit implements IFrame {
 	protected int getReadPosition() {
 		return readPosition;
 	}
+	@Override
+	public void setPts(long pts) {
+		super.setPts(pts);
+	}
+	@Override
+	public void setTimebase(long timebase) {
+		super.setTimebase(timebase);
+	}
 }
