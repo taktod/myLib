@@ -13,6 +13,7 @@ public class SliceIDR extends H264Frame {
 	private ByteBuffer buffer = null;
 	public SliceIDR(Bit1 forbiddenZeroBit, Bit2 nalRefIdc, Bit5 type) {
 		super(forbiddenZeroBit, nalRefIdc, type);
+		super.setKeyFrame(true);
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {

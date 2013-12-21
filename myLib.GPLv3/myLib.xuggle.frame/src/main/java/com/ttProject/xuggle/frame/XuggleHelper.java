@@ -26,6 +26,10 @@ public class XuggleHelper {
 			// 映像frame
 			// bufferの部分を抜き出す必要あり。
 			System.out.println(HexUtil.toHex(frame.getPackBuffer(), 0, 20, true));
+			// TODO ここではkeyFrameかという情報とtimestampもほしいところ。
+			// よってこれらの情報をいれないと処理できない。
+			// keyFrameについては、それぞれのframeによる
+			// timestampは別途設定してもらわないとどうしようもない。
 		}
 		// その他
 		return null;

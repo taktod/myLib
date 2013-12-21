@@ -13,6 +13,8 @@ public abstract class VideoFrame extends Frame implements IVideoFrame {
 	private int height;
 	/** データ間隔(予想) */
 	private float duration;
+	/** キーフレームであるかどうか */
+	private boolean isKeyFrame = false;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -38,6 +40,10 @@ public abstract class VideoFrame extends Frame implements IVideoFrame {
 	public float getDuration() {
 		return duration;
 	}
+	@Override
+	public boolean isKeyFrame() {
+		return isKeyFrame;
+	}
 	protected void setDts(long dts) {
 		this.dts = dts;
 	}
@@ -49,5 +55,8 @@ public abstract class VideoFrame extends Frame implements IVideoFrame {
 	}
 	public void setDuration(float duration) {
 		this.duration = duration;
+	}
+	protected void setKeyFrame(boolean keyFrame) {
+		isKeyFrame = keyFrame;
 	}
 }

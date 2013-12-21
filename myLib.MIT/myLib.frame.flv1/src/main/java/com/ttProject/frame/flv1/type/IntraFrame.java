@@ -24,5 +24,6 @@ public class IntraFrame extends Flv1Frame {
 				customWidth, customHeight,
 				width, height, pictureType, deblockingFlag,
 				quantizer, extraInformationFlag, extraInformation, extra);
+		super.setKeyFrame(true);
 	}
 }

@@ -20,4 +20,9 @@ public interface IVideoFrame extends IFrame {
 	 * @return
 	 */
 	public int getHeight();
+	/**
+	 * keyFrameであるか
+	 * @return
+	 */
+	public boolean isKeyFrame();
 }

@@ -26,6 +26,7 @@ public class IntraFrame extends Vp6Frame {
 	private ByteBuffer buffer = null;
 	public IntraFrame(Bit1 frameMode, Bit6 qp, Bit1 marker) {
 		super(frameMode, qp, marker);
+		super.setKeyFrame(true);
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
