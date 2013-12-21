@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.flv.CodecType;
 import com.ttProject.container.flv.FlvTag;
+import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
 import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.frame.extra.VideoMultiFrame;
@@ -205,6 +206,12 @@ public class VideoTag extends FlvTag {
 				frame = (IVideoFrame)frameAnalyzer.analyze(channel);
 			}
 		} while(channel.size() != channel.position());
+	}
+	public IFrame getFrame() throws Exception {
+		if(frame == null) {
+			analyzeFrame();
+		}
+		return frame;
 	}
 	public int getWidth() throws Exception {
 		if(frame == null) {
