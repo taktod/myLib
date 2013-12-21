@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.flv.CodecType;
 import com.ttProject.container.flv.FlvTag;
 import com.ttProject.frame.AudioAnalyzer;
+import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
@@ -200,16 +201,19 @@ public class AudioTag extends FlvTag {
 //		selector.setSampleNum(getSampleNum()); // sampleNumは無限ループになるのでやらない
 		selector.setSampleRate(getSampleRate());
 		do {
+			AudioFrame audioFrame = (AudioFrame)frameAnalyzer.analyze(channel);
+			audioFrame.setPts(getPts());
+			audioFrame.setTimebase(getTimebase());
 			if(frame != null) {
 				if(!(frame instanceof AudioMultiFrame)) {
 					AudioMultiFrame multiFrame = new AudioMultiFrame();
 					multiFrame.addFrame(frame);
 					frame = multiFrame;
 				}
-				((AudioMultiFrame)frame).addFrame((IAudioFrame)frameAnalyzer.analyze(channel));
+				((AudioMultiFrame)frame).addFrame((IAudioFrame)audioFrame);
 			}
 			else {
-				frame = (IAudioFrame)frameAnalyzer.analyze(channel);
+				frame = (IAudioFrame)audioFrame;
 			}
 		} while(channel.size() != channel.position());
 	}

@@ -9,6 +9,7 @@ import com.ttProject.container.flv.FlvTag;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
 import com.ttProject.frame.VideoAnalyzer;
+import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.h264.ConfigData;
 import com.ttProject.frame.h264.H264FrameSelector;
@@ -158,16 +159,22 @@ public class VideoTag extends FlvTag {
 		IReadChannel channel = new ByteReadChannel(buffer);
 		// video側はコンテナからwidthとheightの情報取得できないので、放置しておく。
 		do {
+			VideoFrame videoFrame = (VideoFrame)frameAnalyzer.analyze(channel);
+			videoFrame.setPts(getPts());
+			videoFrame.setTimebase(getTimebase());
+			if(dts != null) {
+				videoFrame.setDts(dts.get());
+			}
 			if(frame != null) {
 				if(!(frame instanceof VideoMultiFrame)) {
 					VideoMultiFrame multiFrame = new VideoMultiFrame();
 					multiFrame.addFrame(frame);
 					frame = multiFrame;
 				}
-				((VideoMultiFrame)frame).addFrame((IVideoFrame)frameAnalyzer.analyze(channel));
+				((VideoMultiFrame)frame).addFrame((IVideoFrame)videoFrame);
 			}
 			else {
-				frame = (IVideoFrame)frameAnalyzer.analyze(channel);
+				frame = (IVideoFrame)videoFrame;
 			}
 		} while(channel.size() != channel.position());
 	}
