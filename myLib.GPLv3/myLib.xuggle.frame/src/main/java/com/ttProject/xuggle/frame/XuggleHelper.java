@@ -1,6 +1,9 @@
 package com.ttProject.xuggle.frame;
 
+import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
+import com.ttProject.frame.IVideoFrame;
+import com.ttProject.util.HexUtil;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStreamCoder;
 
@@ -14,7 +17,17 @@ public class XuggleHelper {
 	 * @param frame
 	 * @return
 	 */
-	public IPacket getPacket(IFrame frame) {
+	public static IPacket getPacket(IFrame frame) throws Exception {
+		// packetからbyteBufferを取り出してあとは適当に処理する。
+		if(frame instanceof IAudioFrame) {
+			// 音声frame
+		}
+		else if(frame instanceof IVideoFrame) {
+			// 映像frame
+			// bufferの部分を抜き出す必要あり。
+			System.out.println(HexUtil.toHex(frame.getPackBuffer(), 0, 20, true));
+		}
+		// その他
 		return null;
 	}
 	/**
@@ -22,7 +35,7 @@ public class XuggleHelper {
 	 * @param frame
 	 * @return
 	 */
-	public IStreamCoder getDecoder(IFrame frame) {
+	public static IStreamCoder getDecoder(IFrame frame) {
 		return null;
 	}
 	/**
@@ -30,7 +43,7 @@ public class XuggleHelper {
 	 * @param packet
 	 * @return
 	 */
-	public IFrame getFrame(IPacket packet) {
+	public static IFrame getFrame(IPacket packet) {
 		return null;
 	}
 }

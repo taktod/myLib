@@ -14,7 +14,7 @@ public interface IFrame extends IUnit {
 	 * おもにxuggleで変換するときに渡すmedia情報をまとめるのが仕事
 	 * @return
 	 */
-	public ByteBuffer getPackBuffer();
+	public ByteBuffer getPackBuffer() throws Exception;
 	/**
 	 * 各メディアが保持しているデータ長参照
 	 * コンテナから割り出す参考値

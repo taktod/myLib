@@ -121,4 +121,12 @@ public abstract class Flv1Frame extends VideoFrame {
 	public void setPts(long pts) {
 		super.setPts(pts);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ByteBuffer getPackBuffer() throws Exception {
+		// flv1はgetDataの値と同じでOK
+		return getData();
+	}
 }
