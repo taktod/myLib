@@ -36,4 +36,10 @@ public abstract class H264Frame extends VideoFrame {
 			setHeight(sps.getHeight());
 		}
 	}
+	protected SequenceParameterSet getSps() {
+		return sps;
+	}
+	protected PictureParameterSet getPps() {
+		return pps;
+	}
 }

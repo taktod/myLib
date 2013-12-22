@@ -18,10 +18,12 @@ public class Slice extends H264Frame {
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		setReadPosition(channel.position());
 		setSize(channel.size());
+		super.update();
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
+		super.update();
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
@@ -32,7 +34,12 @@ public class Slice extends H264Frame {
 				buffer));
 	}
 	@Override
-	public ByteBuffer getPackBuffer() {
-		return null;
+	public ByteBuffer getPackBuffer() throws Exception {
+		ByteBuffer data = getData();
+		ByteBuffer packBuffer = ByteBuffer.allocate(4 + data.remaining());
+		packBuffer.putInt(1);
+		packBuffer.put(data);
+		packBuffer.flip();
+		return packBuffer;
 	}
 }

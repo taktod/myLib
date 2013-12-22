@@ -4,6 +4,8 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.extra.AudioMultiFrame;
+import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.xuggle.frame.Packetizer;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.IPacket;
@@ -21,6 +23,13 @@ public class DecodeBase {
 	private Packetizer packetizer = new Packetizer();
 	private IPacket packet = null;
 	public void processVideoDecode(IVideoFrame frame) throws Exception {
+		if(frame instanceof VideoMultiFrame) {
+			VideoMultiFrame multiFrame = (VideoMultiFrame) frame;
+			for(IVideoFrame videoFrame : multiFrame.getFrameList()) {
+				processVideoDecode(videoFrame);
+			}
+			return;
+		}
 		decoder = packetizer.getDecoder(frame, decoder);
 		if(decoder == null) {
 			return;
@@ -50,6 +59,13 @@ public class DecodeBase {
 		}
 	}
 	public void processAudioDecode(IAudioFrame frame) throws Exception {
+		if(frame instanceof AudioMultiFrame) {
+			AudioMultiFrame multiFrame = (AudioMultiFrame)frame;
+			for(IAudioFrame audioFrame : multiFrame.getFrameList()) {
+				processAudioDecode(audioFrame);
+			}
+			return;
+		}
 		decoder = packetizer.getDecoder(frame, decoder);
 		if(decoder == null) {
 			return; // frameがデコーダーに対応していないものもあるので、その場合は次にまわす

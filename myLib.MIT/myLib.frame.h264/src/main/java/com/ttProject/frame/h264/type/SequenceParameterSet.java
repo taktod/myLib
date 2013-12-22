@@ -193,11 +193,13 @@ public class SequenceParameterSet extends H264Frame {
 		}
 		super.setWidth(width);
 		super.setHeight(height);
+		super.update();
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		channel.position(super.getReadPosition());
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
+		super.update();
 	}
 	@Override
 	protected void requestUpdate() throws Exception {

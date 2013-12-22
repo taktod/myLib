@@ -10,6 +10,7 @@ import com.ttProject.frame.IVideoFrame;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.flv1.Flv1Frame;
+import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.frame.mp3.Mp3Frame;
 import com.ttProject.frame.vp6.Vp6Frame;
 import com.xuggle.ferry.IBuffer;
@@ -98,8 +99,15 @@ public class Packetizer {
 		}
 		if(frame instanceof Vp6Frame) {
 			if(decoder == null // デコーダーが未設定の場合はつくる必要あり
-					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_VP6F) { // コーデックがflv1でない場合も作り直し
+					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_VP6F) { // コーデックがvp6(flv)でない場合も作り直し
 				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_VP6F);
+				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
+			}
+		}
+		if(frame instanceof H264Frame) {
+			if(decoder == null // デコーダーが未設定の場合はつくる必要あり
+					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_H264) { // コーデックがh264でない場合も作り直し
+				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_H264);
 				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
 			}
 		}
