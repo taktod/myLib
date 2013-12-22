@@ -46,6 +46,7 @@ import com.ttProject.util.BufferUtil;
  */
 public class HeaderFrame extends SpeexFrame {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(HeaderFrame.class);
 	
 	private String speexString;

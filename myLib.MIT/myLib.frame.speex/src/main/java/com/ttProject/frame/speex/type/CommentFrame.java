@@ -46,8 +46,8 @@ public class CommentFrame extends SpeexFrame {
 			int elementLength = buffer.getInt();
 			elementList.add(new String(BufferUtil.safeRead(channel, elementLength).array()));
 		}
-//		logger.info(venderName);
-//		logger.info(elementList);
+		logger.info(venderName);
+		logger.info(elementList);
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
