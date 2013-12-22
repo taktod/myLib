@@ -23,7 +23,7 @@ public class DecodeBase {
 	public void processVideoDecode(IVideoFrame frame) throws Exception {
 		decoder = packetizer.getDecoder(frame, decoder);
 		if(decoder == null) {
-			throw new Exception("動作デコーダーが未定義です");
+			return;
 		}
 		if(!decoder.isOpen()) {
 			if(decoder.open(null, null) < 0) {

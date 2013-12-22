@@ -151,6 +151,10 @@ public class VideoTag extends FlvTag {
 		if(frameBuffer == null) {
 			throw new Exception("frameデータが読み込まれていません");
 		}
+		if(getCodec() == CodecType.H264 && packetType.get() != 1) {
+			// h264でpacketTypeが0:mshや2:endOfSequenceの場合はframeがとれない。
+			return;
+		}
 		ByteBuffer buffer = frameBuffer;
 		if(frameAnalyzer == null) {
 			throw new Exception("frameの解析プログラムが設定されていません。");

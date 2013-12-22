@@ -99,7 +99,7 @@ public class FlvTest {
 			)
 		);
 	}
-//	@Test
+	@Test
 	public void h264speexTest() throws Exception {
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(
@@ -115,7 +115,7 @@ public class FlvTest {
 			)
 		);
 	}
-	@Test
+//	@Test
 	public void adpcm11_1Test() throws Exception {
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(
@@ -123,7 +123,7 @@ public class FlvTest {
 			)
 		);
 	}
-	@Test
+//	@Test
 	public void adpcm11_2Test() throws Exception {
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(

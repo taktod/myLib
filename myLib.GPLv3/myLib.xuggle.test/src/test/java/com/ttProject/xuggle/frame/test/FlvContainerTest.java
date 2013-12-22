@@ -45,7 +45,11 @@ public class FlvContainerTest {
 	}
 	@Test
 	public void h264Test() throws Exception {
-		
+		decodeTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("h264.flv")
+			)
+		);
 	}
 	private void decodeTest(IFileReadChannel source) {
 		DecodeBase base = new DecodeBase();
