@@ -8,6 +8,7 @@ import com.ttProject.frame.IVideoFrame;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.flv1.Flv1Frame;
+import com.ttProject.frame.mp3.Mp3Frame;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IPacket;
@@ -28,6 +29,9 @@ public class Packetizer {
 	 * @return データがとれない場合はnull データがとれる場合はIPacketオブジェクト
 	 */
 	public IPacket getPacket(IFrame frame, IPacket packet) throws Exception {
+		if(packet == null) {
+			packet = IPacket.make();
+		}
 		if(frame instanceof AudioMultiFrame) {
 			throw new Exception("マルチフレームはまだ未対応です");
 		}
@@ -44,9 +48,6 @@ public class Packetizer {
 		return null;
 	}
 	private IPacket getVideoPacket(IVideoFrame frame, IPacket packet) throws Exception {
-		if(packet == null) {
-			packet = IPacket.make();
-		}
 		ByteBuffer buffer = frame.getPackBuffer();
 		int size = buffer.remaining();
 		IBuffer bufData = IBuffer.make(null, buffer.array(), 0, size);
@@ -60,7 +61,14 @@ public class Packetizer {
 		return packet;
 	}
 	private IPacket getAudioPacket(IAudioFrame frame, IPacket packet) throws Exception {
-		return null;
+		ByteBuffer buffer = frame.getPackBuffer();
+		int size = buffer.remaining();
+		IBuffer bufData = IBuffer.make(null, buffer.array(), 0, size);
+		packet.setData(bufData);
+		packet.setPts(frame.getPts());
+		packet.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
+		packet.setComplete(true, size);
+		return packet;
 	}
 	/**
 	 * フレームに対応するデコーダーを応答する
@@ -74,6 +82,16 @@ public class Packetizer {
 					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_FLV1) { // コーデックがflv1でない場合も作り直し
 				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_FLV1);
 				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
+			}
+		}
+		if(frame instanceof Mp3Frame) {
+			if(decoder == null // デコーダーが未設定の場合はつくる必要あり
+					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_MP3) { // コーデックがflv1でない場合も作り直し
+				IAudioFrame audioFrame = (IAudioFrame)frame;
+				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_MP3);
+				decoder.setSampleRate(audioFrame.getSampleRate());
+				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
+				decoder.setChannels(audioFrame.getChannel());
 			}
 		}
 		return decoder;
