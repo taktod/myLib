@@ -65,7 +65,7 @@ public class XuggleFrameTest extends SetupBase {
 	 * h264用の検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void h264() throws Exception {
 		logger.info("h264(flv)準備");
 		init();
@@ -95,5 +95,47 @@ public class XuggleFrameTest extends SetupBase {
 			throw new Exception("ファイルが開けませんでした");
 		}
 		processConvert(container, Encoder.h264(container), null);
+	}
+	/**
+	 * aac用の検証用データ
+	 * @throws Exception
+	 */
+	@Test
+	public void aac() throws Exception {
+		logger.info("aac(flv)準備");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "aac.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.aac(container));
+		logger.info("aac(adts)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "aac.aac"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.aac(container));
+		logger.info("aac(mpegts)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "aac.ts"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.aac(container));
+		logger.info("aac(mp4)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "aac.mp4"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.aac(container));
+		logger.info("aac(mkv)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "aac.mkv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.aac(container));
 	}
 }
