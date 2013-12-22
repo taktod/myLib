@@ -6,6 +6,10 @@ import org.junit.Test;
 import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IStreamCoder;
 
+/**
+ * container用のテストデータ自動作成プログラム
+ * @author taktod
+ */
 public class Container extends SetupBase {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(Container.class);

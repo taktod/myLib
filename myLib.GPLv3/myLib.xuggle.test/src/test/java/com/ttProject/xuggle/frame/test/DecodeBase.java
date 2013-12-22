@@ -19,9 +19,17 @@ import com.xuggle.xuggler.IVideoPicture;
 public class DecodeBase {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(DecodeBase.class);
+	/** デコード */
 	private IStreamCoder decoder = null;
+	/** frame -> packet化 */
 	private Packetizer packetizer = new Packetizer();
+	/** xuggleのpacket */
 	private IPacket packet = null;
+	/**
+	 * 映像データをデコードします
+	 * @param frame
+	 * @throws Exception
+	 */
 	public void processVideoDecode(IVideoFrame frame) throws Exception {
 		if(frame instanceof VideoMultiFrame) {
 			VideoMultiFrame multiFrame = (VideoMultiFrame) frame;
@@ -58,6 +66,11 @@ public class DecodeBase {
 			}
 		}
 	}
+	/**
+	 * 音声データをデコードします
+	 * @param frame
+	 * @throws Exception
+	 */
 	public void processAudioDecode(IAudioFrame frame) throws Exception {
 		if(frame instanceof AudioMultiFrame) {
 			AudioMultiFrame multiFrame = (AudioMultiFrame)frame;
@@ -94,6 +107,9 @@ public class DecodeBase {
 			}
 		}
 	}
+	/**
+	 * 終了処理
+	 */
 	public void close() {
 		if(decoder != null) {
 			decoder.close();

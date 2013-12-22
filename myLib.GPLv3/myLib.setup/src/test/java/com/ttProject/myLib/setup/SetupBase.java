@@ -27,9 +27,9 @@ import com.xuggle.xuggler.video.IConverter;
  */
 public class SetupBase {
 	/** audioデータの動作カウンター */
-	protected int audioCounter = 0;
+	private int audioCounter = 0;
 	/** videoデータの動作カウンター */
-	protected int videoCounter = 0;
+	private int videoCounter = 0;
 	/**
 	 * 初期化
 	 */
@@ -216,7 +216,7 @@ public class SetupBase {
 		samples.setComplete(true, snum, samplingRate, channels, Format.FMT_S16, 0);
 		// このtimestampの設定は必要っぽい
 		samples.setTimeStamp(startPos);
-		// こっちはいらないっぽい。ただし別の関数っぽいので、やっとくに超したことはなさそうな・・・
+		// こっちはいらないっぽい。ただし別の関数っぽいので、やっとくにこしたことはなさそうな・・・
 		samples.setPts(startPos);
 		return samples;
 	}

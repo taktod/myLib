@@ -18,7 +18,7 @@ import com.ttProject.unit.IUnit;
 public class FlvContainerTest {
 	/** 動作ロガー */
 	private Logger logger = Logger.getLogger(FlvContainerTest.class);
-//	@Test
+	@Test
 	public void flv1Test() throws Exception {
 		decodeTest(
 			FileReadChannel.openFileReadChannel(
@@ -26,7 +26,7 @@ public class FlvContainerTest {
 			)
 		);
 	}
-//	@Test
+	@Test
 	public void mp3Test() throws Exception {
 		decodeTest(
 			FileReadChannel.openFileReadChannel(
@@ -34,7 +34,7 @@ public class FlvContainerTest {
 			)
 		);
 	}
-//	@Test
+	@Test
 	public void vp6Test() throws Exception {
 		// TODO このテストをする場合は、audioTagがちょっと邪魔
 		decodeTest(
@@ -43,7 +43,7 @@ public class FlvContainerTest {
 			)
 		);
 	}
-//	@Test
+	@Test
 	public void h264Test() throws Exception {
 		decodeTest(
 			FileReadChannel.openFileReadChannel(
@@ -51,7 +51,7 @@ public class FlvContainerTest {
 			)
 		);
 	}
-//	@Test
+	@Test
 	public void aacTest() throws Exception {
 		decodeTest(
 			FileReadChannel.openFileReadChannel(
@@ -59,7 +59,7 @@ public class FlvContainerTest {
 			)
 		);
 	}
-//	@Test
+	@Test
 	public void adpcmswfTest() throws Exception {
 		decodeTest(
 			FileReadChannel.openFileReadChannel(
@@ -67,7 +67,7 @@ public class FlvContainerTest {
 			)
 		);
 	}
-//	@Test
+	@Test
 	public void nellymoserTest() throws Exception {
 		decodeTest(
 			FileReadChannel.openFileReadChannel(

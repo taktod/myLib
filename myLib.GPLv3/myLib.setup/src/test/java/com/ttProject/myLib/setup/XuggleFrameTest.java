@@ -7,101 +7,17 @@ import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IStreamCoder;
 
 /**
- * myLib.frame用のメディアデータセットアップ
+ * myLib.xuggle.frame用のメディアデータセットアップ
  * @author taktod
  */
 public class XuggleFrameTest extends SetupBase {
 	/** 動作ロガー */
 	private Logger logger = Logger.getLogger(XuggleFrameTest.class);
 	/**
-	 * flv1の検証用データ
-	 * @throws Exception
-	 */
-//	@Test
-	public void flv1() throws Exception {
-		logger.info("flv1(flv)準備");
-		init();
-		IContainer container = IContainer.make();
-		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "flv1.flv"), IContainer.Type.WRITE, null) < 0) {
-			throw new Exception("ファイルが開けませんでした");
-		}
-		processConvert(container, Encoder.flv1(container), null);
-	}
-	/**
-	 * mp3用の検証用データ
-	 * @throws Exception
-	 */
-//	@Test
-	public void mp3() throws Exception {
-		logger.info("mp3(flv)準備");
-		init();
-		IContainer container = IContainer.make();
-		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "mp3.flv"), IContainer.Type.WRITE, null) < 0) {
-			throw new Exception("ファイルが開けませんでした");
-		}
-		processConvert(container, null, Encoder.mp3(container));
-		logger.info("mp3(mp3)準備");
-		init();
-		container = IContainer.make();
-		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "mp3.mp3"), IContainer.Type.WRITE, null) < 0) {
-			throw new Exception("ファイルが開けませんでした");
-		}
-		processConvert(container, null, Encoder.mp3(container));
-		logger.info("mp3(mp4)準備");
-		init();
-		container = IContainer.make();
-		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "mp3.mp4"), IContainer.Type.WRITE, null) < 0) {
-			throw new Exception("ファイルが開けませんでした");
-		}
-		processConvert(container, null, Encoder.mp3(container));
-		logger.info("mp3(mkv)準備");
-		init();
-		container = IContainer.make();
-		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "mp3.mkv"), IContainer.Type.WRITE, null) < 0) {
-			throw new Exception("ファイルが開けませんでした");
-		}
-		processConvert(container, null, Encoder.mp3(container));
-	}
-	/**
-	 * h264用の検証用データ
-	 * @throws Exception
-	 */
-//	@Test
-	public void h264() throws Exception {
-		logger.info("h264(flv)準備");
-		init();
-		IContainer container = IContainer.make();
-		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "h264.flv"), IContainer.Type.WRITE, null) < 0) {
-			throw new Exception("ファイルが開けませんでした");
-		}
-		processConvert(container, Encoder.h264(container), null);
-		logger.info("h264(mpegts)準備");
-		init();
-		container = IContainer.make();
-		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "h264.ts"), IContainer.Type.WRITE, null) < 0) {
-			throw new Exception("ファイルが開けませんでした");
-		}
-		processConvert(container, Encoder.h264(container), null);
-		logger.info("h264(mp4)準備");
-		init();
-		container = IContainer.make();
-		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "h264.mp4"), IContainer.Type.WRITE, null) < 0) {
-			throw new Exception("ファイルが開けませんでした");
-		}
-		processConvert(container, Encoder.h264(container), null);
-		logger.info("h264(mkv)準備");
-		init();
-		container = IContainer.make();
-		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "h264.mkv"), IContainer.Type.WRITE, null) < 0) {
-			throw new Exception("ファイルが開けませんでした");
-		}
-		processConvert(container, Encoder.h264(container), null);
-	}
-	/**
 	 * aac用の検証用データ
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void aac() throws Exception {
 		logger.info("aac(flv)準備");
 		init();
@@ -143,7 +59,7 @@ public class XuggleFrameTest extends SetupBase {
 	 * adpcmswf用の検証用データ
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void adpcmswf() throws Exception {
 		logger.info("adpcmswf(flv)準備");
 		init();
@@ -154,10 +70,94 @@ public class XuggleFrameTest extends SetupBase {
 		processConvert(container, null, Encoder.adpcm_swf(container));
 	}
 	/**
+	 * flv1の検証用データ
+	 * @throws Exception
+	 */
+	@Test
+	public void flv1() throws Exception {
+		logger.info("flv1(flv)準備");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "flv1.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, Encoder.flv1(container), null);
+	}
+	/**
+	 * h264用の検証用データ
+	 * @throws Exception
+	 */
+	@Test
+	public void h264() throws Exception {
+		logger.info("h264(flv)準備");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "h264.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, Encoder.h264(container), null);
+		logger.info("h264(mpegts)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "h264.ts"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, Encoder.h264(container), null);
+		logger.info("h264(mp4)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "h264.mp4"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, Encoder.h264(container), null);
+		logger.info("h264(mkv)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "h264.mkv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, Encoder.h264(container), null);
+	}
+	/**
+	 * mp3用の検証用データ
+	 * @throws Exception
+	 */
+	@Test
+	public void mp3() throws Exception {
+		logger.info("mp3(flv)準備");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "mp3.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.mp3(container));
+		logger.info("mp3(mp3)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "mp3.mp3"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.mp3(container));
+		logger.info("mp3(mp4)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "mp3.mp4"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.mp3(container));
+		logger.info("mp3(mkv)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "mp3.mkv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.mp3(container));
+	}
+	/**
 	 * nellymoser用の検証用データ
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void nellymoser() throws Exception {
 		logger.info("nellymoser(flv)準備");
 		init();
