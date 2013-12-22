@@ -29,6 +29,7 @@ public class StartPage extends OggPage {
 	/** 解析プログラム */
 	private IAnalyzer analyzer = null;
 	private List<IUnit> frameList = new ArrayList<IUnit>();
+	private long passedTic = 0;
 	/**
 	 * コンストラクタ
 	 * @param version
@@ -96,5 +97,11 @@ public class StartPage extends OggPage {
 	 */
 	public IAnalyzer getAnalyzer() {
 		return analyzer;
+	}
+	public void setPassedTic(long passedTic) {
+		this.passedTic = passedTic;
+	}
+	public long getPassedTic() {
+		return passedTic;
 	}
 }

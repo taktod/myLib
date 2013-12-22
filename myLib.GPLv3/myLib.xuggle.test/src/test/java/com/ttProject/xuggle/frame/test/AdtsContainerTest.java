@@ -11,7 +11,7 @@ import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.IUnit;
 
 /**
- * mp3コンテナのデコード動作テスト
+ * adtsコンテナのデコード動作テスト
  * @author taktod
  */
 public class AdtsContainerTest {

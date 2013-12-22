@@ -1,15 +1,15 @@
 package com.ttProject.container.ogg.type;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.ogg.OggPage;
+import com.ttProject.frame.AudioFrame;
+import com.ttProject.frame.IFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
@@ -44,7 +44,6 @@ import com.ttProject.util.BufferUtil;
 public class Page extends OggPage {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(Page.class);
-	private List<IUnit> frameList = new ArrayList<IUnit>();
 	/**
 	 * コンストラクタ
 	 * @param version
@@ -66,13 +65,20 @@ public class Page extends OggPage {
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		logger.info("load");
 		channel.position(getPosition() + 27 + getSegmentSizeList().size());
+		List<IFrame> frameList = getFrameList();
 		for(Bit8 size : getSegmentSizeList()) {
 			ByteBuffer buffer = BufferUtil.safeRead(channel, size.get());
 			// 解析したい。
 			IReadChannel bufferChannel = new ByteReadChannel(buffer);
-			frameList.add(getStartPage().getAnalyzer().analyze(bufferChannel));
+			IFrame frame = (IFrame)getStartPage().getAnalyzer().analyze(bufferChannel);
+			if(frame instanceof AudioFrame) {
+				AudioFrame audioFrame = (AudioFrame) frame;
+				audioFrame.setTimebase(audioFrame.getSampleRate());
+				audioFrame.setPts(getStartPage().getPassedTic());
+				getStartPage().setPassedTic(audioFrame.getPts() + audioFrame.getSampleNum());
+			}
+			frameList.add(frame);
 		}
 		// analyzerをつかって開く
 		channel.position(getPosition() + getSize());

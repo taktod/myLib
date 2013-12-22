@@ -29,11 +29,9 @@ public class CommentFrame extends SpeexFrame {
 	private List<String> elementList = new ArrayList<String>();
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		logger.info("minimumLoad");
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		logger.info("load");
 		// ここでデータを読み込んで処理する。
 		ByteBuffer buffer = BufferUtil.safeRead(channel, 4);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -48,8 +46,8 @@ public class CommentFrame extends SpeexFrame {
 			int elementLength = buffer.getInt();
 			elementList.add(new String(BufferUtil.safeRead(channel, elementLength).array()));
 		}
-		logger.info(venderName);
-		logger.info(elementList);
+//		logger.info(venderName);
+//		logger.info(elementList);
 	}
 	@Override
 	protected void requestUpdate() throws Exception {

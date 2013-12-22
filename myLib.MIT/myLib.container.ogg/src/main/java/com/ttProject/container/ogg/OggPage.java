@@ -110,7 +110,7 @@ public abstract class OggPage extends Container {
 	protected List<ByteBuffer> getBufferList() {
 		return bufferList;
 	}
-	protected List<IFrame> getFrameList() {
+	public List<IFrame> getFrameList() {
 		return frameList;
 	}
 	/**

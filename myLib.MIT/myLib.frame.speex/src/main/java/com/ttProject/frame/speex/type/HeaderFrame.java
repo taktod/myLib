@@ -108,9 +108,9 @@ public class HeaderFrame extends SpeexFrame {
 		extraHeaders = buffer.getInt();
 		reserved1 = buffer.getInt();
 		reserved2 = buffer.getInt();
-		logger.info(rate);
-		logger.info(frameSize);
-		logger.info(framesPerPacket);
+//		logger.info(rate);
+//		logger.info(frameSize);
+//		logger.info(framesPerPacket);
 		// ここでデータの読み込みを実行する。
 		super.setReadPosition(channel.position());
 		super.setSize(channel.size());
