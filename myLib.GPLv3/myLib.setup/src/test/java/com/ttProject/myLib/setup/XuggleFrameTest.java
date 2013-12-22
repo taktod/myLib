@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.xuggle.xuggler.IContainer;
+import com.xuggle.xuggler.IStreamCoder;
 
 /**
  * myLib.frame用のメディアデータセットアップ
@@ -142,7 +143,7 @@ public class XuggleFrameTest extends SetupBase {
 	 * adpcmswf用の検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void adpcmswf() throws Exception {
 		logger.info("adpcmswf(flv)準備");
 		init();
@@ -151,5 +152,21 @@ public class XuggleFrameTest extends SetupBase {
 			throw new Exception("ファイルが開けませんでした");
 		}
 		processConvert(container, null, Encoder.adpcm_swf(container));
+	}
+	/**
+	 * adpcmswf用の検証用データ
+	 * @throws Exception
+	 */
+	@Test
+	public void nellymoser() throws Exception {
+		logger.info("nellymoser(flv)準備");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "nellymoser.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		IStreamCoder encoder = Encoder.nellymoser(container);
+		encoder.setChannels(1);
+		processConvert(container, null, encoder);
 	}
 }

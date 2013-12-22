@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.frame.nellymoser.NellymoserFrame;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.BitN;
 import com.ttProject.unit.extra.bit.Bit64;
@@ -29,10 +30,10 @@ import com.ttProject.unit.extra.bit.Bit6;
  * @author taktod
  */
 public class Frame extends NellymoserFrame {
-	private Bit6 initTableIndex = new Bit6();
-	private Bit5[] deltaTable = new Bit5[22];
-	private BitN payload1 = new BitN(new Bit64(), new Bit64(), new Bit64(), new Bit6());
-	private BitN payload2 = new BitN(new Bit64(), new Bit64(), new Bit64(), new Bit6());
+	private Bit6 initTableIndex = null;
+	private Bit5[] deltaTable = null; //new Bit5[22];
+	private BitN payload1 = null; //new BitN(new Bit64(), new Bit64(), new Bit64(), new Bit6());
+	private BitN payload2 = null; //new BitN(new Bit64(), new Bit64(), new Bit64(), new Bit6());
 	/**
 	 * {@inheritDoc}
 	 */
@@ -49,15 +50,20 @@ public class Frame extends NellymoserFrame {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		BitLoader loader = new BitLoader(channel);
+		initTableIndex = new Bit6();
+		deltaTable = new Bit5[22];
 		loader.load(initTableIndex);
 		for(int i = 0;i < 22;i ++) {
 			deltaTable[i] = new Bit5();
 		}
 		loader.load(deltaTable);
+		payload1 = new BitN(new Bit64(), new Bit64(), new Bit64(), new Bit6());
+		payload2 = new BitN(new Bit64(), new Bit64(), new Bit64(), new Bit6());
 		loader.load(payload1);
 		loader.load(payload2);
+		super.update();
 	}
-	@Override
+/*	@Override
 	public void setBit(int bit) {
 		super.setBit(bit);
 	}
@@ -72,16 +78,25 @@ public class Frame extends NellymoserFrame {
 	@Override
 	public void setSampleRate(int sampleRate) {
 		super.setSampleRate(sampleRate);
-	}
+	}// */
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		// ここでbitconnectorが繰り返して追記ができるようにしないとだめっぽい・・・
+		if(initTableIndex == null) {
+			throw new Exception("データがloadされていません");
+		}
+		BitConnector connector = new BitConnector();
+		connector.feed(initTableIndex);
+		connector.feed(deltaTable);
+		connector.feed(payload1);
+		connector.feed(payload2);
+		super.setData(connector.connect());
 	}
 	@Override
-	public ByteBuffer getPackBuffer() {
-		return null;
+	public ByteBuffer getPackBuffer() throws Exception {
+		return getData();
 	}
 }

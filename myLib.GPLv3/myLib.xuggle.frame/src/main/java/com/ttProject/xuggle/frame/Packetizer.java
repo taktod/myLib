@@ -14,6 +14,7 @@ import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.flv1.Flv1Frame;
 import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.frame.mp3.Mp3Frame;
+import com.ttProject.frame.nellymoser.NellymoserFrame;
 import com.ttProject.frame.vp6.Vp6Frame;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.ICodec;
@@ -123,6 +124,12 @@ public class Packetizer {
 			if(decoder == null // デコーダーが未設定の場合は生成する必要あり
 					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_AAC) {
 				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_AAC);
+			}
+		}
+		if(frame instanceof NellymoserFrame) {
+			if(decoder == null // デコーダーが未設定の場合は生成する必要あり
+					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_NELLYMOSER) {
+				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_NELLYMOSER);
 			}
 		}
 		if(frame instanceof AdpcmswfFrame) {
