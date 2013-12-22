@@ -34,13 +34,18 @@ public class FlvContainerTest {
 			)
 		);
 	}
-	@Test
+//	@Test
 	public void vp6Test() throws Exception {
+		// TODO このテストをする場合は、audioTagがちょっと邪魔
 		decodeTest(
 			FileReadChannel.openFileReadChannel(
 					"http://red5.googlecode.com/svn-history/r4071/java/example/trunk/oflaDemo/www/streams/toystory3-vp6.flv"
 			)
 		);
+	}
+	@Test
+	public void h264Test() throws Exception {
+		
 	}
 	private void decodeTest(IFileReadChannel source) {
 		DecodeBase base = new DecodeBase();
@@ -53,11 +58,11 @@ public class FlvContainerTest {
 					logger.info(vTag.getFrame());
 					base.processVideoDecode(vTag.getFrame());
 				}
-/*				else if(unit instanceof AudioTag) {
+				else if(unit instanceof AudioTag) {
 					AudioTag aTag = (AudioTag)unit;
 					logger.info(aTag.getFrame());
 					base.processAudioDecode(aTag.getFrame());
-				}// */
+				}
 			}
 		}
 		catch(Exception e) {
