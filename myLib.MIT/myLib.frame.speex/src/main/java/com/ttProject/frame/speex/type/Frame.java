@@ -51,7 +51,7 @@ public class Frame extends SpeexFrame {
 		super.setData(frameBuffer);
 	}
 	@Override
-	public ByteBuffer getPackBuffer() {
-		return null;
+	public ByteBuffer getPackBuffer() throws Exception {
+		return getData();
 	}
 }

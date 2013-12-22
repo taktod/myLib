@@ -67,11 +67,19 @@ public class FlvContainerTest {
 			)
 		);
 	}
-	@Test
+//	@Test
 	public void nellymoserTest() throws Exception {
 		decodeTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("nellymoser.flv")
+			)
+		);
+	}
+	@Test
+	public void speexTest() throws Exception {
+		decodeTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
 			)
 		);
 	}

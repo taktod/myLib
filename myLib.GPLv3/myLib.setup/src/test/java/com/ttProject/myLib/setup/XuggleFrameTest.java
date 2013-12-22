@@ -154,10 +154,10 @@ public class XuggleFrameTest extends SetupBase {
 		processConvert(container, null, Encoder.adpcm_swf(container));
 	}
 	/**
-	 * adpcmswf用の検証用データ
+	 * nellymoser用の検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void nellymoser() throws Exception {
 		logger.info("nellymoser(flv)準備");
 		init();
@@ -168,5 +168,29 @@ public class XuggleFrameTest extends SetupBase {
 		IStreamCoder encoder = Encoder.nellymoser(container);
 		encoder.setChannels(1);
 		processConvert(container, null, encoder);
+	}
+	/**
+	 * speex用の検証用データ
+	 * @throws Exception
+	 */
+	@Test
+	public void speex() throws Exception {
+		logger.info("speex(flv)準備");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "speex.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		IStreamCoder encoder = Encoder.speex(container);
+		encoder.setSampleRate(16000);
+		encoder.setChannels(1);
+		processConvert(container, null, encoder);
+		logger.info("speex(ogg)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "speex.ogg"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.speex(container));
 	}
 }
