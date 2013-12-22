@@ -164,7 +164,7 @@ public class Frame extends Mp3Frame {
 				rawBuffer));
 	}
 	@Override
-	public ByteBuffer getPackBuffer() {
-		return null;
+	public ByteBuffer getPackBuffer() throws Exception {
+		return getData();
 	}
 }
