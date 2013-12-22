@@ -34,7 +34,6 @@ public class AdtsContainerTest {
 			while((unit = analyzer.analyze(source)) != null) {
 				if(unit instanceof AdtsUnit) {
 					AdtsUnit adtsUnit = (AdtsUnit) unit;
-					logger.info(adtsUnit.getPosition());
 					logger.info(adtsUnit.getFrame());
 					base.processAudioDecode(adtsUnit.getFrame());
 				}

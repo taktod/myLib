@@ -23,6 +23,7 @@ import com.ttProject.util.BufferUtil;
  * profile, the MPEG-4 Audio Object Type minus 1
  * 
  * @author taktod
+ * TODO sampleRateとかいれておかないと処理できなくなる。
  */
 public class Frame extends AacFrame {
 	/** 動作ロガー */
@@ -44,6 +45,10 @@ public class Frame extends AacFrame {
 	private Bit11 adtsBufferFullness = new Bit11(0x7FF);
 	private Bit2 noRawDataBlocksInFrame = new Bit2();
 	private ByteBuffer buffer = null;
+	/** 周波数テーブル */
+	private static int [] sampleRateTable = {
+		96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000
+	};
 	/**
 	 * dsiの読み込み
 	 * @param size
@@ -57,9 +62,8 @@ public class Frame extends AacFrame {
 		samplingFrequenceIndex.set(dsi.getFrequencyIndex());
 		channelConfiguration.set(dsi.getChannelConfiguration());
 		super.setSize(7 + size);
-		super.update();
 		super.setReadPosition(channel.position());
-		super.setSampleNum(1024);
+		updateFlagData();
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
@@ -70,9 +74,14 @@ public class Frame extends AacFrame {
 				copyrightIdentificationStart, frameSize, adtsBufferFullness,
 				noRawDataBlocksInFrame);
 		super.setSize(frameSize.get());
-		super.update();
 		super.setReadPosition(channel.position());
+		updateFlagData();
+	}
+	private void updateFlagData() {
 		super.setSampleNum(1024);
+		super.setChannel(channelConfiguration.get());
+		super.setSampleRate(sampleRateTable[samplingFrequenceIndex.get()]);
+		super.update();
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
