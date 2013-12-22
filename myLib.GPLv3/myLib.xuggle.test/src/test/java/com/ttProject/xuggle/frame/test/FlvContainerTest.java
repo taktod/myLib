@@ -20,21 +20,29 @@ public class FlvContainerTest {
 	private Logger logger = Logger.getLogger(FlvContainerTest.class);
 //	@Test
 	public void flv1Test() throws Exception {
-		convertTest(
+		decodeTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("flv1.flv")
 			)
 		);
 	}
-	@Test
+//	@Test
 	public void mp3Test() throws Exception {
-		convertTest(
+		decodeTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("mp3.flv")
 			)
 		);
 	}
-	private void convertTest(IFileReadChannel source) {
+	@Test
+	public void vp6Test() throws Exception {
+		decodeTest(
+			FileReadChannel.openFileReadChannel(
+					"http://red5.googlecode.com/svn-history/r4071/java/example/trunk/oflaDemo/www/streams/toystory3-vp6.flv"
+			)
+		);
+	}
+	private void decodeTest(IFileReadChannel source) {
 		DecodeBase base = new DecodeBase();
 		try {
 			IAnalyzer analyzer = new FlvTagAnalyzer();
@@ -45,11 +53,11 @@ public class FlvContainerTest {
 					logger.info(vTag.getFrame());
 					base.processVideoDecode(vTag.getFrame());
 				}
-				else if(unit instanceof AudioTag) {
+/*				else if(unit instanceof AudioTag) {
 					AudioTag aTag = (AudioTag)unit;
 					logger.info(aTag.getFrame());
 					base.processAudioDecode(aTag.getFrame());
-				}
+				}// */
 			}
 		}
 		catch(Exception e) {

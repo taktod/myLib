@@ -49,7 +49,7 @@ public class InterFrame extends Vp6Frame {
 				buffer));
 	}
 	@Override
-	public ByteBuffer getPackBuffer() {
-		return null;
+	public ByteBuffer getPackBuffer() throws Exception {
+		return getData();
 	}
 }

@@ -20,13 +20,13 @@ public class Mp3ContainerTest {
 	@Test
 	public void mp3() throws Exception {
 		logger.info("mp3テスト");
-		convertTest(
+		decodeTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("mp3.mp3")
 			)
 		);
 	}
-	private void convertTest(IFileReadChannel source) {
+	private void decodeTest(IFileReadChannel source) {
 		DecodeBase base = new DecodeBase();
 		try {
 			IAnalyzer analyzer = new Mp3UnitAnalyzer();

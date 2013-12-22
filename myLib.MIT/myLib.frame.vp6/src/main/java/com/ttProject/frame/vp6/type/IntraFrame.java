@@ -65,7 +65,7 @@ public class IntraFrame extends Vp6Frame {
 		return version2;
 	}
 	@Override
-	public ByteBuffer getPackBuffer() {
-		return null;
+	public ByteBuffer getPackBuffer() throws Exception {
+		return getData();
 	}
 }
