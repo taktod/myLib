@@ -9,7 +9,6 @@ import com.ttProject.unit.IUnit;
 /**
  * mp3のコンテナからmp3のunitを抜き出す動作
  * @author taktod
- *
  */
 public class Mp3UnitSelector implements ISelector {
 	/** 経過したサンプル数を保持しておく */

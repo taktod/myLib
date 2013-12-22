@@ -5,6 +5,10 @@ import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 
+/**
+ * unitのselector
+ * @author taktod
+ */
 public class AdtsUnitAnalyzer implements IAnalyzer {
 	private ISelector selector = new AdtsUnitSelector();
 	@Override
