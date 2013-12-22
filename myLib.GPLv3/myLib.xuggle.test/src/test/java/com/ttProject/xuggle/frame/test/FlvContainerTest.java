@@ -43,11 +43,19 @@ public class FlvContainerTest {
 			)
 		);
 	}
-	@Test
+//	@Test
 	public void h264Test() throws Exception {
 		decodeTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("h264.flv")
+			)
+		);
+	}
+	@Test
+	public void aacTest() throws Exception {
+		decodeTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("aac.flv")
 			)
 		);
 	}

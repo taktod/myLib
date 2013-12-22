@@ -190,6 +190,10 @@ public class AudioTag extends FlvTag {
 		if(frameBuffer == null) {
 			throw new Exception("frameデータが読み込まれていません");
 		}
+		if(getCodec() == CodecType.AAC && sequenceHeaderFlag.get() != 1) {
+			// aacのmshも処理しません。
+			return;
+		}
 		if(frameAnalyzer == null) {
 			throw new Exception("frameの解析プログラムが設定されていません。");
 		}

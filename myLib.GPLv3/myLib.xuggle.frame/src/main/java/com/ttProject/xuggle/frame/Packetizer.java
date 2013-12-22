@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.aac.AacFrame;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.flv1.Flv1Frame;
@@ -27,6 +28,7 @@ import com.xuggle.xuggler.IStreamCoder.Direction;
  */
 public class Packetizer {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Packetizer.class);
 	/**
 	 * packetをframeから取り出します(マルチフレームの場合に一気に応答したかったのですが、そうするとIPacketの使いまわしができないので１つのみの応答にします)
@@ -70,7 +72,6 @@ public class Packetizer {
 		return packet;
 	}
 	private IPacket getAudioPacket(IAudioFrame frame, IPacket packet) throws Exception {
-		logger.info(frame.getSampleNum());
 		ByteBuffer buffer = frame.getPackBuffer();
 		if(buffer == null) {
 			return null;
@@ -114,17 +115,33 @@ public class Packetizer {
 		if(frame instanceof Mp3Frame) {
 			if(decoder == null // デコーダーが未設定の場合はつくる必要あり
 					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_MP3) { // コーデックがflv1でない場合も作り直し
-				IAudioFrame audioFrame = (IAudioFrame)frame;
-				if(audioFrame.getSampleRate() == 0 || audioFrame.getTimebase() == 0 || audioFrame.getChannel() == 0) {
-					// audioFrameの定義情報がかけている場合は、処理の参考にならないframeなので、処理を飛ばす(metaデータとか)
-					return null;
-				}
-				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_MP3);
-				decoder.setSampleRate(audioFrame.getSampleRate());
-				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
-				decoder.setChannels(audioFrame.getChannel());
+				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_MP3);
 			}
 		}
+		if(frame instanceof AacFrame) {
+			if(decoder == null // デコーダーが未設定の場合は生成する必要あり
+					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_AAC) {
+				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_AAC);
+			}
+		}
+		return decoder;
+	}
+	/**
+	 * audioのデコーダーを作成する
+	 * @param frame
+	 * @param id
+	 * @return
+	 */
+	private IStreamCoder makeAudioDecoder(IAudioFrame frame, ICodec.ID id) {
+		IStreamCoder decoder = null;
+		if(frame.getSampleRate() == 0 || frame.getTimebase() == 0 || frame.getChannel() == 0) {
+			// audioFrameの定義情報がかけている場合は、処理の参考にならないframeなので、処理を飛ばす(metaデータとか)
+			return null;
+		}
+		decoder = IStreamCoder.make(Direction.DECODING, id);
+		decoder.setSampleRate(frame.getSampleRate());
+		decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
+		decoder.setChannels(frame.getChannel());
 		return decoder;
 	}
 }
