@@ -12,7 +12,7 @@ import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.IUnit;
 
 /**
- * xuggleによるコンテナの変換を実行するテスト
+ * flvコンテナのデコード動作テスト
  * @author taktod
  */
 public class FlvContainerTest {

@@ -30,7 +30,11 @@ public class DecodeBase {
 				throw new Exception("デコーダーが開けませんでした");
 			}
 		}
-		packet = packetizer.getPacket(frame, packet);
+		IPacket pkt = packetizer.getPacket(frame, packet);
+		if(pkt == null) {
+			return;
+		}
+		packet = pkt;
 		logger.info(packet);
 		IVideoPicture picture = IVideoPicture.make(decoder.getPixelType(), frame.getWidth(), frame.getHeight());
 		int offset = 0;
@@ -48,14 +52,18 @@ public class DecodeBase {
 	public void processAudioDecode(IAudioFrame frame) throws Exception {
 		decoder = packetizer.getDecoder(frame, decoder);
 		if(decoder == null) {
-			throw new Exception("動作デコーダーが未定義です");
+			return; // frameがデコーダーに対応していないものもあるので、その場合は次にまわす
 		}
 		if(!decoder.isOpen()) {
 			if(decoder.open(null, null) < 0) {
 				throw new Exception("デコーダーが開けません");
 			}
 		}
-		packet = packetizer.getPacket(frame, packet);
+		IPacket pkt = packetizer.getPacket(frame, packet);
+		if(pkt == null) {
+			return;
+		}
+		packet = pkt;
 		logger.info(packet);
 		IAudioSamples samples = IAudioSamples.make(1024, decoder.getChannels());
 		int offset = 0;

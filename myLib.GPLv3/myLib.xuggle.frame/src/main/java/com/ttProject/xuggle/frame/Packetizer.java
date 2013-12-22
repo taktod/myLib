@@ -2,6 +2,8 @@ package com.ttProject.xuggle.frame;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
@@ -22,6 +24,8 @@ import com.xuggle.xuggler.IStreamCoder.Direction;
  *
  */
 public class Packetizer {
+	/** ロガー */
+	private Logger logger = Logger.getLogger(Packetizer.class);
 	/**
 	 * packetをframeから取り出します(マルチフレームの場合に一気に応答したかったのですが、そうするとIPacketの使いまわしができないので１つのみの応答にします)
 	 * @param frame
@@ -49,6 +53,9 @@ public class Packetizer {
 	}
 	private IPacket getVideoPacket(IVideoFrame frame, IPacket packet) throws Exception {
 		ByteBuffer buffer = frame.getPackBuffer();
+		if(buffer == null) {
+			return null;
+		}
 		int size = buffer.remaining();
 		IBuffer bufData = IBuffer.make(null, buffer.array(), 0, size);
 		packet.setData(bufData);
@@ -61,7 +68,11 @@ public class Packetizer {
 		return packet;
 	}
 	private IPacket getAudioPacket(IAudioFrame frame, IPacket packet) throws Exception {
+		logger.info(frame.getSampleNum());
 		ByteBuffer buffer = frame.getPackBuffer();
+		if(buffer == null) {
+			return null;
+		}
 		int size = buffer.remaining();
 		IBuffer bufData = IBuffer.make(null, buffer.array(), 0, size);
 		packet.setData(bufData);
@@ -88,6 +99,10 @@ public class Packetizer {
 			if(decoder == null // デコーダーが未設定の場合はつくる必要あり
 					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_MP3) { // コーデックがflv1でない場合も作り直し
 				IAudioFrame audioFrame = (IAudioFrame)frame;
+				if(audioFrame.getSampleRate() == 0 || audioFrame.getTimebase() == 0 || audioFrame.getChannel() == 0) {
+					// audioFrameの定義情報がかけている場合は、処理の参考にならないframeなので、処理を飛ばす(metaデータとか)
+					return null;
+				}
 				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_MP3);
 				decoder.setSampleRate(audioFrame.getSampleRate());
 				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
