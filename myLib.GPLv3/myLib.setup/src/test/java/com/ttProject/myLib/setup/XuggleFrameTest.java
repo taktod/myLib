@@ -100,7 +100,7 @@ public class XuggleFrameTest extends SetupBase {
 	 * aac用の検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void aac() throws Exception {
 		logger.info("aac(flv)準備");
 		init();
@@ -137,5 +137,19 @@ public class XuggleFrameTest extends SetupBase {
 			throw new Exception("ファイルが開けませんでした");
 		}
 		processConvert(container, null, Encoder.aac(container));
+	}
+	/**
+	 * adpcmswf用の検証用データ
+	 * @throws Exception
+	 */
+	@Test
+	public void adpcmswf() throws Exception {
+		logger.info("adpcmswf(flv)準備");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "adpcmswf.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.adpcm_swf(container));
 	}
 }
