@@ -54,4 +54,7 @@ public class VideoMultiFrame extends VideoFrame {
 	public ByteBuffer getPackBuffer() {
 		return null;
 	}
+	public List<IVideoFrame> getFrameList() {
+		return new ArrayList<IVideoFrame>(frameList);
+	}
 }

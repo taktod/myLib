@@ -51,4 +51,7 @@ public class AudioMultiFrame extends AudioFrame {
 	public ByteBuffer getPackBuffer() {
 		throw new RuntimeException("マルチフレームはpackBuffer未対応");
 	}
+	public List<IAudioFrame> getFrameList() {
+		return new ArrayList<IAudioFrame>(frameList);
+	}
 }
