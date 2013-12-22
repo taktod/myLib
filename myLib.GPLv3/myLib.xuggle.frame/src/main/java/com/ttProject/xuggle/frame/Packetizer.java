@@ -8,6 +8,7 @@ import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
 import com.ttProject.frame.aac.AacFrame;
+import com.ttProject.frame.adpcmswf.AdpcmswfFrame;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.flv1.Flv1Frame;
@@ -41,10 +42,10 @@ public class Packetizer {
 			packet = IPacket.make();
 		}
 		if(frame instanceof AudioMultiFrame) {
-			throw new Exception("マルチフレームはまだ未対応です");
+			throw new Exception("マルチフレームは未対応です");
 		}
 		else if(frame instanceof VideoMultiFrame) {
-			throw new Exception("マルチフレームはまだ未対応です");
+			throw new Exception("マルチフレームは未対応です");
 		}
 		else if(frame instanceof IAudioFrame) {
 			return getAudioPacket((IAudioFrame)frame, packet);
@@ -122,6 +123,12 @@ public class Packetizer {
 			if(decoder == null // デコーダーが未設定の場合は生成する必要あり
 					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_AAC) {
 				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_AAC);
+			}
+		}
+		if(frame instanceof AdpcmswfFrame) {
+			if(decoder == null // デコーダーが未設定の場合は生成する必要あり
+					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_ADPCM_SWF) {
+				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_ADPCM_SWF);
 			}
 		}
 		return decoder;

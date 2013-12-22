@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import com.ttProject.frame.adpcmswf.AdpcmswfFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit16;
 import com.ttProject.unit.extra.bit.Bit2;
@@ -58,18 +59,34 @@ public class Frame extends AdpcmswfFrame {
 			// モノラルの場合
 			setSampleNum((int)Math.ceil(leftBitCount / (adpcmCodeSize.get() + 2)));
 		}
+		super.update();
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		channel.position(getReadPosition());
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
+		super.update();
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
+		if(buffer == null) {
+			throw new Exception("必要な情報が読み込まれていません");
+		}
+		BitConnector connector = new BitConnector();
+		super.setData(BufferUtil.connect(
+			connector.connect(
+				adpcmCodeSize,
+				initSample1,
+				initialIndex1,
+				initSample2,
+				initialIndex2,
+				extraBit
+			),
+			buffer
+		));
 	}
 	@Override
-	public ByteBuffer getPackBuffer() {
-		// TODO Auto-generated method stub
-		return null;
+	public ByteBuffer getPackBuffer() throws Exception{
+		return getData();
 	}
 }

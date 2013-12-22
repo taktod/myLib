@@ -51,11 +51,19 @@ public class FlvContainerTest {
 			)
 		);
 	}
-	@Test
+//	@Test
 	public void aacTest() throws Exception {
 		decodeTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("aac.flv")
+			)
+		);
+	}
+	@Test
+	public void adpcmswfTest() throws Exception {
+		decodeTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("adpcmswf.flv")
 			)
 		);
 	}
