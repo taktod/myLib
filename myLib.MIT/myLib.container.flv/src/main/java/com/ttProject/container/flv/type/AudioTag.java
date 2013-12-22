@@ -10,7 +10,6 @@ import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.IAudioFrame;
-import com.ttProject.frame.IFrame;
 import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
 import com.ttProject.frame.aac.AacDsiFrameSelector;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
@@ -217,7 +216,7 @@ public class AudioTag extends FlvTag {
 			}
 		} while(channel.size() != channel.position());
 	}
-	public IFrame getFrame() throws Exception {
+	public IAudioFrame getFrame() throws Exception {
 		if(frame == null) {
 			analyzeFrame();
 		}
