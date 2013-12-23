@@ -35,4 +35,7 @@ public abstract class MpegtsPacket extends Container {
 		this.payloadFieldExist = payloadFieldExist;
 		this.continuityCounter = continuityCounter;
 	}
+	protected boolean isPayloadUnitStart() {
+		return payloadUnitStartIndicator.get() == 1;
+	}
 }
