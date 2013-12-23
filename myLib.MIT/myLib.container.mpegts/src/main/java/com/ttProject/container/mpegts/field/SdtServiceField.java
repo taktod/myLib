@@ -18,27 +18,17 @@ import com.ttProject.unit.extra.bit.Bit6;
  * @author taktod
  */
 public class SdtServiceField {
-	private Bit16 serviceId; // 16ビット
-	private Bit6 reservedFutureUse;
-	private Bit1 eitScheduleFlag;
-	private Bit1 eitPresentFollowingFlag;
-	private Bit3 runningStatus;
-	private Bit1 freeCAMode;
-	private Bit12 descriptorsLoopLength; // 12ビット
+	private Bit16 serviceId = new Bit16(1);
+	private Bit6 reservedFutureUse = new Bit6(0x3F);
+	private Bit1 eitScheduleFlag = new Bit1();
+	private Bit1 eitPresentFollowingFlag = new Bit1();
+	private Bit3 runningStatus = new Bit3(4);
+	private Bit1 freeCAMode = new Bit1();
+	private Bit12 descriptorsLoopLength = new Bit12();
 	private List<Descriptor> descriptors = new ArrayList<Descriptor>();
 	/**
-	 * コンストラクタ
+	 * @param id
 	 */
-	public SdtServiceField() {
-		// デフォルト値は以下とします。
-		serviceId = new Bit16(1); // とりあえず1を指定しておく。
-		reservedFutureUse = new Bit6(0x3F);
-		eitScheduleFlag = new Bit1(0);
-		eitPresentFollowingFlag = new Bit1(0);
-		runningStatus = new Bit3(0x4);
-		freeCAMode = new Bit1(0);
-		descriptorsLoopLength = new Bit12(0);
-	}
 	public void setServiceId(short id) {
 		this.serviceId.set(id);
 	}
@@ -82,14 +72,7 @@ public class SdtServiceField {
 	 * @param ch
 	 * @throws Exception
 	 */
-	public void analyze(IReadChannel ch) throws Exception {
-		serviceId = new Bit16();
-		reservedFutureUse = new Bit6();
-		eitScheduleFlag = new Bit1();
-		eitPresentFollowingFlag = new Bit1();
-		runningStatus = new Bit3();
-		freeCAMode = new Bit1();
-		descriptorsLoopLength = new Bit12();
+	public void load(IReadChannel ch) throws Exception {
 		BitLoader bitLoader = new BitLoader(ch);
 		bitLoader.load(serviceId, reservedFutureUse,
 				eitScheduleFlag, eitPresentFollowingFlag, runningStatus,
