@@ -15,7 +15,7 @@ public class DtsField {
 	// 0010 XXX1 XXXX XXXX XXXX XXX1 XXXX XXXX XXXX XXX1
 	private Bit4 signature;
 	private long dts;
-	public void analyze(IReadChannel ch) throws Exception {
+	public void load(IReadChannel ch) throws Exception {
 		signature = new Bit4();
 		Bit3 dts1 = new Bit3();
 		Bit1 dtsFlag1 = new Bit1();

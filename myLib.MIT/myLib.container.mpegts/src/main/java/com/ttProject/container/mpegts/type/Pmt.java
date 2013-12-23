@@ -1,6 +1,10 @@
 package com.ttProject.container.mpegts.type;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.ttProject.container.mpegts.ProgramPacket;
+import com.ttProject.container.mpegts.field.PmtElementaryField;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
@@ -9,8 +13,10 @@ import com.ttProject.unit.extra.bit.Bit12;
 import com.ttProject.unit.extra.bit.Bit13;
 import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit3;
+import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
+import com.ttProject.util.BufferUtil;
 
 /**
  * Pmt
@@ -64,6 +70,8 @@ public class Pmt extends ProgramPacket {
 	private Bit13 pcrPid = new Bit13();
 	private Bit4 reserved2 = new Bit4();
 	private Bit12 programInfoLength = new Bit12();
+	private List<PmtElementaryField> fields = new ArrayList<PmtElementaryField>();
+	private Bit32 crc32 = new Bit32();
 	/**
 	 * コンストラクタ
 	 * @param syncByte
@@ -84,6 +92,10 @@ public class Pmt extends ProgramPacket {
 				transportPriority, pid, scramblingControl, adaptationFieldExist,
 				payloadFieldExist, continuityCounter);
 	}
+	/**
+	 * コンストラクタ
+	 * @param pmtPid
+	 */
 	public Pmt(Bit13 pmtPid) {
 		this(new Bit8(0x47), new Bit1(), new Bit1(1), new Bit1(),
 				pmtPid, new Bit2(), new Bit1(), new Bit1(1),
@@ -107,17 +119,32 @@ public class Pmt extends ProgramPacket {
 		BitLoader loader = new BitLoader(channel);
 		loader.load(reserved1, pcrPid,
 				reserved2, programInfoLength);
-		
+		int size = getSectionLength() - 5 - 4;
+		while(size > 4) {
+			PmtElementaryField elementaryField = new PmtElementaryField();
+			elementaryField.load(channel);
+			size -= elementaryField.getSize();
+			fields.add(elementaryField);
+		}
+		loader.load(crc32);
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// TODO Auto-generated method stub
+		BufferUtil.quickDispose(channel, 188 - getSize());
 	}
-
 	@Override
 	protected void requestUpdate() throws Exception {
-		// TODO Auto-generated method stub
 
 	}
-
+	public int getPcrPid() {
+		return pcrPid.get();
+	}
+	public boolean isPesPid(int pid) {
+		for(PmtElementaryField field : fields) {
+			if(field.getPid() == pid) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

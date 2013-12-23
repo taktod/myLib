@@ -88,7 +88,7 @@ public class PmtElementaryField {
 	 * @param ch
 	 * @throws Exception
 	 */
-	public void analyze(IReadChannel ch) throws Exception {
+	public void load(IReadChannel ch) throws Exception {
 		streamType = new Bit8();
 		reserved1 = new Bit3();
 		pid = new Bit13();

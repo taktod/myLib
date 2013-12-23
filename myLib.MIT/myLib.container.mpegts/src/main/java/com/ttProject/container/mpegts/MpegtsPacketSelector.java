@@ -3,6 +3,7 @@ package com.ttProject.container.mpegts;
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.mpegts.type.Pat;
+import com.ttProject.container.mpegts.type.Pmt;
 import com.ttProject.container.mpegts.type.Sdt;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
@@ -24,6 +25,7 @@ public class MpegtsPacketSelector implements ISelector {
 	private final int patPid = 0x0000;
 	private final int sdtPid = 0x0011;
 	private Pat pat = null;
+	private Pmt pmt = null;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -61,11 +63,17 @@ public class MpegtsPacketSelector implements ISelector {
 			pat = new Pat(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
 			packet = pat;
 		}
-		else if(pid.get() == pat.getPmtPid()){
+		else if(pat != null && pid.get() == pat.getPmtPid()){
 			logger.info("pmtデータ");
+			pmt = new Pmt(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
+			packet = pmt;
+		}
+		else if(pmt != null && pmt.isPesPid(pid.get())) {
+			logger.info("pesデータ");
 			return null;
 		}
 		else {
+			logger.info("その他データ" + Integer.toHexString(pid.get()));
 			// esPidであるか確認
 			// その他
 			return null;

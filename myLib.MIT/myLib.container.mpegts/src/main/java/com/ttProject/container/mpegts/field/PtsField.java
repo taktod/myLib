@@ -17,7 +17,7 @@ public class PtsField {
 	// xの部分をつなぎ合わせたらptsデータとなります。
 	private Bit4 signature;
 	private long pts; // 90.0fで割り算したら、ミリ秒データになる。
-	public void analyze(IReadChannel ch) throws Exception {
+	public void load(IReadChannel ch) throws Exception {
 		signature = new Bit4();
 		Bit3 pts1 = new Bit3();
 		Bit1 ptsFlag1 = new Bit1();

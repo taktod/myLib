@@ -75,7 +75,7 @@ public class AdaptationField {
 		randomAccessIndicator = new Bit1(flg);
 	}
 	// pcr opcr spliceCountdown stuffingBytes等々・・・
-	public void analyze(IReadChannel channel) throws Exception {
+	public void load(IReadChannel channel) throws Exception {
 		// とりあえずlengthをみておく。
 		BitLoader bitLoader = new BitLoader(channel);
 		bitLoader.load(adaptationFieldLength);
