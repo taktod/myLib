@@ -38,6 +38,7 @@ public abstract class ProgramPacket extends MpegtsPacket {
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
+		super.minimumLoad(channel);
 		BitLoader loader = new BitLoader(channel);
 		loader.load(pointerField, tableId, sectionSyntaxIndicator,
 				reservedFutureUse1, reserved1, sectionLength, programNumber,

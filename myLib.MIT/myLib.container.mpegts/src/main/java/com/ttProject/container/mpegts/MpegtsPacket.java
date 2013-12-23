@@ -1,6 +1,8 @@
 package com.ttProject.container.mpegts;
 
 import com.ttProject.container.Container;
+import com.ttProject.container.mpegts.field.AdaptationField;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit13;
 import com.ttProject.unit.extra.bit.Bit2;
@@ -21,6 +23,7 @@ public abstract class MpegtsPacket extends Container {
 	private final Bit1 adaptationFieldExist;
 	private final Bit1 payloadFieldExist;
 	private final Bit4 continuityCounter;
+	private AdaptationField adaptationField = new AdaptationField();
 	public MpegtsPacket(Bit8 syncByte, Bit1 transportErrorIndicator,
 			Bit1 payloadUnitStartIndicator, Bit1 transportPriority,
 			Bit13 pid, Bit2 scramblingControl, Bit1 adaptationFieldExist,
@@ -34,6 +37,12 @@ public abstract class MpegtsPacket extends Container {
 		this.adaptationFieldExist = adaptationFieldExist;
 		this.payloadFieldExist = payloadFieldExist;
 		this.continuityCounter = continuityCounter;
+	}
+	@Override
+	public void minimumLoad(IReadChannel channel) throws Exception {
+		if(adaptationFieldExist.get() != 0x00) {
+			adaptationField.load(channel);
+		}
 	}
 	protected boolean isPayloadUnitStart() {
 		return payloadUnitStartIndicator.get() == 1;

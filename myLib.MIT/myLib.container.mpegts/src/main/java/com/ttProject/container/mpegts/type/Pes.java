@@ -14,6 +14,7 @@ import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit24;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
+import com.ttProject.util.BufferUtil;
 
 /**
  * ElementaryStreamPacket
@@ -81,12 +82,13 @@ public class Pes extends MpegtsPacket {
 	private Bit1 CRCFlag = null; // 0
 	private Bit1 extensionFlag = null; // 0
 
-	private Bit8 PESHeaederLength = null; // 10byte?
+	private Bit8 PESHeaderLength = null; // 10byte?
 	private PtsField pts = null;
 	private DtsField dts = null;
 
 	/** unitの開始のpesは保持しておく。(こいつにframeを持たせることにする) */
 	private Pes unitStartPes = null;
+	private int pesDeltaSize = 0; // pesが保持するデータサイズ
 	public Pes(Bit8 syncByte, Bit1 transportErrorIndicator,
 			Bit1 payloadUnitStartIndicator, Bit1 transportPriority,
 			Bit13 pid, Bit2 scramblingControl, Bit1 adaptationFieldExist,
@@ -104,6 +106,8 @@ public class Pes extends MpegtsPacket {
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
+		int startPos = channel.position();
+		super.minimumLoad(channel);
 		// payloadStartUnitの場合はデータの読み込みがあるみたいです。
 		if(isPayloadUnitStart()) {
 			logger.info("payloadの開始である");
@@ -124,18 +128,61 @@ public class Pes extends MpegtsPacket {
 			additionalCopyInfoFlag = new Bit1();
 			CRCFlag = new Bit1();
 			extensionFlag = new Bit1();
-			PESHeaederLength = new Bit8();
+			PESHeaderLength = new Bit8();
 			BitLoader loader = new BitLoader(channel);
 			loader.load(prefix, streamId, pesPacketLength, markerBits,
 					scramblingControl, priority, dataAlignmentIndicator,
 					copyright, originFlg, ptsDtsIndicator, escrFlag,
 					esRateFlag, DSMTrickModeFlag, additionalCopyInfoFlag,
-					CRCFlag, extensionFlag, PESHeaederLength);
+					CRCFlag, extensionFlag, PESHeaderLength);
+			
+			int length = PESHeaderLength.get();
+			switch(ptsDtsIndicator.get()) {
+			case 0x03:
+				pts = new PtsField();
+				dts = new DtsField();
+				pts.load(channel);
+				dts.load(channel);
+				length -= 10;
+				break;
+			case 0x02:
+				pts = new PtsField();
+				pts.load(channel);
+				length -= 5;
+				break;
+			case 0x00:
+				break;
+			default:
+				throw new Exception("ptsDtsIndicatorが不正です。");
+			}
+			if(escrFlag.get() != 0x00) {
+				throw new Exception("escrFlagの解析は未実装です。");
+			}
+			if(esRateFlag.get() != 0x00) {
+				throw new Exception("esRateFlagの解析は未実装です。");
+			}
+			if(DSMTrickModeFlag.get() != 0x00) {
+				throw new Exception("DSMTrickModeFlagの解析は未実装です。");
+			}
+			if(additionalCopyInfoFlag.get() != 0x00) {
+				throw new Exception("additionalCopyInfoFlagの解析は未実装です。");
+			}
+			if(CRCFlag.get() != 0x00) {
+				throw new Exception("CRCFlagの解析は未実装です。");
+			}
+			if(extensionFlag.get() != 0x00) {
+				throw new Exception("extensionFlagの解析は未実装です。");
+			}
+			if(length != 0) {
+				throw new Exception("読み込みできていないデータがあるみたいです。");
+			}
 		}
+		pesDeltaSize = 184 - (channel.position() - startPos);
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		// frameの実データを読み込みます。読み込んだデータはpayloadStartUnitをもっているpesに格納されます
+		BufferUtil.quickDispose(channel, pesDeltaSize);
 	}
 	@Override
 	protected void requestUpdate() throws Exception {

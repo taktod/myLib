@@ -42,6 +42,7 @@ public class MpegtsPacketSelector implements ISelector {
 			// データが最後まできているので処理することができない。
 			return null;
 		}
+		logger.info("pos:" + channel.position());
 		Bit8 syncByte = new Bit8();
 		Bit1 transportErrorIndicator = new Bit1();
 		Bit1 payloadUnitStartIndicator = new Bit1();
