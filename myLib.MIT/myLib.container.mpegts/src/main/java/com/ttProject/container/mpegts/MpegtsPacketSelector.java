@@ -2,6 +2,7 @@ package com.ttProject.container.mpegts;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.container.mpegts.type.Pat;
 import com.ttProject.container.mpegts.type.Sdt;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
@@ -22,8 +23,7 @@ public class MpegtsPacketSelector implements ISelector {
 	private Logger logger = Logger.getLogger(MpegtsPacketSelector.class);
 	private final int patPid = 0x0000;
 	private final int sdtPid = 0x0011;
-	private int pmtPId;
-	private int pcrPid;
+	private Pat pat = null;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -54,16 +54,23 @@ public class MpegtsPacketSelector implements ISelector {
 		if(pid.get() == sdtPid) {
 			logger.info("sdtデータ");
 			packet = new Sdt(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
-			packet.minimumLoad(channel);
 		}
 		else if(pid.get() == patPid) {
 			logger.info("patデータ");
+			// patを保持しておく
+			pat = new Pat(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
+			packet = pat;
+		}
+		else if(pid.get() == pat.getPmtPid()){
+			logger.info("pmtデータ");
+			return null;
 		}
 		else {
-			// pmtPidであるか確認
 			// esPidであるか確認
 			// その他
+			return null;
 		}
+		packet.minimumLoad(channel);
 		return packet;
 	}
 }

@@ -1,14 +1,29 @@
 package com.ttProject.container.mpegts.type;
 
-import com.ttProject.container.mpegts.MpegtsPacket;
+import com.ttProject.container.mpegts.ProgramPacket;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit13;
+import com.ttProject.unit.extra.bit.Bit16;
 import com.ttProject.unit.extra.bit.Bit2;
+import com.ttProject.unit.extra.bit.Bit3;
+import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
+import com.ttProject.util.BufferUtil;
 
-public class Pat extends MpegtsPacket {
+/**
+ * Pat(Program Association Table)
+ * 474000100000B00D0001C100000001F0002AB104B2
+ * @author taktod
+ */
+public class Pat extends ProgramPacket {
+	private Bit16 programNum = new Bit16();
+	private Bit3 reserved = new Bit3();
+	private Bit13 pmtPid = new Bit13();
+	private Bit32 crc32 = new Bit32();
 	public Pat(Bit8 syncByte, Bit1 transportErrorIndicator,
 			Bit1 payloadUnitStartIndicator, Bit1 transportPriority,
 			Bit13 pid, Bit2 scramblingControl, Bit1 adaptationFieldExist,
@@ -17,22 +32,41 @@ public class Pat extends MpegtsPacket {
 				transportPriority, pid, scramblingControl, adaptationFieldExist,
 				payloadFieldExist, continuityCounter);
 	}
-
+	public Pat() {
+		this(new Bit8(0x47), new Bit1(), new Bit1(1), new Bit1(),
+				new Bit13(), new Bit2(), new Bit1(), new Bit1(1),
+				new Bit4()
+		);
+		try {
+			super.minimumLoad(new ByteReadChannel(new byte[]{
+					0x00, 0x00, (byte)0xB0, 0x0D, 0x00, 0x01, (byte)0xC1, 0x00, 0x00
+			}));
+		}
+		catch(Exception e) {
+		}
+		programNum.set(1);
+		reserved.set(0x07);
+		pmtPid.set(0x1000);
+		setSectionLength(13);
+	}
+	public int getPmtPid() {
+		return pmtPid.get();
+	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		// TODO Auto-generated method stub
-		
+		super.minimumLoad(channel);
+		BitLoader loader = new BitLoader(channel);
+		loader.load(programNum, reserved, pmtPid, crc32);
 	}
 
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// TODO Auto-generated method stub
-		
+		// とりあえず残りのデータ数分skipさせとくか・・・
+		BufferUtil.quickDispose(channel, 188 - getSize());
 	}
 
 	@Override
 	protected void requestUpdate() throws Exception {
-		// TODO Auto-generated method stub
 		
 	}
 
