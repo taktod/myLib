@@ -109,10 +109,21 @@ public class MetaTag extends FlvTag {
 				tailBuffer
 		));
 	}
+	/**
+	 * データ追加
+	 * @param key
+	 * @param value
+	 * @throws Exception
+	 */
 	public void put(String key, Object value) throws Exception {
 		data.put(key, value);
 		updateData();
 	}
+	/**
+	 * データ削除
+	 * @param key
+	 * @throws Exception
+	 */
 	public void remove(String key) throws Exception {
 		data.remove(key);
 		updateData();
@@ -129,6 +140,11 @@ public class MetaTag extends FlvTag {
 		setSize(rawBuffer.remaining() + 15);
 		update();
 	}
+	/**
+	 * データ参照
+	 * @param key
+	 * @return
+	 */
 	public Object get(String key) {
 		return data.get(key);
 	}

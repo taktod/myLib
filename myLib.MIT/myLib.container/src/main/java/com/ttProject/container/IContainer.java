@@ -8,7 +8,7 @@ import com.ttProject.unit.IUnit;
  */
 public interface IContainer extends IUnit {
 	/**
-	 * ファイル上のデータの開始位置
+	 * IReadChannel上の位置情報参照(主にファイル上のデータの位置)
 	 * @return
 	 */
 	public int getPosition();

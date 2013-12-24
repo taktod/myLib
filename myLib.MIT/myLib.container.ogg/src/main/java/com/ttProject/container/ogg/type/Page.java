@@ -57,12 +57,18 @@ public class Page extends OggPage {
 			Bit1 packetContinurousFlag) {
 		super(version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
 		logger.info("minimumload");
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		channel.position(getPosition() + 27 + getSegmentSizeList().size());
@@ -83,6 +89,9 @@ public class Page extends OggPage {
 		// analyzerをつかって開く
 		channel.position(getPosition() + getSize());
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		

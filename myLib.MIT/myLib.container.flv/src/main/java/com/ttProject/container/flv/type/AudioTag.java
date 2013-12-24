@@ -33,26 +33,40 @@ import com.ttProject.util.BufferUtil;
 public class AudioTag extends FlvTag {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(AudioTag.class);
-	private Bit4 codecId = null;
-	private Bit2 sampleRate = null;
-	private Bit1 bitCount = null;
-	private Bit1 channels = null;
+	private Bit4 codecId            = new Bit4();
+	private Bit2 sampleRate         = new Bit2();
+	private Bit1 bitCount           = new Bit1();
+	private Bit1 channels           = new Bit1();
 	private Bit8 sequenceHeaderFlag = null;
-	private ByteBuffer frameBuffer = null;
-	private IAudioFrame frame = null;
+	
+	private ByteBuffer    frameBuffer   = null;
+	private IAudioFrame   frame         = null;
 	private AudioAnalyzer frameAnalyzer = null;
-/*	public IAudioFrame getFrame() {
-		return frame;
-	}*/
+	/**
+	 * コンストラクタ
+	 * @param tagType
+	 */
 	public AudioTag(Bit8 tagType) {
 		super(tagType);
 	}
+	/**
+	 * デフォルトコンストラクタ
+	 */
 	public AudioTag() {
 		this(new Bit8(0x08));
 	}
+	/**
+	 * フレーム解析オブジェクト保持
+	 * @param analyzer
+	 */
 	public void setFrameAnalyzer(AudioAnalyzer analyzer) {
 		this.frameAnalyzer = analyzer;
 	}
+	/**
+	 * サンプルレート参照
+	 * @return
+	 * @throws Exception
+	 */
 	public int getSampleRate() throws Exception {
 		if(frame == null) {
 			switch(getCodec()) {
@@ -79,12 +93,21 @@ public class AudioTag extends FlvTag {
 		}
 		return frame.getSampleRate();
 	}
+	/**
+	 * サンプル数参照(frame依存)
+	 * @return
+	 * @throws Exception
+	 */
 	public int getSampleNum() throws Exception {
 		if(frame == null) {
 			analyzeFrame(); // 解析させる
 		}
 		return frame.getSampleNum();
 	}
+	/**
+	 * チャンネル数
+	 * @return
+	 */
 	public int getChannels() {
 		if(frame == null) {
 			if(channels.get() == 1) {
@@ -96,6 +119,10 @@ public class AudioTag extends FlvTag {
 		}
 		return frame.getChannel();
 	}
+	/**
+	 * ビット数
+	 * @return
+	 */
 	public int getBitCount() {
 		if(frame == null) {
 			if(bitCount.get() == 1) {
@@ -137,6 +164,10 @@ public class AudioTag extends FlvTag {
 			throw new Exception("終端タグのデータ量がおかしいです。");
 		}
 	}
+	/**
+	 * コーデック参照
+	 * @return
+	 */
 	public CodecType getCodec() {
 		return CodecType.getAudioCodecType(codecId.get());
 	}
@@ -151,16 +182,15 @@ public class AudioTag extends FlvTag {
 			return;
 		}
 		BitLoader loader = new BitLoader(channel);
-		codecId = new Bit4();
-		sampleRate = new Bit2();
-		bitCount = new Bit1();
-		channels = new Bit1();
 		loader.load(codecId, sampleRate, bitCount, channels);
 		if(getCodec() == CodecType.AAC) {
 			sequenceHeaderFlag = new Bit8();
 			loader.load(sequenceHeaderFlag);
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(frameBuffer == null && frame == null) {
@@ -180,13 +210,21 @@ public class AudioTag extends FlvTag {
 				tailBuffer
 		));
 	}
+	/**
+	 * frameBuffer参照
+	 * @return
+	 */
 	private ByteBuffer getFrameBuffer() {
 		if(frameBuffer == null) {
 			// frameから復元する必要あり
 		}
 		return frameBuffer.duplicate();
 	}
-	public void analyzeFrame() throws Exception {
+	/**
+	 * フレーム解析
+	 * @throws Exception
+	 */
+	private void analyzeFrame() throws Exception {
 		if(frameBuffer == null) {
 			throw new Exception("frameデータが読み込まれていません");
 		}
@@ -220,12 +258,20 @@ public class AudioTag extends FlvTag {
 			}
 		} while(channel.size() != channel.position());
 	}
+	/**
+	 * フレーム参照
+	 * @return
+	 * @throws Exception
+	 */
 	public IAudioFrame getFrame() throws Exception {
 		if(frame == null) {
 			analyzeFrame();
 		}
 		return frame;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		StringBuilder data = new StringBuilder();
@@ -239,7 +285,6 @@ public class AudioTag extends FlvTag {
 			data.append(" sampleNum:").append(sampleNum);
 		}
 		catch(Exception e) {
-//			e.printStackTrace();
 		}
 		return data.toString();
 	}

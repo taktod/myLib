@@ -13,14 +13,18 @@ import com.ttProject.unit.extra.bit.Bit8;
 /**
  * flvデータのタグ
  * @author taktod
+ * メモ：bitDataの取り扱いについて
+ * コンストラクタにて設定されるものはfinalをつける。
+ * minimumloadにて設定されるものは先にデフォルトのbitで初期化する
+ * データのフラグによって追加されるかもしれないものはnullを代入しておく
  */
 public abstract class FlvTag extends Container {
-	private final Bit8 tagType; // 8 9 12以外にもありえるのか？
-	private Bit24 dataSize = new Bit24();
-	private Bit24 timestamp = new Bit24();
-	private Bit8 timestampExt =new Bit8();
-	private Bit24 streamId = new Bit24();
-	private Bit32 prevTagSize = new Bit32();
+	private final Bit8  tagType; // 8 9 12以外にもありえるのか？
+	private       Bit24 dataSize     = new Bit24();
+	private       Bit24 timestamp    = new Bit24();
+	private       Bit8  timestampExt = new Bit8();
+	private       Bit24 streamId     = new Bit24();
+	private       Bit32 prevTagSize  = new Bit32();
 	/**
 	 * コンストラクタ
 	 */
@@ -45,23 +49,41 @@ public abstract class FlvTag extends Container {
 		super.setSize(dataSize.get() + 11 + 4);
 		super.update();
 	}
+	/**
+	 * 開始時に存在するデータ参照
+	 * @return
+	 */
 	protected ByteBuffer getStartBuffer() {
 		BitConnector connector = new BitConnector();
 		return connector.connect(tagType, dataSize, timestamp, timestampExt, streamId);
 	}
+	/**
+	 * 終端に追加するデータ参照
+	 * @return
+	 */
 	protected ByteBuffer getTailBuffer() {
 		BitConnector connector = new BitConnector();
 		return connector.connect(prevTagSize);
 	}
+	/**
+	 * 終端に追加されるデータ量情報(全体のデータ量 - 4)
+	 * @return
+	 */
 	protected int getPrevTagSize() {
 		return prevTagSize.get();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void setData(ByteBuffer data) {
 		dataSize.set(data.remaining() - 11 - 4);
 		prevTagSize = new Bit32(dataSize.get() + 11);
 		super.setData(data);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void setPts(long pts) {
 		timestamp.set((int)(pts & 0x00FFFFFF));

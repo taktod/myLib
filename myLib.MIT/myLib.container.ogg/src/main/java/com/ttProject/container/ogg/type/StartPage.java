@@ -22,13 +22,16 @@ import com.ttProject.util.BufferUtil;
 /**
  * startPage(speexとかのheader情報がはいっているっぽい。)
  * @author taktod
+ * TODO Out of Memoryが発生する可能性があるので、frameListをpageごとに保持するように変更したほうがよい。
  */
 public class StartPage extends OggPage {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(StartPage.class);
 	/** 解析プログラム */
 	private IAnalyzer analyzer = null;
+	/** 全ファイルのframeListがここに保持されるみたいです。(この方法だとデータがでかいoggファイルを読み込むとOOMが発生するので、対処しなければいけない。) */
 	private List<IUnit> frameList = new ArrayList<IUnit>();
+	/** 経過tic情報 */
 	private long passedTic = 0;
 	/**
 	 * コンストラクタ
@@ -43,12 +46,17 @@ public class StartPage extends OggPage {
 			Bit1 packetContinurousFlag) {
 		super(version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
-		logger.info("minimumload");
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		boolean isFirstData = true;
@@ -88,6 +96,9 @@ public class StartPage extends OggPage {
 		// 次の位置に強制割り当てしている
 		channel.position(getPosition() + getSize());
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 	}
@@ -98,9 +109,17 @@ public class StartPage extends OggPage {
 	public IAnalyzer getAnalyzer() {
 		return analyzer;
 	}
+	/**
+	 * 経過ticを設定する
+	 * @param passedTic
+	 */
 	public void setPassedTic(long passedTic) {
 		this.passedTic = passedTic;
 	}
+	/**
+	 * 経過ticを参照する
+	 * @return
+	 */
 	public long getPassedTic() {
 		return passedTic;
 	}

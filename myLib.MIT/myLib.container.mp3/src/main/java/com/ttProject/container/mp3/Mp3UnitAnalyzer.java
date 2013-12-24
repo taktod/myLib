@@ -10,7 +10,11 @@ import com.ttProject.unit.IUnit;
  * @author taktod
  */
 public class Mp3UnitAnalyzer implements IAnalyzer {
+	/** 解析用セレクター */
 	private ISelector selector = new Mp3UnitSelector();
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public IUnit analyze(IReadChannel channel) throws Exception {
 		IUnit unit = selector.select(channel);

@@ -10,7 +10,11 @@ import com.ttProject.unit.IUnit;
  * @author taktod
  */
 public class AdtsUnitAnalyzer implements IAnalyzer {
+	/** 対応セレクター */
 	private ISelector selector = new AdtsUnitSelector();
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public IUnit analyze(IReadChannel channel) throws Exception {
 		IUnit unit = selector.select(channel);
@@ -19,5 +23,4 @@ public class AdtsUnitAnalyzer implements IAnalyzer {
 		}
 		return unit;
 	}
-
 }

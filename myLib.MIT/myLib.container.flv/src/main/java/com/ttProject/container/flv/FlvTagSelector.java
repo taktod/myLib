@@ -34,7 +34,9 @@ public class FlvTagSelector implements ISelector {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(FlvTagSelector.class);
+	/** 動画フレームの解析 */
 	private VideoAnalyzer videoFrameAnalyzer = null;
+	/** 映像フレームの解析 */
 	private AudioAnalyzer audioFrameAnalyzer = null;
 	/**
 	 * {@inheritDoc}

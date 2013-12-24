@@ -30,22 +30,35 @@ public class VideoTag extends FlvTag {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(VideoTag.class);
 	private Bit4 frameType = new Bit4();
-	private Bit4 codecId = new Bit4();
-	private Bit4 horizontalAdjustment = null; // vp6のみ
-	private Bit4 verticalAdjustment = null; // vp6のみ
-	private Bit32 offsetToAlpha = null; // vp6aのみ
-	private Bit8 packetType = null; // avcのみ
-	private Bit24 dts = null; // avcのみ
+	private Bit4 codecId   = new Bit4();
+	
+	private Bit4  horizontalAdjustment = null; // vp6のみ
+	private Bit4  verticalAdjustment   = null; // vp6のみ
+	private Bit32 offsetToAlpha        = null; // vp6aのみ
+	private Bit8  packetType           = null; // avcのみ
+	private Bit24 dts                  = null; // avcのみ
+
 	private ByteBuffer frameBuffer = null; // フレームデータ
-	private ByteBuffer alphaData = null; // vp6a用のalphaデータ
-	private IVideoFrame frame = null; // 動作対象フレーム
+	private ByteBuffer alphaData   = null; // vp6a用のalphaデータ
+	private IVideoFrame   frame = null; // 動作対象フレーム
 	private VideoAnalyzer frameAnalyzer = null;
+	/**
+	 * コンストラクタ
+	 * @param tagType
+	 */
 	public VideoTag(Bit8 tagType) {
 		super(tagType);
 	}
+	/**
+	 * デフォルトコンストラクタ
+	 */
 	public VideoTag() {
 		this(new Bit8(0x09));
 	}
+	/**
+	 * フレーム解析Analyzer設定
+	 * @param analyzer
+	 */
 	public void setFrameAnalyzer(VideoAnalyzer analyzer) {
 		this.frameAnalyzer = analyzer;
 	}
@@ -94,6 +107,10 @@ public class VideoTag extends FlvTag {
 			throw new Exception("終端タグのデータ量がおかしいです。");
 		}
 	}
+	/**
+	 * コーデック参照
+	 * @return
+	 */
 	public CodecType getCodec() {
 		return CodecType.getVideoCodecType(codecId.get());
 	}
@@ -118,6 +135,9 @@ public class VideoTag extends FlvTag {
 			loader.load(packetType, dts);
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(frameBuffer == null && frame == null) {
@@ -141,13 +161,21 @@ public class VideoTag extends FlvTag {
 				tailBuffer
 		));
 	}
+	/**
+	 * frame用buffer参照
+	 * @return
+	 */
 	private ByteBuffer getFrameBuffer() {
 		if(frameBuffer == null) {
 			// frameから復元する必要あり。
 		}
 		return frameBuffer.duplicate();
 	}
-	public void analyzeFrame() throws Exception {
+	/**
+	 * フレーム解析実行
+	 * @throws Exception
+	 */
+	private void analyzeFrame() throws Exception {
 		if(frameBuffer == null) {
 			throw new Exception("frameデータが読み込まれていません");
 		}
@@ -181,24 +209,42 @@ public class VideoTag extends FlvTag {
 			}
 		} while(channel.size() != channel.position());
 	}
+	/**
+	 * フレーム参照
+	 * @return
+	 * @throws Exception
+	 */
 	public IVideoFrame getFrame() throws Exception {
 		if(frame == null) {
 			analyzeFrame();
 		}
 		return frame;
 	}
+	/**
+	 * 横幅
+	 * @return
+	 * @throws Exception
+	 */
 	public int getWidth() throws Exception {
 		if(frame == null) {
 			analyzeFrame();
 		}
 		return frame.getWidth();
 	}
+	/**
+	 * 高さ
+	 * @return
+	 * @throws Exception
+	 */
 	public int getHeight() throws Exception {
 		if(frame == null) {
 			analyzeFrame();
 		}
 		return frame.getHeight();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		StringBuilder data = new StringBuilder();

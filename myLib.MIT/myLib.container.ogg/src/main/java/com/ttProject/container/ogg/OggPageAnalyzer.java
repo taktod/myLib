@@ -10,7 +10,11 @@ import com.ttProject.unit.IUnit;
  * @author taktod
  */
 public class OggPageAnalyzer implements IAnalyzer {
+	/** 解析用セレクター設定 */
 	private ISelector selector = new OggPageSelector();
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public IUnit analyze(IReadChannel channel) throws Exception {
 		IUnit unit = selector.select(channel);

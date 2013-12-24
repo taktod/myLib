@@ -21,14 +21,15 @@ public class FlvHeaderTag extends Container implements IContainer {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(FlvHeaderTag.class);
+
 	private final Bit24 signature;
-	private Bit8 version = new Bit8(1);
-	private Bit5 reserved1 = new Bit5();
-	private Bit1 audioFlag = new Bit1();
-	private Bit1 reserved2 = new Bit1();
-	private Bit1 videoFlag = new Bit1();
-	private Bit32 length = new Bit32(9);
-	private Bit32 reserved3 = new Bit32();
+	private       Bit8  version   = new Bit8(1);
+	private       Bit5  reserved1 = new Bit5();
+	private       Bit1  audioFlag = new Bit1();
+	private       Bit1  reserved2 = new Bit1();
+	private       Bit1  videoFlag = new Bit1();
+	private       Bit32 length    = new Bit32(9);
+	private       Bit32 reserved3 = new Bit32();
 	/**
 	 * コンストラクタ
 	 * @param signature
@@ -39,24 +40,11 @@ public class FlvHeaderTag extends Container implements IContainer {
 		setPts(0);
 		setTimebase(1000);
 	}
+	/**
+	 * コンストラクタ
+	 */
 	public FlvHeaderTag() {
 		this(new Bit24('F' << 16 | 'L' << 8 | 'V'));
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void load(IReadChannel channel) throws Exception {
-		if(reserved3 == null) {
-			minimumLoad(channel);
-		}
-		// 全体で追加読み込みしないといけないデータはないものとします。
-	}
-	public void setVideoFlag(boolean flag) {
-		videoFlag.set(flag ? 1 : 0);
-	}
-	public void setAudioFlag(boolean flag) {
-		audioFlag.set(flag ? 1 : 0);
 	}
 	/**
 	 * {@inheritDoc}
@@ -69,6 +57,30 @@ public class FlvHeaderTag extends Container implements IContainer {
 				length, reserved3);
 		update();
 		setSize(13);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void load(IReadChannel channel) throws Exception {
+//		if(reserved3 == null) {
+//			minimumLoad(channel);
+//		}
+		// 追加読み込みデータは存在しません。
+	}
+	/**
+	 * 映像があるか設定
+	 * @param flag
+	 */
+	public void setVideoFlag(boolean flag) {
+		videoFlag.set(flag ? 1 : 0);
+	}
+	/**
+	 * 音声があるか設定
+	 * @param flag
+	 */
+	public void setAudioFlag(boolean flag) {
+		audioFlag.set(flag ? 1 : 0);
 	}
 	/**
 	 * {@inheritDoc}

@@ -13,6 +13,7 @@ import com.ttProject.unit.IUnit;
 public class AdtsUnitSelector implements ISelector {
 	/** 経過サンプル数を保持 */
 	private long passedTic = 0;
+	/** aacFrameの解析用セレクター */
 	private ISelector aacFrameSelector = new AacFrameSelector();
 	/**
 	 * {@inheritDoc}

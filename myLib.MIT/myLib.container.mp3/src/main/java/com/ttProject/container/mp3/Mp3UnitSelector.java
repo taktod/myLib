@@ -13,6 +13,7 @@ import com.ttProject.unit.IUnit;
 public class Mp3UnitSelector implements ISelector {
 	/** 経過したサンプル数を保持しておく */
 	private long passedTic = 0;
+	/** mp3のデータframe解析動作 */
 	private ISelector mp3FrameSelector = new Mp3FrameSelector();
 	/**
 	 * {@inheritDoc}
