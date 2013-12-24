@@ -16,6 +16,7 @@ import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit5;
+import com.ttProject.unit.extra.bit.Bit64;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
@@ -36,11 +37,12 @@ public abstract class OggPage extends Container {
 	private final Bit1  packetContinurousFlag;
 
 	// ここから先はminimumLoadで実行すればよい bit数に書き直したいけど、littleEndianの取り扱いが微妙
-	private long absoluteGranulePosition; // TODO bit数に書き直したい
-	private int streamSerialNumber; // TODO bit数に書き直したい
-	private int pageSequenceNo; // TODO bit数に書き直したい
-	private int pageChecksum; // TODO bit数に書き直したい
-	private Bit8 segmentCount = new Bit8();
+	private Bit64 absoluteGranulePosition = new Bit64();
+	private Bit32 streamSerialNumber      = new Bit32();
+	private Bit32 pageSequenceNo          = new Bit32();
+	private Bit32 pageChecksum            = new Bit32();
+	private Bit8  segmentCount            = new Bit8();
+
 	private List<Bit8> segmentSizeList = new ArrayList<Bit8>();
 	private List<ByteBuffer> bufferList = new ArrayList<ByteBuffer>();
 	private List<IFrame> frameList = new ArrayList<IFrame>();
@@ -75,10 +77,10 @@ public abstract class OggPage extends Container {
 		// データを読み込む
 		ByteBuffer buffer = BufferUtil.safeRead(channel, 20);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
-		absoluteGranulePosition = buffer.getLong();
-		streamSerialNumber = buffer.getInt();
-		pageSequenceNo = buffer.getInt();
-		pageChecksum = buffer.getInt();
+		absoluteGranulePosition.setLong(buffer.getLong());
+		streamSerialNumber.set(buffer.getInt());
+		pageSequenceNo.set(buffer.getInt());
+		pageChecksum.set(buffer.getInt());
 		BitLoader loader = new BitLoader(channel);
 		loader.load(segmentCount);
 		logger.info(segmentCount.get());
@@ -103,10 +105,10 @@ public abstract class OggPage extends Container {
 		result.put(connector.connect(
 				syncString, version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag
 		));
-		result.putLong(absoluteGranulePosition);
-		result.putInt(streamSerialNumber);
-		result.putInt(pageSequenceNo);
-		result.putInt(pageChecksum);
+		result.putLong(absoluteGranulePosition.getLong());
+		result.putInt(streamSerialNumber.get());
+		result.putInt(pageSequenceNo.get());
+		result.putInt(pageChecksum.get());
 		connector.feed(segmentCount);
 		for(Bit8 bit : segmentSizeList) {
 			connector.feed(bit);
@@ -141,7 +143,7 @@ public abstract class OggPage extends Container {
 	 * @return
 	 */
 	public Integer getStreamSerialNumber() {
-		return streamSerialNumber;
+		return streamSerialNumber.get();
 	}
 	/**
 	 * startPageを保持設定しておく。
