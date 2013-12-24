@@ -4,6 +4,10 @@ import java.nio.ByteBuffer;
 
 import com.ttProject.nio.channels.IReadChannel;
 
+/**
+ * 全データの基本インターフェイス
+ * @author taktod
+ */
 public interface IData {
 	/**
 	 * 保持データを応答します。

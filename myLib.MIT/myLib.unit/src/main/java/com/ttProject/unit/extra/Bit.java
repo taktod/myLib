@@ -32,6 +32,10 @@ public abstract class Bit {
 	public int get() {
 		return value & 0xFF;
 	}
+	/**
+	 * bit深度を参照します。
+	 * @return
+	 */
 	public int getBitCount() {
 		return bitCount;
 	}

@@ -10,5 +10,11 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public interface IAnalyzer {
+	/**
+	 * 解析動作(全byteデータの確認を実施します)
+	 * @param channel
+	 * @return
+	 * @throws Exception
+	 */
 	public IUnit analyze(IReadChannel channel) throws Exception;
 }

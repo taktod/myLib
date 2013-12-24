@@ -5,7 +5,6 @@ import java.nio.ByteBuffer;
 /**
  * データのベースとなるクラス
  * @author taktod
- *
  */
 public abstract class Data implements IData {
 	/** データサイズ */
@@ -42,9 +41,17 @@ public abstract class Data implements IData {
 		}
 		return data;
 	}
+	/**
+	 * サイズ設定
+	 * @param size
+	 */
 	protected void setSize(int size) {
 		this.size = size;
 	}
+	/**
+	 * データ設定
+	 * @param data
+	 */
 	protected void setData(ByteBuffer data) {
 		this.data = data;
 		update = false;

@@ -17,6 +17,7 @@ import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit6;
+import com.ttProject.unit.extra.bit.Bit64;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.unit.extra.bit.Seg;
 import com.ttProject.unit.extra.bit.Ueg;
@@ -172,5 +173,14 @@ public class BitTest {
 		logger.info("test8");
 		BitConnector connector = new BitConnector();
 		logger.info(HexUtil.toHex(connector.connect((Bit)null)));
+	}
+	@Test
+	public void test9() throws Exception {
+		logger.info("test9");
+		Bit64 bit = new Bit64();
+		bit.setLong(0xFF00000000L);
+		logger.info(bit);
+		bit.setLong(0xFFFFFFFFL);
+		logger.info(bit);
 	}
 }

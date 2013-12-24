@@ -36,9 +36,17 @@ public abstract class ExpGolomb extends Bit {
 		bitCount = 1;
 		bits.add(new Bit1(1));
 	}
+	/**
+	 * 内部データ参照
+	 * @return
+	 */
 	protected int getData() {
 		return value;
 	}
+	/**
+	 * 内部データ設定
+	 * @param value
+	 */
 	protected void setData(int value) {
 		this.value = value;
 		bits.clear();

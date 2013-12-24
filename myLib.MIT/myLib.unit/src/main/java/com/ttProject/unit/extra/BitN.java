@@ -6,6 +6,7 @@ import java.util.List;
 /**
  * 複数のbitを結合して使えるようにするbit
  * bit数は始めに定義したままとします。(入力数値によって可変ではありません)
+ * TODO 32bit以上の場合のget,setはlongで扱うべき
  * @author taktod
  */
 public class BitN extends Bit {
@@ -37,6 +38,18 @@ public class BitN extends Bit {
 		return value;
 	}
 	/**
+	 * long値でデータを参照します
+	 * @return
+	 */
+	public long getLong() {
+		long value = 0;
+		for(Bit bit : bits) {
+			value <<= bit.bitCount;
+			value |= bit.get();
+		}
+		return value;
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -45,6 +58,18 @@ public class BitN extends Bit {
 		for(int i = size - 1;i >= 0;i --) {
 			Bit bit = bits.get(i);
 			bit.set(value);
+			value >>>= bit.bitCount;
+		}
+	}
+	/**
+	 * long値でデータを設定します
+	 * @param value
+	 */
+	public void setLong(long value) {
+		int size = bits.size();
+		for(int i = size - 1;i >= 0;i --) {
+			Bit bit = bits.get(i);
+			bit.set((int)(value & 0xFFFFFFFF));
 			value >>>= bit.bitCount;
 		}
 	}

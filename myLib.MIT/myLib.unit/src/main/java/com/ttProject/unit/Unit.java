@@ -27,9 +27,17 @@ public abstract class Unit extends Data implements IUnit {
 	public long getTimebase() {
 		return timebase;
 	}
+	/**
+	 * pts値設定
+	 * @param pts
+	 */
 	protected void setPts(long pts) {
 		this.pts = pts;
 	}
+	/**
+	 * timebase設定(時間はpts / timebase秒になります。)
+	 * @param timebase
+	 */
 	protected void setTimebase(long timebase) {
 		this.timebase = timebase;
 	}
