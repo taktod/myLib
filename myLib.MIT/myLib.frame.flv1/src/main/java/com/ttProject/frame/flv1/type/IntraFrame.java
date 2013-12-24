@@ -14,6 +14,23 @@ import com.ttProject.unit.extra.bit.Bit8;
  * @author taktod
  */
 public class IntraFrame extends Flv1Frame {
+	/**
+	 * コンストラクタ
+	 * @param pictureStartCode
+	 * @param version
+	 * @param temporalReference
+	 * @param pictureSize
+	 * @param customWidth
+	 * @param customHeight
+	 * @param width
+	 * @param height
+	 * @param pictureType
+	 * @param deblockingFlag
+	 * @param quantizer
+	 * @param extraInformationFlag
+	 * @param extraInformation
+	 * @param extra
+	 */
 	public IntraFrame(Bit17 pictureStartCode,
 			Bit5 version, Bit8 temporalReference, Bit3 pictureSize,
 			Bit customWidth, Bit customHeight,

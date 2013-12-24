@@ -21,17 +21,17 @@ import com.ttProject.util.BufferUtil;
  */
 public abstract class Flv1Frame extends VideoFrame {
 	private final Bit17 pictureStartCode;
-	private final Bit5 version;
-	private final Bit8 temporalReference;
-	private final Bit3 pictureSize;
-	private final Bit customWidth;
-	private final Bit customHeight;
-	private final Bit2 pictureType;
-	private final Bit1 deblockingFlag;
-	private final Bit5 quantizer;
-	private final Bit1 extraInformationFlag;
-	private final Bit8 extraInformation;
-	private final Bit extra; // 帳尻あわせ用
+	private final Bit5  version;
+	private final Bit8  temporalReference;
+	private final Bit3  pictureSize;
+	private final Bit   customWidth;
+	private final Bit   customHeight;
+	private final Bit2  pictureType;
+	private final Bit1  deblockingFlag;
+	private final Bit5  quantizer;
+	private final Bit1  extraInformationFlag;
+	private final Bit8  extraInformation;
+	private final Bit   extra; // 帳尻あわせ用
 	private ByteBuffer buffer = null; // あとで読み込みさせたい場合にいれておく
 	private int width, height;
 
@@ -57,7 +57,7 @@ public abstract class Flv1Frame extends VideoFrame {
 		this.height = height;
 	}
 	/**
-	 * 全体のデータを応答します。
+	 * {@inheritDoc}
 	 */
 	@Override
 	public ByteBuffer getData() throws Exception {

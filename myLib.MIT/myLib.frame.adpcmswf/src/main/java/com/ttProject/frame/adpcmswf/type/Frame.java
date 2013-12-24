@@ -27,13 +27,17 @@ public class Frame extends AdpcmswfFrame {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Frame.class);
-	private Bit2 adpcmCodeSize = new Bit2();
-	private Bit16 initSample1 = new Bit16();
-	private Bit6 initialIndex1 = new Bit6();
-	private Bit16 initSample2 = null;
-	private Bit6 initialIndex2 = null;
-	private Bit extraBit = null;
+	
+	private Bit2  adpcmCodeSize = new Bit2();
+	private Bit16 initSample1   = new Bit16();
+	private Bit6  initialIndex1 = new Bit6();
+	private Bit16 initSample2   = null;
+	private Bit6  initialIndex2 = null;
+	private Bit   extraBit      = null;
 	private ByteBuffer buffer = null;
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		setSize(channel.size());
@@ -61,12 +65,18 @@ public class Frame extends AdpcmswfFrame {
 		}
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		channel.position(getReadPosition());
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
@@ -85,6 +95,9 @@ public class Frame extends AdpcmswfFrame {
 			buffer
 		));
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception{
 		return getData();

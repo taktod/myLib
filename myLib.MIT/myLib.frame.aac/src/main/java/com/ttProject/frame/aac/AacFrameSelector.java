@@ -7,6 +7,11 @@ import com.ttProject.frame.aac.type.Frame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IUnit;
 
+/**
+ * adts形式のaacFrame選択動作
+ * @author taktod
+ *
+ */
 public class AacFrameSelector extends AudioSelector {
 	/** ロガー */
 	@SuppressWarnings("unused")

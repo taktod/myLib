@@ -7,6 +7,9 @@ import com.ttProject.frame.VideoAnalyzer;
  * @author taktod
  */
 public class Flv1FrameAnalyzer extends VideoAnalyzer {
+	/**
+	 * コンストラクタ
+	 */
 	public Flv1FrameAnalyzer() {
 		super(new Flv1FrameSelector());
 	}

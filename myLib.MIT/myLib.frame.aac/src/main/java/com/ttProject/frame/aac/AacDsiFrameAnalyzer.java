@@ -8,6 +8,9 @@ import com.ttProject.frame.AudioAnalyzer;
  * @author taktod
  */
 public class AacDsiFrameAnalyzer extends AudioAnalyzer {
+	/**
+	 * コンストラクタ
+	 */
 	public AacDsiFrameAnalyzer() {
 		super(new AacDsiFrameSelector());
 	}

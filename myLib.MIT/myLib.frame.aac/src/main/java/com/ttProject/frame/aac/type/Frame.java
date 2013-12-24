@@ -29,21 +29,22 @@ public class Frame extends AacFrame {
 	/** 動作ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Frame.class);
-	private Bit12 syncBit = new Bit12(0x0FFF);
-	private Bit1 id = new Bit1();
-	private Bit2 layer = new Bit2();
-	private Bit1 protectionAbsent = new Bit1(1);
-	private Bit2 profile = new Bit2(); // -1した値がはいっているみたい。
-	private Bit4 samplingFrequenceIndex = new Bit4(4);
-	private Bit1 privateBit = new Bit1(1);
-	private Bit3 channelConfiguration = new Bit3(2);
-	private Bit1 originalFlg = new Bit1(1);
-	private Bit1 home = new Bit1();
-	private Bit1 copyrightIdentificationBit = new Bit1();
-	private Bit1 copyrightIdentificationStart = new Bit1();
-	private Bit13 frameSize = new Bit13(0);
-	private Bit11 adtsBufferFullness = new Bit11(0x7FF);
-	private Bit2 noRawDataBlocksInFrame = new Bit2();
+	private Bit12 syncBit                      = new Bit12(0x0FFF);
+	private Bit1  id                           = new Bit1();
+	private Bit2  layer                        = new Bit2();
+	private Bit1  protectionAbsent             = new Bit1(1);
+	private Bit2  profile                      = new Bit2(); // -1した値がはいっているみたい。
+	private Bit4  samplingFrequenceIndex       = new Bit4(4);
+	private Bit1  privateBit                   = new Bit1(1);
+	private Bit3  channelConfiguration         = new Bit3(2);
+	private Bit1  originalFlg                  = new Bit1(1);
+	private Bit1  home                         = new Bit1();
+	private Bit1  copyrightIdentificationBit   = new Bit1();
+	private Bit1  copyrightIdentificationStart = new Bit1();
+	private Bit13 frameSize                    = new Bit13(0);
+	private Bit11 adtsBufferFullness           = new Bit11(0x7FF);
+	private Bit2  noRawDataBlocksInFrame       = new Bit2();
+	
 	private ByteBuffer buffer = null;
 	/** 周波数テーブル */
 	private static int [] sampleRateTable = {
@@ -65,6 +66,9 @@ public class Frame extends AacFrame {
 		super.setReadPosition(channel.position());
 		updateFlagData();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		BitLoader loader = new BitLoader(channel);
@@ -77,20 +81,33 @@ public class Frame extends AacFrame {
 		super.setReadPosition(channel.position());
 		updateFlagData();
 	}
+	/**
+	 * flagDataを更新する
+	 */
 	private void updateFlagData() {
 		super.setSampleNum(1024);
 		super.setChannel(channelConfiguration.get());
 		super.setSampleRate(sampleRateTable[samplingFrequenceIndex.get()]);
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		channel.position(super.getReadPosition());
 		buffer = BufferUtil.safeRead(channel, getSize() - 7);
 	}
+	/**
+	 * bufferを設定します(使ってない？)
+	 * @param buffer
+	 */
 	public void setBuffer(ByteBuffer buffer) {
 		this.buffer = buffer;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
@@ -105,6 +122,9 @@ public class Frame extends AacFrame {
 						noRawDataBlocksInFrame),
 				buffer));
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		return getData();
