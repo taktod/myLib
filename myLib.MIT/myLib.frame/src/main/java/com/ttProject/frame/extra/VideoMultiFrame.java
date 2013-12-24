@@ -36,24 +36,47 @@ public class VideoMultiFrame extends VideoFrame {
 		}
 		frameList.add(frame);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Deprecated
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Deprecated
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Deprecated
 	@Override
 	protected void requestUpdate() throws Exception {
-		
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Deprecated
 	@Override
 	public float getDuration() {
 		return 0;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Deprecated
 	@Override
 	public ByteBuffer getPackBuffer() {
 		return null;
 	}
+	/**
+	 * frameリスト参照
+	 * @return
+	 */
 	public List<IVideoFrame> getFrameList() {
 		return new ArrayList<IVideoFrame>(frameList);
 	}

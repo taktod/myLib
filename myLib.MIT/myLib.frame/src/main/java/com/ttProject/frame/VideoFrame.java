@@ -36,26 +36,52 @@ public abstract class VideoFrame extends Frame implements IVideoFrame {
 	public int getHeight() {
 		return height;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public float getDuration() {
 		return duration;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isKeyFrame() {
 		return isKeyFrame;
 	}
+	/**
+	 * dts値設定
+	 * @param dts
+	 */
 	public void setDts(long dts) {
 		this.dts = dts;
 	}
+	/**
+	 * 横幅設定
+	 * @param width
+	 */
 	protected void setWidth(int width) {
 		this.width = width;
 	}
+	/**
+	 * 縦幅設定
+	 * @param height
+	 */
 	protected void setHeight(int height) {
 		this.height = height;
 	}
+	/**
+	 * duration値設定
+	 * @param duration
+	 */
 	public void setDuration(float duration) {
 		this.duration = duration;
 	}
+	/**
+	 * keyFrameであるか設定
+	 * @param keyFrame
+	 */
 	protected void setKeyFrame(boolean keyFrame) {
 		isKeyFrame = keyFrame;
 	}

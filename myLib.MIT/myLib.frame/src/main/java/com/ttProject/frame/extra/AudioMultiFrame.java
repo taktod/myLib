@@ -14,6 +14,7 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class AudioMultiFrame extends AudioFrame {
+	/** 保持フレームリスト */
 	private List<IAudioFrame> frameList = new ArrayList<IAudioFrame>();
 	/**
 	 * フレームを追加します
@@ -35,22 +36,39 @@ public class AudioMultiFrame extends AudioFrame {
 		}
 		frameList.add(frame);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Deprecated
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Deprecated
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Deprecated
 	@Override
 	protected void requestUpdate() throws Exception {
-		
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Deprecated
 	@Override
 	public ByteBuffer getPackBuffer() {
 		throw new RuntimeException("マルチフレームはpackBuffer未対応");
 	}
+	/**
+	 * frameリスト参照
+	 * @return
+	 */
 	public List<IAudioFrame> getFrameList() {
 		return new ArrayList<IAudioFrame>(frameList);
 	}

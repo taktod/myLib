@@ -41,19 +41,38 @@ public abstract class AudioFrame extends Frame implements IAudioFrame {
 	public int getBit() {
 		return bit;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public float getDuration() {
 		return 1.0f * getSampleNum() / getSampleRate();
 	}
+	/**
+	 * 保持サンプル数設定
+	 * @param sampleNum
+	 */
 	protected void setSampleNum(int sampleNum) {
 		this.sampleNum = sampleNum;
 	}
+	/**
+	 * サンプルレート設定
+	 * @param sampleRate
+	 */
 	protected void setSampleRate(int sampleRate) {
 		this.sampleRate = sampleRate;
 	}
+	/**
+	 * 音声チャンネル数設定
+	 * @param channel
+	 */
 	protected void setChannel(int channel) {
 		this.channel = channel;
 	}
+	/**
+	 * 音声buffer bit数設定
+	 * @param bit
+	 */
 	protected void setBit(int bit) {
 		this.bit = bit;
 	}

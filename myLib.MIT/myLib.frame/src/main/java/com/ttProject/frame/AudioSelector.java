@@ -27,15 +27,31 @@ public abstract class AudioSelector implements ISelector {
 		frame.setSampleRate(sampleRate);
 		frame.setSampleNum(sampleNum);
 	}
+	/**
+	 * 音声チャンネル数設定
+	 * @param channel
+	 */
 	public void setChannel(int channel) {
 		this.channel = channel;
 	}
+	/**
+	 * 音声buffer bit設定
+	 * @param bit
+	 */
 	public void setBit(int bit) {
 		this.bit = bit;
 	}
+	/**
+	 * 音声サンプルレート設定
+	 * @param sampleRate
+	 */
 	public void setSampleRate(int sampleRate) {
 		this.sampleRate = sampleRate;
 	}
+	/**
+	 * 音声サンプル数設定
+	 * @param sampleNum
+	 */
 	public void setSampleNum(int sampleNum) {
 		this.sampleNum = sampleNum;
 	}
