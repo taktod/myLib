@@ -7,6 +7,9 @@ import com.ttProject.frame.AudioAnalyzer;
  * @author taktod
  */
 public class NellymoserFrameAnalyzer extends AudioAnalyzer {
+	/**
+	 * コンストラクタ
+	 */
 	public NellymoserFrameAnalyzer() {
 		super(new NellymoserFrameSelector());
 	}

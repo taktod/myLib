@@ -14,20 +14,31 @@ import com.ttProject.unit.extra.bit.Bit6;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
+/**
+ * vp6のkeyFrame
+ * @author taktod
+ */
 public class IntraFrame extends Vp6Frame {
-	private Bit5 version = new Bit5();
-	private Bit2 version2 = new Bit2();
-	private Bit1 interlace = new Bit1();
-	private Bit16 offset = null; // 16bit
-	private Bit8 dimY = new Bit8(); // x16で縦幅
-	private Bit8 dimX = new Bit8(); // x16で横幅
-	private Bit8 renderY = new Bit8(); // x16で縦幅
-	private Bit8 renderX = new Bit8(); // x16で横幅
+	private Bit5  version   = new Bit5();
+	private Bit2  version2  = new Bit2();
+	private Bit1  interlace = new Bit1();
+	private Bit16 offset    = null; // 16bit
+	private Bit8  dimY      = new Bit8(); // x16で縦幅
+	private Bit8  dimX      = new Bit8(); // x16で横幅
+	private Bit8  renderY   = new Bit8(); // x16で縦幅
+	private Bit8  renderX   = new Bit8(); // x16で横幅
+
 	private ByteBuffer buffer = null;
+	/**
+	 * コンストラクタ
+	 */
 	public IntraFrame(Bit1 frameMode, Bit6 qp, Bit1 marker) {
 		super(frameMode, qp, marker);
 		super.setKeyFrame(true);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		BitLoader loader = new BitLoader(channel);
@@ -44,11 +55,17 @@ public class IntraFrame extends Vp6Frame {
 		super.setSize(channel.size());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		channel.position(super.getReadPosition());
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
@@ -61,9 +78,16 @@ public class IntraFrame extends Vp6Frame {
 						dimY, dimX, renderY, renderX),
 				buffer));
 	}
+	/**
+	 * データタイプがversion2であるか参照(interFrameの分岐で利用)
+	 * @return
+	 */
 	public Bit2 getVersion2() {
 		return version2;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		return getData();

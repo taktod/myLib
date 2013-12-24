@@ -19,22 +19,38 @@ public class SliceIDR extends H264Frame {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(SliceIDR.class);
+	/** データ */
 	private ByteBuffer buffer = null;
+	/**
+	 * コンストラクタ
+	 * @param forbiddenZeroBit
+	 * @param nalRefIdc
+	 * @param type
+	 */
 	public SliceIDR(Bit1 forbiddenZeroBit, Bit2 nalRefIdc, Bit5 type) {
 		super(forbiddenZeroBit, nalRefIdc, type);
 		super.setKeyFrame(true);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		setReadPosition(channel.position());
 		setSize(channel.size());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
@@ -43,6 +59,9 @@ public class SliceIDR extends H264Frame {
 		setData(BufferUtil.connect(getTypeBuffer(),
 				buffer));
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		// packデータとしては、00 00 00 01 sps 00 00 00 01 pps 00 00 00 01 sliceIdrをつくればいいはず。

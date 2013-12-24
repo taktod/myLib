@@ -14,6 +14,9 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class NalAnalyzer extends VideoAnalyzer {
+	/**
+	 * コンストラクタ
+	 */
 	public NalAnalyzer() {
 		super(new H264FrameSelector());
 	}
@@ -94,17 +97,33 @@ public class NalAnalyzer extends VideoAnalyzer {
 		}
 		return setupFrame(buffer);
 	}
+	/**
+	 * frameを読み込む(loadまで実行して実体作成までやる)
+	 * @param buffer
+	 * @return
+	 * @throws Exception
+	 */
 	private IUnit setupFrame(ByteBuffer buffer) throws Exception {
 		IReadChannel channel = new ByteReadChannel(buffer);
 		IUnit unit = getSelector().select(channel);
 		unit.load(channel);
 		return unit;
 	}
+	/**
+	 * 最終読み込み途上データを設定
+	 * @param buffer
+	 * @param lastData
+	 */
 	private void setLastData(ByteBuffer buffer, Short lastData) {
 		if(lastData != null) {
 			buffer.putShort(lastData);
 		}
 	}
+	/**
+	 * 最終読み込み途上データを確認
+	 * @param buffer
+	 * @param lastData
+	 */
 	private void checkLastData(ByteBuffer buffer, Short lastData) {
 		if(lastData != null) {
 			if((lastData & 0x00FF) == 0) {

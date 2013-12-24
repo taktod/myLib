@@ -19,16 +19,17 @@ import com.ttProject.util.BufferUtil;
  */
 public class ID3Frame extends Mp3Frame {
 	private Bit24 signature = new Bit24();
-	private Bit16 version = new Bit16();
-	private Bit8 flag = new Bit8();
-	private Bit1 dummy1 = new Bit1();
-	private Bit7 size1 = new Bit7();
-	private Bit1 dummy2 = new Bit1();
-	private Bit7 size2 = new Bit7();
-	private Bit1 dummy3 = new Bit1();
-	private Bit7 size3 = new Bit7();
-	private Bit1 dummy4 = new Bit1();
-	private Bit7 size4 = new Bit7();
+	private Bit16 version   = new Bit16();
+	private Bit8  flag      = new Bit8();
+	private Bit1  dummy1    = new Bit1();
+	private Bit7  size1     = new Bit7();
+	private Bit1  dummy2    = new Bit1();
+	private Bit7  size2     = new Bit7();
+	private Bit1  dummy3    = new Bit1();
+	private Bit7  size3     = new Bit7();
+	private Bit1  dummy4    = new Bit1();
+	private Bit7  size4     = new Bit7();
+	
 	private ByteBuffer rawBuffer = null;
 	/**
 	 * {@inheritDoc}
@@ -69,6 +70,9 @@ public class ID3Frame extends Mp3Frame {
 						dummy3, size3, dummy4, size4),
 				rawBuffer));
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() {
 		return null;

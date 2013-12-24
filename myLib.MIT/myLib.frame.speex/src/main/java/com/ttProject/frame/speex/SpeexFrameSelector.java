@@ -7,15 +7,33 @@ import com.ttProject.frame.speex.type.HeaderFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IUnit;
 
+/**
+ * speexフレーム選択
+ * speexでは、headerFrame -> commentFrame -> 実データという順にデータがはいるらしい
+ * @author taktod
+ */
 public class SpeexFrameSelector extends AudioSelector {
+	/** header情報 */
 	private HeaderFrame headerFrame = null;
+	/** コメント情報(メタデータなので、とりあえず捨てておく) */
 	private CommentFrame commentFrame = null;
+	/**
+	 * headerフレーム設定(flvで使う)
+	 * @param frame
+	 */
 	public void setHeaderFrame(HeaderFrame frame) {
 		this.headerFrame = frame;
 	}
+	/**
+	 * commentフレーム設定(flvで設定する)
+	 * @param frame
+	 */
 	public void setCommentFrame(CommentFrame frame) {
 		this.commentFrame = frame;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		SpeexFrame frame = null;

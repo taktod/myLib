@@ -10,6 +10,10 @@ import com.ttProject.frame.speex.type.HeaderFrame;
 public abstract class SpeexFrame extends AudioFrame {
 	/** headerデータを保持しておくことにする */
 	private HeaderFrame headerFrame = null;
+	/**
+	 * headerFrameを設定する
+	 * @param headerFrame
+	 */
 	public void setHeaderFrame(HeaderFrame headerFrame) {
 		this.headerFrame = headerFrame;
 		super.setBit(headerFrame.getBit());
@@ -17,6 +21,10 @@ public abstract class SpeexFrame extends AudioFrame {
 		super.setSampleNum(headerFrame.getSampleNum());
 		super.setSampleRate(headerFrame.getSampleRate());
 	}
+	/**
+	 * headerFrameを参照する
+	 * @return
+	 */
 	protected HeaderFrame getHeaderFrame() {
 		return headerFrame;
 	}

@@ -12,6 +12,9 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class DataNalAnalyzer extends VideoAnalyzer {
+	/**
+	 * コンストラクタ
+	 */
 	public DataNalAnalyzer() {
 		super(new H264FrameSelector());
 	}

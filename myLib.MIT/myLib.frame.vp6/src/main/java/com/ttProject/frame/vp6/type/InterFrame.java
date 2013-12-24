@@ -17,10 +17,20 @@ import com.ttProject.util.BufferUtil;
  */
 public class InterFrame extends Vp6Frame {
 	private Bit16 offset = null;
+
 	private ByteBuffer buffer = null;
+	/**
+	 * コンストラクタ
+	 * @param frameMode
+	 * @param qp
+	 * @param marker
+	 */
 	public InterFrame(Bit1 frameMode, Bit6 qp, Bit1 marker) {
 		super(frameMode, qp, marker);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		// keyFrameのversion値が0もしくはmarker値が1の場合にoffsetを読み込む必要あり
@@ -33,11 +43,17 @@ public class InterFrame extends Vp6Frame {
 		super.setSize(channel.size());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		channel.position(super.getReadPosition());
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
@@ -48,6 +64,9 @@ public class InterFrame extends Vp6Frame {
 				connector.connect(offset),
 				buffer));
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		return getData();

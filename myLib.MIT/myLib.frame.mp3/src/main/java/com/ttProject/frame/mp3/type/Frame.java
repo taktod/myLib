@@ -15,23 +15,28 @@ import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.util.BufferUtil;
 
+/**
+ * mp3の音声を保持しているframe
+ * @author taktod
+ */
 public class Frame extends Mp3Frame {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Frame.class);
-	private Bit11 syncBit = new Bit11();
-	private Bit2 mpegVersion = new Bit2();
-	private Bit2 layer = new Bit2();
-	private Bit1 protectionBit = new Bit1();
-	private Bit4 bitrateIndex = new Bit4();
-	private Bit2 samplingRateIndex = new Bit2();
-	private Bit1 paddingBit = new Bit1();
-	private Bit1 privateBit = new Bit1();
-	private Bit2 channelMode = new Bit2();
-	private Bit2 modeExtension = new Bit2();
-	private Bit1 copyRight = new Bit1();
-	private Bit1 originalFlag = new Bit1();
-	private Bit2 emphasis = new Bit2();
+	private Bit11 syncBit           = new Bit11();
+	private Bit2  mpegVersion       = new Bit2();
+	private Bit2  layer             = new Bit2();
+	private Bit1  protectionBit     = new Bit1();
+	private Bit4  bitrateIndex      = new Bit4();
+	private Bit2  samplingRateIndex = new Bit2();
+	private Bit1  paddingBit        = new Bit1();
+	private Bit1  privateBit        = new Bit1();
+	private Bit2  channelMode       = new Bit2();
+	private Bit2  modeExtension     = new Bit2();
+	private Bit1  copyRight         = new Bit1();
+	private Bit1  originalFlag      = new Bit1();
+	private Bit2  emphasis          = new Bit2();
+	
 	private ByteBuffer rawBuffer;
 	
 	/** 処理用のテーブル */
@@ -100,6 +105,10 @@ public class Frame extends Mp3Frame {
 			throw new Exception("layerの値がおかしいです。");
 		}
 	}
+	/**
+	 * bitrate計算
+	 * @return
+	 */
 	public int getBitrate() {
 		if(mpegVersion.get() == 0 || mpegVersion.get() == 2) { // 2.5と2の場合
 			if(layer.get() == 3) { // layer1
@@ -122,6 +131,9 @@ public class Frame extends Mp3Frame {
 		}
 		return -1;
 	}
+	/**
+	 * データサイズ計算
+	 */
 	private void setSize() {
 		if(layer.get() == 3) { // layer1
 			super.setSize((int)Math.floor((12f * getBitrate() / getSampleRate() + paddingBit.get()) * 4));
@@ -163,6 +175,9 @@ public class Frame extends Mp3Frame {
 						channelMode, modeExtension, copyRight, originalFlag, emphasis),
 				rawBuffer));
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		return getData();

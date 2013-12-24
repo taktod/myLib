@@ -45,57 +45,67 @@ public class SequenceParameterSet extends H264Frame {
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(SequenceParameterSet.class);
 	// 先頭の３バイトからこのデータが取得可能
-	private Bit8 profileIdc = new Bit8();
+	private Bit8 profileIdc         = new Bit8();
 	private Bit1 constraintSet0Flag = new Bit1();
 	private Bit1 constraintSet1Flag = new Bit1();
 	private Bit1 constraintSet2Flag = new Bit1();
 	private Bit1 constraintSet3Flag = new Bit1();
 	private Bit1 constraintSet4Flag = new Bit1();
 	private Bit1 constraintSet5Flag = new Bit1();
-	private Bit2 reservedZeroBits= new Bit2();
-	private Bit8 levelIdc = new Bit8();
+	private Bit2 reservedZeroBits   = new Bit2();
+	private Bit8 levelIdc           = new Bit8();
 	
-	private Ueg seqParameterSetId = new Ueg();
-	private Ueg chromaFormatIdc = null;
-	private Bit1 separateColourPlaneFlag = null;
-	private Ueg bitDepthLumaMinus8 = null;
-	private Ueg bitDepthChromaMinus8 = null;
-	private Bit1 qpprimeYZeroTransformBypassFlag = null;
-	private Bit1 seqScalingMatrixPresentFlag = null;
+	private Ueg    seqParameterSetId               = new Ueg();
+	private Ueg    chromaFormatIdc                 = null;
+	private Bit1   separateColourPlaneFlag         = null;
+	private Ueg    bitDepthLumaMinus8              = null;
+	private Ueg    bitDepthChromaMinus8            = null;
+	private Bit1   qpprimeYZeroTransformBypassFlag = null;
+	private Bit1   seqScalingMatrixPresentFlag     = null;
 	@SuppressWarnings("unused")
-	private Bit1[] seqScalingListPresentFlag = null;
+	private Bit1[] seqScalingListPresentFlag       = null;
 	
-	private Ueg log2MaxFrameNumMinus4 = new Ueg();
-	private Ueg picOrderCntType = new Ueg();
-	private Ueg log2MaxPicOrderCntLsbMinus4 = null;
-	private Bit1 deltaPicOrderAlwaysZeroFlag = null;
-	private Seg offsetForNonRefPic = null;
-	private Seg offsetForTopToBottomField = null;
-	private Ueg numRefFramesInPicOrderCntCycle = null;
-	private Seg[] offsetForRefFrame = null;
+	private Ueg   log2MaxFrameNumMinus4          = new Ueg();
+	private Ueg   picOrderCntType                = new Ueg();
+	private Ueg   log2MaxPicOrderCntLsbMinus4    = null;
+	private Bit1  deltaPicOrderAlwaysZeroFlag    = null;
+	private Seg   offsetForNonRefPic             = null;
+	private Seg   offsetForTopToBottomField      = null;
+	private Ueg   numRefFramesInPicOrderCntCycle = null;
+	private Seg[] offsetForRefFrame              = null;
 
-	private Ueg maxNumRefFrames = new Ueg();
+	private Ueg  maxNumRefFrames                = new Ueg();
 	private Bit1 gapsInFrameNumValueAllowedFlag = new Bit1();
-	private Ueg picWidthInMbsMinus1 = new Ueg();
-	private Ueg picHeightInMapUnitsMinus1 = new Ueg();
-	private Bit1 frameMbsOnlyFlag = new Bit1();
-	private Bit1 mbAdaptiveFrameFieldFlag = null;
-	private Bit1 direct8x8InferenceFlag = new Bit1();
-	private Bit1 frameCroppingFlag = new Bit1();
-	private Ueg frameCropLeftOffset = null;
-	private Ueg frameCropRightOffset = null;
-	private Ueg frameCropTopOffset = null;
-	private Ueg frameCropBottomOffset = null;
-	private Bit1 vuiParametersPresentFlag = new Bit1();
+	private Ueg  picWidthInMbsMinus1            = new Ueg();
+	private Ueg  picHeightInMapUnitsMinus1      = new Ueg();
+	private Bit1 frameMbsOnlyFlag               = new Bit1();
+	private Bit1 mbAdaptiveFrameFieldFlag       = null;
+	private Bit1 direct8x8InferenceFlag         = new Bit1();
+	private Bit1 frameCroppingFlag              = new Bit1();
+	private Ueg  frameCropLeftOffset            = null;
+	private Ueg  frameCropRightOffset           = null;
+	private Ueg  frameCropTopOffset             = null;
+	private Ueg  frameCropBottomOffset          = null;
+	private Bit1 vuiParametersPresentFlag       = new Bit1();
+
 	private Bit extraBit = null; // 超過bit
 	
 	private ByteBuffer buffer = null;
 	
+	/**
+	 * コンストラクタ
+	 * @param forbiddenZeroBit
+	 * @param nalRefIdc
+	 * @param type
+	 */
 	public SequenceParameterSet(Bit1 forbiddenZeroBit,
 			Bit2 nalRefIdc,
 			Bit5 type) {
 		super(forbiddenZeroBit, nalRefIdc, type);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		BitLoader loader = new BitLoader(channel);
@@ -195,12 +205,18 @@ public class SequenceParameterSet extends H264Frame {
 		super.setHeight(height);
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		channel.position(super.getReadPosition());
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
@@ -231,6 +247,9 @@ public class SequenceParameterSet extends H264Frame {
 				connector.connect(),
 				buffer));
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() {
 		return null;

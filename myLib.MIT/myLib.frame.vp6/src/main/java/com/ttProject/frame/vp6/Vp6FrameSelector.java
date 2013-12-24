@@ -9,9 +9,16 @@ import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit6;
 
+/**
+ * vp6のframe選択
+ * @author taktod
+ */
 public class Vp6FrameSelector extends VideoSelector {
 	/** 前回解析したkeyFrame情報は保持しておいて、interFrameに紐づける必要あり。 */
 	private IntraFrame keyFrame = null;
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		// はじめの1byteを読み込んでやりとりすることにします。

@@ -33,16 +33,26 @@ public class Frame extends SpeexFrame {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Frame.class);
+	/** frameの内部データ */
 	private ByteBuffer frameBuffer = null;
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		// そのままデータを保持しておいておわり。
 		frameBuffer = BufferUtil.safeRead(channel, channel.size());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(frameBuffer == null) {
@@ -50,6 +60,9 @@ public class Frame extends SpeexFrame {
 		}
 		super.setData(frameBuffer);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		return getData();

@@ -26,23 +26,46 @@ public abstract class Vp6Frame extends VideoFrame {
 	private final Bit1 frameMode;
 	private final Bit6 qp;
 	private final Bit1 marker;
+	/** 参照用のキーフレーム */
 	private IntraFrame keyFrame = null;
+	/**
+	 * コンストラクタ
+	 * @param frameMode
+	 * @param qp
+	 * @param marker
+	 */
 	public Vp6Frame(Bit1 frameMode, Bit6 qp, Bit1 marker) {
 		this.frameMode = frameMode;
 		this.qp = qp;
 		this.marker = marker;
 	}
+	/**
+	 * キーフレーム設定
+	 * @param keyFrame
+	 */
 	public void setKeyFrame(IntraFrame keyFrame) {
 		this.keyFrame = keyFrame;
 		super.setWidth(keyFrame.getWidth());
 		super.setHeight(keyFrame.getHeight());
 	}
+	/**
+	 * marker参照
+	 * @return
+	 */
 	protected Bit1 getMarker() {
 		return marker;
 	}
+	/**
+	 * keyFrame参照
+	 * @return
+	 */
 	protected IntraFrame getKeyFrame() {
 		return keyFrame;
 	}
+	/**
+	 * headerの部分のbuffer参照
+	 * @return
+	 */
 	protected ByteBuffer getHeaderBuffer() {
 		BitConnector connector = new BitConnector();
 		return connector.connect(frameMode, qp, marker);

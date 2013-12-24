@@ -1,7 +1,7 @@
 package com.ttProject.frame.mp3;
 
 /**
- * 
+ * tagのジャンル一覧
  * @author taktod
  */
 public enum TagGenre {

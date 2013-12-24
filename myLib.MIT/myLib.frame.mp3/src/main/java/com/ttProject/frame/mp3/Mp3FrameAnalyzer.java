@@ -7,6 +7,9 @@ import com.ttProject.frame.AudioAnalyzer;
  * @author taktod
  */
 public class Mp3FrameAnalyzer extends AudioAnalyzer {
+	/**
+	 * コンストラクタ
+	 */
 	public Mp3FrameAnalyzer() {
 		super(new Mp3FrameSelector());
 	}

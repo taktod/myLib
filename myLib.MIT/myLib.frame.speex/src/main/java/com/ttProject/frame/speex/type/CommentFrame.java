@@ -25,11 +25,19 @@ import com.ttProject.util.BufferUtil;
 public class CommentFrame extends SpeexFrame {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(CommentFrame.class);
+	/** venderName */
 	private String venderName;
+	/** データ要素 */
 	private List<String> elementList = new ArrayList<String>();
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		// ここでデータを読み込んで処理する。
@@ -49,10 +57,16 @@ public class CommentFrame extends SpeexFrame {
 		logger.info(venderName);
 		logger.info(elementList);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		// 結合は特に問題ないので、あとでつくっておくことにします。
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() {
 		return null;

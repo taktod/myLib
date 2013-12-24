@@ -19,8 +19,13 @@ import com.ttProject.unit.extra.bit.Bit5;
  * @author taktod
  */
 public class H264FrameSelector extends VideoSelector {
+	/** 解析sps */
 	private SequenceParameterSet sps = null;
-	private PictureParameterSet pps = null;
+	/** 解析pps */
+	private PictureParameterSet  pps = null;
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		BitLoader loader = new BitLoader(channel);

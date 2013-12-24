@@ -48,7 +48,7 @@ public class HeaderFrame extends SpeexFrame {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(HeaderFrame.class);
-	
+	// TODO こいつもoggと同じくbit表示にした法がいいのかな・・・ とりあえず面倒なので保留
 	private String speexString;
 	private String speexVersion;
 	private int speexVersionId;
@@ -90,6 +90,9 @@ public class HeaderFrame extends SpeexFrame {
 		super.setChannel(nbChannels);
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		speexString = new String(BufferUtil.safeRead(channel, 8).array());
@@ -120,10 +123,16 @@ public class HeaderFrame extends SpeexFrame {
 		super.setChannel(nbChannels);
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		// 読み込むデータは特になし。
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		// データを結合してByteBufferを登録しておきたい。
@@ -153,6 +162,9 @@ public class HeaderFrame extends SpeexFrame {
 		buffer.flip();
 		super.setData(buffer);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() {
 		return null;

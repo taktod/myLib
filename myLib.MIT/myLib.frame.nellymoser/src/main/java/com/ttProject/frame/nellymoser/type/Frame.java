@@ -30,10 +30,10 @@ import com.ttProject.unit.extra.bit.Bit6;
  * @author taktod
  */
 public class Frame extends NellymoserFrame {
-	private Bit6 initTableIndex = null;
+	private Bit6   initTableIndex = null;
 	private Bit5[] deltaTable = null; //new Bit5[22];
-	private BitN payload1 = null; //new BitN(new Bit64(), new Bit64(), new Bit64(), new Bit6());
-	private BitN payload2 = null; //new BitN(new Bit64(), new Bit64(), new Bit64(), new Bit6());
+	private BitN   payload1 = null; //new BitN(new Bit64(), new Bit64(), new Bit64(), new Bit6());
+	private BitN   payload2 = null; //new BitN(new Bit64(), new Bit64(), new Bit64(), new Bit6());
 	/**
 	 * {@inheritDoc}
 	 */
@@ -63,22 +63,6 @@ public class Frame extends NellymoserFrame {
 		loader.load(payload2);
 		super.update();
 	}
-/*	@Override
-	public void setBit(int bit) {
-		super.setBit(bit);
-	}
-	@Override
-	public void setChannel(int channel) {
-		super.setChannel(channel);
-	}
-	@Override
-	public void setPts(long pts) {
-		super.setPts(pts);
-	}
-	@Override
-	public void setSampleRate(int sampleRate) {
-		super.setSampleRate(sampleRate);
-	}// */
 	/**
 	 * {@inheritDoc}
 	 */
@@ -95,6 +79,11 @@ public class Frame extends NellymoserFrame {
 		connector.feed(payload2);
 		super.setData(connector.connect());
 	}
+	/**
+	 * {@inheritDoc}
+	 * ここのpack用のbufferですが、複数のnellymoserframeがくっついているものにしても本当はよいが、扱い方が定まらないのでとりあえずこのままおいとく。
+	 * 64byte 128byte 256byteの塊にしても動作するということ
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		return getData();

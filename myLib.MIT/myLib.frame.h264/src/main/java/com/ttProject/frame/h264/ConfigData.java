@@ -29,6 +29,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class ConfigData {
+	/** 動作セレクター(セレクターにsps ppsを保持させて、他のframeに持たせる必要があるので、ここで設置できるようにしてある) */
 	private H264FrameSelector selector = null;
 	/**
 	 * セレクターの設定

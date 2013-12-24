@@ -9,22 +9,43 @@ import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.util.BufferUtil;
 
+/**
+ * Slice
+ * h264の基本となる中間フレーム
+ * @author taktod
+ */
 public class Slice extends H264Frame {
+	/** データ */
 	private ByteBuffer buffer = null;
+	/**
+	 * コンストラクタ
+	 * @param forbiddenZeroBit
+	 * @param nalRefIdc
+	 * @param type
+	 */
 	public Slice(Bit1 forbiddenZeroBit, Bit2 nalRefIdc, Bit5 type) {
 		super(forbiddenZeroBit, nalRefIdc, type);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		setReadPosition(channel.position());
 		setSize(channel.size());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
@@ -33,6 +54,9 @@ public class Slice extends H264Frame {
 		setData(BufferUtil.connect(getTypeBuffer(),
 				buffer));
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		ByteBuffer data = getData();
