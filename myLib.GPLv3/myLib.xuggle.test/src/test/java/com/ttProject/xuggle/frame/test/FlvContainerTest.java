@@ -3,13 +3,13 @@ package com.ttProject.xuggle.frame.test;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import com.ttProject.container.flv.FlvTagAnalyzer;
+import com.ttProject.container.IContainer;
+import com.ttProject.container.IReader;
+import com.ttProject.container.flv.FlvTagReader;
 import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.VideoTag;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
-import com.ttProject.unit.IAnalyzer;
-import com.ttProject.unit.IUnit;
 
 /**
  * flvコンテナのデコード動作テスト
@@ -86,16 +86,16 @@ public class FlvContainerTest {
 	private void decodeTest(IFileReadChannel source) {
 		DecodeBase base = new DecodeBase();
 		try {
-			IAnalyzer analyzer = new FlvTagAnalyzer();
-			IUnit unit = null;
-			while((unit = analyzer.analyze(source)) != null) {
-				if(unit instanceof VideoTag) {
-					VideoTag vTag = (VideoTag)unit;
+			IReader reader = new FlvTagReader();
+			IContainer container = null;
+			while((container = reader.read(source)) != null) {
+				if(container instanceof VideoTag) {
+					VideoTag vTag = (VideoTag)container;
 					logger.info(vTag.getFrame());
 					base.processVideoDecode(vTag.getFrame());
 				}
-				else if(unit instanceof AudioTag) {
-					AudioTag aTag = (AudioTag)unit;
+				else if(container instanceof AudioTag) {
+					AudioTag aTag = (AudioTag)container;
 					logger.info(aTag.getFrame());
 					base.processAudioDecode(aTag.getFrame());
 				}

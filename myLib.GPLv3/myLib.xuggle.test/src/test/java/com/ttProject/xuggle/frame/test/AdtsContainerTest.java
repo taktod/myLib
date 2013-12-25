@@ -3,12 +3,12 @@ package com.ttProject.xuggle.frame.test;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import com.ttProject.container.IContainer;
+import com.ttProject.container.IReader;
 import com.ttProject.container.adts.AdtsUnit;
-import com.ttProject.container.adts.AdtsUnitAnalyzer;
+import com.ttProject.container.adts.AdtsUnitReader;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
-import com.ttProject.unit.IAnalyzer;
-import com.ttProject.unit.IUnit;
 
 /**
  * adtsコンテナのデコード動作テスト
@@ -29,11 +29,11 @@ public class AdtsContainerTest {
 	private void decodeTest(IFileReadChannel source) {
 		DecodeBase base = new DecodeBase();
 		try {
-			IAnalyzer analyzer = new AdtsUnitAnalyzer();
-			IUnit unit = null;
-			while((unit = analyzer.analyze(source)) != null) {
-				if(unit instanceof AdtsUnit) {
-					AdtsUnit adtsUnit = (AdtsUnit) unit;
+			IReader reader = new AdtsUnitReader();
+			IContainer container = null;
+			while((container = reader.read(source)) != null) {
+				if(container instanceof AdtsUnit) {
+					AdtsUnit adtsUnit = (AdtsUnit) container;
 					logger.info(adtsUnit.getFrame());
 					base.processAudioDecode(adtsUnit.getFrame());
 				}

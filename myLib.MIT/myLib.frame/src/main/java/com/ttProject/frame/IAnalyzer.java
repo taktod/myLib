@@ -1,6 +1,7 @@
-package com.ttProject.unit;
+package com.ttProject.frame;
 
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.IUnit;
 
 /**
  * 内部データを解析して応答する動作

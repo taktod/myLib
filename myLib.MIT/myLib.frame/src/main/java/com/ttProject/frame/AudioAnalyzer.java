@@ -1,7 +1,6 @@
 package com.ttProject.frame;
 
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.IUnit;
 
 /**

@@ -3,12 +3,12 @@ package com.ttProject.xuggle.frame.test;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import com.ttProject.container.IContainer;
+import com.ttProject.container.IReader;
 import com.ttProject.container.mp3.Mp3Unit;
-import com.ttProject.container.mp3.Mp3UnitAnalyzer;
+import com.ttProject.container.mp3.Mp3UnitReader;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
-import com.ttProject.unit.IAnalyzer;
-import com.ttProject.unit.IUnit;
 
 /**
  * mp3コンテナのデコード動作テスト
@@ -29,11 +29,11 @@ public class Mp3ContainerTest {
 	private void decodeTest(IFileReadChannel source) {
 		DecodeBase base = new DecodeBase();
 		try {
-			IAnalyzer analyzer = new Mp3UnitAnalyzer();
-			IUnit unit = null;
-			while((unit = analyzer.analyze(source)) != null) {
-				if(unit instanceof Mp3Unit) {
-					Mp3Unit mp3Unit = (Mp3Unit) unit;
+			IReader reader = new Mp3UnitReader();
+			IContainer container = null;
+			while((container = reader.read(source)) != null) {
+				if(container instanceof Mp3Unit) {
+					Mp3Unit mp3Unit = (Mp3Unit) container;
 					logger.info(mp3Unit.getPosition());
 					logger.info(mp3Unit.getFrame());
 					base.processAudioDecode(mp3Unit.getFrame());

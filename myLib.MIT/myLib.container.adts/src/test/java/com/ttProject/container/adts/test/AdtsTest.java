@@ -3,11 +3,11 @@ package com.ttProject.container.adts.test;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import com.ttProject.container.adts.AdtsUnitAnalyzer;
+import com.ttProject.container.IContainer;
+import com.ttProject.container.IReader;
+import com.ttProject.container.adts.AdtsUnitReader;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
-import com.ttProject.unit.IAnalyzer;
-import com.ttProject.unit.IUnit;
 
 /**
  * adtsの読み込み動作テスト
@@ -26,10 +26,10 @@ public class AdtsTest {
 			source = FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("test.aac")
 			);
-			IAnalyzer analyzer = new AdtsUnitAnalyzer();
-			IUnit unit = null;
-			while((unit = analyzer.analyze(source)) != null) {
-				logger.info(unit);
+			IReader reader = new AdtsUnitReader();
+			IContainer container = null;
+			while((container = reader.read(source)) != null) {
+				logger.info(container);
 			}
 		}
 		catch(Exception e) {

@@ -7,12 +7,12 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.ogg.OggPage;
+import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.speex.SpeexFrameAnalyzer;
 import com.ttProject.frame.theora.TheoraFrameAnalyzer;
 import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;

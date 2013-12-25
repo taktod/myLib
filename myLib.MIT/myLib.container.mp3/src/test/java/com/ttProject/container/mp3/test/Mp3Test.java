@@ -3,11 +3,11 @@ package com.ttProject.container.mp3.test;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import com.ttProject.container.mp3.Mp3UnitAnalyzer;
+import com.ttProject.container.IContainer;
+import com.ttProject.container.IReader;
+import com.ttProject.container.mp3.Mp3UnitReader;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
-import com.ttProject.unit.IAnalyzer;
-import com.ttProject.unit.IUnit;
 
 /**
  * mp3データの読み込み動作テスト
@@ -23,10 +23,10 @@ public class Mp3Test {
 			source = FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("test.mp3")
 			);
-			IAnalyzer analyzer = new Mp3UnitAnalyzer();
-			IUnit unit = null;
-			while((unit = analyzer.analyze(source)) != null) {
-				logger.info(unit);
+			IReader reader = new Mp3UnitReader();
+			IContainer container = null;
+			while((container = reader.read(source)) != null) {
+				logger.info(container);
 			}
 		}
 		catch(Exception e) {

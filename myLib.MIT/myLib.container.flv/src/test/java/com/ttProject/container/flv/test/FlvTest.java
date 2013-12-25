@@ -3,11 +3,11 @@ package com.ttProject.container.flv.test;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import com.ttProject.container.flv.FlvTagAnalyzer;
+import com.ttProject.container.IContainer;
+import com.ttProject.container.IReader;
+import com.ttProject.container.flv.FlvTagReader;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
-import com.ttProject.unit.IAnalyzer;
-import com.ttProject.unit.IUnit;
 
 /**
  * flvの動作テスト
@@ -26,10 +26,10 @@ public class FlvTest {
 			source = FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("test.flv")
 			);
-			IAnalyzer analyzer = new FlvTagAnalyzer();
-			IUnit unit = null;
-			while((unit = analyzer.analyze(source)) != null) {
-				logger.info(unit);
+			IReader reader = new FlvTagReader();
+			IContainer container = null;
+			while((container = reader.read(source)) != null) {
+				logger.info(container);
 			}
 		}
 		catch(Exception e) {
@@ -133,10 +133,10 @@ public class FlvTest {
 	}
 	private void analyzerTest(IFileReadChannel source) {
 		try {
-			IAnalyzer analyzer = new FlvTagAnalyzer();
-			IUnit unit = null;
-			while((unit = analyzer.analyze(source)) != null) {
-				logger.info(unit);
+			IReader reader = new FlvTagReader();
+			IContainer container = null;
+			while((container = reader.read(source)) != null) {
+				logger.info(container);
 /*				if(unit instanceof AudioTag) {
 					IAudioFrame frame = ((AudioTag)unit).getFrame();
 					logger.info(HexUtil.toHex(frame.getData()));

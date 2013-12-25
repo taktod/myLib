@@ -3,11 +3,11 @@ package com.ttProject.container.mpegts.test;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import com.ttProject.container.mpegts.MpegtsPacketAnalyzer;
+import com.ttProject.container.IContainer;
+import com.ttProject.container.IReader;
+import com.ttProject.container.mpegts.MpegtsPacketReader;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
-import com.ttProject.unit.IAnalyzer;
-import com.ttProject.unit.IUnit;
 
 /**
  * mpegtsの動作テスト
@@ -27,10 +27,10 @@ public class MpegtsTest {
 	}
 	private void analyzerTest(IFileReadChannel source) {
 		try {
-			IAnalyzer analyzer = new MpegtsPacketAnalyzer();
-			IUnit unit = null;
-			while((unit = analyzer.analyze(source)) != null) {
-				logger.info(unit);
+			IReader reader = new MpegtsPacketReader();
+			IContainer container = null;
+			while((container = reader.read(source)) != null) {
+				logger.info(container);
 			}
 		}
 		catch(Exception e) {

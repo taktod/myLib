@@ -3,15 +3,15 @@ package com.ttProject.xuggle.frame.test;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import com.ttProject.container.IContainer;
+import com.ttProject.container.IReader;
 import com.ttProject.container.ogg.OggPage;
-import com.ttProject.container.ogg.OggPageAnalyzer;
+import com.ttProject.container.ogg.OggPageReader;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
-import com.ttProject.unit.IAnalyzer;
-import com.ttProject.unit.IUnit;
 
 /**
  * oggコンテナのデコード動作テスト
@@ -32,11 +32,11 @@ public class OggContainerTest {
 	private void decodeTest(IFileReadChannel source) {
 		DecodeBase base = new DecodeBase();
 		try {
-			IAnalyzer analyzer = new OggPageAnalyzer();
-			IUnit unit = null;
-			while((unit = analyzer.analyze(source)) != null) {
-				if(unit instanceof OggPage) {
-					OggPage page = (OggPage) unit;
+			IReader reader = new OggPageReader();
+			IContainer container = null;
+			while((container = reader.read(source)) != null) {
+				if(container instanceof OggPage) {
+					OggPage page = (OggPage) container;
 					for(IFrame frame : page.getFrameList()) {
 						logger.info(frame);
 						if(frame instanceof IAudioFrame) {

@@ -3,10 +3,10 @@ package com.ttProject.frame.mp3.test;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
-import com.ttProject.unit.IAnalyzer;
 import com.ttProject.unit.IUnit;
 
 /**
