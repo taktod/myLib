@@ -11,8 +11,11 @@ import com.ttProject.container.flv.FlvTagReader;
 import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.VideoTag;
 import com.ttProject.container.mp3.Mp3UnitWriter;
+import com.ttProject.frame.speex.type.CommentFrame;
+import com.ttProject.frame.speex.type.HeaderFrame;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
+import com.ttProject.util.HexUtil;
 
 /**
  * flvを他のコンテナに変換する動作テスト
@@ -25,7 +28,7 @@ public class FlvToTest {
 	 * mp3にコンバートする
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void mp3() throws Exception {
 		logger.info("mp3に変換する動作テスト");
 		convertTest(
@@ -39,7 +42,7 @@ public class FlvToTest {
 	 * adtsにコンバートする
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void adts() throws Exception {
 		logger.info("adtsに変換する動作テスト");
 		convertTest(
@@ -48,6 +51,25 @@ public class FlvToTest {
 			),
 			new AdtsUnitWriter("output.aac")
 		);
+	}
+	/**
+	 * oggにコンバートする(speexのみ)
+	 * @throws Exception
+	 */
+	@Test
+	public void ogg() throws Exception {
+		logger.info("oggに変換する動作テスト");
+		HeaderFrame headerFrame = new HeaderFrame();
+		headerFrame.fillWithFlvDefault();
+		logger.info(HexUtil.toHex(headerFrame.getData(), true));
+		CommentFrame commentFrame = new CommentFrame();
+		logger.info(HexUtil.toHex(commentFrame.getData(), true));
+//		convertTest(
+//			FileReadChannel.openFileReadChannel(
+//					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
+//			),
+//			new AdtsUnitWriter("output.aac")
+//		);
 	}
 	/**
 	 * 内部処理

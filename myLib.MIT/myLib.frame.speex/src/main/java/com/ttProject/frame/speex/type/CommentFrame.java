@@ -29,11 +29,15 @@ public class CommentFrame extends SpeexFrame {
 	private String venderName;
 	/** データ要素 */
 	private List<String> elementList = new ArrayList<String>();
+	public CommentFrame() {
+		super.update();
+	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
@@ -56,13 +60,37 @@ public class CommentFrame extends SpeexFrame {
 		}
 		logger.info(venderName);
 		logger.info(elementList);
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		// 結合は特に問題ないので、あとでつくっておくことにします。
+		if(venderName == null) {
+			venderName = "myLib.speex.muxer";
+		}
+		// venderLength
+		// venderData
+		// elementListSize
+		//  elementDataLength
+		//  elementData
+		// を繰り返す
+		int size = 4 + venderName.length() + 4;
+		for(String element : elementList) {
+			size += 4 + element.length();
+		}
+		ByteBuffer buffer = ByteBuffer.allocate(size);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		buffer.putInt(venderName.length());
+		buffer.put(venderName.getBytes());
+		buffer.putInt(elementList.size());
+		for(String element : elementList) {
+			buffer.putInt(element.length());
+			buffer.put(element.getBytes());
+		}
+		buffer.flip();
+		setData(buffer);
 	}
 	/**
 	 * {@inheritDoc}
@@ -70,5 +98,17 @@ public class CommentFrame extends SpeexFrame {
 	@Override
 	public ByteBuffer getPackBuffer() {
 		return null;
+	}
+	public void setVenderName(String name) {
+		this.venderName = name;
+		super.update();
+	}
+	public void addElement(String data) {
+		elementList.add(data);
+		super.update();
+	}
+	public void removeElement(String data) {
+		elementList.remove(data);
+		super.update();
 	}
 }

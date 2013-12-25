@@ -23,6 +23,7 @@ import com.ttProject.util.BufferUtil;
  * startPage(speexとかのheader情報がはいっているっぽい。)
  * @author taktod
  * TODO Out of Memoryが発生する可能性があるので、frameListをpageごとに保持するように変更したほうがよい。
+ * crc32の計算が微妙・・・どうすりゃいいんだ。
  */
 public class StartPage extends OggPage {
 	/** ロガー */
