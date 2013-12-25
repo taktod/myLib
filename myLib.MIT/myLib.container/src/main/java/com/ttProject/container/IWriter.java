@@ -14,18 +14,18 @@ public interface IWriter {
 	 * @param container
 	 */
 	@Deprecated
-	public void addContainer(IContainer container);
+	public void addContainer(IContainer container) throws Exception;
 	/**
 	 * メディアフレームを追加
 	 * @param frame
 	 */
-	public void addFrame(IFrame frame);
+	public void addFrame(IFrame frame) throws Exception;
 	/**
 	 * headerデータを構築
 	 */
-	public void prepareHeader();
+	public void prepareHeader() throws Exception;
 	/**
 	 * 終端データを構築
 	 */
-	public void prepareTailer();
+	public void prepareTailer() throws Exception;
 }
