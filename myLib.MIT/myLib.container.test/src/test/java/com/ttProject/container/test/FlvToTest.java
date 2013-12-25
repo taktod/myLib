@@ -1,0 +1,89 @@
+package com.ttProject.container.test;
+
+import org.apache.log4j.Logger;
+import org.junit.Test;
+
+import com.ttProject.container.IContainer;
+import com.ttProject.container.IReader;
+import com.ttProject.container.IWriter;
+import com.ttProject.container.adts.AdtsUnitWriter;
+import com.ttProject.container.flv.FlvTagReader;
+import com.ttProject.container.flv.type.AudioTag;
+import com.ttProject.container.flv.type.VideoTag;
+import com.ttProject.container.mp3.Mp3UnitWriter;
+import com.ttProject.nio.channels.FileReadChannel;
+import com.ttProject.nio.channels.IFileReadChannel;
+
+/**
+ * flvを他のコンテナに変換する動作テスト
+ * @author taktod
+ */
+public class FlvToTest {
+	/** ロガー */
+	private Logger logger = Logger.getLogger(FlvToTest.class);
+	/**
+	 * mp3にコンバートする
+	 * @throws Exception
+	 */
+	@Test
+	public void mp3() throws Exception {
+		logger.info("mp3に変換する動作テスト");
+		convertTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("mp3.flv")
+			),
+			new Mp3UnitWriter("output.mp3")
+		);
+	}
+	/**
+	 * adtsにコンバートする
+	 * @throws Exception
+	 */
+	@Test
+	public void adts() throws Exception {
+		logger.info("adtsに変換する動作テスト");
+		convertTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("aac.flv")
+			),
+			new AdtsUnitWriter("output.aac")
+		);
+	}
+	/**
+	 * 内部処理
+	 * @param source
+	 * @param writer
+	 */
+	private void convertTest(IFileReadChannel source, IWriter writer) {
+		// headerを書き込む
+		try {
+			writer.prepareHeader();
+			IReader reader = new FlvTagReader();
+			IContainer container = null;
+			while((container = reader.read(source)) != null) {
+				if(container instanceof VideoTag) {
+					VideoTag vTag = (VideoTag)container;
+					writer.addFrame(vTag.getFrame());
+				}
+				else if(container instanceof AudioTag) {
+					AudioTag aTag = (AudioTag)container;
+					writer.addFrame(aTag.getFrame());
+				}
+			}
+			writer.prepareTailer();
+		}
+		catch(Exception e) {
+			
+		}
+		finally {
+			if(source != null) {
+				try {
+					source.close();
+				}
+				catch(Exception e) {}
+				source = null;
+			}
+		}
+		// tailerを書き込む
+	}
+}
