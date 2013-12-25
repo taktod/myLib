@@ -1,0 +1,61 @@
+package com.ttProject.myLib.setup;
+
+import org.apache.log4j.Logger;
+import org.junit.Test;
+
+import com.xuggle.xuggler.IContainer;
+import com.xuggle.xuggler.IStreamCoder;
+
+/**
+ * myLib.container.testで利用するデータ
+ * @author taktod
+ */
+public class ContainerTest extends SetupBase {
+	/** 動作ロガー */
+	private Logger logger = Logger.getLogger(ContainerTest.class);
+	/**
+	 * aac用変換元データ
+	 * @throws Exception
+	 */
+	@Test
+	public void aac() throws Exception {
+		logger.info("aac(adts)準備");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.test", "aac.aac"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.aac(container));
+	}
+	/**
+	 * flv用変換元データ
+	 * @throws Exception
+	 */
+	@Test
+	public void flv() throws Exception {
+		logger.info("aac(flv)準備");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.test", "aac.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.aac(container));
+		logger.info("mp3(flv)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.test", "mp3.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.mp3(container));
+		logger.info("speex(flv)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.test", "speex.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		IStreamCoder encoder = Encoder.speex(container);
+		encoder.setSampleRate(16000);
+		encoder.setChannels(1);
+		processConvert(container, null, encoder);
+	}
+}
