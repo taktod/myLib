@@ -64,6 +64,21 @@ public class FlvToTest {
 		logger.info(HexUtil.toHex(headerFrame.getData(), true));
 		CommentFrame commentFrame = new CommentFrame();
 		logger.info(HexUtil.toHex(commentFrame.getData(), true));
+		/*
+		 * absoluteGranulePositionの設定が必要みたいだが、どういうことがよくわからん。
+		 * よって解析する。
+		 * mario.speex.oggで値を確認してみる。
+		 * 0x27c13 + 27d94
+		 * 0x4F9A7 + 27d7b
+		 * 0x77722 + 27d73
+		 * 0x9F495
+		 * 
+		 * speexのheaderFrameによると640samplesみたいなので、
+		 * 255 x 640 = 0x27D80
+		 * それっぽい値にはなってますね。なんで揺らぎがあるのかは不明
+		 * どうやら経過sampleNumがはいっているのはガチっぽいです。ただし、なぜかフレームの保持sample数の半分が引かれているっぽいです。
+		 * 仕様からすると引かなくても良さそうだけど・・・
+		 */
 //		convertTest(
 //			FileReadChannel.openFileReadChannel(
 //					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
