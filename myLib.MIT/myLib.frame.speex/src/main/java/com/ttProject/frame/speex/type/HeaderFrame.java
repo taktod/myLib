@@ -143,7 +143,7 @@ public class HeaderFrame extends SpeexFrame {
 			buffer.put((byte)0x00);
 		}
 		buffer.put(speexVersion.getBytes());
-		while(buffer.position() < 20) {
+		while(buffer.position() < 28) {
 			buffer.put((byte)0x00);
 		}
 		buffer.putInt(speexVersionId);
