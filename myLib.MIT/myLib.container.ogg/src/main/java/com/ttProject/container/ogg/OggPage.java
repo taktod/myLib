@@ -159,4 +159,11 @@ public abstract class OggPage extends Container {
 	protected StartPage getStartPage() {
 		return startPage;
 	}
+	/**
+	 * pageの番号を参照する
+	 * @return
+	 */
+	protected int getPageSequenceNo() {
+		return pageSequenceNo.get();
+	}
 }

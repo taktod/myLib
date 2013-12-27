@@ -67,4 +67,8 @@ public class Frame extends SpeexFrame {
 	public ByteBuffer getPackBuffer() throws Exception {
 		return getData();
 	}
+	@Override
+	public boolean isComplete() {
+		return true;
+	}
 }

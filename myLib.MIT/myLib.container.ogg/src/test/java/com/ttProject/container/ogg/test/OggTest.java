@@ -19,13 +19,40 @@ public class OggTest {
 	/**
 	 * 解析動作テスト
 	 */
-	@Test
+//	@Test
 	public void analyzerTest() {
 		logger.info("ogg解析テスト");
 		IFileReadChannel source = null;
 		try {
 			source = FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("test.speex.ogg")
+			);
+			IReader reader = new OggPageReader();
+			IContainer container = null;
+			while((container = reader.read(source)) != null) {
+				logger.info(container);
+			}
+		}
+		catch(Exception e) {
+			logger.warn("例外発生", e);
+		}
+		finally {
+			if(source != null) {
+				try {
+					source.close();
+				}
+				catch(Exception e) {}
+				source = null;
+			}
+		}
+	}
+	@Test
+	public void analyzeTest2() {
+		logger.info("ogg解析テスト");
+		IFileReadChannel source = null;
+		try {
+			source = FileReadChannel.openFileReadChannel(
+					"http://49.212.39.17/mario.speex2.ogg"
 			);
 			IReader reader = new OggPageReader();
 			IContainer container = null;

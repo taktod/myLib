@@ -28,4 +28,5 @@ public abstract class SpeexFrame extends AudioFrame {
 	protected HeaderFrame getHeaderFrame() {
 		return headerFrame;
 	}
+	public abstract boolean isComplete();
 }

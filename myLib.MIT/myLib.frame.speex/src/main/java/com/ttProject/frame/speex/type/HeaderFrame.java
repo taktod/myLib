@@ -169,4 +169,8 @@ public class HeaderFrame extends SpeexFrame {
 	public ByteBuffer getPackBuffer() {
 		return null;
 	}
+	@Override
+	public boolean isComplete() {
+		return true;
+	}
 }
