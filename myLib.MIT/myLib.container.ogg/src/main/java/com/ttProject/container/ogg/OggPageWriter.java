@@ -72,6 +72,9 @@ public class OggPageWriter implements IWriter {
 		logger.info("targetPage:" + targetPage);
 		// pageにデータを設定します。
 		targetPage.getFrameList().add(frame);
+		if(targetPage.getFrameList().size() >= 255) {
+			completePage(trackId);
+		}
 	}
 	/**
 	 * {@inheritDoc}
