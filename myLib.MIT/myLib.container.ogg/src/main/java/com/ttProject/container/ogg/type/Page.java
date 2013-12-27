@@ -1,10 +1,12 @@
 package com.ttProject.container.ogg.type;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.container.ogg.Crc32;
 import com.ttProject.container.ogg.OggPage;
 import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.IFrame;
@@ -14,6 +16,7 @@ import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
+import com.ttProject.util.HexUtil;
 
 /**
  * oggの基本単位のpage
@@ -98,6 +101,31 @@ public class Page extends OggPage {
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		
+		logger.info("ここにきた。");
+		ByteBuffer headerBuffer = getHeaderBuffer();
+		logger.info(HexUtil.toHex(headerBuffer, true));
+		ByteBuffer buffer = ByteBuffer.allocate(getSize());
+		logger.info("bufSize:" + buffer.capacity());
+		logger.info("pageSize:" + getSize());
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		buffer.put(headerBuffer);
+		logger.info(getFrameList());
+		for(IFrame frame : getFrameList()) {
+			buffer.put(frame.getData());
+		}
+		ByteBuffer tmpBuffer = buffer.duplicate();
+		tmpBuffer.flip();
+		// crc32を作成して
+		Crc32 crc32 = new Crc32();
+		while(tmpBuffer.remaining() > 0) {
+			crc32.update(tmpBuffer.get());
+		}
+		// crc32を更新する。
+		buffer.position(22);
+		buffer.putInt((int)crc32.getValue());
+		buffer.position(tmpBuffer.position());
+		buffer.flip();
+		// おわり
+		setData(buffer);
 	}
 }

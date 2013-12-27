@@ -11,6 +11,7 @@ import com.ttProject.frame.speex.SpeexFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
+import com.ttProject.util.HexUtil;
 
 /**
  * speexのCommentFrame(metaデータみたいなものかな)
@@ -156,6 +157,8 @@ public class CommentFrame extends SpeexFrame {
 			buffer.put(element.getBytes());
 		}
 		buffer.flip();
+		logger.info(HexUtil.toHex(buffer, true));
+		setSize(buffer.remaining());
 		setData(buffer);
 	}
 	/**

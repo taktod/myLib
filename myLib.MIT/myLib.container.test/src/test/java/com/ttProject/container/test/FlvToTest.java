@@ -59,17 +59,17 @@ public class FlvToTest {
 	 */
 	@Test
 	public void ogg() throws Exception {
-		OggPageWriter writer = new OggPageWriter();
+		OggPageWriter writer = new OggPageWriter("output.ogg");
 		logger.info("oggに変換する動作テスト");
 		HeaderFrame headerFrame = new HeaderFrame();
 		headerFrame.fillWithFlvDefault();
-		writer.addFrame(0, headerFrame);
-		writer.completePage();
+		writer.addFrame(1, headerFrame);
+		writer.completePage(1);
 		logger.info(HexUtil.toHex(headerFrame.getData(), true));
 		CommentFrame commentFrame = new CommentFrame();
 		logger.info(HexUtil.toHex(commentFrame.getData(), true));
-		writer.addFrame(0, commentFrame);
-		writer.completePage();
+		writer.addFrame(1, commentFrame);
+		writer.completePage(1);
 		/*
 		 * absoluteGranulePositionの設定が必要みたいだが、どういうことがよくわからん。
 		 * よって解析する。
@@ -85,12 +85,12 @@ public class FlvToTest {
 		 * どうやら経過sampleNumがはいっているのはガチっぽいです。ただし、なぜかフレームの保持sample数の半分が引かれているっぽいです。
 		 * 仕様からすると引かなくても良さそうだけど・・・
 		 */
-//		convertTest(
-//			FileReadChannel.openFileReadChannel(
-//					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
-//			),
-//			new AdtsUnitWriter("output.aac")
-//		);
+		convertTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
+			),
+			writer
+		);
 	}
 	/**
 	 * 内部処理
@@ -110,13 +110,13 @@ public class FlvToTest {
 				}
 				else if(container instanceof AudioTag) {
 					AudioTag aTag = (AudioTag)container;
-					writer.addFrame(0, aTag.getFrame());
+					writer.addFrame(1, aTag.getFrame());
 				}
 			}
 			writer.prepareTailer();
 		}
 		catch(Exception e) {
-			
+			logger.error("例外発生", e);
 		}
 		finally {
 			if(source != null) {

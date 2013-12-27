@@ -1,19 +1,19 @@
 package com.ttProject.container.ogg.type;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
+import java.nio.ByteOrder;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.container.ogg.Crc32;
 import com.ttProject.container.ogg.OggPage;
 import com.ttProject.frame.IAnalyzer;
+import com.ttProject.frame.IFrame;
 import com.ttProject.frame.speex.SpeexFrameAnalyzer;
 import com.ttProject.frame.theora.TheoraFrameAnalyzer;
 import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
@@ -22,6 +22,7 @@ import com.ttProject.util.BufferUtil;
 /**
  * startPage(speexとかのheader情報がはいっているっぽい。)
  * @author taktod
+ * 
  * TODO Out of Memoryが発生する可能性があるので、frameListをpageごとに保持するように変更したほうがよい。
  * crc32の計算が微妙・・・どうすりゃいいんだ。
  */
@@ -30,8 +31,6 @@ public class StartPage extends OggPage {
 	private Logger logger = Logger.getLogger(StartPage.class);
 	/** 解析プログラム */
 	private IAnalyzer analyzer = null;
-	/** 全ファイルのframeListがここに保持されるみたいです。(この方法だとデータがでかいoggファイルを読み込むとOOMが発生するので、対処しなければいけない。) */
-	private List<IUnit> frameList = new ArrayList<IUnit>();
 	/** 経過tic情報 */
 	private long passedTic = 0;
 	/**
@@ -87,7 +86,7 @@ public class StartPage extends OggPage {
 			}
 			isFirstData = false;
 			IReadChannel bufferChannel = new ByteReadChannel(buffer);
-			frameList.add(analyzer.analyze(bufferChannel));
+			getFrameList().add((IFrame)analyzer.analyze(bufferChannel));
 			// bufferChannelの中身がなくなるまで読み込ませる必要あり。
 		}
 		// データを1byte読み込んで調べてみる。
@@ -96,12 +95,38 @@ public class StartPage extends OggPage {
 		// あたりをつけて残りのデータを読み込んで決定したい。
 		// 次の位置に強制割り当てしている
 		channel.position(getPosition() + getSize());
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
+		// データをupdateしなければいけない。
+		// ここでするべきことは、bufferをつくること。
+		// headerBufferを書き込み
+		ByteBuffer headerBuffer = getHeaderBuffer();
+		ByteBuffer buffer = ByteBuffer.allocate(getSize());
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		buffer.put(headerBuffer);
+		// frameを書き込み
+		for(IFrame frame : getFrameList()) {
+			buffer.put(frame.getData());
+		}
+		ByteBuffer tmpBuffer = buffer.duplicate();
+		tmpBuffer.flip();
+		// crc32を作成して
+		Crc32 crc32 = new Crc32();
+		while(tmpBuffer.remaining() > 0) {
+			crc32.update(tmpBuffer.get());
+		}
+		// crc32を更新する。
+		buffer.position(22);
+		buffer.putInt((int)crc32.getValue());
+		buffer.position(tmpBuffer.position());
+		buffer.flip();
+		// おわり
+		setData(buffer);
 	}
 	/**
 	 * 解析analyzer参照

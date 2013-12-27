@@ -46,6 +46,7 @@ public class Frame extends SpeexFrame {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
+		super.setSize(channel.size());
 		// そのままデータを保持しておいておわり。
 		frameBuffer = BufferUtil.safeRead(channel, channel.size());
 		super.update();

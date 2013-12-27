@@ -37,6 +37,7 @@ public abstract class OggPage extends Container {
 	private final Bit1  packetContinurousFlag;
 
 	// ここから先はminimumLoadで実行すればよい bit数に書き直したいけど、littleEndianの取り扱いが微妙
+	// でもこの部分はbyteが逆向きではいっているので、Bit動作としては、ただしくない動作になってしまう。
 	private Bit64 absoluteGranulePosition = new Bit64();
 	private Bit32 streamSerialNumber      = new Bit32();
 	private Bit32 pageSequenceNo          = new Bit32();
@@ -64,6 +65,7 @@ public abstract class OggPage extends Container {
 		this.logicEndFlag = logicEndFlag;
 		this.logicStartFlag = logicStartFlag;
 		this.packetContinurousFlag = packetContinurousFlag;
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
@@ -98,9 +100,15 @@ public abstract class OggPage extends Container {
 	 * @return
 	 */
 	protected ByteBuffer getHeaderBuffer() {
+		logger.info(frameList);
+		// ここのデータはframeListから作る必要があるわけか・・・
+		segmentCount.set(frameList.size());
+		for(IFrame frame : frameList) {
+			segmentSizeList.add(new Bit8(frame.getSize()));
+		}
+		
 		ByteBuffer result = ByteBuffer.allocate(27 + segmentCount.get());
 		result.order(ByteOrder.LITTLE_ENDIAN);
-//		result.put(capturePattern.getBytes());
 		BitConnector connector = new BitConnector();
 		result.put(connector.connect(
 				syncString, version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag
@@ -110,11 +118,15 @@ public abstract class OggPage extends Container {
 		result.putInt(pageSequenceNo.get());
 		result.putInt(pageChecksum.get());
 		connector.feed(segmentCount);
+		int size = 0;
 		for(Bit8 bit : segmentSizeList) {
 			connector.feed(bit);
+			size += bit.get();
 		}
 		result.put(connector.connect());
 		result.flip();
+		super.setSize(result.remaining() + size);
+		logger.info("dataSize:" + (result.remaining() + size));
 		return result;
 	}
 	/**
@@ -163,7 +175,24 @@ public abstract class OggPage extends Container {
 	 * pageの番号を参照する
 	 * @return
 	 */
-	protected int getPageSequenceNo() {
+	public int getPageSequenceNo() {
 		return pageSequenceNo.get();
+	}
+	public void setAbsoluteGranulePosition(long granulePosition) {
+		absoluteGranulePosition.setLong(granulePosition);
+	}
+	public void setStreamSerialNumber(int serialNumber) {
+		streamSerialNumber.set(serialNumber);
+	}
+	public void setPageSequenceNo(int sequenceNo) {
+		pageSequenceNo.set(sequenceNo);
+	}
+	public void setLogicEndFlag(boolean flag) {
+		if(flag) {
+			logicEndFlag.set(1);
+		}
+		else {
+			logicEndFlag.set(0);
+		}
 	}
 }
