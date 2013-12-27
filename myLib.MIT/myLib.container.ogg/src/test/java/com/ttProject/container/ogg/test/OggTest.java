@@ -19,7 +19,7 @@ public class OggTest {
 	/**
 	 * 解析動作テスト
 	 */
-//	@Test
+	@Test
 	public void analyzerTest() {
 		logger.info("ogg解析テスト");
 		IFileReadChannel source = null;
@@ -46,7 +46,10 @@ public class OggTest {
 			}
 		}
 	}
-	@Test
+	/**
+	 * speexのmetaデータが非常にながい場合にどうなるか・・・というテストとしてつくったもの。あとでサーバー上のoggファイルは撤去する予定。
+	 */
+//	@Test
 	public void analyzeTest2() {
 		logger.info("ogg解析テスト2");
 		IFileReadChannel source = null;
