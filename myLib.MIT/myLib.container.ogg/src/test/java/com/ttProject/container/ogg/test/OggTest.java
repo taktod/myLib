@@ -48,7 +48,7 @@ public class OggTest {
 	}
 	@Test
 	public void analyzeTest2() {
-		logger.info("ogg解析テスト");
+		logger.info("ogg解析テスト2");
 		IFileReadChannel source = null;
 		try {
 			source = FileReadChannel.openFileReadChannel(

@@ -21,24 +21,21 @@ public class SpeexFrameAnalyzer extends AudioAnalyzer {
 	 */
 	@Override
 	public IUnit analyze(IReadChannel channel) throws Exception {
+		SpeexFrame unit = null;
 		if(tmpFrame != null) {
-			tmpFrame.load(channel);
-			if(!tmpFrame.isComplete()) {
-				return null;
-			}
-			else {
-				return tmpFrame;
-			}
+			unit = tmpFrame;
+			unit.load(channel);
 		}
 		else {
-			SpeexFrame unit = (SpeexFrame)super.analyze(channel);
-			if(!unit.isComplete()) {
-				tmpFrame = unit;
-				return null;
-			}
-			else {
-				return unit;
-			}
+			unit = (SpeexFrame)super.analyze(channel);
 		}
+		// データを評価する
+		if(!unit.isComplete()) {
+			tmpFrame = unit;
+		}
+		else {
+			tmpFrame = null;
+		}
+		return unit;
 	}
 }

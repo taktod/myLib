@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.ttProject.frame.speex.SpeexFrame;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
@@ -52,47 +53,80 @@ public class CommentFrame extends SpeexFrame {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
+		// この処理の仕方はここにくるchannelが一定量のデータであることを期待しています。
 		// tmpBufferにデータがある場合は結合しなければならない。
+		IReadChannel targetChannel = null;
 		if(tmpBuffer != null) {
-			
+			tmpBuffer = BufferUtil.connect(
+				tmpBuffer, BufferUtil.safeRead(channel, channel.size() - channel.position())
+			);
+			targetChannel = new ByteReadChannel(tmpBuffer);
+			tmpBuffer = null;
+		}
+		else {
+			targetChannel = channel;
 		}
 		if(venderName == null) {
 			// ここでデータを読み込んで処理する。
-			ByteBuffer buffer = BufferUtil.safeRead(channel, 4);
-			buffer.order(ByteOrder.LITTLE_ENDIAN);
-			// データの読み込みを試す。足りない場合は、データを保持しておいて次にまわす必要がある。
-			// venderLength分データを取得したい。
-			int venderLength = buffer.getInt();
-			// データが必要分あるか確認
-			if(channel.size() - channel.position() < venderLength) {
-				// 次回に持ち越し
-				// 必要データはtmpBufferに記録しておく。
-				tmpBuffer = ByteBuffer.allocate(channel.size() - channel.position() + 4);
-				tmpBuffer.order(ByteOrder.LITTLE_ENDIAN);
-				tmpBuffer.putInt(venderLength);
-				tmpBuffer.put(BufferUtil.safeRead(channel, channel.size() - channel.position()));
+			venderName = readString(targetChannel);
+			if(venderName == null) {
 				return;
 			}
-			venderName = new String(BufferUtil.safeRead(channel, venderLength).array());
 			logger.info("venderName:" + venderName);
 		}
 		if(elementSize == null) {
 			// 問題はこのあと。
-			ByteBuffer buffer = BufferUtil.safeRead(channel, 4);
-			buffer.order(ByteOrder.LITTLE_ENDIAN);
-			elementSize = buffer.getInt();
-			logger.info("elementCount:" + elementSize);
+			Integer size = readInt(targetChannel);
+			if(size == null) {
+				return;
+			}
+			elementSize = size;
 		}
 		for(int i = 0;i < elementSize;i ++) {
 			// 長さを読み込んで必要なデータを取り出す。
-			ByteBuffer buffer = BufferUtil.safeRead(channel, 4);
-			buffer.order(ByteOrder.LITTLE_ENDIAN);
-			int elementLength = buffer.getInt();
-			elementList.add(new String(BufferUtil.safeRead(channel, elementLength).array()));
+			String element = readString(targetChannel);
+			if(element == null) {
+				return;
+			}
+			elementList.add(element);
 		}
 		logger.info(venderName);
 		logger.info(elementList);
 		super.update();
+	}
+	/**
+	 * データを読み込もうとしてデータサイズが足りなかったらnullを返す
+	 * @param channel
+	 * @return
+	 */
+	private String readString(IReadChannel channel) throws Exception {
+		Integer length = readInt(channel);
+		if(length == null) {
+			return null;
+		}
+		if(channel.size() - channel.position() < length) {
+			tmpBuffer = ByteBuffer.allocate(channel.size() - channel.position() + 4);
+			tmpBuffer.order(ByteOrder.LITTLE_ENDIAN);
+			tmpBuffer.putInt(length);
+			tmpBuffer.put(BufferUtil.safeRead(channel, channel.size() - channel.position()));
+			tmpBuffer.flip();
+			return null;
+		}
+		return new String(BufferUtil.safeRead(channel, length).array());
+	}
+	/**
+	 * データを読み込もうとしてデータサイズが足りなかったらnullを返す
+	 * @param channel
+	 * @return
+	 */
+	private Integer readInt(IReadChannel channel) throws Exception {
+		if(channel.size() - channel.position() < 4) {
+			tmpBuffer = BufferUtil.safeRead(channel, channel.size() - channel.position());
+			return null;
+		}
+		ByteBuffer buffer = BufferUtil.safeRead(channel, 4);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		return buffer.getInt();
 	}
 	/**
 	 * {@inheritDoc}

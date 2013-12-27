@@ -84,7 +84,11 @@ public class Page extends OggPage {
 				audioFrame.setPts(getStartPage().getPassedTic());
 				getStartPage().setPassedTic(audioFrame.getPts() + audioFrame.getSampleNum());
 			}
-			frameList.add(frame);
+			// frameのhashCodeをみて、同一だったら同じフレームであると考える。(とりあえず一致したら放置でいってみる。)
+			if(frameList.size() == 0 || frameList.get(frameList.size() - 1).hashCode() != frame.hashCode()) {
+				// 一致しなければ追加する
+				frameList.add(frame);
+			}
 		}
 		// analyzerをつかって開く
 		channel.position(getPosition() + getSize());
