@@ -35,7 +35,7 @@ public class AdtsUnitWriter implements IWriter {
 	}
 
 	@Override
-	public void addFrame(IFrame frame) throws Exception {
+	public void addFrame(int trackId, IFrame frame) throws Exception {
 		if(frame instanceof Frame) {
 			logger.info("frameを書き込む" + frame.toString());
 			outputChannel.write(frame.getData());

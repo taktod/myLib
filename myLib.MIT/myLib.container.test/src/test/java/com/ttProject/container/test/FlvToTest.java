@@ -11,6 +11,7 @@ import com.ttProject.container.flv.FlvTagReader;
 import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.VideoTag;
 import com.ttProject.container.mp3.Mp3UnitWriter;
+import com.ttProject.container.ogg.OggPageWriter;
 import com.ttProject.frame.speex.type.CommentFrame;
 import com.ttProject.frame.speex.type.HeaderFrame;
 import com.ttProject.nio.channels.FileReadChannel;
@@ -58,12 +59,17 @@ public class FlvToTest {
 	 */
 	@Test
 	public void ogg() throws Exception {
+		OggPageWriter writer = new OggPageWriter();
 		logger.info("oggに変換する動作テスト");
 		HeaderFrame headerFrame = new HeaderFrame();
 		headerFrame.fillWithFlvDefault();
+		writer.addFrame(0, headerFrame);
+		writer.completePage();
 		logger.info(HexUtil.toHex(headerFrame.getData(), true));
 		CommentFrame commentFrame = new CommentFrame();
 		logger.info(HexUtil.toHex(commentFrame.getData(), true));
+		writer.addFrame(0, commentFrame);
+		writer.completePage();
 		/*
 		 * absoluteGranulePositionの設定が必要みたいだが、どういうことがよくわからん。
 		 * よって解析する。
@@ -100,11 +106,11 @@ public class FlvToTest {
 			while((container = reader.read(source)) != null) {
 				if(container instanceof VideoTag) {
 					VideoTag vTag = (VideoTag)container;
-					writer.addFrame(vTag.getFrame());
+					writer.addFrame(0, vTag.getFrame());
 				}
 				else if(container instanceof AudioTag) {
 					AudioTag aTag = (AudioTag)container;
-					writer.addFrame(aTag.getFrame());
+					writer.addFrame(0, aTag.getFrame());
 				}
 			}
 			writer.prepareTailer();

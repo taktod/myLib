@@ -17,9 +17,10 @@ public interface IWriter {
 	public void addContainer(IContainer container) throws Exception;
 	/**
 	 * メディアフレームを追加
+	 * @param trackId
 	 * @param frame
 	 */
-	public void addFrame(IFrame frame) throws Exception;
+	public void addFrame(int trackId, IFrame frame) throws Exception;
 	/**
 	 * headerデータを構築
 	 */

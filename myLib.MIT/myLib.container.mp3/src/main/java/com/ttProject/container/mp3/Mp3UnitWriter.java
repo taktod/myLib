@@ -37,7 +37,7 @@ public class Mp3UnitWriter implements IWriter {
 	public void addContainer(IContainer container) throws Exception {
 	}
 	@Override
-	public void addFrame(IFrame frame) throws Exception {
+	public void addFrame(int trackId, IFrame frame) throws Exception {
 		if(frame instanceof Frame) {
 			logger.info("frameを書き込む" + frame.toString());
 			outputChannel.write(frame.getData());
