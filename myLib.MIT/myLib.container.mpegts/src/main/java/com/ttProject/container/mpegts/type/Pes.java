@@ -124,6 +124,22 @@ public class Pes extends MpegtsPacket {
 				payloadFieldExist, continuityCounter);
 	}
 	/**
+	 * コンストラクタ
+	 */
+	public Pes(int pid, boolean isPcr) {
+		// adaptationFieldはh264のkeyFrameや音声データにつくべきもの。
+		// h264の中間フレームにはいれる必要はないです。
+		super(new Bit8(0x47), new Bit1(), new Bit1(1), new Bit1(),
+				new Bit13(pid), new Bit2(), new Bit1(isPcr ? 1 : 0), new Bit1(1), new Bit4());
+		// minimumLoadを実行しておく。
+		if(isPcr) {
+			// adaptationFieldの読み込みがあるので、minimumLoadを実行しておきたいところ。
+			// h264のkeyFrameや
+		}
+		// そのほかの細かい部分のセットアップを実行する必要あり(payLoadUnitStartなので・・・)
+		unitStartPes = this;
+	}
+	/**
 	 * 開始位置のpesを保持しておく
 	 * @param pes
 	 */
@@ -207,16 +223,13 @@ public class Pes extends MpegtsPacket {
 				throw new Exception("読み込みできていないデータがあるみたいです。");
 			}
 			frameList = new ArrayList<IFrame>();
+			unitStartPes = this;
 		} // 844
 		pesDeltaSize = 184 - (channel.position() - startPos);
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		// frameの実データを読み込みます。読み込んだデータはpayloadStartUnitをもっているpesに格納されます
-		if(unitStartPes == null) {
-			unitStartPes = this;
-			logger.info("読み込むデータ量:" + unitStartPes.pesPacketLengthLeft);
-		}
 		unitStartPes.pesBuffer.put(BufferUtil.safeRead(channel, pesDeltaSize));
 		// ここでは読み込んだデータを主体となるpesのdata領域に格納させていきます。
 		unitStartPes.pesPacketLengthLeft -= pesDeltaSize;
