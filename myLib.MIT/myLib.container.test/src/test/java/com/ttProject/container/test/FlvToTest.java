@@ -12,6 +12,7 @@ import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.VideoTag;
 import com.ttProject.container.mp3.Mp3UnitWriter;
 import com.ttProject.container.mpegts.MpegtsPacketWriter;
+import com.ttProject.container.mpegts.type.Pat;
 import com.ttProject.container.mpegts.type.Sdt;
 import com.ttProject.container.ogg.OggPageWriter;
 import com.ttProject.frame.speex.type.CommentFrame;
@@ -85,11 +86,15 @@ public class FlvToTest {
 	 */
 	@Test
 	public void mpegts_mp3() throws Exception {
+		logger.info("mpegtsに変換するテスト(mp3)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_mp3.ts");
+		// sdtを追加
 		Sdt sdt = new Sdt();
 		sdt.writeDefaultProvider("test", "hogehoge");
-		logger.info("mpegtsに変換するテスト(mp3)");
 		writer.addContainer(sdt);
+		// patを追加
+		Pat pat = new Pat();
+		writer.addContainer(pat);
 		// とりあえずsdt pat pmtを設定しなければいけない。
 		// frame追記にあわせてpesを書き込んでいく
 		convertTest(

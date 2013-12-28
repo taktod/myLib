@@ -114,8 +114,6 @@ public class Sdt extends ProgramPacket {
 	@Override
 	protected void requestUpdate() throws Exception {
 		// 修正実行
-		// 頭部分取得
-		// getHeaderBuffer();
 		// このbufferの部分取得
 		BitConnector connector = new BitConnector();
 		connector.feed(originalNetworkId, reservedFutureUse2);
@@ -128,9 +126,11 @@ public class Sdt extends ProgramPacket {
 		);
 		// crc32を加えないとだめ
 		int crc32 = calculateCrc(tmpBuffer);
+		this.crc32.set(crc32);
 		ByteBuffer buffer = ByteBuffer.allocate(188);
 		buffer.put(tmpBuffer);
 		buffer.putInt(crc32);
+		// 埋め
 		while(buffer.position() < 188) {
 			buffer.put((byte)0xFF);
 		}
@@ -182,7 +182,6 @@ public class Sdt extends ProgramPacket {
 		// crc32のデータ
 		length += 4;
 		setSectionLength(length);
-		
 		// 更新したので、修正依頼をしておく
 		super.update();
 	}

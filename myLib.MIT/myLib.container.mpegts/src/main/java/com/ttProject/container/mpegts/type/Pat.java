@@ -1,8 +1,11 @@
 package com.ttProject.container.mpegts.type;
 
+import java.nio.ByteBuffer;
+
 import com.ttProject.container.mpegts.ProgramPacket;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit13;
@@ -31,6 +34,7 @@ public class Pat extends ProgramPacket {
 		super(syncByte, transportErrorIndicator, payloadUnitStartIndicator,
 				transportPriority, pid, scramblingControl, adaptationFieldExist,
 				payloadFieldExist, continuityCounter);
+		super.update();
 	}
 	public Pat() {
 		this(new Bit8(0x47), new Bit1(), new Bit1(1), new Bit1(),
@@ -48,6 +52,7 @@ public class Pat extends ProgramPacket {
 		reserved.set(0x07);
 		pmtPid.set(0x1000);
 		setSectionLength(13);
+		super.update();
 	}
 	public int getPmtPid() {
 		return pmtPid.get();
@@ -57,17 +62,33 @@ public class Pat extends ProgramPacket {
 		super.minimumLoad(channel);
 		BitLoader loader = new BitLoader(channel);
 		loader.load(programNum, reserved, pmtPid, crc32);
+		super.update();
 	}
 
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		// とりあえず残りのデータ数分skipさせとくか・・・
 		BufferUtil.quickDispose(channel, 188 - getSize());
+		super.update();
 	}
 
 	@Override
 	protected void requestUpdate() throws Exception {
-		
+		BitConnector connector = new BitConnector();
+		ByteBuffer tmpBuffer = BufferUtil.connect(
+				getHeaderBuffer(),
+				connector.connect(programNum, reserved, pmtPid)
+		);
+		int crc32 = calculateCrc(tmpBuffer);
+		this.crc32.set(crc32);
+		ByteBuffer buffer = ByteBuffer.allocate(188);
+		buffer.put(tmpBuffer);
+		buffer.putInt(crc32);
+		// 埋め
+		while(buffer.position() < 188) {
+			buffer.put((byte)0xFF);
+		}
+		buffer.flip();
+		super.setData(buffer);
 	}
-
 }
