@@ -87,7 +87,8 @@ public class FlvToTest {
 		 */
 		convertTest(
 			FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
+//					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
+					"http://49.212.39.17/mario.speex.flv"
 			),
 			writer
 		);
