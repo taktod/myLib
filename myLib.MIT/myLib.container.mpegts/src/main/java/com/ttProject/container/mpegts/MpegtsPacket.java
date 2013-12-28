@@ -1,13 +1,17 @@
 package com.ttProject.container.mpegts;
 
+import java.nio.ByteBuffer;
+
 import com.ttProject.container.Container;
 import com.ttProject.container.mpegts.field.AdaptationField;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit13;
 import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
+import com.ttProject.util.BufferUtil;
 
 /**
  * mpegtsのpacket
@@ -46,5 +50,25 @@ public abstract class MpegtsPacket extends Container {
 	}
 	protected boolean isPayloadUnitStart() {
 		return payloadUnitStartIndicator.get() == 1;
+	}
+	protected ByteBuffer getHeaderBuffer() {
+		BitConnector connector = new BitConnector();
+		if(adaptationFieldExist.get() == 1) {
+			return BufferUtil.connect(
+				connector.connect(
+						syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority,
+						pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter),
+				connector.connect(adaptationField.getBits())
+			);
+		}
+		else {
+			return connector.connect(
+					syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority,
+					pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
+		}
+	}
+	public void setContinuityCounter(int counter) {
+		continuityCounter.set(counter);
+		super.update();
 	}
 }

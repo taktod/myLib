@@ -1,6 +1,9 @@
 package com.ttProject.container.mpegts;
 
+import java.nio.ByteBuffer;
+
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit12;
@@ -10,6 +13,7 @@ import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
+import com.ttProject.util.BufferUtil;
 
 /**
  * programPacket
@@ -57,5 +61,26 @@ public abstract class ProgramPacket extends MpegtsPacket {
 	}
 	protected int getSectionLength() {
 		return sectionLength.get();
+	}
+	@Override
+	protected ByteBuffer getHeaderBuffer() {
+		BitConnector connector = new BitConnector();
+		return BufferUtil.connect(
+			super.getHeaderBuffer(),
+			connector.connect(
+				pointerField, tableId, sectionSyntaxIndicator, reservedFutureUse1,
+				reserved1, sectionLength, programNumber, reserved2, versionNumber,
+				currentNextOrder, sectionNumber, lastSectionNumber
+			)
+		);
+	}
+	protected int calculateCrc(ByteBuffer buffer) {
+		Crc32 crc32 = new Crc32();
+		ByteBuffer tmpBuffer = buffer.duplicate();
+		tmpBuffer.position(6);
+		while(tmpBuffer.remaining() > 0) {
+			crc32.update(tmpBuffer.get());
+		}
+		return (int)crc32.getValue();
 	}
 }

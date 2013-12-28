@@ -11,6 +11,8 @@ import com.ttProject.container.flv.FlvTagReader;
 import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.VideoTag;
 import com.ttProject.container.mp3.Mp3UnitWriter;
+import com.ttProject.container.mpegts.MpegtsPacketWriter;
+import com.ttProject.container.mpegts.type.Sdt;
 import com.ttProject.container.ogg.OggPageWriter;
 import com.ttProject.frame.speex.type.CommentFrame;
 import com.ttProject.frame.speex.type.HeaderFrame;
@@ -26,7 +28,7 @@ public class FlvToTest {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(FlvToTest.class);
 	/**
-	 * mp3にコンバートする
+	 * mp3にコンバートする(mp3)
 	 * @throws Exception
 	 */
 //	@Test
@@ -40,7 +42,7 @@ public class FlvToTest {
 		);
 	}
 	/**
-	 * adtsにコンバートする
+	 * adtsにコンバートする(aac)
 	 * @throws Exception
 	 */
 //	@Test
@@ -54,10 +56,10 @@ public class FlvToTest {
 		);
 	}
 	/**
-	 * oggにコンバートする(speexのみ)
+	 * oggにコンバートする(speex)
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void ogg() throws Exception {
 		OggPageWriter writer = new OggPageWriter("output.ogg");
 		logger.info("oggに変換する動作テスト");
@@ -70,25 +72,29 @@ public class FlvToTest {
 		logger.info(HexUtil.toHex(commentFrame.getData(), true));
 		writer.addFrame(1, commentFrame);
 		writer.completePage(1);
-		/*
-		 * absoluteGranulePositionの設定が必要みたいだが、どういうことがよくわからん。
-		 * よって解析する。
-		 * mario.speex.oggで値を確認してみる。
-		 * 0x27c13 + 27d94
-		 * 0x4F9A7 + 27d7b
-		 * 0x77722 + 27d73
-		 * 0x9F495
-		 * 
-		 * speexのheaderFrameによると640samplesみたいなので、
-		 * 255 x 640 = 0x27D80
-		 * それっぽい値にはなってますね。なんで揺らぎがあるのかは不明
-		 * どうやら経過sampleNumがはいっているのはガチっぽいです。ただし、なぜかフレームの保持sample数の半分が引かれているっぽいです。
-		 * 仕様からすると引かなくても良さそうだけど・・・
-		 */
 		convertTest(
 			FileReadChannel.openFileReadChannel(
-//					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
-					"http://49.212.39.17/mario.speex.flv"
+					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
+			),
+			writer
+		);
+	}
+	/**
+	 * mpegtsにコンバートする(h264 aac mp3)
+	 * @throws Exception
+	 */
+	@Test
+	public void mpegts_mp3() throws Exception {
+		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_mp3.ts");
+		Sdt sdt = new Sdt();
+		sdt.writeDefaultProvider("test", "hogehoge");
+		logger.info("mpegtsに変換するテスト(mp3)");
+		writer.addContainer(sdt);
+		// とりあえずsdt pat pmtを設定しなければいけない。
+		// frame追記にあわせてpesを書き込んでいく
+		convertTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("mp3.flv")
 			),
 			writer
 		);

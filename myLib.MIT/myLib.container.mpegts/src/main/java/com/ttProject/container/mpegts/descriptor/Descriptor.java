@@ -14,9 +14,9 @@ import com.ttProject.unit.extra.bit.Bit8;
  */
 public abstract class Descriptor {
 	/** 設定タグ(descriptorによってまちまち) */
-	private Bit8 descriptorTag; // これは固定
+	private final Bit8 descriptorTag; // これは固定
 	/** 保持データ量 */
-	private Bit8 descriptorLength; // これは可変っていうか、設定データによって変わる。
+	private Bit8 descriptorLength = new Bit8(); // これは可変っていうか、設定データによって変わる。
 	/**
 	 * コンストラクタ
 	 * @param tag
