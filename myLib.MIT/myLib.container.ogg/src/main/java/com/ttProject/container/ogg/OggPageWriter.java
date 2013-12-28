@@ -65,7 +65,13 @@ public class OggPageWriter implements IWriter {
 		if(!(frame instanceof SpeexFrame)) {
 			return;
 		}
-		addedSampleNum += ((SpeexFrame)frame).getSampleNum();
+		SpeexFrame sFrame = (SpeexFrame)frame;
+		if(sFrame.getSampleNum() != 0 && addedSampleNum == 0) {
+			addedSampleNum = -1 * sFrame.getSampleNum() / 2;
+		}
+		else {
+			addedSampleNum += sFrame.getSampleNum();
+		}
 		logger.info("フレーム追加:" + frame);
 		OggPage targetPage = null;
 		if(pageMap.get(trackId) == null) {
@@ -99,6 +105,8 @@ public class OggPageWriter implements IWriter {
 		for(Integer key : pageMap.keySet()) {
 			logger.info("target:" + key);
 			OggPage page = pageMap.get(key);
+			// absoluteGranulePositionを更新する
+			page.setAbsoluteGranulePosition(addedSampleNum);
 			// 残っているpageMapのendFlagを1にたてて止める必要がある。
 			page.setLogicEndFlag(true);
 			// このタイミングでoutputChannelを止めてしまう。
