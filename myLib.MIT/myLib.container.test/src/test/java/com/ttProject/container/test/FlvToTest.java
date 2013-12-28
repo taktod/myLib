@@ -11,8 +11,11 @@ import com.ttProject.container.flv.FlvTagReader;
 import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.VideoTag;
 import com.ttProject.container.mp3.Mp3UnitWriter;
+import com.ttProject.container.mpegts.CodecType;
 import com.ttProject.container.mpegts.MpegtsPacketWriter;
+import com.ttProject.container.mpegts.field.PmtElementaryField;
 import com.ttProject.container.mpegts.type.Pat;
+import com.ttProject.container.mpegts.type.Pmt;
 import com.ttProject.container.mpegts.type.Sdt;
 import com.ttProject.container.ogg.OggPageWriter;
 import com.ttProject.frame.speex.type.CommentFrame;
@@ -39,7 +42,8 @@ public class FlvToTest {
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("mp3.flv")
 			),
-			new Mp3UnitWriter("output.mp3")
+			new Mp3UnitWriter("output.mp3"),
+			0, 1
 		);
 	}
 	/**
@@ -53,7 +57,8 @@ public class FlvToTest {
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("aac.flv")
 			),
-			new AdtsUnitWriter("output.aac")
+			new AdtsUnitWriter("output.aac"),
+			0, 1
 		);
 	}
 	/**
@@ -77,7 +82,8 @@ public class FlvToTest {
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
 			),
-			writer
+			writer,
+			0, 1
 		);
 	}
 	/**
@@ -88,6 +94,7 @@ public class FlvToTest {
 	public void mpegts_mp3() throws Exception {
 		logger.info("mpegtsに変換するテスト(mp3)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_mp3.ts");
+		// とりあえずsdt pat pmtを設定しなければいけない。
 		// sdtを追加
 		Sdt sdt = new Sdt();
 		sdt.writeDefaultProvider("test", "hogehoge");
@@ -95,13 +102,19 @@ public class FlvToTest {
 		// patを追加
 		Pat pat = new Pat();
 		writer.addContainer(pat);
-		// とりあえずsdt pat pmtを設定しなければいけない。
+		// pmtを追加
+		Pmt pmt = new Pmt(pat.getPmtPid());
+		PmtElementaryField elementaryField = PmtElementaryField.makeNewField(CodecType.AUDIO_MPEG1);
+		pmt.addNewField(elementaryField);
+		writer.addContainer(pmt);
 		// frame追記にあわせてpesを書き込んでいく
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("mp3.flv")
 			),
-			writer
+			writer,
+			0,
+			elementaryField.getPid()
 		);
 	}
 	/**
@@ -109,7 +122,7 @@ public class FlvToTest {
 	 * @param source
 	 * @param writer
 	 */
-	private void convertTest(IFileReadChannel source, IWriter writer) {
+	private void convertTest(IFileReadChannel source, IWriter writer, int videoId, int audioId) {
 		// headerを書き込む
 		try {
 			writer.prepareHeader();
@@ -118,11 +131,11 @@ public class FlvToTest {
 			while((container = reader.read(source)) != null) {
 				if(container instanceof VideoTag) {
 					VideoTag vTag = (VideoTag)container;
-					writer.addFrame(0, vTag.getFrame());
+					writer.addFrame(videoId, vTag.getFrame());
 				}
 				else if(container instanceof AudioTag) {
 					AudioTag aTag = (AudioTag)container;
-					writer.addFrame(1, aTag.getFrame());
+					writer.addFrame(audioId, aTag.getFrame());
 				}
 			}
 			writer.prepareTailer();
