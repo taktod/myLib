@@ -1,10 +1,14 @@
 package com.ttProject.container.mpegts.type;
 
+import java.nio.ByteBuffer;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.mpegts.MpegtsPacket;
 import com.ttProject.container.mpegts.field.DtsField;
 import com.ttProject.container.mpegts.field.PtsField;
+import com.ttProject.frame.IFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
@@ -85,10 +89,28 @@ public class Pes extends MpegtsPacket {
 	private Bit8 PESHeaderLength = null; // 10byte?
 	private PtsField pts = null;
 	private DtsField dts = null;
+	
+	/** このpesが保持しているデータ量 */
+	private int pesDeltaSize = 0;
 
 	/** unitの開始のpesは保持しておく。(こいつにframeを持たせることにする) */
-	private Pes unitStartPes = null;
-	private int pesDeltaSize = 0; // pesが保持するデータサイズ
+	private Pes unitStartPes = null; // 主軸のpes
+	// pesからデータを取り出すとこのframeListがとれるような感じにしておきたい。
+	private List<IFrame> frameList = null; // 主軸のpesにframeListを持たせる必要があります。
+	private ByteBuffer pesBuffer = null; // 実データ
+	private int pesPacketLengthLeft = 0;
+	/**
+	 * コンストラクタ
+	 * @param syncByte
+	 * @param transportErrorIndicator
+	 * @param payloadUnitStartIndicator
+	 * @param transportPriority
+	 * @param pid
+	 * @param scramblingControl
+	 * @param adaptationFieldExist
+	 * @param payloadFieldExist
+	 * @param continuityCounter
+	 */
 	public Pes(Bit8 syncByte, Bit1 transportErrorIndicator,
 			Bit1 payloadUnitStartIndicator, Bit1 transportPriority,
 			Bit13 pid, Bit2 scramblingControl, Bit1 adaptationFieldExist,
@@ -135,7 +157,7 @@ public class Pes extends MpegtsPacket {
 					copyright, originFlg, ptsDtsIndicator, escrFlag,
 					esRateFlag, DSMTrickModeFlag, additionalCopyInfoFlag,
 					CRCFlag, extensionFlag, PESHeaderLength);
-			
+			pesPacketLengthLeft = pesPacketLength.get() - 3 - PESHeaderLength.get(); // このあとのデータも含むので(その分引かないとだめ(3とheaderLength分))
 			int length = PESHeaderLength.get();
 			switch(ptsDtsIndicator.get()) {
 			case 0x03:
@@ -176,13 +198,25 @@ public class Pes extends MpegtsPacket {
 			if(length != 0) {
 				throw new Exception("読み込みできていないデータがあるみたいです。");
 			}
-		}
+		} // 844
 		pesDeltaSize = 184 - (channel.position() - startPos);
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		// frameの実データを読み込みます。読み込んだデータはpayloadStartUnitをもっているpesに格納されます
 		BufferUtil.quickDispose(channel, pesDeltaSize);
+		// ここでは読み込んだデータを主体となるpesのdata領域に格納させていきます。
+		if(unitStartPes == null) {
+			unitStartPes = this;
+			logger.info("読み込むデータ量:" + unitStartPes.pesPacketLengthLeft);
+		}
+		unitStartPes.pesPacketLengthLeft -= pesDeltaSize;
+		if(unitStartPes.pesPacketLengthLeft == 0) {
+			logger.info("最後まで読み込めた");
+		}
+		else {
+			logger.info("残りデータ:" + unitStartPes.pesPacketLengthLeft);
+		}
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
