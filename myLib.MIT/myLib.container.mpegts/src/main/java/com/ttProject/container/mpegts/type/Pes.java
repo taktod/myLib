@@ -1,11 +1,11 @@
 package com.ttProject.container.mpegts.type;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.ttProject.container.mpegts.CodecType;
 import com.ttProject.container.mpegts.MpegtsPacket;
 import com.ttProject.container.mpegts.field.DtsField;
 import com.ttProject.container.mpegts.field.PtsField;
@@ -13,7 +13,6 @@ import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.IFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit13;
@@ -207,6 +206,7 @@ public class Pes extends MpegtsPacket {
 			if(length != 0) {
 				throw new Exception("読み込みできていないデータがあるみたいです。");
 			}
+			frameList = new ArrayList<IFrame>();
 		} // 844
 		pesDeltaSize = 184 - (channel.position() - startPos);
 	}
@@ -226,9 +226,9 @@ public class Pes extends MpegtsPacket {
 			if(unitStartPes.frameAnalyzer != null) {
 				unitStartPes.pesBuffer.flip();
 				IReadChannel pesBufferChannel = new ByteReadChannel(unitStartPes.pesBuffer);
-				IUnit unit = null;
-				while((unit = unitStartPes.frameAnalyzer.analyze(pesBufferChannel)) != null) {
-					logger.info(unit);
+				IFrame frame = null;
+				while((frame = unitStartPes.frameAnalyzer.analyze(pesBufferChannel)) != null) {
+					unitStartPes.frameList.add(frame);
 				}
 			}
 		}
