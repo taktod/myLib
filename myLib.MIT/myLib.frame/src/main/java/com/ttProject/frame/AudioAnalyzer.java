@@ -1,7 +1,6 @@
 package com.ttProject.frame;
 
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IUnit;
 
 /**
  * audioフレーム解析動作ベース
@@ -28,11 +27,11 @@ public abstract class AudioAnalyzer implements IAnalyzer {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IUnit analyze(IReadChannel channel) throws Exception {
-		IUnit unit = selector.select(channel);
-		if(unit != null) {
-			unit.load(channel);
+	public IFrame analyze(IReadChannel channel) throws Exception {
+		IFrame frame = (IFrame)selector.select(channel);
+		if(frame != null) {
+			frame.load(channel);
 		}
-		return unit;
+		return frame;
 	}
 }

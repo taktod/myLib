@@ -1,9 +1,9 @@
 package com.ttProject.frame.h264;
 
+import com.ttProject.frame.IFrame;
 import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IUnit;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -22,7 +22,7 @@ public class DataNalAnalyzer extends VideoAnalyzer {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IUnit analyze(IReadChannel channel) throws Exception {
+	public IFrame analyze(IReadChannel channel) throws Exception {
 		if(channel.size() < 4) {
 			throw new Exception("読み込みバッファ量がおかしいです。");
 		}
@@ -34,8 +34,8 @@ public class DataNalAnalyzer extends VideoAnalyzer {
 			throw new Exception("データが足りません");
 		}
 		IReadChannel byteChannel = new ByteReadChannel(BufferUtil.safeRead(channel, size));
-		IUnit unit = getSelector().select(byteChannel);
-		unit.load(byteChannel);
-		return unit;
+		IFrame frame = (IFrame)getSelector().select(byteChannel);
+		frame.load(byteChannel);
+		return frame;
 	}
 }

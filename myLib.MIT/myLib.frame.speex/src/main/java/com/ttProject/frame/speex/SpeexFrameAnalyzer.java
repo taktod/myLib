@@ -1,8 +1,8 @@
 package com.ttProject.frame.speex;
 
 import com.ttProject.frame.AudioAnalyzer;
+import com.ttProject.frame.IFrame;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IUnit;
 
 /**
  * speexデータ解析
@@ -20,22 +20,22 @@ public class SpeexFrameAnalyzer extends AudioAnalyzer {
 	 * フレームが読み込み途上だったらそっちの続き読み込みを実施しなければいけないので、analyzeを別途作成します。
 	 */
 	@Override
-	public IUnit analyze(IReadChannel channel) throws Exception {
-		SpeexFrame unit = null;
+	public IFrame analyze(IReadChannel channel) throws Exception {
+		SpeexFrame frame = null;
 		if(tmpFrame != null) {
-			unit = tmpFrame;
-			unit.load(channel);
+			frame = tmpFrame;
+			frame.load(channel);
 		}
 		else {
-			unit = (SpeexFrame)super.analyze(channel);
+			frame = (SpeexFrame)super.analyze(channel);
 		}
 		// データを評価する
-		if(!unit.isComplete()) {
-			tmpFrame = unit;
+		if(!frame.isComplete()) {
+			tmpFrame = frame;
 		}
 		else {
 			tmpFrame = null;
 		}
-		return unit;
+		return frame;
 	}
 }
