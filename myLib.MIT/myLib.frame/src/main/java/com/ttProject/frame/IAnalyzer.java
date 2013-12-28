@@ -1,7 +1,6 @@
 package com.ttProject.frame;
 
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IUnit;
 
 /**
  * 内部データを解析して応答する動作
@@ -17,5 +16,5 @@ public interface IAnalyzer {
 	 * @return
 	 * @throws Exception
 	 */
-	public IUnit analyze(IReadChannel channel) throws Exception;
+	public IFrame analyze(IReadChannel channel) throws Exception;
 }

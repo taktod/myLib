@@ -2,10 +2,10 @@ package com.ttProject.frame.h264;
 
 import java.nio.ByteBuffer;
 
+import com.ttProject.frame.IFrame;
 import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.IUnit;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -24,7 +24,7 @@ public class NalAnalyzer extends VideoAnalyzer {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IUnit analyze(IReadChannel channel) throws Exception {
+	public IFrame analyze(IReadChannel channel) throws Exception {
 		Short lastData = null;
 		ByteBuffer buffer = ByteBuffer.allocate(channel.size() - channel.position());
 		// データを読み込んでいく
@@ -103,11 +103,11 @@ public class NalAnalyzer extends VideoAnalyzer {
 	 * @return
 	 * @throws Exception
 	 */
-	private IUnit setupFrame(ByteBuffer buffer) throws Exception {
+	private IFrame setupFrame(ByteBuffer buffer) throws Exception {
 		IReadChannel channel = new ByteReadChannel(buffer);
-		IUnit unit = getSelector().select(channel);
-		unit.load(channel);
-		return unit;
+		IFrame frame = (IFrame)getSelector().select(channel);
+		frame.load(channel);
+		return frame;
 	}
 	/**
 	 * 最終読み込み途上データを設定

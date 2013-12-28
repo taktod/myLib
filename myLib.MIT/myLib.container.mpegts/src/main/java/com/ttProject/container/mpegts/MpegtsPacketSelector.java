@@ -5,10 +5,15 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.container.mpegts.field.PmtElementaryField;
 import com.ttProject.container.mpegts.type.Pat;
 import com.ttProject.container.mpegts.type.Pes;
 import com.ttProject.container.mpegts.type.Pmt;
 import com.ttProject.container.mpegts.type.Sdt;
+import com.ttProject.frame.IAnalyzer;
+import com.ttProject.frame.aac.AacFrameAnalyzer;
+import com.ttProject.frame.h264.H264FrameAnalyzer;
+import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
@@ -31,6 +36,7 @@ public class MpegtsPacketSelector implements ISelector {
 	private Pat pat = null;
 	private Pmt pmt = null;
 	private Map<Integer, Pes> pesMap = new HashMap<Integer, Pes>();
+	private Map<Integer, IAnalyzer> analyzerMap = new HashMap<Integer, IAnalyzer>();
 	/**
 	 * {@inheritDoc}
 	 */
@@ -72,7 +78,25 @@ public class MpegtsPacketSelector implements ISelector {
 		else if(pat != null && pid.get() == pat.getPmtPid()){
 			logger.info("pmtデータ");
 			pmt = new Pmt(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
-			packet = pmt;
+			// pmtの解析がおわったら必要なanalyzerをつくらないとだめ
+			pmt.minimumLoad(channel);
+			// analyzerをつくっておく。
+			for(PmtElementaryField elementaryField : pmt.getFields()) {
+				switch(elementaryField.getCodecType()) {
+				case AUDIO_AAC:
+					analyzerMap.put((int)elementaryField.getPid(), new AacFrameAnalyzer());
+					break;
+				case AUDIO_MPEG1:
+					analyzerMap.put((int)elementaryField.getPid(), new Mp3FrameAnalyzer());
+					break;
+				case VIDEO_H264:
+					analyzerMap.put((int)elementaryField.getPid(), new H264FrameAnalyzer());
+					break;
+				default:
+					break;
+				}
+			}
+			return pmt;
 		}
 		else if(pmt != null && pmt.isPesPid(pid.get())) {
 			logger.info("pesデータ");
@@ -81,6 +105,7 @@ public class MpegtsPacketSelector implements ISelector {
 			if(payloadUnitStartIndicator.get() == 1) {
 				// unitの開始位置なので、pesを記録しておく。
 				pesMap.put(pid.get(), pes);
+				pes.setFrameAnalyzer(analyzerMap.get(pid.get()));
 			}
 			else {
 				pes.setUnitStartPes(pesMap.get(pid.get()));
