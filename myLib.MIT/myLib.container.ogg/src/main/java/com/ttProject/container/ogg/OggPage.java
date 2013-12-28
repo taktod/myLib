@@ -100,13 +100,15 @@ public abstract class OggPage extends Container {
 	 * @return
 	 */
 	protected ByteBuffer getHeaderBuffer() {
-		logger.info(frameList);
+//		logger.info(frameList);
 		// ここのデータはframeListから作る必要があるわけか・・・
 		segmentCount.set(frameList.size());
+		logger.info("defList:" + segmentSizeList.size());
+		logger.info(frameList.size());
 		for(IFrame frame : frameList) {
 			segmentSizeList.add(new Bit8(frame.getSize()));
 		}
-		
+		logger.info("headerSize:" + (27 + segmentCount.get()));
 		ByteBuffer result = ByteBuffer.allocate(27 + segmentCount.get());
 		result.order(ByteOrder.LITTLE_ENDIAN);
 		BitConnector connector = new BitConnector();
@@ -118,8 +120,11 @@ public abstract class OggPage extends Container {
 		result.putInt(pageSequenceNo.get());
 		result.putInt(pageChecksum.get());
 		connector.feed(segmentCount);
+		logger.info("segmentCount:" + segmentCount.get());
+		logger.info(segmentSizeList.size());
 		int size = 0;
 		for(Bit8 bit : segmentSizeList) {
+//			logger.info(bit.get());
 			connector.feed(bit);
 			size += bit.get();
 		}

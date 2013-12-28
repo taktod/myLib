@@ -1,14 +1,18 @@
 package com.ttProject.container.mpegts.type;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.mpegts.ProgramPacket;
+import com.ttProject.container.mpegts.descriptor.Descriptor;
+import com.ttProject.container.mpegts.descriptor.ServiceDescriptor;
 import com.ttProject.container.mpegts.field.SdtServiceField;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit13;
@@ -62,6 +66,7 @@ public class Sdt extends ProgramPacket {
 		super(syncByte, transportErrorIndicator, payloadUnitStartIndicator,
 				transportPriority, pid, scramblingControl, adaptationFieldExist,
 				payloadFieldExist, continuityCounter);
+		super.update();
 	}
 	/**
 	 * デフォルトコンストラクタ
@@ -81,6 +86,7 @@ public class Sdt extends ProgramPacket {
 		}
 		catch(Exception e) {
 		}
+		super.update();
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
@@ -97,13 +103,86 @@ public class Sdt extends ProgramPacket {
 			serviceFields.add(ssfield);
 		}
 		loader.load(crc32);
+		super.update();
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		// とりあえず残りのデータ数分skipさせとくか・・・
 		BufferUtil.quickDispose(channel, 188 - getSize());
+		super.update();
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
+		// 修正実行
+		// このbufferの部分取得
+		BitConnector connector = new BitConnector();
+		connector.feed(originalNetworkId, reservedFutureUse2);
+		for(SdtServiceField ssField : serviceFields) {
+			connector.feed(ssField.getBits());
+		}
+		ByteBuffer tmpBuffer = BufferUtil.connect(
+				getHeaderBuffer(),
+				connector.connect()
+		);
+		// crc32を加えないとだめ
+		int crc32 = calculateCrc(tmpBuffer);
+		this.crc32.set(crc32);
+		ByteBuffer buffer = ByteBuffer.allocate(188);
+		buffer.put(tmpBuffer);
+		buffer.putInt(crc32);
+		// 埋め
+		while(buffer.position() < 188) {
+			buffer.put((byte)0xFF);
+		}
+		buffer.flip();
+		super.setData(buffer);
+	}
+	/**
+	 * 基本providerデータを書き込む
+	 * @param provider
+	 * @param name
+	 */
+	public void writeDefaultProvider(String provider, String name) {
+		// すでに別のserviceFieldがあるか確認
+		SdtServiceField targetField = null;
+		for(SdtServiceField ssField : serviceFields) {
+			if(ssField.getServiceId() == 1) {
+				targetField = ssField;
+				break;
+			}
+		}
+		// なければ新設
+		if(targetField == null) {
+			targetField = new SdtServiceField();
+			serviceFields.add(targetField);
+		}
+		// すでにdescriptorがあるか確認
+		ServiceDescriptor targetDescriptor = null;
+		for(Descriptor descriptor : targetField.getDescriptors()) {
+			if(descriptor instanceof ServiceDescriptor) {
+				targetDescriptor = (ServiceDescriptor)descriptor;
+				break;
+			}
+		}
+		if(targetDescriptor == null) {
+			targetDescriptor = new ServiceDescriptor();
+			targetField.addDescriptor(targetDescriptor);
+		}
+		targetDescriptor.setName(provider, name);
+		// sectionlengthが変更になるので、更新しておく。
+		short length = 0;
+		// sectionlength以降とprogramPacketのデータ
+		length += 5;
+		// sdtのデータ
+		length += 3;
+		// sdtServiceFieldのデータ
+		for(SdtServiceField ssField : serviceFields) {
+			length += ssField.getSize();
+		}
+		// crc32のデータ
+		length += 4;
+		setSectionLength(length);
+		// 更新したので、修正依頼をしておく
+		super.update();
 	}
 }

@@ -76,7 +76,7 @@ public class HeaderFrame extends SpeexFrame {
 		mode = 1;
 		modeBitstreamVersion = 4;
 		nbChannels = 1;
-		bitRate = 0x6C98; // flvにあわせて変更すべき？
+		bitRate = 0xA4D8; // flvにあわせて変更すべき？(42200bpsにしておく。固定か？、vlcではこの値をみて、データの長さを計算しているみたいです。)
 		frameSize = 0x140; // 固定っぽい
 		vbr = 0;
 		framesPerPacket = 1;

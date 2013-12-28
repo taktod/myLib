@@ -1,5 +1,6 @@
 package com.ttProject.container.mpegts.type;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import com.ttProject.container.mpegts.ProgramPacket;
 import com.ttProject.container.mpegts.field.PmtElementaryField;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit12;
@@ -91,14 +93,15 @@ public class Pmt extends ProgramPacket {
 		super(syncByte, transportErrorIndicator, payloadUnitStartIndicator,
 				transportPriority, pid, scramblingControl, adaptationFieldExist,
 				payloadFieldExist, continuityCounter);
+		super.update();
 	}
 	/**
 	 * コンストラクタ
 	 * @param pmtPid
 	 */
-	public Pmt(Bit13 pmtPid) {
+	public Pmt(int pmtPid) {
 		this(new Bit8(0x47), new Bit1(), new Bit1(1), new Bit1(),
-				pmtPid, new Bit2(), new Bit1(), new Bit1(1),
+				new Bit13(pmtPid), new Bit2(), new Bit1(), new Bit1(1),
 				new Bit4()
 		);
 		try {
@@ -112,6 +115,7 @@ public class Pmt extends ProgramPacket {
 		pcrPid.set(0x0100);
 		reserved2.set(0x0F);
 		programInfoLength.set(0x0000);
+		super.update();
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
@@ -127,14 +131,36 @@ public class Pmt extends ProgramPacket {
 			fields.add(elementaryField);
 		}
 		loader.load(crc32);
+		super.update();
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		BufferUtil.quickDispose(channel, 188 - getSize());
+		super.update();
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
-
+		BitConnector connector = new BitConnector();
+		connector.feed(reserved1, pcrPid, reserved2, programInfoLength);
+		for(PmtElementaryField elementaryField : fields) {
+			connector.feed(elementaryField.getBits());
+		}
+		// headerと結合する
+		ByteBuffer tmpBuffer = BufferUtil.connect(
+				getHeaderBuffer(),
+				connector.connect()
+		);
+		int crc32 = calculateCrc(tmpBuffer);
+		this.crc32.set(crc32);
+		ByteBuffer buffer = ByteBuffer.allocate(188);
+		buffer.put(tmpBuffer);
+		buffer.putInt(crc32);
+		// 埋め
+		while(buffer.position() < 188) {
+			buffer.put((byte)0xFF);
+		}
+		buffer.flip();
+		super.setData(buffer);
 	}
 	public int getPcrPid() {
 		return pcrPid.get();
@@ -146,5 +172,21 @@ public class Pmt extends ProgramPacket {
 			}
 		}
 		return false;
+	}
+	public void addNewField(PmtElementaryField field) {
+		if(!fields.contains(field)) {
+			fields.add(field);
+			short length = 0;
+			length += 5;
+			length += 4;
+			for(PmtElementaryField elementaryField : fields) {
+				length += (short) elementaryField.getSize();
+			}
+			length += 4;
+			setSectionLength(length);
+		}
+	}
+	public List<PmtElementaryField> getFields() {
+		return new ArrayList<PmtElementaryField>(fields);
 	}
 }

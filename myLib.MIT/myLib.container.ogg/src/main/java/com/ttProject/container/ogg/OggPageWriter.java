@@ -12,6 +12,7 @@ import com.ttProject.container.IWriter;
 import com.ttProject.container.ogg.type.Page;
 import com.ttProject.container.ogg.type.StartPage;
 import com.ttProject.frame.IFrame;
+import com.ttProject.frame.speex.SpeexFrame;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
@@ -33,6 +34,8 @@ public class OggPageWriter implements IWriter {
 	private Map<Integer, OggPage> pageMap = new HashMap<Integer, OggPage>();
 	private final WritableByteChannel outputChannel;
 	private FileOutputStream outputStream = null;
+	/** speexのsample数を足していく(この動作はvorbisやtheoraの場合にかわってくるので、本来はここにあるべきではない。またマルチチャンネルの場合もこまったことになります。) */
+	private long addedSampleNum = 0;
 	/**
 	 * コンストラクタ
 	 * @param fileName
@@ -59,6 +62,12 @@ public class OggPageWriter implements IWriter {
 	 */
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
+		// 利用不能なフレームは除外しておく
+		if(!(frame instanceof SpeexFrame)) {
+			return;
+		}
+		SpeexFrame sFrame = (SpeexFrame)frame;
+		addedSampleNum += sFrame.getSampleNum();
 		logger.info("フレーム追加:" + frame);
 		OggPage targetPage = null;
 		if(pageMap.get(trackId) == null) {
@@ -92,6 +101,8 @@ public class OggPageWriter implements IWriter {
 		for(Integer key : pageMap.keySet()) {
 			logger.info("target:" + key);
 			OggPage page = pageMap.get(key);
+			// absoluteGranulePositionを更新する
+			page.setAbsoluteGranulePosition(addedSampleNum);
 			// 残っているpageMapのendFlagを1にたてて止める必要がある。
 			page.setLogicEndFlag(true);
 			// このタイミングでoutputChannelを止めてしまう。
@@ -112,6 +123,9 @@ public class OggPageWriter implements IWriter {
 		logger.info("強制pageComplete");
 		OggPage page = pageMap.get(trackId);
 		logger.info(page);
+		// このタイミングでgranulePositionを書き込まないとだめ
+		// frameの合計位置を計算して加えないとだめ
+		page.setAbsoluteGranulePosition(addedSampleNum);
 		// このタイミングでoutputChannelに必要な情報を書き込む
 		outputChannel.write(page.getData());
 		int lastSequenceNo = page.getPageSequenceNo();
