@@ -5,11 +5,15 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.container.mpegts.CodecType;
 import com.ttProject.container.mpegts.MpegtsPacket;
 import com.ttProject.container.mpegts.field.DtsField;
 import com.ttProject.container.mpegts.field.PtsField;
+import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.IFrame;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit13;
@@ -99,6 +103,7 @@ public class Pes extends MpegtsPacket {
 	private List<IFrame> frameList = null; // 主軸のpesにframeListを持たせる必要があります。
 	private ByteBuffer pesBuffer = null; // 実データ
 	private int pesPacketLengthLeft = 0;
+	private IAnalyzer frameAnalyzer = null;
 	/**
 	 * コンストラクタ
 	 * @param syncByte
@@ -125,6 +130,9 @@ public class Pes extends MpegtsPacket {
 	 */
 	public void setUnitStartPes(Pes pes) {
 		unitStartPes = pes;
+	}
+	public void setFrameAnalyzer(IAnalyzer analyzer) {
+		frameAnalyzer = analyzer;
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
@@ -158,6 +166,7 @@ public class Pes extends MpegtsPacket {
 					esRateFlag, DSMTrickModeFlag, additionalCopyInfoFlag,
 					CRCFlag, extensionFlag, PESHeaderLength);
 			pesPacketLengthLeft = pesPacketLength.get() - 3 - PESHeaderLength.get(); // このあとのデータも含むので(その分引かないとだめ(3とheaderLength分))
+			pesBuffer = ByteBuffer.allocate(pesPacketLengthLeft);
 			int length = PESHeaderLength.get();
 			switch(ptsDtsIndicator.get()) {
 			case 0x03:
@@ -204,15 +213,24 @@ public class Pes extends MpegtsPacket {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		// frameの実データを読み込みます。読み込んだデータはpayloadStartUnitをもっているpesに格納されます
-		BufferUtil.quickDispose(channel, pesDeltaSize);
-		// ここでは読み込んだデータを主体となるpesのdata領域に格納させていきます。
 		if(unitStartPes == null) {
 			unitStartPes = this;
 			logger.info("読み込むデータ量:" + unitStartPes.pesPacketLengthLeft);
 		}
+		unitStartPes.pesBuffer.put(BufferUtil.safeRead(channel, pesDeltaSize));
+		// ここでは読み込んだデータを主体となるpesのdata領域に格納させていきます。
 		unitStartPes.pesPacketLengthLeft -= pesDeltaSize;
 		if(unitStartPes.pesPacketLengthLeft == 0) {
 			logger.info("最後まで読み込めた");
+			// ここまできたら、byteBufferからframeを生成して保持しておけばよい。
+			if(unitStartPes.frameAnalyzer != null) {
+				unitStartPes.pesBuffer.flip();
+				IReadChannel pesBufferChannel = new ByteReadChannel(unitStartPes.pesBuffer);
+				IUnit unit = null;
+				while((unit = unitStartPes.frameAnalyzer.analyze(pesBufferChannel)) != null) {
+					logger.info(unit);
+				}
+			}
 		}
 		else {
 			logger.info("残りデータ:" + unitStartPes.pesPacketLengthLeft);
