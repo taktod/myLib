@@ -34,6 +34,7 @@ public class OggPageWriter implements IWriter {
 	private Map<Integer, OggPage> pageMap = new HashMap<Integer, OggPage>();
 	private final WritableByteChannel outputChannel;
 	private FileOutputStream outputStream = null;
+	/** speexのsample数を足していく(この動作はvorbisやtheoraの場合にかわってくるので、本来はここにあるべきではない。またマルチチャンネルの場合もこまったことになります。) */
 	private long addedSampleNum = 0;
 	/**
 	 * コンストラクタ
@@ -66,12 +67,7 @@ public class OggPageWriter implements IWriter {
 			return;
 		}
 		SpeexFrame sFrame = (SpeexFrame)frame;
-		if(sFrame.getSampleNum() != 0 && addedSampleNum == 0) {
-			addedSampleNum = -1 * sFrame.getSampleNum() / 2;
-		}
-		else {
-			addedSampleNum += sFrame.getSampleNum();
-		}
+		addedSampleNum += sFrame.getSampleNum();
 		logger.info("フレーム追加:" + frame);
 		OggPage targetPage = null;
 		if(pageMap.get(trackId) == null) {
