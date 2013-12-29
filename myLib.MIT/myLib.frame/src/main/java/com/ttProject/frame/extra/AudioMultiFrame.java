@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.nio.channels.IReadChannel;
@@ -14,6 +16,9 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class AudioMultiFrame extends AudioFrame {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(AudioMultiFrame.class);
 	/** 保持フレームリスト */
 	private List<IAudioFrame> frameList = new ArrayList<IAudioFrame>();
 	/**
@@ -27,7 +32,7 @@ public class AudioMultiFrame extends AudioFrame {
 			setChannel(frame.getChannel());
 			setPts(frame.getPts());
 			setTimebase(frame.getTimebase());
-			setSampleRate(getSampleRate());
+			setSampleRate(frame.getSampleRate());
 			setSampleNum(frame.getSampleNum());
 		}
 		else {
