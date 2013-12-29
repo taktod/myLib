@@ -1,8 +1,6 @@
 package com.ttProject.container.mpegts.type;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -10,7 +8,11 @@ import com.ttProject.container.mpegts.MpegtsPacket;
 import com.ttProject.container.mpegts.field.DtsField;
 import com.ttProject.container.mpegts.field.PtsField;
 import com.ttProject.frame.IAnalyzer;
+import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
+import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.extra.AudioMultiFrame;
+import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
@@ -99,7 +101,7 @@ public class Pes extends MpegtsPacket {
 	/** unitの開始のpesは保持しておく。(こいつにframeを持たせることにする) */
 	private Pes unitStartPes = null; // 主軸のpes
 	// pesからデータを取り出すとこのframeListがとれるような感じにしておきたい。
-	private List<IFrame> frameList = null; // 主軸のpesにframeListを持たせる必要があります。
+	private IFrame frame = null;
 	private ByteBuffer pesBuffer = null; // 実データ
 	private int pesPacketLengthLeft = 0;
 	private IAnalyzer frameAnalyzer = null;
@@ -129,15 +131,8 @@ public class Pes extends MpegtsPacket {
 	public Pes(int pid, boolean isPcr) {
 		// adaptationFieldはh264のkeyFrameや音声データにつくべきもの。
 		// h264の中間フレームにはいれる必要はないです。
-		super(new Bit8(0x47), new Bit1(), new Bit1(1), new Bit1(),
-				new Bit13(pid), new Bit2(), new Bit1(isPcr ? 1 : 0), new Bit1(1), new Bit4());
-		// minimumLoadを実行しておく。
-		if(isPcr) {
-			// adaptationFieldの読み込みがあるので、minimumLoadを実行しておきたいところ。
-			// h264のkeyFrameや
-		}
-		// そのほかの細かい部分のセットアップを実行する必要あり(payLoadUnitStartなので・・・)
-		unitStartPes = this;
+		super(new Bit8(0x47), new Bit1(), new Bit1(), new Bit1(),
+				new Bit13(pid), new Bit2(), new Bit1(), new Bit1(1), new Bit4());
 	}
 	/**
 	 * 開始位置のpesを保持しておく
@@ -222,7 +217,6 @@ public class Pes extends MpegtsPacket {
 			if(length != 0) {
 				throw new Exception("読み込みできていないデータがあるみたいです。");
 			}
-			frameList = new ArrayList<IFrame>();
 			unitStartPes = this;
 		} // 844
 		pesDeltaSize = 184 - (channel.position() - startPos);
@@ -239,15 +233,55 @@ public class Pes extends MpegtsPacket {
 			if(unitStartPes.frameAnalyzer != null) {
 				unitStartPes.pesBuffer.flip();
 				IReadChannel pesBufferChannel = new ByteReadChannel(unitStartPes.pesBuffer);
-				IFrame frame = null;
-				while((frame = unitStartPes.frameAnalyzer.analyze(pesBufferChannel)) != null) {
-					unitStartPes.frameList.add(frame);
+				IFrame tmpFrame = null;
+				while((tmpFrame = unitStartPes.frameAnalyzer.analyze(pesBufferChannel)) != null) {
+					if(frame == null) {
+						frame = tmpFrame;
+					}
+					else if(frame instanceof AudioMultiFrame) {
+						if(!(tmpFrame instanceof IAudioFrame)) {
+							throw new Exception("audioFrameの追加バッファとしてaudioFrame以外を受け取りました");
+						}
+						((AudioMultiFrame)frame).addFrame((IAudioFrame)tmpFrame);
+					}
+					else if(frame instanceof VideoMultiFrame) {
+						if(!(tmpFrame instanceof IVideoFrame)) {
+							throw new Exception("videoFrameの追加バッファとしてvideoFrame以外を受け取りました");
+						}
+						((VideoMultiFrame)frame).addFrame((IVideoFrame)tmpFrame);
+					}
+					else if(frame instanceof IAudioFrame) {
+						AudioMultiFrame multiFrame = new AudioMultiFrame();
+						multiFrame.addFrame((IAudioFrame)frame);
+						if(!(tmpFrame instanceof IAudioFrame)) {
+							throw new Exception("audioFrameの追加バッファとしてaudioFrame以外を受け取りました");
+						}
+						multiFrame.addFrame((IAudioFrame)tmpFrame);
+					}
+					else if(frame instanceof IVideoFrame) {
+						VideoMultiFrame multiFrame = new VideoMultiFrame();
+						multiFrame.addFrame((IVideoFrame)frame);
+						if(!(tmpFrame instanceof IVideoFrame)) {
+							throw new Exception("videoFrameの追加バッファとしてvideoFrame以外を受け取りました");
+						}
+						multiFrame.addFrame((IVideoFrame)tmpFrame);
+					}
+					else {
+						throw new Exception("frameのデータに不明なデータがはいりました。");
+					}
 				}
 			}
 		}
 		else {
 			logger.info("残りデータ:" + unitStartPes.pesPacketLengthLeft);
 		}
+	}
+	/**
+	 * 動作フレームを参照する
+	 * @return
+	 */
+	public IFrame getFrame() {
+		return unitStartPes.frame;
 	}
 	@Override
 	protected void requestUpdate() throws Exception {

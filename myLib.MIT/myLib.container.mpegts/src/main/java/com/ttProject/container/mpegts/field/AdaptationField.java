@@ -60,6 +60,9 @@ public class AdaptationField {
 		transportPrivateDataFlag = new Bit1(0);
 		adaptationFieldExtensionFlag = new Bit1(0);
 	}
+	public void setPcrFlag(int flag) {
+		pcrFlag.set(flag);
+	}
 	public void setPcrBase(long base) throws Exception {
 		ByteBuffer buffer = ByteBuffer.allocate(8);
 		buffer.putLong(base);

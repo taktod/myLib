@@ -48,9 +48,6 @@ public abstract class MpegtsPacket extends Container {
 			adaptationField.load(channel);
 		}
 	}
-	protected boolean isPayloadUnitStart() {
-		return payloadUnitStartIndicator.get() == 1;
-	}
 	protected ByteBuffer getHeaderBuffer() {
 		BitConnector connector = new BitConnector();
 		if(adaptationFieldExist.get() == 1) {
@@ -67,8 +64,26 @@ public abstract class MpegtsPacket extends Container {
 					pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
 		}
 	}
+	protected boolean isPayloadUnitStart() {
+		return payloadUnitStartIndicator.get() == 1;
+	}
+	protected void setPayloadUnitStart(int flag) {
+		payloadUnitStartIndicator.set(flag);
+	}
 	public void setContinuityCounter(int counter) {
 		continuityCounter.set(counter);
 		super.update();
+	}
+	protected void setAdaptationFieldExist(int flag) {
+		adaptationFieldExist.set(flag);
+	}
+	protected boolean isAdaptationFieldExist() {
+		return adaptationFieldExist.get() == 1;
+	}
+	protected AdaptationField getAdaptationField() {
+		return adaptationField;
+	}
+	protected int getPid() {
+		return pid.get();
 	}
 }
