@@ -13,7 +13,13 @@ import com.ttProject.container.mpegts.type.Pat;
 import com.ttProject.container.mpegts.type.Pes;
 import com.ttProject.container.mpegts.type.Pmt;
 import com.ttProject.container.mpegts.type.Sdt;
+import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
+import com.ttProject.frame.h264.H264Frame;
+import com.ttProject.frame.h264.type.PictureParameterSet;
+import com.ttProject.frame.h264.type.SequenceParameterSet;
+import com.ttProject.frame.h264.type.Slice;
+import com.ttProject.frame.h264.type.SliceIDR;
 import com.ttProject.util.HexUtil;
 
 /**
@@ -43,6 +49,9 @@ public class MpegtsPacketWriter implements IWriter {
 	private Pmt pmt = null;
 	/** 処理中pesMap */
 	private Map<Integer, Pes> pesMap = new HashMap<Integer, Pes>();
+	// h264のppsとspsは保持しておいて、sliceIDRのデータをpesにはめるときに一緒にはめておいた方がいいかも。
+	private SequenceParameterSet sps = null;
+	private PictureParameterSet pps = null;
 	/**
 	 * コンストラクタ
 	 * @param fileName
@@ -75,6 +84,14 @@ public class MpegtsPacketWriter implements IWriter {
 	}
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
+		if(frame instanceof SequenceParameterSet) {
+			sps = (SequenceParameterSet) frame;
+			return;
+		}
+		if(frame instanceof PictureParameterSet) {
+			pps = (PictureParameterSet) frame;
+			return;
+		}
 		if(pesMap.size() == 0) {
 			// データがまだない場合は、はじめてのデータなので、sdt, pat, pmtを書き込む必要があります。
 			if(sdt == null || pat == null || pmt == null) {
@@ -89,11 +106,37 @@ public class MpegtsPacketWriter implements IWriter {
 		}
 		Pes pes = pesMap.get(trackId);
 		if(pes == null) {
+			logger.info("pesデータがないので、作ります。");
 			pes = new Pes(trackId, pmt.getPcrPid() == trackId);
+			pes.setUnitStartPes(pes);
 			pesMap.put(trackId, pes);
 		}
 		// pesにデータを当てはめていく必要がある。
-		pes.addFrame(frame);
+		if(frame instanceof SliceIDR) {
+			pes.addFrame(sps);
+			pes.addFrame(pps);
+			pes.addFrame(frame);
+			// frameはここまで
+		}
+		else if(frame instanceof Slice) {
+			pes.addFrame(frame);
+			// frameはここまで
+		}
+		else if(frame instanceof H264Frame) {
+			// その他のh264Frameは必要ない情報だと思われるのでスキップします。
+			;
+		}
+		else if(frame instanceof IAudioFrame){
+			pes.addFrame(frame);
+			IAudioFrame audioFrame = (IAudioFrame)pes.getFrame();
+			logger.info("time:" + (1.0f * audioFrame.getSampleNum() / audioFrame.getSampleRate()));
+			if(1.0f * audioFrame.getSampleNum() / audioFrame.getSampleRate() > 1.0f) {
+				// データが１秒以上になったら書き込みたいところ。
+			}
+		}
+		else {
+			throw new Exception("不明なデータを受け取りました。");
+		}
 		// pesの中身のデータ量がある程度以上になったらpes完了なので、一旦データを破棄しなければだめ。
 	}
 	private void writeMpegtsPacket(MpegtsPacket packet) throws Exception {

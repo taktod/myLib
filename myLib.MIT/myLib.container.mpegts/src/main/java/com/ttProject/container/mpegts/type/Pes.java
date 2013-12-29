@@ -277,6 +277,7 @@ public class Pes extends MpegtsPacket {
 				throw new Exception("audioFrameの追加バッファとしてaudioFrame以外を受け取りました");
 			}
 			multiFrame.addFrame((IAudioFrame)tmpFrame);
+			frame = multiFrame;
 		}
 		else if(frame instanceof IVideoFrame) {
 			VideoMultiFrame multiFrame = new VideoMultiFrame();
@@ -285,6 +286,7 @@ public class Pes extends MpegtsPacket {
 				throw new Exception("videoFrameの追加バッファとしてvideoFrame以外を受け取りました");
 			}
 			multiFrame.addFrame((IVideoFrame)tmpFrame);
+			frame = multiFrame;
 		}
 		else {
 			throw new Exception("frameのデータに不明なデータがはいりました。");
