@@ -300,8 +300,25 @@ public class Pes extends MpegtsPacket {
 		// pts dtsやadaptationFieldのPcr値の設定もやらないとだめだな。
 		logger.info("mpegtsのpesの内容をつくりあげないとだめ。");
 		// まず、frameを結合してデータをつくります。(サイズだけ知りたい)
-		int dataSize = frame.getSize();
-		logger.info("データサイズ:" + dataSize);
+		ByteBuffer buffer = ByteBuffer.allocate(frame.getSize());
+		if(frame instanceof AudioMultiFrame) {
+			for(IFrame audioFrame : ((AudioMultiFrame)frame).getFrameList()) {
+				buffer.put(audioFrame.getData());
+			}
+		}
+		else if(frame instanceof VideoMultiFrame) {
+			for(IFrame videoFrame : ((VideoMultiFrame)frame).getFrameList()) {
+				buffer.put(videoFrame.getData());
+			}
+		}
+		else {
+			buffer.put(frame.getData());
+		}
+		buffer.flip();
+		// どのくらいデータ量があるかあたりをつける。
+		buffer.remaining();
+		// frameのデータを結合しないとだめ。
 		// つづいてpesをデータ化して必要なbufferを作り上げていきます。
+		// これらのデータをベースにpesをつくって書き込んでいく。
 	}
 }
