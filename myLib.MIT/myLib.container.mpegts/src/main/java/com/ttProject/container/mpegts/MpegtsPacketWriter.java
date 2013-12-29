@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.nio.channels.WritableByteChannel;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -108,7 +109,6 @@ public class MpegtsPacketWriter implements IWriter {
 		if(pes == null) {
 			logger.info("pesデータがないので、作ります。");
 			pes = new Pes(trackId, pmt.getPcrPid() == trackId);
-			pes.setUnitStartPes(pes);
 			pesMap.put(trackId, pes);
 		}
 		// pesにデータを当てはめていく必要がある。
@@ -155,6 +155,12 @@ public class MpegtsPacketWriter implements IWriter {
 	@Override
 	public void prepareTailer() throws Exception {
 		// のこっているpesデータはすべて書き込む
+		for(Entry<Integer, Pes> entry : pesMap.entrySet()) {
+			// 書き込みしないといけないpesデータ
+			Pes pes = entry.getValue();
+			logger.info("書き込みしないとだめなpesがみつかった:" + pes);
+			writeMpegtsPacket(pes);
+		}
 		if(outputStream != null) {
 			try {
 				outputStream.close();

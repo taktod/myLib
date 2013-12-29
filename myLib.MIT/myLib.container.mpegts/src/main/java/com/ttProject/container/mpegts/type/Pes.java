@@ -129,10 +129,10 @@ public class Pes extends MpegtsPacket {
 	 * コンストラクタ
 	 */
 	public Pes(int pid, boolean isPcr) {
-		// adaptationFieldはh264のkeyFrameや音声データにつくべきもの。
-		// h264の中間フレームにはいれる必要はないです。
-		super(new Bit8(0x47), new Bit1(), new Bit1(), new Bit1(),
-				new Bit13(pid), new Bit2(), new Bit1(), new Bit1(1), new Bit4());
+		// 基本unitStartにしておきます。
+		super(new Bit8(0x47), new Bit1(), new Bit1(1), new Bit1(),
+				new Bit13(pid), new Bit2(), new Bit1(1), new Bit1(1), new Bit4());
+		unitStartPes = this;
 	}
 	/**
 	 * 開始位置のpesを保持しておく
@@ -297,5 +297,10 @@ public class Pes extends MpegtsPacket {
 		// TODO 保持frameからByteBufferのデータを復元します。
 		// unitStartPesのみ動作可能としたいとおもいます。
 		// 内部pesをいくつか作り上げていかないとだめ・・・どうするかな・・・
+		logger.info("mpegtsのpesの内容をつくりあげないとだめ。");
+		// まず、frameを結合してデータをつくります。(サイズだけ知りたい)
+		int dataSize = frame.getSize();
+		logger.info("データサイズ:" + dataSize);
+		// つづいてpesをデータ化して必要なbufferを作り上げていきます。
 	}
 }

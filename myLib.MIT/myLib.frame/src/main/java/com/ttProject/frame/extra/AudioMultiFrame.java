@@ -34,10 +34,12 @@ public class AudioMultiFrame extends AudioFrame {
 			setTimebase(frame.getTimebase());
 			setSampleRate(frame.getSampleRate());
 			setSampleNum(frame.getSampleNum());
+			setSize(frame.getSize());
 		}
 		else {
 			// データの不一致はいまのところほっとく。
 			setSampleNum(frame.getSampleNum() + getSampleNum()); // サンプル数は足していく。
+			setSize(frame.getSize() + getSize());
 		}
 		frameList.add(frame);
 	}
