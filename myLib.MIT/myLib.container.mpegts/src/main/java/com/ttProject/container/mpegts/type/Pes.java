@@ -233,42 +233,9 @@ public class Pes extends MpegtsPacket {
 			if(unitStartPes.frameAnalyzer != null) {
 				unitStartPes.pesBuffer.flip();
 				IReadChannel pesBufferChannel = new ByteReadChannel(unitStartPes.pesBuffer);
-				IFrame tmpFrame = null;
-				while((tmpFrame = unitStartPes.frameAnalyzer.analyze(pesBufferChannel)) != null) {
-					if(frame == null) {
-						frame = tmpFrame;
-					}
-					else if(frame instanceof AudioMultiFrame) {
-						if(!(tmpFrame instanceof IAudioFrame)) {
-							throw new Exception("audioFrameの追加バッファとしてaudioFrame以外を受け取りました");
-						}
-						((AudioMultiFrame)frame).addFrame((IAudioFrame)tmpFrame);
-					}
-					else if(frame instanceof VideoMultiFrame) {
-						if(!(tmpFrame instanceof IVideoFrame)) {
-							throw new Exception("videoFrameの追加バッファとしてvideoFrame以外を受け取りました");
-						}
-						((VideoMultiFrame)frame).addFrame((IVideoFrame)tmpFrame);
-					}
-					else if(frame instanceof IAudioFrame) {
-						AudioMultiFrame multiFrame = new AudioMultiFrame();
-						multiFrame.addFrame((IAudioFrame)frame);
-						if(!(tmpFrame instanceof IAudioFrame)) {
-							throw new Exception("audioFrameの追加バッファとしてaudioFrame以外を受け取りました");
-						}
-						multiFrame.addFrame((IAudioFrame)tmpFrame);
-					}
-					else if(frame instanceof IVideoFrame) {
-						VideoMultiFrame multiFrame = new VideoMultiFrame();
-						multiFrame.addFrame((IVideoFrame)frame);
-						if(!(tmpFrame instanceof IVideoFrame)) {
-							throw new Exception("videoFrameの追加バッファとしてvideoFrame以外を受け取りました");
-						}
-						multiFrame.addFrame((IVideoFrame)tmpFrame);
-					}
-					else {
-						throw new Exception("frameのデータに不明なデータがはいりました。");
-					}
+				IFrame frame = null;
+				while((frame = unitStartPes.frameAnalyzer.analyze(pesBufferChannel)) != null) {
+					addFrame(frame);
 				}
 			}
 		}
@@ -283,7 +250,50 @@ public class Pes extends MpegtsPacket {
 	public IFrame getFrame() {
 		return unitStartPes.frame;
 	}
+	/**
+	 * frameを追加する
+	 * @param tmpFrame
+	 */
+	public void addFrame(IFrame tmpFrame) throws Exception {
+		if(frame == null) {
+			frame = tmpFrame;
+		}
+		else if(frame instanceof AudioMultiFrame) {
+			if(!(tmpFrame instanceof IAudioFrame)) {
+				throw new Exception("audioFrameの追加バッファとしてaudioFrame以外を受け取りました");
+			}
+			((AudioMultiFrame)frame).addFrame((IAudioFrame)tmpFrame);
+		}
+		else if(frame instanceof VideoMultiFrame) {
+			if(!(tmpFrame instanceof IVideoFrame)) {
+				throw new Exception("videoFrameの追加バッファとしてvideoFrame以外を受け取りました");
+			}
+			((VideoMultiFrame)frame).addFrame((IVideoFrame)tmpFrame);
+		}
+		else if(frame instanceof IAudioFrame) {
+			AudioMultiFrame multiFrame = new AudioMultiFrame();
+			multiFrame.addFrame((IAudioFrame)frame);
+			if(!(tmpFrame instanceof IAudioFrame)) {
+				throw new Exception("audioFrameの追加バッファとしてaudioFrame以外を受け取りました");
+			}
+			multiFrame.addFrame((IAudioFrame)tmpFrame);
+		}
+		else if(frame instanceof IVideoFrame) {
+			VideoMultiFrame multiFrame = new VideoMultiFrame();
+			multiFrame.addFrame((IVideoFrame)frame);
+			if(!(tmpFrame instanceof IVideoFrame)) {
+				throw new Exception("videoFrameの追加バッファとしてvideoFrame以外を受け取りました");
+			}
+			multiFrame.addFrame((IVideoFrame)tmpFrame);
+		}
+		else {
+			throw new Exception("frameのデータに不明なデータがはいりました。");
+		}
+	}
 	@Override
 	protected void requestUpdate() throws Exception {
+		// TODO 保持frameからByteBufferのデータを復元します。
+		// unitStartPesのみ動作可能としたいとおもいます。
+		// 内部pesをいくつか作り上げていかないとだめ・・・どうするかな・・・
 	}
 }

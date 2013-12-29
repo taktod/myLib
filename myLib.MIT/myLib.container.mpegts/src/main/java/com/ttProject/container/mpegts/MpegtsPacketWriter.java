@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
 import com.ttProject.container.mpegts.type.Pat;
+import com.ttProject.container.mpegts.type.Pes;
 import com.ttProject.container.mpegts.type.Pmt;
 import com.ttProject.container.mpegts.type.Sdt;
 import com.ttProject.frame.IFrame;
@@ -40,6 +41,8 @@ public class MpegtsPacketWriter implements IWriter {
 	private Pat pat = null;
 	/** pmtデータ */
 	private Pmt pmt = null;
+	/** 処理中pesMap */
+	private Map<Integer, Pes> pesMap = new HashMap<Integer, Pes>();
 	/**
 	 * コンストラクタ
 	 * @param fileName
@@ -72,9 +75,35 @@ public class MpegtsPacketWriter implements IWriter {
 	}
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
+		if(pesMap.size() == 0) {
+			// データがまだない場合は、はじめてのデータなので、sdt, pat, pmtを書き込む必要があります。
+			if(sdt == null || pat == null || pmt == null) {
+				throw new Exception("必要な情報がありません。");
+			}
+			logger.info("writeSdt");
+			writeMpegtsPacket(sdt);
+			logger.info("writePat");
+			writeMpegtsPacket(pat);
+			logger.info("writePmt");
+			writeMpegtsPacket(pmt);
+		}
+		Pes pes = pesMap.get(trackId);
+		if(pes == null) {
+			pes = new Pes(trackId, pmt.getPcrPid() == trackId);
+			pesMap.put(trackId, pes);
+		}
 		// pesにデータを当てはめていく必要がある。
-		// 初データである場合はsdt、pat、pmtを書き込む
-//		logger.info(frame.getPts());
+		pes.addFrame(frame);
+		// pesの中身のデータ量がある程度以上になったらpes完了なので、一旦データを破棄しなければだめ。
+	}
+	private void writeMpegtsPacket(MpegtsPacket packet) throws Exception {
+		Integer counter = continuityCounterMap.get(packet.getPid());
+		if(counter == null) {
+			counter = 0;
+		}
+		packet.setContinuityCounter(counter);
+		outputChannel.write(packet.getData());
+		continuityCounterMap.put(packet.getPid(), counter + 1);
 	}
 	@Override
 	public void prepareHeader() throws Exception {
