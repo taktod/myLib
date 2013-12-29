@@ -297,6 +297,7 @@ public class Pes extends MpegtsPacket {
 		// TODO 保持frameからByteBufferのデータを復元します。
 		// unitStartPesのみ動作可能としたいとおもいます。
 		// 内部pesをいくつか作り上げていかないとだめ・・・どうするかな・・・
+		// pts dtsやadaptationFieldのPcr値の設定もやらないとだめだな。
 		logger.info("mpegtsのpesの内容をつくりあげないとだめ。");
 		// まず、frameを結合してデータをつくります。(サイズだけ知りたい)
 		int dataSize = frame.getSize();
