@@ -1,15 +1,14 @@
 package com.ttProject.frame.h264;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
+import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.h264.type.PictureParameterSet;
 import com.ttProject.frame.h264.type.SequenceParameterSet;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
-import com.ttProject.unit.IUnit;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -44,7 +43,7 @@ public class ConfigData {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<IUnit> getNals(IReadChannel channel) throws Exception {
+	public IVideoFrame getNalsFrame(IReadChannel channel) throws Exception {
 		ISelector selector = null;
 		if(this.selector != null) {
 			selector = this.selector;
@@ -52,7 +51,7 @@ public class ConfigData {
 		else {
 			selector = new H264FrameSelector();
 		}
-		List<IUnit> list = new ArrayList<IUnit>();
+		VideoMultiFrame result = new VideoMultiFrame();
 		if(channel.size() - channel.position() < 8) {
 			throw new Exception("先頭データの読み込み部のサイズが小さすぎます。");
 		}
@@ -62,22 +61,22 @@ public class ConfigData {
 		}
 		short spsSize = BufferUtil.safeRead(channel, 2).getShort();
 		IReadChannel byteChannel = new ByteReadChannel(BufferUtil.safeRead(channel, spsSize));
-		IUnit sps = selector.select(byteChannel);
+		IVideoFrame sps = (IVideoFrame)selector.select(byteChannel);
 		if(!(sps instanceof SequenceParameterSet)) {
 			throw new Exception("取得データがspsではありませんでした。");
 		}
 		sps.load(byteChannel);
-		list.add(sps);
+		result.addFrame(sps);
 		BufferUtil.safeRead(channel, 1);
 		short ppsSize = BufferUtil.safeRead(channel, 2).getShort();
 		byteChannel = new ByteReadChannel(BufferUtil.safeRead(channel, ppsSize));
-		IUnit pps = selector.select(byteChannel);
+		IVideoFrame pps = (IVideoFrame)selector.select(byteChannel);
 		if(!(pps instanceof PictureParameterSet)) {
 			throw new Exception("取得データがppsではありませんでした。");
 		}
 		pps.load(byteChannel);
-		list.add(pps);
-		return list;
+		result.addFrame(pps);
+		return result;
 	}
 	/**
 	 * configDataをspsとppsから作成します。

@@ -78,7 +78,7 @@ public class VideoTag extends FlvTag {
 					// mshの場合はconfigDataを構築しておく。
 					ConfigData configData = new ConfigData();
 					configData.setSelector((H264FrameSelector)frameAnalyzer.getSelector());
-					configData.getNals(new ByteReadChannel(frameBuffer));
+					configData.getNalsFrame(new ByteReadChannel(frameBuffer));
 				}
 				break;
 			case ON2VP6:

@@ -86,10 +86,12 @@ public class MpegtsPacketWriter implements IWriter {
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
 		if(frame instanceof SequenceParameterSet) {
+			logger.info("sps find");
 			sps = (SequenceParameterSet) frame;
 			return;
 		}
 		if(frame instanceof PictureParameterSet) {
+			logger.info("pps find");
 			pps = (PictureParameterSet) frame;
 			return;
 		}
@@ -109,19 +111,29 @@ public class MpegtsPacketWriter implements IWriter {
 		if(pes == null) {
 			logger.info("pesデータがないので、作ります。");
 			pes = new Pes(trackId, pmt.getPcrPid() == trackId);
+			// TODO このstreamIdの設定の部分を調整しないとだめ。
+			// audioなら0xC0 - 0xDF videoなら0xE0 - 0xEF
 			pes.setStreamId(0xC0);
 			pesMap.put(trackId, pes);
 		}
-		// pesにデータを当てはめていく必要がある。
+		// pesにデータを当てはめていく必要がある。(multiFrameでsliceIDRが2番目以降である可能性も一応ある。)
 		if(frame instanceof SliceIDR) {
+			if(sps == null) {
+				throw new Exception("spsがない");
+			}
+			if(pps == null) {
+				throw new Exception("ppsがない");
+			}
 			pes.addFrame(sps);
 			pes.addFrame(pps);
 			pes.addFrame(frame);
+			logger.info("keyFrameOK");
 			// frameはここまで
 		}
 		else if(frame instanceof Slice) {
 			pes.addFrame(frame);
 			// frameはここまで
+			logger.info("frameOK");
 		}
 		else if(frame instanceof H264Frame) {
 			// その他のh264Frameは必要ない情報だと思われるのでスキップします。

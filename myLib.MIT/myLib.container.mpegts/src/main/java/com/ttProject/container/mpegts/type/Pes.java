@@ -244,6 +244,9 @@ public class Pes extends MpegtsPacket {
 	 * @param tmpFrame
 	 */
 	public void addFrame(IFrame tmpFrame) throws Exception {
+		if(tmpFrame == null) {
+			return;
+		}
 		if(frame == null) {
 			frame = tmpFrame;
 		}
@@ -255,7 +258,7 @@ public class Pes extends MpegtsPacket {
 		}
 		else if(frame instanceof VideoMultiFrame) {
 			if(!(tmpFrame instanceof IVideoFrame)) {
-				throw new Exception("videoFrameの追加バッファとしてvideoFrame以外を受け取りました");
+				throw new Exception("videoFrameの追加バッファとしてvideoFrame以外を受け取りました:" + tmpFrame);
 			}
 			((VideoMultiFrame)frame).addFrame((IVideoFrame)tmpFrame);
 		}

@@ -30,6 +30,7 @@ public class VideoMultiFrame extends VideoFrame {
 			if(frame.isKeyFrame()) {
 				setKeyFrame(true);
 			}
+			setSize(frame.getSize());
 		}
 		else {
 			// とりあえずデータの不一致についてはいまは目をつむっておく。
@@ -39,6 +40,7 @@ public class VideoMultiFrame extends VideoFrame {
 			if(frame.isKeyFrame()) {
 				setKeyFrame(true);
 			}
+			setSize(frame.getSize() + getSize());
 		}
 		frameList.add(frame);
 	}

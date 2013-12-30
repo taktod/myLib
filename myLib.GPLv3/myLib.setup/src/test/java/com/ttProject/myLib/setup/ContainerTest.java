@@ -57,5 +57,12 @@ public class ContainerTest extends SetupBase {
 		encoder.setSampleRate(16000);
 		encoder.setChannels(1);
 		processConvert(container, null, encoder);
+		logger.info("h264(flv)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.test", "h264.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, Encoder.h264(container), null);
 	}
 }
