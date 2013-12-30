@@ -21,24 +21,72 @@ import com.ttProject.unit.extra.bit.Bit9;
  * @author taktod
  */
 public class AdaptationField {
-	private Bit8 adaptationFieldLength = new Bit8(); // lengthのみも成立しうる
+	private Bit8 adaptationFieldLength  = new Bit8(1); // lengthのみも成立しうる
+
 	private Bit1 discontinuityIndicator = null; // 0
-	private Bit1 randomAccessIndicator = null; // aacの先頭だけ、たってる？ (aacのみでも同様)(h264のキーフレームもたってるっぽい)
+	private Bit1 randomAccessIndicator  = null; // aacの先頭だけ、たってる？ (aacのみでも同様)(h264のキーフレームもたってるっぽい)
 	private Bit1 elementaryStreamPriorityIndicator = null; // 0
-	private Bit1 pcrFlag = null;
-	private Bit1 opcrFlag = null; // originalPcr(コピーするときにつかうらしい。) // 0
-	private Bit1 splicingPointFlag = null; // 0
-	private Bit1 transportPrivateDataFlag = null; // 0
-	private Bit1 adaptationFieldExtensionFlag = null; // 0
+	private Bit1 pcrFlag                           = null;
+	private Bit1 opcrFlag                          = null; // originalPcr(コピーするときにつかうらしい。) // 0
+	private Bit1 splicingPointFlag                 = null; // 0
+	private Bit1 transportPrivateDataFlag          = null; // 0
+	private Bit1 adaptationFieldExtensionFlag      = null; // 0
 	// pcr
-	private Bit33 pcrBase = null;
-	private Bit6 pcrPadding = null;
-	private Bit9 pcrExtension = null;
+	private Bit33 pcrBase      = null;
+	private Bit6  pcrPadding   = null;
+	private Bit9  pcrExtension = null;
 	// opcr
-	private Bit33 opcrBase = null;
-	private Bit6 opcrPadding = null;
-	private Bit9 opcrExtension = null;
+	private Bit33 opcrBase      = null;
+	private Bit6  opcrPadding   = null;
+	private Bit9  opcrExtension = null;
+	/**
+	 * 通常あるheaderFlag用のbyteデータを準備する
+	 */
+	private void initElement() {
+		if(discontinuityIndicator == null) {
+			discontinuityIndicator = new Bit1();
+		}
+		if(randomAccessIndicator == null) {
+			randomAccessIndicator = new Bit1();
+		}
+		if(elementaryStreamPriorityIndicator == null) {
+			elementaryStreamPriorityIndicator = new Bit1();
+		}
+		if(pcrFlag == null) {
+			pcrFlag = new Bit1();
+		}
+		if(opcrFlag == null) {
+			opcrFlag = new Bit1();
+		}
+		if(splicingPointFlag == null) {
+			splicingPointFlag = new Bit1();
+		}
+		if(transportPrivateDataFlag == null) {
+			transportPrivateDataFlag = new Bit1();
+		}
+		if(adaptationFieldExtensionFlag == null) {
+			adaptationFieldExtensionFlag = new Bit1();
+		}
+	}
+	/**
+	 * データの長さを更新する
+	 */
+	private void checkLength() {
+		int length = 0;
+		if(discontinuityIndicator != null) {
+			length += 1;
+		}
+		if(pcrFlag != null && pcrFlag.get() == 1) {
+			length += 6;
+		}
+		if(opcrFlag != null && opcrFlag.get() == 1) {
+			length += 6;
+		}
+		adaptationFieldLength.set(length);
+	}
 	public boolean hasPcr() {
+		initElement();
+		checkLength();
 		return pcrFlag.get() == 1;
 	}
 	public long getPcrBase() {
@@ -50,30 +98,28 @@ public class AdaptationField {
 		return connector.connect(new Bit31(), opcrBase).getLong();
 	}
 	public void setPcrFlag(int flag) {
+		initElement();
 		pcrFlag.set(flag);
+		checkLength();
 	}
 	public void setPcrBase(long base) throws Exception {
-		discontinuityIndicator = new Bit1();
-		randomAccessIndicator = new Bit1();
-		elementaryStreamPriorityIndicator = new Bit1();
-		pcrFlag = new Bit1();
-		opcrFlag = new Bit1();
-		splicingPointFlag = new Bit1();
-		transportPrivateDataFlag = new Bit1();
-		adaptationFieldExtensionFlag = new Bit1();
+		initElement();
 
+		pcrBase = new Bit33();
+		pcrPadding = new Bit6(0x3F);
+		pcrExtension = new Bit9();
 		ByteBuffer buffer = ByteBuffer.allocate(8);
 		buffer.putLong(base);
 		buffer.flip();
 		BitLoader loader = new BitLoader(new ByteReadChannel(buffer));
 		loader.load(new Bit31(), pcrBase);
+		checkLength();
 	}
 	public void setRandomAccessIndicator(int flg) {
 		// adaptationFieldの長さが存在しない場合は1に変更する必要あり。
-		if(adaptationFieldLength.get() == 0) {
-			adaptationFieldLength.set(1);
-		}
+		initElement();
 		randomAccessIndicator = new Bit1(flg);
+		checkLength();
 	}
 	// pcr opcr spliceCountdown stuffingBytes等々・・・
 	public void load(IReadChannel channel) throws Exception {
@@ -84,14 +130,7 @@ public class AdaptationField {
 			return;
 		}
 		int size = adaptationFieldLength.get();
-		discontinuityIndicator = new Bit1();
-		randomAccessIndicator = new Bit1();
-		elementaryStreamPriorityIndicator = new Bit1();
-		pcrFlag = new Bit1();
-		opcrFlag = new Bit1();
-		splicingPointFlag = new Bit1();
-		transportPrivateDataFlag = new Bit1();
-		adaptationFieldExtensionFlag = new Bit1();
+		initElement();
 		bitLoader = new BitLoader(channel);
 		bitLoader.load(discontinuityIndicator, randomAccessIndicator,
 				elementaryStreamPriorityIndicator, pcrFlag, opcrFlag, splicingPointFlag,
@@ -184,6 +223,8 @@ public class AdaptationField {
 		return list;
 	}
 	public int getRandomAccessIndicator() {
+		initElement();
+		checkLength();
 		return randomAccessIndicator.get();
 	}
 	@Override

@@ -16,6 +16,7 @@ import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit13;
@@ -106,6 +107,7 @@ public class Pes extends MpegtsPacket {
 	private ByteBuffer pesBuffer = null; // 実データ
 	private int pesPacketLengthLeft = 0;
 	private IAnalyzer frameAnalyzer = null;
+	private boolean pcrFlag;
 	/**
 	 * コンストラクタ
 	 * @param syncByte
@@ -117,14 +119,16 @@ public class Pes extends MpegtsPacket {
 	 * @param adaptationFieldExist
 	 * @param payloadFieldExist
 	 * @param continuityCounter
+	 * @param pcrFlag
 	 */
 	public Pes(Bit8 syncByte, Bit1 transportErrorIndicator,
 			Bit1 payloadUnitStartIndicator, Bit1 transportPriority,
 			Bit13 pid, Bit2 scramblingControl, Bit1 adaptationFieldExist,
-			Bit1 payloadFieldExist, Bit4 continuityCounter) {
+			Bit1 payloadFieldExist, Bit4 continuityCounter, boolean isPcr) {
 		super(syncByte, transportErrorIndicator, payloadUnitStartIndicator,
 				transportPriority, pid, scramblingControl, adaptationFieldExist,
 				payloadFieldExist, continuityCounter);
+		this.pcrFlag = isPcr;
 	}
 	/**
 	 * コンストラクタ
@@ -134,6 +138,7 @@ public class Pes extends MpegtsPacket {
 		super(new Bit8(0x47), new Bit1(), new Bit1(1), new Bit1(),
 				new Bit13(pid), new Bit2(), new Bit1(1), new Bit1(1), new Bit4());
 		unitStartPes = this;
+		this.pcrFlag = isPcr;
 	}
 	/**
 	 * 開始位置のpesを保持しておく
@@ -288,12 +293,15 @@ public class Pes extends MpegtsPacket {
 			// ptsのみ
 			setPts(frame.getPts(), frame.getTimebase());
 			ptsDtsIndicator.set(2);
+			PESHeaderLength.set(5);
 			// adaptationFieldを有効にして、randomAccessIndicatorとpcrの設定が必要になる。
-			setAdaptationFieldExist(1);
-			AdaptationField aField = getAdaptationField();
-			aField.setRandomAccessIndicator(1);
-			aField.setPcrFlag(1);
-			aField.setPcrBase((long)(1.0D * frame.getPts() / frame.getTimebase() * 90000));
+			if(pcrFlag) {
+				setAdaptationFieldExist(1);
+				AdaptationField aField = getAdaptationField();
+				aField.setRandomAccessIndicator(1);
+				aField.setPcrFlag(1);
+				aField.setPcrBase((long)(1.0D * frame.getPts() / frame.getTimebase() * 90000));
+			}
 		}
 		else if(frame instanceof IVideoFrame) {
 			// pts
@@ -304,13 +312,15 @@ public class Pes extends MpegtsPacket {
 				// dtsが存在するので書き込みしておく。
 				setDts(vFrame.getDts(), vFrame.getTimebase());
 				ptsDtsIndicator.set(3);
+				PESHeaderLength.set(10);
 			}
 			else {
 				ptsDtsIndicator.set(2);
+				PESHeaderLength.set(5);
 			}
 			// keyFrameなら
 			// adaptationFieldにpcrをいれる必要あり。
-			if(vFrame.isKeyFrame()) {
+			if(vFrame.isKeyFrame() && pcrFlag) {
 				setAdaptationFieldExist(1);
 				AdaptationField aField = getAdaptationField();
 				aField.setRandomAccessIndicator(1);
@@ -321,7 +331,9 @@ public class Pes extends MpegtsPacket {
 		else {
 			throw new Exception("frameに映像でも音声でもない情報がはいっていました。");
 		}
-		logger.info("mpegtsのpesの内容をつくりあげないとだめ。");
+		// pesPacketLengthを更新する。
+		pesPacketLength.set(3 + PESHeaderLength.get() + frame.getSize());
+
 		// 登録すべきframeデータ
 		ByteBuffer buffer = ByteBuffer.allocate(frame.getSize());
 		if(frame instanceof AudioMultiFrame) {
@@ -346,12 +358,78 @@ public class Pes extends MpegtsPacket {
 		 * 9 + PESHeaderLength.get()
 		 * これが先頭にあるデータ量
 		 */
-		int headerLength = 4 + (isAdaptationFieldExist() ? getAdaptationField().getLength() : 0) + 9 + PESHeaderLength.get();
-		logger.info(headerLength);
-		// どのくらいデータ量があるかあたりをつける。
-		// frameのデータを結合しないとだめ。
-		// つづいてpesをデータ化して必要なbufferを作り上げていきます。
-		// これらのデータをベースにpesをつくって書き込んでいく。
+		int headerLength = (isAdaptationFieldExist() ? getAdaptationField().getLength() : 0) + 9 + PESHeaderLength.get();
+		// 必要なデータ量をしらべないとだめ。
+		logger.info("frameSize:" + buffer.remaining());
+		logger.info((int)(Math.ceil((buffer.remaining() + headerLength) / 184f) * 188));
+		ByteBuffer pesChunk = ByteBuffer.allocate((int)(Math.ceil((buffer.remaining() + headerLength) / 184f) * 188));
+		if(headerLength + buffer.remaining() < 184) {
+			// 1packetで済む長さなので、調整しないとだめ。
+			logger.info("1packetで済む長さなので、adaptationFieldで調整します。");
+			return;
+		}
+		logger.info("通常のパケットなので、まず第１パケットの書き込みを実行します。");
+		// データサイズを計算します。
+		// header4byteとadaptationFieldを取得します。
+		pesChunk.put(getHeaderBuffer());
+		BitConnector connector = new BitConnector();
+		connector.feed(prefix, streamId, pesPacketLength, markerBits,
+				scramblingControl, priority, dataAlignmentIndicator,
+				copyright, originFlg, ptsDtsIndicator, escrFlag,
+				esRateFlag, DSMTrickModeFlag, additionalCopyInfoFlag,
+				CRCFlag, extensionFlag, PESHeaderLength);
+		switch(ptsDtsIndicator.get()) {
+		case 0:
+			break;
+		case 2:
+			connector.feed(pts.getBits());
+			break;
+		case 3:
+			connector.feed(pts.getBits());
+			connector.feed(dts.getBits());
+			break;
+		default:
+		}
+		pesChunk.put(connector.connect());
+		byte[] data = new byte[(188 - (pesChunk.position() % 188))];
+		buffer.get(data);
+		pesChunk.put(data);
+		// 次のデータをいれていく。
+		// adaptationFieldをoffにしておく。
+		AdaptationField aField = getAdaptationField();
+		aField.setPcrFlag(0);
+		aField.setRandomAccessIndicator(0);
+		// adaptationFieldがないものとする
+		setAdaptationFieldExist(0);
+		// payloadUnitStartでないとする。
+		setPayloadUnitStart(0);
+		// pesのunitを書き込んでいく
+		while(buffer.remaining() > 0) {
+			logger.info(pesChunk.position());
+			setContinuityCounter(getContinuityCounter() + 1);
+			if(buffer.remaining() < 184) {
+				logger.info("here...:" + buffer.remaining());
+				setAdaptationFieldExist(1);
+				getAdaptationField().setLength(183 - buffer.remaining());
+				logger.info(getAdaptationField());
+				pesChunk.put(getHeaderBuffer().array());
+				data = new byte[buffer.remaining()];
+				buffer.get(data);
+				pesChunk.put(data);
+				break;
+			}
+			else {
+				pesChunk.put(getHeaderBuffer().array());
+				data = new byte[184];
+			}
+			buffer.get(data);
+			pesChunk.put(data);
+		}
+		pesChunk.flip();
+		// header部checkOK
+//		logger.info(HexUtil.toHex(pesChunk, true));
+		setData(pesChunk);
+		// pesの内容をもとに戻しておく。
 	}
 	private void setPts(long timestamp, long timebase) {
 		pts = new PtsField();
@@ -360,5 +438,8 @@ public class Pes extends MpegtsPacket {
 	private void setDts(long timestamp, long timebase) {
 		dts = new DtsField();
 		dts.setDts((long)(1.0D * timestamp / timebase + 90000));
+	}
+	public void setStreamId(int id) {
+		streamId.set(id);
 	}
 }

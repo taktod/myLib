@@ -100,7 +100,7 @@ public class MpegtsPacketSelector implements ISelector {
 		}
 		else if(pmt != null && pmt.isPesPid(pid.get())) {
 			logger.info("pesデータ");
-			Pes pes = new Pes(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
+			Pes pes = new Pes(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter, pmt.getPcrPid() == pid.get());
 			// payLoadの開始位置でなかったら、startUnitのpesを取得して保持しなければならない。
 			if(payloadUnitStartIndicator.get() == 1) {
 				// unitの開始位置なので、pesを記録しておく。
