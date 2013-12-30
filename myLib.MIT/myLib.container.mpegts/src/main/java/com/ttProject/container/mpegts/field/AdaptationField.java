@@ -49,21 +49,19 @@ public class AdaptationField {
 		BitConnector connector = new BitConnector();
 		return connector.connect(new Bit31(), opcrBase).getLong();
 	}
-	public AdaptationField() {
-		adaptationFieldLength = new Bit8(0);
-		discontinuityIndicator = new Bit1(0);
-		randomAccessIndicator = new Bit1(0);
-		elementaryStreamPriorityIndicator = new Bit1(0);
-		pcrFlag = new Bit1(0);
-		opcrFlag = new Bit1(0);
-		splicingPointFlag = new Bit1(0);
-		transportPrivateDataFlag = new Bit1(0);
-		adaptationFieldExtensionFlag = new Bit1(0);
-	}
 	public void setPcrFlag(int flag) {
 		pcrFlag.set(flag);
 	}
 	public void setPcrBase(long base) throws Exception {
+		discontinuityIndicator = new Bit1();
+		randomAccessIndicator = new Bit1();
+		elementaryStreamPriorityIndicator = new Bit1();
+		pcrFlag = new Bit1();
+		opcrFlag = new Bit1();
+		splicingPointFlag = new Bit1();
+		transportPrivateDataFlag = new Bit1();
+		adaptationFieldExtensionFlag = new Bit1();
+
 		ByteBuffer buffer = ByteBuffer.allocate(8);
 		buffer.putLong(base);
 		buffer.flip();

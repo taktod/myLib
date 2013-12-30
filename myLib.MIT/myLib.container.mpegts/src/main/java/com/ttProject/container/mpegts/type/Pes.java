@@ -339,6 +339,15 @@ public class Pes extends MpegtsPacket {
 		}
 		buffer.flip();
 		buffer.remaining();
+		// header部分のサイズがどのくらいあるか確認しておく。
+		/*
+		 * 先頭4byte
+		 * adaptationFieldがあるなら、getLength
+		 * 9 + PESHeaderLength.get()
+		 * これが先頭にあるデータ量
+		 */
+		int headerLength = 4 + (isAdaptationFieldExist() ? getAdaptationField().getLength() : 0) + 9 + PESHeaderLength.get();
+		logger.info(headerLength);
 		// どのくらいデータ量があるかあたりをつける。
 		// frameのデータを結合しないとだめ。
 		// つづいてpesをデータ化して必要なbufferを作り上げていきます。
