@@ -106,6 +106,7 @@ public class FlvToTest {
 		Pmt pmt = new Pmt(pat.getPmtPid());
 		PmtElementaryField elementaryField = PmtElementaryField.makeNewField(CodecType.AUDIO_MPEG1);
 		pmt.addNewField(elementaryField);
+		pmt.setPcrPid(elementaryField.getPid());
 		writer.addContainer(pmt);
 		// frame追記にあわせてpesを書き込んでいく
 		convertTest(
@@ -136,6 +137,7 @@ public class FlvToTest {
 		// pmtを追加
 		Pmt pmt = new Pmt(pat.getPmtPid());
 		PmtElementaryField elementaryField = PmtElementaryField.makeNewField(CodecType.AUDIO_AAC);
+		pmt.setPcrPid(elementaryField.getPid());
 		pmt.addNewField(elementaryField);
 		writer.addContainer(pmt);
 		// frame追記にあわせてpesを書き込んでいく

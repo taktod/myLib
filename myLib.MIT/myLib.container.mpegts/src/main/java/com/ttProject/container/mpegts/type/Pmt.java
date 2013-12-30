@@ -165,6 +165,9 @@ public class Pmt extends ProgramPacket {
 	public int getPcrPid() {
 		return pcrPid.get();
 	}
+	public void setPcrPid(int pid) {
+		pcrPid.set(pid);
+	}
 	public boolean isPesPid(int pid) {
 		for(PmtElementaryField field : fields) {
 			if(field.getPid() == pid) {

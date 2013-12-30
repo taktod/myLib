@@ -24,8 +24,9 @@ import com.ttProject.unit.extra.bit.Bit9;
  */
 public class AdaptationField {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(AdaptationField.class);
-	private Bit8 adaptationFieldLength  = new Bit8(1); // lengthのみも成立しうる
+	private Bit8 adaptationFieldLength  = new Bit8(); // lengthのみも成立しうる
 
 	private Bit1 discontinuityIndicator = null; // 0
 	private Bit1 randomAccessIndicator  = null; // aacの先頭だけ、たってる？ (aacのみでも同様)(h264のキーフレームもたってるっぽい)
@@ -107,7 +108,6 @@ public class AdaptationField {
 		checkLength();
 	}
 	public void setPcrBase(long base) throws Exception {
-		logger.info("setPcrBase");
 		initElement();
 
 		pcrBase = new Bit33();
