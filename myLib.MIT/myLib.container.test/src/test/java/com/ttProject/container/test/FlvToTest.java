@@ -118,6 +118,37 @@ public class FlvToTest {
 		);
 	}
 	/**
+	 * mpegtsのaacの変換テスト
+	 * @throws Exception
+	 */
+	@Test
+	public void mpegts_aac() throws Exception {
+		logger.info("mpegtsに変換するテスト(aac)");
+		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_aac.ts");
+		// とりあえずsdt pat pmtを設定しなければいけない。
+		// sdtを追加
+		Sdt sdt = new Sdt();
+		sdt.writeDefaultProvider("test", "hogehoge");
+		writer.addContainer(sdt);
+		// patを追加
+		Pat pat = new Pat();
+		writer.addContainer(pat);
+		// pmtを追加
+		Pmt pmt = new Pmt(pat.getPmtPid());
+		PmtElementaryField elementaryField = PmtElementaryField.makeNewField(CodecType.AUDIO_AAC);
+		pmt.addNewField(elementaryField);
+		writer.addContainer(pmt);
+		// frame追記にあわせてpesを書き込んでいく
+		convertTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("aac.flv")
+			),
+			writer,
+			0,
+			elementaryField.getPid()
+		);
+	}
+	/**
 	 * 内部処理
 	 * @param source
 	 * @param writer

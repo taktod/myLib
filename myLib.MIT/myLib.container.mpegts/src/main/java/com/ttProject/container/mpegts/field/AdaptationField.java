@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit;
@@ -21,6 +23,8 @@ import com.ttProject.unit.extra.bit.Bit9;
  * @author taktod
  */
 public class AdaptationField {
+	/** ロガー */
+	private Logger logger = Logger.getLogger(AdaptationField.class);
 	private Bit8 adaptationFieldLength  = new Bit8(1); // lengthのみも成立しうる
 
 	private Bit1 discontinuityIndicator = null; // 0
@@ -103,6 +107,7 @@ public class AdaptationField {
 		checkLength();
 	}
 	public void setPcrBase(long base) throws Exception {
+		logger.info("setPcrBase");
 		initElement();
 
 		pcrBase = new Bit33();

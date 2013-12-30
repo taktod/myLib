@@ -19,7 +19,7 @@ import com.ttProject.unit.extra.bit.Bit8;
  * @author taktod
  */
 public class PmtElementaryField {
-	// あたらしくトラックをつくった場合の次のpid
+	// あたらしくトラックをつくった場合の次のpid(TODO この部分を使い回せないおかげで、ちょっとした例外がでてしまった。staticをはずした方がよさそう。)
 	private static short nextTrackPid = 0x0100;
 	private Bit8 streamType;
 	private Bit3 reserved1;

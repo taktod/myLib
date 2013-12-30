@@ -131,14 +131,14 @@ public class MpegtsPacketWriter implements IWriter {
 			pes.addFrame(frame);
 			IAudioFrame audioFrame = (IAudioFrame)pes.getFrame();
 			logger.info("time:" + (1.0f * audioFrame.getSampleNum() / audioFrame.getSampleRate()));
-			if(1.0f * audioFrame.getSampleNum() / audioFrame.getSampleRate() > 0.2f) {
+			if(1.0f * audioFrame.getSampleNum() / audioFrame.getSampleRate() > 0.3f) {
 				// データが１秒以上になったら書き込みたいところ。
 				writeMpegtsPacket(pes);
 				pesMap.remove(trackId);
 			}
 		}
 		else {
-			throw new Exception("不明なデータを受け取りました。");
+//			throw new Exception("不明なデータを受け取りました。");
 		}
 		// pesの中身のデータ量がある程度以上になったらpes完了なので、一旦データを破棄しなければだめ。
 	}
