@@ -3,6 +3,8 @@ package com.ttProject.container.mpegts.field;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit;
 import com.ttProject.unit.extra.BitLoader;
@@ -12,10 +14,12 @@ import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit4;
 
 public class PtsField {
+	/** ロガー */
+	private Logger logger = Logger.getLogger(PtsField.class);
 	// 0010 XXX1 XXXX XXXX XXXX XXX1 XXXX XXXX XXXX XXX1
 	// 0011 XXX1 XXXX XXXX XXXX XXX1 XXXX XXXX XXXX XXX1
 	// xの部分をつなぎ合わせたらptsデータとなります。
-	private Bit4 signature;
+	private Bit4 signature = new Bit4(2);
 	private long pts; // 90.0fで割り算したら、ミリ秒データになる。
 	public void load(IReadChannel ch) throws Exception {
 		signature = new Bit4();
@@ -38,12 +42,14 @@ public class PtsField {
 		return pts;
 	}
 	public void setPts(long pts) {
+		logger.info("setPts:" + pts);
 		this.pts = pts;
 	}
-	public void setSignature(Bit4 signature) {
+/*	public void setSignature(Bit4 signature) {
 		this.signature = signature;
-	}
+	}*/
 	public List<Bit> getBits() {
+		logger.info("pts::" + pts);
 		List<Bit> list = new ArrayList<Bit>();
 		list.add(signature);
 		list.add(new Bit3((int)(pts >>> 30)));

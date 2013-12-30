@@ -109,6 +109,7 @@ public class MpegtsPacketWriter implements IWriter {
 		if(pes == null) {
 			logger.info("pesデータがないので、作ります。");
 			pes = new Pes(trackId, pmt.getPcrPid() == trackId);
+			pes.setStreamId(0xC0);
 			pesMap.put(trackId, pes);
 		}
 		// pesにデータを当てはめていく必要がある。
@@ -130,8 +131,10 @@ public class MpegtsPacketWriter implements IWriter {
 			pes.addFrame(frame);
 			IAudioFrame audioFrame = (IAudioFrame)pes.getFrame();
 			logger.info("time:" + (1.0f * audioFrame.getSampleNum() / audioFrame.getSampleRate()));
-			if(1.0f * audioFrame.getSampleNum() / audioFrame.getSampleRate() > 1.0f) {
+			if(1.0f * audioFrame.getSampleNum() / audioFrame.getSampleRate() > 0.2f) {
 				// データが１秒以上になったら書き込みたいところ。
+				writeMpegtsPacket(pes);
+				pesMap.remove(trackId);
 			}
 		}
 		else {
@@ -146,7 +149,7 @@ public class MpegtsPacketWriter implements IWriter {
 		}
 		packet.setContinuityCounter(counter);
 		outputChannel.write(packet.getData());
-		continuityCounterMap.put(packet.getPid(), counter + 1);
+		continuityCounterMap.put(packet.getPid(), packet.getContinuityCounter() + 1);
 	}
 	@Override
 	public void prepareHeader() throws Exception {

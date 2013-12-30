@@ -77,7 +77,7 @@ public abstract class ProgramPacket extends MpegtsPacket {
 	protected int calculateCrc(ByteBuffer buffer) {
 		Crc32 crc32 = new Crc32();
 		ByteBuffer tmpBuffer = buffer.duplicate();
-		tmpBuffer.position(6);
+		tmpBuffer.position(5);
 		while(tmpBuffer.remaining() > 0) {
 			crc32.update(tmpBuffer.get());
 		}

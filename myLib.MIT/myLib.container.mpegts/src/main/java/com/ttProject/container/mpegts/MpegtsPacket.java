@@ -74,7 +74,7 @@ public abstract class MpegtsPacket extends Container {
 		continuityCounter.set(counter);
 		super.update();
 	}
-	protected int getContinuityCounter() {
+	public int getContinuityCounter() {
 		return continuityCounter.get();
 	}
 	protected void setAdaptationFieldExist(int flag) {

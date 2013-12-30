@@ -13,7 +13,7 @@ import com.ttProject.unit.extra.bit.Bit4;
 
 public class DtsField {
 	// 0010 XXX1 XXXX XXXX XXXX XXX1 XXXX XXXX XXXX XXX1
-	private Bit4 signature;
+	private Bit4 signature = new Bit4(2);
 	private long dts;
 	public void load(IReadChannel ch) throws Exception {
 		signature = new Bit4();
@@ -38,9 +38,9 @@ public class DtsField {
 	public void setDts(long dts) {
 		this.dts = dts;
 	}
-	public void setSignature(Bit4 signature) {
+/*	public void setSignature(Bit4 signature) {
 		this.signature = signature;
-	}
+	}*/
 	public List<Bit> getBits() {
 		List<Bit> list = new ArrayList<Bit>();
 		list.add(signature);

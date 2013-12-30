@@ -301,6 +301,7 @@ public class Pes extends MpegtsPacket {
 				aField.setRandomAccessIndicator(1);
 				aField.setPcrFlag(1);
 				aField.setPcrBase((long)(1.0D * frame.getPts() / frame.getTimebase() * 90000));
+				// 63000
 			}
 		}
 		else if(frame instanceof IVideoFrame) {
@@ -382,6 +383,7 @@ public class Pes extends MpegtsPacket {
 		case 0:
 			break;
 		case 2:
+			logger.info(pts.getBits());
 			connector.feed(pts.getBits());
 			break;
 		case 3:
@@ -433,11 +435,12 @@ public class Pes extends MpegtsPacket {
 	}
 	private void setPts(long timestamp, long timebase) {
 		pts = new PtsField();
-		pts.setPts((long)(1.0D * timestamp / timebase + 90000));
+		pts.setPts((long)(1.0D * timestamp / timebase * 90000));
+		logger.info("pts:" + getPts());
 	}
 	private void setDts(long timestamp, long timebase) {
 		dts = new DtsField();
-		dts.setDts((long)(1.0D * timestamp / timebase + 90000));
+		dts.setDts((long)(1.0D * timestamp / timebase * 90000));
 	}
 	public void setStreamId(int id) {
 		streamId.set(id);
