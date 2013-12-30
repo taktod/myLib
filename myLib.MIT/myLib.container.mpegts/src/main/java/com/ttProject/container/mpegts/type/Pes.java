@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.mpegts.MpegtsPacket;
+import com.ttProject.container.mpegts.field.AdaptationField;
 import com.ttProject.container.mpegts.field.DtsField;
 import com.ttProject.container.mpegts.field.PtsField;
 import com.ttProject.frame.IAnalyzer;
@@ -73,25 +74,25 @@ import com.ttProject.util.BufferUtil;
 public class Pes extends MpegtsPacket {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(Pes.class);
-	private Bit24 prefix = null; // 0x000001固定
-	private Bit8 streamId = null; // audioなら0xC0 - 0xDF videoなら0xE0 - 0xEFただしvlcが吐くデータはその限りではなかった。
-	private Bit16 pesPacketLength = null;
-	private Bit2 markerBits = null; // 10固定
-	private Bit2 scramblingControl = null; // 00
-	private Bit1 priority = null; // 0
-	private Bit1 dataAlignmentIndicator = null; // 0
-	private Bit1 copyright = null; // 0
-	private Bit1 originFlg = null; // 0:original 1:copy
+	private Bit24 prefix = new Bit24(1); // 0x000001固定
+	private Bit8 streamId = new Bit8(); // audioなら0xC0 - 0xDF videoなら0xE0 - 0xEFただしvlcが吐くデータはその限りではなかった。
+	private Bit16 pesPacketLength = new Bit16();
+	private Bit2 markerBits = new Bit2(2); // 10固定
+	private Bit2 scramblingControl = new Bit2(); // 00
+	private Bit1 priority = new Bit1(); // 0
+	private Bit1 dataAlignmentIndicator = new Bit1(); // 0
+	private Bit1 copyright = new Bit1(); // 0
+	private Bit1 originFlg = new Bit1(); // 0:original 1:copy
 
-	private Bit2 ptsDtsIndicator = null; // ここ・・・wikiによると11だとboth、1だとPTSのみと書いてあるけど10の間違いではないですかね。
-	private Bit1 escrFlag = null; // 0
-	private Bit1 esRateFlag = null; // 0
-	private Bit1 DSMTrickModeFlag = null; // 0
-	private Bit1 additionalCopyInfoFlag = null; // 0
-	private Bit1 CRCFlag = null; // 0
-	private Bit1 extensionFlag = null; // 0
+	private Bit2 ptsDtsIndicator = new Bit2(); // ここ・・・wikiによると11だとboth、1だとPTSのみと書いてあるけど10の間違いではないですかね。
+	private Bit1 escrFlag = new Bit1(); // 0
+	private Bit1 esRateFlag = new Bit1(); // 0
+	private Bit1 DSMTrickModeFlag = new Bit1(); // 0
+	private Bit1 additionalCopyInfoFlag = new Bit1(); // 0
+	private Bit1 CRCFlag = new Bit1(); // 0
+	private Bit1 extensionFlag = new Bit1(); // 0
 
-	private Bit8 PESHeaderLength = null; // 10byte?
+	private Bit8 PESHeaderLength = new Bit8(); // 10byte?
 	private PtsField pts = null;
 	private DtsField dts = null;
 	
@@ -152,23 +153,6 @@ public class Pes extends MpegtsPacket {
 		if(isPayloadUnitStart()) {
 			logger.info("payloadの開始である");
 			// 開始なので、各種情報があると思われる
-			prefix = new Bit24();
-			streamId = new Bit8();
-			pesPacketLength = new Bit16();
-			markerBits = new Bit2();
-			scramblingControl = new Bit2();
-			priority = new Bit1();
-			dataAlignmentIndicator = new Bit1();
-			copyright = new Bit1();
-			originFlg = new Bit1();
-			ptsDtsIndicator = new Bit2();
-			escrFlag = new Bit1();
-			esRateFlag = new Bit1();
-			DSMTrickModeFlag = new Bit1();
-			additionalCopyInfoFlag = new Bit1();
-			CRCFlag = new Bit1();
-			extensionFlag = new Bit1();
-			PESHeaderLength = new Bit8();
 			BitLoader loader = new BitLoader(channel);
 			loader.load(prefix, streamId, pesPacketLength, markerBits,
 					scramblingControl, priority, dataAlignmentIndicator,
@@ -296,10 +280,49 @@ public class Pes extends MpegtsPacket {
 	protected void requestUpdate() throws Exception {
 		// TODO 保持frameからByteBufferのデータを復元します。
 		// unitStartPesのみ動作可能としたいとおもいます。
-		// 内部pesをいくつか作り上げていかないとだめ・・・どうするかな・・・
-		// pts dtsやadaptationFieldのPcr値の設定もやらないとだめだな。
+		if(!isPayloadUnitStart()) {
+			throw new Exception("データの取得はunitStartのpesから実行してください。");
+		}
+		// 時間まわりの設定調整
+		if(frame instanceof IAudioFrame) {
+			// ptsのみ
+			setPts(frame.getPts(), frame.getTimebase());
+			ptsDtsIndicator.set(2);
+			// adaptationFieldを有効にして、randomAccessIndicatorとpcrの設定が必要になる。
+			setAdaptationFieldExist(1);
+			AdaptationField aField = getAdaptationField();
+			aField.setRandomAccessIndicator(1);
+			aField.setPcrFlag(1);
+			aField.setPcrBase((long)(1.0D * frame.getPts() / frame.getTimebase() * 90000));
+		}
+		else if(frame instanceof IVideoFrame) {
+			// pts
+			setPts(frame.getPts(), frame.getTimebase());
+			// dtsあるかもしれない
+			IVideoFrame vFrame = (IVideoFrame)frame;
+			if(vFrame.getDts() != -1) {
+				// dtsが存在するので書き込みしておく。
+				setDts(vFrame.getDts(), vFrame.getTimebase());
+				ptsDtsIndicator.set(3);
+			}
+			else {
+				ptsDtsIndicator.set(2);
+			}
+			// keyFrameなら
+			// adaptationFieldにpcrをいれる必要あり。
+			if(vFrame.isKeyFrame()) {
+				setAdaptationFieldExist(1);
+				AdaptationField aField = getAdaptationField();
+				aField.setRandomAccessIndicator(1);
+				aField.setPcrFlag(1);
+				aField.setPcrBase((long)(1.0D * frame.getPts() / frame.getTimebase() * 90000));
+			}
+		}
+		else {
+			throw new Exception("frameに映像でも音声でもない情報がはいっていました。");
+		}
 		logger.info("mpegtsのpesの内容をつくりあげないとだめ。");
-		// まず、frameを結合してデータをつくります。(サイズだけ知りたい)
+		// 登録すべきframeデータ
 		ByteBuffer buffer = ByteBuffer.allocate(frame.getSize());
 		if(frame instanceof AudioMultiFrame) {
 			for(IFrame audioFrame : ((AudioMultiFrame)frame).getFrameList()) {
@@ -315,10 +338,18 @@ public class Pes extends MpegtsPacket {
 			buffer.put(frame.getData());
 		}
 		buffer.flip();
-		// どのくらいデータ量があるかあたりをつける。
 		buffer.remaining();
+		// どのくらいデータ量があるかあたりをつける。
 		// frameのデータを結合しないとだめ。
 		// つづいてpesをデータ化して必要なbufferを作り上げていきます。
 		// これらのデータをベースにpesをつくって書き込んでいく。
+	}
+	private void setPts(long timestamp, long timebase) {
+		pts = new PtsField();
+		pts.setPts((long)(1.0D * timestamp / timebase + 90000));
+	}
+	private void setDts(long timestamp, long timebase) {
+		dts = new DtsField();
+		dts.setDts((long)(1.0D * timestamp / timebase + 90000));
 	}
 }

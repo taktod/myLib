@@ -27,12 +27,18 @@ public class VideoMultiFrame extends VideoFrame {
 			setTimebase(frame.getTimebase());
 			setWidth(frame.getWidth());
 			setHeight(frame.getHeight());
+			if(frame.isKeyFrame()) {
+				setKeyFrame(true);
+			}
 		}
 		else {
 			// とりあえずデータの不一致についてはいまは目をつむっておく。
 //			if(frame.getWidth() != getWidth() || frame.getHeight() != getHeight()) {
 //				throw new Exception("値の違うframeが同じデータとして追加されました。");
 //			}
+			if(frame.isKeyFrame()) {
+				setKeyFrame(true);
+			}
 		}
 		frameList.add(frame);
 	}

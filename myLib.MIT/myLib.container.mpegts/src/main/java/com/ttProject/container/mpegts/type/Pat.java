@@ -24,9 +24,21 @@ import com.ttProject.util.BufferUtil;
  */
 public class Pat extends ProgramPacket {
 	private Bit16 programNum = new Bit16();
-	private Bit3 reserved = new Bit3();
-	private Bit13 pmtPid = new Bit13();
-	private Bit32 crc32 = new Bit32();
+	private Bit3  reserved   = new Bit3();
+	private Bit13 pmtPid     = new Bit13();
+	private Bit32 crc32      = new Bit32();
+	/**
+	 * コンストラクタ
+	 * @param syncByte
+	 * @param transportErrorIndicator
+	 * @param payloadUnitStartIndicator
+	 * @param transportPriority
+	 * @param pid
+	 * @param scramblingControl
+	 * @param adaptationFieldExist
+	 * @param payloadFieldExist
+	 * @param continuityCounter
+	 */
 	public Pat(Bit8 syncByte, Bit1 transportErrorIndicator,
 			Bit1 payloadUnitStartIndicator, Bit1 transportPriority,
 			Bit13 pid, Bit2 scramblingControl, Bit1 adaptationFieldExist,
@@ -36,6 +48,9 @@ public class Pat extends ProgramPacket {
 				payloadFieldExist, continuityCounter);
 		super.update();
 	}
+	/**
+	 * デフォルトコンストラクタ
+	 */
 	public Pat() {
 		this(new Bit8(0x47), new Bit1(), new Bit1(1), new Bit1(),
 				new Bit13(), new Bit2(), new Bit1(), new Bit1(1),
