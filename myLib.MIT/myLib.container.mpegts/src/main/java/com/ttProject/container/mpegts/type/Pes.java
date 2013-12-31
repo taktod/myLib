@@ -517,4 +517,7 @@ public class Pes extends MpegtsPacket {
 	public void setStreamId(int id) {
 		streamId.set(id);
 	}
+	public int getStreamId() {
+		return streamId.get();
+	}
 }

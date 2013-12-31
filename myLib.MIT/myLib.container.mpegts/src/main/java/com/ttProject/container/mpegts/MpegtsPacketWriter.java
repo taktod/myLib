@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
+import com.ttProject.container.mpegts.field.PmtElementaryField;
 import com.ttProject.container.mpegts.type.Pat;
 import com.ttProject.container.mpegts.type.Pes;
 import com.ttProject.container.mpegts.type.Pmt;
@@ -88,6 +89,9 @@ public class MpegtsPacketWriter implements IWriter {
 	}
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
+		if(frame == null) {
+			return;
+		}
 		if(frame instanceof VideoMultiFrame) {
 			VideoMultiFrame multiFrame = (VideoMultiFrame) frame;
 			for(IVideoFrame vFrame : multiFrame.getFrameList()) {
@@ -115,9 +119,17 @@ public class MpegtsPacketWriter implements IWriter {
 		if(pes == null) {
 			logger.info("pesデータがないので、作ります。");
 			pes = new Pes(trackId, pmt.getPcrPid() == trackId);
-			// TODO このstreamIdの設定の部分を調整しないとだめ。
-			// audioなら0xC0 - 0xDF videoなら0xE0 - 0xEF
-			pes.setStreamId(0xE0);
+			for(PmtElementaryField peField : pmt.getFields()) {
+				if(trackId == peField.getPid()) {
+					if(pes.getStreamId() != 0) {
+						peField.setSuggestStreamId(pes.getStreamId());
+					}
+					else {
+						pes.setStreamId(peField.getSuggestStreamId());
+					}
+					break;
+				}
+			}
 			pesMap.put(trackId, pes);
 		}
 		// pesにデータを当てはめていく必要がある。(multiFrameでsliceIDRが2番目以降である可能性も一応ある。)
@@ -181,8 +193,14 @@ public class MpegtsPacketWriter implements IWriter {
 		for(Entry<Integer, Pes> entry : pesMap.entrySet()) {
 			// 書き込みしないといけないpesデータ
 			Pes pes = entry.getValue();
-			logger.info("書き込みしないとだめなpesがみつかった:" + pes);
-			writeMpegtsPacket(pes);
+			try {
+				logger.info("書き込みしないとだめなpesがみつかった:" + pes);
+				writeMpegtsPacket(pes);
+			}
+			catch(Exception e) {
+				// ここで例外がでるのがそもそもおかしいけど・・・
+				logger.error("例外がでた。", e);
+			}
 		}
 		if(outputStream != null) {
 			try {

@@ -20,12 +20,11 @@ import com.ttProject.unit.extra.bit.Bit8;
  */
 public class PmtElementaryField {
 	// あたらしくトラックをつくった場合の次のpid(TODO この部分を使い回せないおかげで、ちょっとした例外がでてしまった。staticをはずした方がよさそう。)
-	private static short nextTrackPid = 0x0100;
-	private Bit8 streamType;
-	private Bit3 reserved1;
-	private Bit13 pid; // 13bit
-	private Bit4 reserved2;
-	private Bit12 esInfoLength; // 12bit
+	private Bit8  streamType   = new Bit8();
+	private Bit3  reserved1    = new Bit3();
+	private Bit13 pid          = new Bit13(); // 13bit
+	private Bit4  reserved2    = new Bit4();
+	private Bit12 esInfoLength = new Bit12(); // 12bit
 	// ESDescriptor
 	/*
 	 * vlcで作成したmpegtsのデータにこのdescriptorの定義がありましたが、情報がみつからない・・・
@@ -38,6 +37,28 @@ public class PmtElementaryField {
 	 */
 	private List<Descriptor> descriptors = new ArrayList<Descriptor>();
 //	private Descriptor esDescriptor; // 形式がわからないので、とりあえず放置
+	
+	// このtrackが名乗ったらいいのでは？と思われる推奨streamId値
+	private int suggestStreamId;
+	public int getSuggestStreamId() {
+		return suggestStreamId;
+	}
+	public void setSuggestStreamId(int suggestStreamId) {
+		this.suggestStreamId = suggestStreamId;
+	}
+	/**
+	 * デフォルトコンストラクタ
+	 */
+	public PmtElementaryField() {
+	}
+	public PmtElementaryField(Bit8 streamType, Bit3 reserved1,
+			Bit13 pid, Bit4 reserved2, Bit12 esInfoLength) {
+		this.streamType   = streamType;
+		this.reserved1    = reserved1;
+		this.pid          = pid;
+		this.reserved2    = reserved2;
+		this.esInfoLength = esInfoLength;
+	}
 	public int getSize() {
 		return 5 + esInfoLength.get();
 	}
@@ -47,15 +68,6 @@ public class PmtElementaryField {
 	 */
 	public short getPid() {
 		return (short)pid.get();
-	}
-	public static PmtElementaryField makeNewField(CodecType codec) {
-		PmtElementaryField elementField = new PmtElementaryField();
-		elementField.streamType = new Bit8(codec.intValue());
-		elementField.reserved1 = new Bit3(0x07);
-		elementField.pid = new Bit13(nextTrackPid ++);
-		elementField.reserved2 = new Bit4(0x0F);
-		elementField.esInfoLength = new Bit12(0);
-		return elementField;
 	}
 	/**
 	 * 対象コーデックタイプを取得
@@ -89,16 +101,8 @@ public class PmtElementaryField {
 	 * @throws Exception
 	 */
 	public void load(IReadChannel ch) throws Exception {
-		streamType = new Bit8();
-		reserved1 = new Bit3();
-		pid = new Bit13();
-		reserved2 = new Bit4();
-		esInfoLength = new Bit12();
 		BitLoader bitLoader = new BitLoader(ch);
 		bitLoader.load(streamType, reserved1, pid, reserved2, esInfoLength);
-		if(pid.get() > nextTrackPid) {
-			nextTrackPid = (short)(pid.get() + 1);
-		}
 		int size = esInfoLength.get();
 		while(size > 0) {
 			Descriptor descriptor = Descriptor.getDescriptor(ch);
