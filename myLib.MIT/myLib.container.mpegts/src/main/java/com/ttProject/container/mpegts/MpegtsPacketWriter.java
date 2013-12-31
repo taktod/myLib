@@ -16,7 +16,10 @@ import com.ttProject.container.mpegts.type.Pmt;
 import com.ttProject.container.mpegts.type.Sdt;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
+import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.h264.H264Frame;
+import com.ttProject.frame.h264.type.AccessUnitDelimiter;
 import com.ttProject.frame.h264.type.PictureParameterSet;
 import com.ttProject.frame.h264.type.SequenceParameterSet;
 import com.ttProject.frame.h264.type.Slice;
@@ -85,13 +88,17 @@ public class MpegtsPacketWriter implements IWriter {
 	}
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
+		if(frame instanceof VideoMultiFrame) {
+			VideoMultiFrame multiFrame = (VideoMultiFrame) frame;
+			for(IVideoFrame vFrame : multiFrame.getFrameList()) {
+				addFrame(trackId, vFrame);
+			}
+		}
 		if(frame instanceof SequenceParameterSet) {
-			logger.info("sps find");
 			sps = (SequenceParameterSet) frame;
 			return;
 		}
 		if(frame instanceof PictureParameterSet) {
-			logger.info("pps find");
 			pps = (PictureParameterSet) frame;
 			return;
 		}
@@ -100,11 +107,8 @@ public class MpegtsPacketWriter implements IWriter {
 			if(sdt == null || pat == null || pmt == null) {
 				throw new Exception("必要な情報がありません。");
 			}
-			logger.info("writeSdt");
 			writeMpegtsPacket(sdt);
-			logger.info("writePat");
 			writeMpegtsPacket(pat);
-			logger.info("writePmt");
 			writeMpegtsPacket(pmt);
 		}
 		Pes pes = pesMap.get(trackId);
@@ -113,7 +117,7 @@ public class MpegtsPacketWriter implements IWriter {
 			pes = new Pes(trackId, pmt.getPcrPid() == trackId);
 			// TODO このstreamIdの設定の部分を調整しないとだめ。
 			// audioなら0xC0 - 0xDF videoなら0xE0 - 0xEF
-			pes.setStreamId(0xC0);
+			pes.setStreamId(0xE0);
 			pesMap.put(trackId, pes);
 		}
 		// pesにデータを当てはめていく必要がある。(multiFrameでsliceIDRが2番目以降である可能性も一応ある。)
@@ -124,16 +128,20 @@ public class MpegtsPacketWriter implements IWriter {
 			if(pps == null) {
 				throw new Exception("ppsがない");
 			}
+			pes.addFrame(new AccessUnitDelimiter());
 			pes.addFrame(sps);
 			pes.addFrame(pps);
 			pes.addFrame(frame);
-			logger.info("keyFrameOK");
 			// frameはここまで
+			writeMpegtsPacket(pes);
+			pesMap.remove(trackId);
 		}
 		else if(frame instanceof Slice) {
+			pes.addFrame(new AccessUnitDelimiter());
 			pes.addFrame(frame);
 			// frameはここまで
-			logger.info("frameOK");
+			writeMpegtsPacket(pes);
+			pesMap.remove(trackId);
 		}
 		else if(frame instanceof H264Frame) {
 			// その他のh264Frameは必要ない情報だと思われるのでスキップします。

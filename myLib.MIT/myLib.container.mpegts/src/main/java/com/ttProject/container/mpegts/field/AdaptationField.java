@@ -186,6 +186,7 @@ public class AdaptationField {
 	 */
 	public void setLength(int length) {
 		adaptationFieldLength = new Bit8(length);
+		initElement();
 	}
 	/**
 	 * 長さを参照する。

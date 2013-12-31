@@ -1,5 +1,7 @@
 package com.ttProject.frame.h264;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.VideoSelector;
 import com.ttProject.frame.h264.type.AccessUnitDelimiter;
 import com.ttProject.frame.h264.type.PictureParameterSet;
@@ -19,6 +21,9 @@ import com.ttProject.unit.extra.bit.Bit5;
  * @author taktod
  */
 public class H264FrameSelector extends VideoSelector {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(H264FrameSelector.class);
 	/** 解析sps */
 	private SequenceParameterSet sps = null;
 	/** 解析pps */
@@ -36,6 +41,7 @@ public class H264FrameSelector extends VideoSelector {
 		H264Frame frame = null;
 		switch(Type.getType(type.get())) {
 		case AccessUnitDelimiter:
+//			logger.info("accessUnitDelimiter発見");
 			frame = new AccessUnitDelimiter(forbiddenZeroBit, nalRefIdc, type);
 			break;
 		case PictureParameterSet:

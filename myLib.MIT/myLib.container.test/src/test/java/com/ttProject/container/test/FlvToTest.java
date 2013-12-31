@@ -178,8 +178,8 @@ public class FlvToTest {
 					Thread.currentThread().getContextClassLoader().getResource("h264.flv")
 			),
 			writer,
-			0,
-			elementaryField.getPid()
+			elementaryField.getPid(),
+			0
 		);
 	}
 	/**

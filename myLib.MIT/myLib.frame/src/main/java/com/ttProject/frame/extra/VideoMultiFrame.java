@@ -22,21 +22,18 @@ public class VideoMultiFrame extends VideoFrame {
 	 * @throws Exception
 	 */
 	public void addFrame(IVideoFrame frame) throws Exception {
+		setPts(frame.getPts());
+		setTimebase(frame.getTimebase());
+		setWidth(frame.getWidth());
+		setHeight(frame.getHeight());
 		if(frameList.size() == 0) {
-			setPts(frame.getPts());
-			setTimebase(frame.getTimebase());
-			setWidth(frame.getWidth());
-			setHeight(frame.getHeight());
 			if(frame.isKeyFrame()) {
 				setKeyFrame(true);
 			}
 			setSize(frame.getSize());
 		}
 		else {
-			// とりあえずデータの不一致についてはいまは目をつむっておく。
-//			if(frame.getWidth() != getWidth() || frame.getHeight() != getHeight()) {
-//				throw new Exception("値の違うframeが同じデータとして追加されました。");
-//			}
+			// キーフレームを取得したら、キーフレームの内容でいったん初期化しておく。
 			if(frame.isKeyFrame()) {
 				setKeyFrame(true);
 			}

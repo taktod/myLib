@@ -2,6 +2,8 @@ package com.ttProject.frame.h264.type;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.bit.Bit1;
@@ -15,6 +17,9 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class AccessUnitDelimiter extends H264Frame {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(AccessUnitDelimiter.class);
 	/** データ実体 */
 	private ByteBuffer buffer = null;
 	/**
@@ -25,6 +30,18 @@ public class AccessUnitDelimiter extends H264Frame {
 	 */
 	public AccessUnitDelimiter(Bit1 forbiddenZeroBit, Bit2 nalRefIdc, Bit5 type) {
 		super(forbiddenZeroBit, nalRefIdc, type);
+		super.update();
+	}
+	/**
+	 * コンストラクタ
+	 */
+	public AccessUnitDelimiter() {
+		super(new Bit1(), new Bit2(), new Bit5(0x09));
+		buffer = ByteBuffer.allocate(1);
+		buffer.put((byte)0xF0);
+		buffer.flip();
+		super.setSize(2);
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
@@ -33,6 +50,7 @@ public class AccessUnitDelimiter extends H264Frame {
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		setReadPosition(channel.position());
 		setSize(channel.size());
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
@@ -40,6 +58,7 @@ public class AccessUnitDelimiter extends H264Frame {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
@@ -56,7 +75,7 @@ public class AccessUnitDelimiter extends H264Frame {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ByteBuffer getPackBuffer() {
+	public ByteBuffer getPackBuffer() throws Exception {
 		return null;
 	}
 }
