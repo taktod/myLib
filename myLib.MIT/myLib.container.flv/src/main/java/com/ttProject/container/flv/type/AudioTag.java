@@ -270,6 +270,20 @@ public class AudioTag extends FlvTag {
 		return frame;
 	}
 	/**
+	 * frameを設定する
+	 * @param frame
+	 */
+	public void setFrame(IAudioFrame frame) {
+		// frameから各情報を復元しないとだめ。
+		// 時間情報
+		// size情報
+		// streamId(0固定)
+		// tagデータ(codec, sampleRate, channel, bit)
+		// (aacの場合はmshであるかフラグ)
+		// frameデータ実体
+		// tail size
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override

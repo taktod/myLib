@@ -46,7 +46,7 @@ public abstract class OggPage extends Container {
 
 	private List<Bit8> segmentSizeList = new ArrayList<Bit8>();
 	private List<ByteBuffer> bufferList = new ArrayList<ByteBuffer>();
-	private List<IFrame> frameList = new ArrayList<IFrame>();
+	private List<IFrame> frameList = new ArrayList<IFrame>(); // ここ、あとでmultiFrameを使う方がいいとわかったら変更したいところ。
 	private StartPage startPage = null;
 	/**
 	 * コンストラクタ

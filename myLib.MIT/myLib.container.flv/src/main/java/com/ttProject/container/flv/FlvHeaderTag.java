@@ -39,12 +39,14 @@ public class FlvHeaderTag extends Container implements IContainer {
 		setPosition(0);
 		setPts(0);
 		setTimebase(1000);
+		super.update();
 	}
 	/**
 	 * コンストラクタ
 	 */
 	public FlvHeaderTag() {
 		this(new Bit24('F' << 16 | 'L' << 8 | 'V'));
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
@@ -55,7 +57,7 @@ public class FlvHeaderTag extends Container implements IContainer {
 		BitLoader loader = new BitLoader(channel);
 		loader.load(version, reserved1, audioFlag, reserved2, videoFlag,
 				length, reserved3);
-		update();
+		super.update();
 		setSize(13);
 	}
 	/**
@@ -67,6 +69,7 @@ public class FlvHeaderTag extends Container implements IContainer {
 //			minimumLoad(channel);
 //		}
 		// 追加読み込みデータは存在しません。
+		super.update();
 	}
 	/**
 	 * 映像があるか設定
@@ -74,6 +77,7 @@ public class FlvHeaderTag extends Container implements IContainer {
 	 */
 	public void setVideoFlag(boolean flag) {
 		videoFlag.set(flag ? 1 : 0);
+		super.update();
 	}
 	/**
 	 * 音声があるか設定
@@ -81,6 +85,7 @@ public class FlvHeaderTag extends Container implements IContainer {
 	 */
 	public void setAudioFlag(boolean flag) {
 		audioFlag.set(flag ? 1 : 0);
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}

@@ -7,7 +7,9 @@ import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
 import com.ttProject.container.IWriter;
 import com.ttProject.container.adts.AdtsUnitWriter;
+import com.ttProject.container.flv.FlvHeaderTag;
 import com.ttProject.container.flv.FlvTagReader;
+import com.ttProject.container.flv.FlvTagWriter;
 import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.VideoTag;
 import com.ttProject.container.mp3.Mp3UnitWriter;
@@ -190,7 +192,7 @@ public class FlvToTest {
 	 * mpegtsのh264の変換テスト
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void mpegts_h264_aac() throws Exception {
 		logger.info("mpegtsに変換するテスト(h264 / aac)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_h264_aac.ts");
@@ -219,6 +221,28 @@ public class FlvToTest {
 			writer,
 			videoElementaryField.getPid(),
 			audioElementaryField.getPid()
+		);
+	}
+	/**
+	 * flvのmp3変換テスト
+	 * flvからflameを抜き出して再度flvにします。
+	 * @throws Exception
+	 */
+	@Test
+	public void flv_mp3() throws Exception {
+		logger.info("flvに変換するテスト(mp3)");
+		FlvTagWriter writer = new FlvTagWriter("output_mp3.flv");
+		FlvHeaderTag flvHeader = new FlvHeaderTag();
+		flvHeader.setAudioFlag(true);
+		flvHeader.setVideoFlag(false);
+		writer.addContainer(flvHeader);
+		convertTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("mp3.flv")
+			),
+			writer,
+			0,
+			1
 		);
 	}
 	/**

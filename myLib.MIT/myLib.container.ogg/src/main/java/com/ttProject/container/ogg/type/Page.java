@@ -80,6 +80,8 @@ public class Page extends OggPage {
 			ByteBuffer buffer = BufferUtil.safeRead(channel, size.get());
 			// 解析したい。
 			IReadChannel bufferChannel = new ByteReadChannel(buffer);
+			// TODO 他のコンテナでは、このタイミングでflame化していません。byteデータを保持しているだけ
+			// なので、あとからやった方がいいかもしれません。frameを取り出すときとか
 			IFrame frame = (IFrame)getStartPage().getAnalyzer().analyze(bufferChannel);
 			if(frame instanceof AudioFrame) {
 				AudioFrame audioFrame = (AudioFrame) frame;

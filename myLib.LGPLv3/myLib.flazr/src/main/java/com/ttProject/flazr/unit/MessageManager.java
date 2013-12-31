@@ -47,6 +47,11 @@ public class MessageManager {
 		}
 		return null;
 	}
+	/**
+	 * 動画データに変換する。
+	 * @param video
+	 * @return
+	 */
 	private VideoTag convertToVideoTag(Video video) {
 		RtmpHeader header = video.getHeader();
 		ChannelBuffer data = video.encode();

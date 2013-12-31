@@ -25,6 +25,9 @@ import com.ttProject.util.BufferUtil;
 /**
  * 映像用のtag
  * @author taktod
+ * このtagがvideoAnalyzerを保持しているのは、flvTagはあとからflame化ができるため。
+ * mpegtsもIAnalyzerを保持しておいて、あとからframe化できるようになってますね。
+ * 勘違いしてました。
  */
 public class VideoTag extends FlvTag {
 	/** ロガー */
@@ -249,6 +252,20 @@ public class VideoTag extends FlvTag {
 			analyzeFrame();
 		}
 		return frame.getHeight();
+	}
+	/**
+	 * frameを設定する
+	 * @param frame
+	 */
+	public void setFrame(IVideoFrame frame) {
+		// frameから各情報を復元しないとだめ
+		// 時間情報
+		// size情報
+		// streamId(0固定)
+		// tagデータ(frameType, codecId)
+		// (vp6,vp6a,h264の場合の特殊データ)
+		// frameデータ実体
+		// tail size
 	}
 	/**
 	 * {@inheritDoc}
