@@ -310,7 +310,7 @@ public class Pes extends MpegtsPacket {
 		// 必要なデータ量をしらべないとだめ。
 		logger.info("frameSize:" + frameBuffer.remaining());
 		logger.info((int)(Math.ceil((frameBuffer.remaining() + headerLength) / 184f) * 188));
-		ByteBuffer pesChunk = ByteBuffer.allocate((int)(Math.ceil((frameBuffer.remaining() + headerLength) / 184f) * 188));
+		ByteBuffer pesChunk = ByteBuffer.allocate((int)(Math.ceil((frameBuffer.remaining() + headerLength) / 184f) * 188) + 188);
 		if(headerLength + frameBuffer.remaining() < 184) {
 			// 1packetで済む長さなので、調整しないとだめ。
 //			logger.info("1packetで済む長さなので、adaptationFieldで調整します。");
