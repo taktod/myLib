@@ -192,7 +192,7 @@ public class FlvToTest {
 	 */
 	@Test
 	public void mpegts_h264_aac() throws Exception {
-		logger.info("mpegtsに変換するテスト(h264)");
+		logger.info("mpegtsに変換するテスト(h264 / aac)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_h264_aac.ts");
 		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
 		// とりあえずsdt pat pmtを設定しなければいけない。

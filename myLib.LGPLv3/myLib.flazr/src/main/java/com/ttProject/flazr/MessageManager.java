@@ -148,6 +148,12 @@ public class MessageManager {
 		tag.setRawData(buffer);
 		return tag;
 	}
+	/**
+	 * Videoデータからvideo用のタグに書き換えます。
+	 * @param header
+	 * @param data
+	 * @return
+	 */
 	private VideoTag convertToVideoTag(RtmpHeader header, ChannelBuffer data) {
 		if(!header.isVideo() || data.capacity() == 0) {
 			return null;
