@@ -17,7 +17,7 @@ public class ContainerTest extends SetupBase {
 	 * aac用変換元データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void aac() throws Exception {
 		logger.info("aac(adts)準備");
 		init();
@@ -64,5 +64,12 @@ public class ContainerTest extends SetupBase {
 			throw new Exception("ファイルが開けませんでした");
 		}
 		processConvert(container, Encoder.h264(container), null);
+		logger.info("h264(flv / aac)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.test", "h264_aac.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, Encoder.h264(container), Encoder.aac(container));
 	}
 }

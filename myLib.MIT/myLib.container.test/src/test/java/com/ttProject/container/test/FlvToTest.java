@@ -91,7 +91,7 @@ public class FlvToTest {
 	 * mpegtsにコンバートする(h264 aac mp3)
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void mpegts_mp3() throws Exception {
 		logger.info("mpegtsに変換するテスト(mp3)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_mp3.ts");
@@ -124,7 +124,7 @@ public class FlvToTest {
 	 * mpegtsのaacの変換テスト
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void mpegts_aac() throws Exception {
 		logger.info("mpegtsに変換するテスト(aac)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_aac.ts");
@@ -157,7 +157,7 @@ public class FlvToTest {
 	 * mpegtsのh264の変換テスト
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void mpegts_h264() throws Exception {
 		logger.info("mpegtsに変換するテスト(h264)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_h264.ts");
@@ -184,6 +184,41 @@ public class FlvToTest {
 			writer,
 			elementaryField.getPid(),
 			0
+		);
+	}
+	/**
+	 * mpegtsのh264の変換テスト
+	 * @throws Exception
+	 */
+	@Test
+	public void mpegts_h264_aac() throws Exception {
+		logger.info("mpegtsに変換するテスト(h264)");
+		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_h264_aac.ts");
+		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
+		// とりあえずsdt pat pmtを設定しなければいけない。
+		// sdtを追加
+		Sdt sdt = new Sdt();
+		sdt.writeDefaultProvider("test", "hogehoge");
+		writer.addContainer(sdt);
+		// patを追加
+		Pat pat = new Pat();
+		writer.addContainer(pat);
+		// pmtを追加
+		Pmt pmt = new Pmt(pat.getPmtPid());
+		PmtElementaryField videoElementaryField = pmtFieldFactory.makeNewField(CodecType.VIDEO_H264);
+		pmt.setPcrPid(videoElementaryField.getPid());
+		pmt.addNewField(videoElementaryField);
+		PmtElementaryField audioElementaryField = pmtFieldFactory.makeNewField(CodecType.AUDIO_AAC);
+		pmt.addNewField(audioElementaryField);
+		writer.addContainer(pmt);
+		// frame追記にあわせてpesを書き込んでいく
+		convertTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("h264_aac.flv")
+			),
+			writer,
+			videoElementaryField.getPid(),
+			audioElementaryField.getPid()
 		);
 	}
 	/**
