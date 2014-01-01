@@ -9,25 +9,25 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.bit.Bit32;
 
 /**
- * edtsの定義
+ * mfraの定義
  * @author taktod
  */
-public class Edts extends Mp4Atom {
+public class Mfra extends Mp4Atom {
 	/** ロガー */
-	private Logger logger = Logger.getLogger(Edts.class);
+	private Logger logger = Logger.getLogger(Mfra.class);
 	/**
 	 * コンストラクタ
 	 * @param size
 	 * @param name
 	 */
-	public Edts(Bit32 size, Bit32 name) {
+	public Mfra(Bit32 size, Bit32 name) {
 		super(size, name);
 	}
 	/**
 	 * コンストラクタ
 	 */
-	public Edts() {
-		super(new Bit32(), Type.getTypeBit(Type.Edts));
+	public Mfra() {
+		super(new Bit32(), Type.getTypeBit(Type.Mfra));
 	}
 	/**
 	 * {@inheritDoc}

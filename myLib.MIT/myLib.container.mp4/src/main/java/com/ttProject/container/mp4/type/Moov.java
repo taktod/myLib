@@ -9,17 +9,25 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.bit.Bit32;
 
 /**
- * ftypの定義
+ * moovの定義
  * @author taktod
  */
 public class Moov extends Mp4Atom {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(Moov.class);
+	/**
+	 * コンストラクタ
+	 * @param size
+	 * @param name
+	 */
 	public Moov(Bit32 size, Bit32 name) {
 		super(size, name);
 	}
+	/**
+	 * コンストラクタ
+	 */
 	public Moov() {
-		super(new Bit32(), Type.getTypeBit(Type.Ftyp));
+		super(new Bit32(), Type.getTypeBit(Type.Moov));
 	}
 	/**
 	 * {@inheritDoc}

@@ -9,25 +9,25 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.bit.Bit32;
 
 /**
- * edtsの定義
+ * trafの定義
  * @author taktod
  */
-public class Edts extends Mp4Atom {
+public class Traf extends Mp4Atom {
 	/** ロガー */
-	private Logger logger = Logger.getLogger(Edts.class);
+	private Logger logger = Logger.getLogger(Traf.class);
 	/**
 	 * コンストラクタ
 	 * @param size
 	 * @param name
 	 */
-	public Edts(Bit32 size, Bit32 name) {
+	public Traf(Bit32 size, Bit32 name) {
 		super(size, name);
 	}
 	/**
 	 * コンストラクタ
 	 */
-	public Edts() {
-		super(new Bit32(), Type.getTypeBit(Type.Edts));
+	public Traf() {
+		super(new Bit32(), Type.getTypeBit(Type.Traf));
 	}
 	/**
 	 * {@inheritDoc}

@@ -9,17 +9,25 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.bit.Bit32;
 
 /**
- * ftypの定義
+ * mdiaの定義
  * @author taktod
  */
 public class Mdia extends Mp4Atom {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(Mdia.class);
+	/**
+	 * コンストラクタ
+	 * @param size
+	 * @param name
+	 */
 	public Mdia(Bit32 size, Bit32 name) {
 		super(size, name);
 	}
+	/**
+	 * コンストラクタ
+	 */
 	public Mdia() {
-		super(new Bit32(), Type.getTypeBit(Type.Ftyp));
+		super(new Bit32(), Type.getTypeBit(Type.Mdia));
 	}
 	/**
 	 * {@inheritDoc}

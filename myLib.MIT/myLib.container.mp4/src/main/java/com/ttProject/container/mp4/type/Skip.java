@@ -5,23 +5,23 @@ import com.ttProject.container.mp4.Type;
 import com.ttProject.unit.extra.bit.Bit32;
 
 /**
- * elstの定義
+ * skipの定義
  * @author taktod
  */
-public class Elst extends Mp4Atom {
+public class Skip extends Mp4Atom {
 	/**
 	 * コンストラクタ
 	 * @param size
 	 * @param name
 	 */
-	public Elst(Bit32 size, Bit32 name) {
+	public Skip(Bit32 size, Bit32 name) {
 		super(size, name);
 	}
 	/**
 	 * コンストラクタ
 	 */
-	public Elst() {
-		super(new Bit32(), Type.getTypeBit(Type.Elst));
+	public Skip() {
+		super(new Bit32(), Type.getTypeBit(Type.Skip));
 	}
 	/**
 	 * {@inheritDoc}

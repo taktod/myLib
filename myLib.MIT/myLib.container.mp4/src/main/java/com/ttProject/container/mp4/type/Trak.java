@@ -9,17 +9,25 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.bit.Bit32;
 
 /**
- * ftypの定義
+ * trakの定義
  * @author taktod
  */
 public class Trak extends Mp4Atom {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(Trak.class);
+	/**
+	 * コンストラクタ
+	 * @param size
+	 * @param name
+	 */
 	public Trak(Bit32 size, Bit32 name) {
 		super(size, name);
 	}
+	/**
+	 * コンストラクタ
+	 */
 	public Trak() {
-		super(new Bit32(), Type.getTypeBit(Type.Mvhd));
+		super(new Bit32(), Type.getTypeBit(Type.Trak));
 	}
 	/**
 	 * {@inheritDoc}

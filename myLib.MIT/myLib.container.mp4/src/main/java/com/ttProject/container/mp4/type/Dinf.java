@@ -9,25 +9,25 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.bit.Bit32;
 
 /**
- * edtsの定義
+ * dinfの定義
  * @author taktod
  */
-public class Edts extends Mp4Atom {
+public class Dinf extends Mp4Atom {
 	/** ロガー */
-	private Logger logger = Logger.getLogger(Edts.class);
+	private Logger logger = Logger.getLogger(Dinf.class);
 	/**
 	 * コンストラクタ
 	 * @param size
 	 * @param name
 	 */
-	public Edts(Bit32 size, Bit32 name) {
+	public Dinf(Bit32 size, Bit32 name) {
 		super(size, name);
 	}
 	/**
 	 * コンストラクタ
 	 */
-	public Edts() {
-		super(new Bit32(), Type.getTypeBit(Type.Edts));
+	public Dinf() {
+		super(new Bit32(), Type.getTypeBit(Type.Dinf));
 	}
 	/**
 	 * {@inheritDoc}

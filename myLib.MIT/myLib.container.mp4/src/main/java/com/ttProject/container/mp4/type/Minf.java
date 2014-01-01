@@ -9,17 +9,25 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.bit.Bit32;
 
 /**
- * ftypの定義
+ * minfの定義
  * @author taktod
  */
 public class Minf extends Mp4Atom {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(Minf.class);
+	/**
+	 * コンストラクタ
+	 * @param size
+	 * @param name
+	 */
 	public Minf(Bit32 size, Bit32 name) {
 		super(size, name);
 	}
+	/**
+	 * コンストラクタ
+	 */
 	public Minf() {
-		super(new Bit32(), Type.getTypeBit(Type.Ftyp));
+		super(new Bit32(), Type.getTypeBit(Type.Minf));
 	}
 	/**
 	 * {@inheritDoc}
