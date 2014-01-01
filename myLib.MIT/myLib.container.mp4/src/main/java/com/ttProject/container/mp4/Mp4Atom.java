@@ -66,8 +66,8 @@ public abstract class Mp4Atom extends Container {
 	public String toString() {
 		StringBuilder data = new StringBuilder();
 		data.append(getClass().getSimpleName());
-		data.append(" pos:").append(getPosition());
-		data.append(" size:").append(getSize());
+		data.append(" pos:").append(Integer.toHexString(getPosition()));
+		data.append(" size:").append(Integer.toHexString(getSize()));
 		return data.toString();
 	}
 }
