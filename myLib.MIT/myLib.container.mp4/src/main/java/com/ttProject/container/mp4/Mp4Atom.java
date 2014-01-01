@@ -37,4 +37,12 @@ public abstract class Mp4Atom extends Container {
 	protected Reader getMp4AtomReader() {
 		return reader;
 	}
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append(getClass().getSimpleName());
+		data.append(" pos:").append(getPosition());
+		data.append(" size:").append(getSize());
+		return data.toString();
+	}
 }
