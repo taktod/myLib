@@ -119,6 +119,16 @@ public class BufferUtil {
 		return new String(data).toLowerCase();
 	}
 	/**
+	 * read状態のbufferからタグ文字列を取得する
+	 * @param buffer
+	 * @return
+	 */
+	public static String getDwordTextNormal(ByteBuffer buffer) {
+		byte[] data = new byte[4];
+		buffer.get(data);
+		return new String(data);
+	}
+	/**
 	 * 数値データを書き込む
 	 * @param target
 	 * @param data
