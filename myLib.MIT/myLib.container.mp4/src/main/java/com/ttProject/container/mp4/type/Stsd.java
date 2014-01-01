@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ttProject.container.mp4.Mp4Atom;
 import com.ttProject.container.mp4.Type;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.bit.Bit24;
 import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit8;
@@ -30,6 +31,12 @@ public class Stsd extends Mp4Atom {
 	 */
 	public Stsd() {
 		super(new Bit32(), Type.getTypeBit(Type.Stsd));
+	}
+	@Override
+	public void minimumLoad(IReadChannel channel) throws Exception {
+		super.minimumLoad(channel);
+		// stsdについて読み込みをつづける。
+		// ここからstsdを読み込ませる必要がある。
 	}
 	/**
 	 * {@inheritDoc}
