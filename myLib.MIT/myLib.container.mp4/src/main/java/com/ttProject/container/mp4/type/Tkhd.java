@@ -12,6 +12,7 @@ import com.ttProject.unit.extra.bit.Bit8;
  * tkhdの定義
  * @author taktod
  */
+@SuppressWarnings("unused")
 public class Tkhd extends Mp4Atom {
 	private Bit8 version;
 	private Bit24 flags;

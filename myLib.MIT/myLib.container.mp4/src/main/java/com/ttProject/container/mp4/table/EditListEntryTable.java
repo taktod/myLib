@@ -7,6 +7,7 @@ import com.ttProject.unit.extra.bit.Bit64;
  * elstに保持している、editListEntryTable
  * @author taktod
  */
+@SuppressWarnings("unused")
 public class EditListEntryTable {
 	private Bit32 segmentDuration;
 	private Bit64 segmentDuration1;

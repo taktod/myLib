@@ -12,6 +12,7 @@ import com.ttProject.unit.extra.bit.Bit8;
  * mvhdの定義
  * @author taktod
  */
+@SuppressWarnings("unused")
 public class Mvhd extends Mp4Atom {
 	private Bit8    version;
 	private Bit24   flags;
