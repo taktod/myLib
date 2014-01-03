@@ -79,6 +79,9 @@ public class MessageManager {
 			if(difference == -1) {
 				difference = time - header.getTime();
 			}
+			time = time - difference;
+			timestamp.set(time & 0x00FFFFFF);
+			timestampExt.set((time >> 24) & 0xFF);
 			in.skipBytes(3);
 			buffer.put(connector.connect(type, dataSize,
 					timestamp, timestampExt, streamId));
