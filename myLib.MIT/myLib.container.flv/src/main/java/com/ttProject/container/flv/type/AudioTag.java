@@ -289,7 +289,7 @@ public class AudioTag extends FlvTag {
 	@Override
 	public String toString() {
 		StringBuilder data = new StringBuilder();
-		data.append("audioTag:");
+		data.append("AudioTag:");
 		data.append(" timestamp:").append(getPts());
 		data.append(" codec:").append(getCodec());
 		try {

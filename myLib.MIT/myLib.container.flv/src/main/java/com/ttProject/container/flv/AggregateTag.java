@@ -4,13 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.Unit;
+import com.ttProject.unit.extra.bit.Bit8;
 
 /**
  * flvの集合タグ(rtmpででてくるデータ)
  * @author taktod
  */
-public class AggregateTag extends Unit {
+public class AggregateTag extends FlvTag {
+	/**
+	 * コンストラクタ
+	 */
+	public AggregateTag() {
+		super(new Bit8(0xFF));
+	}
 	/** 集合タグの内部リスト */
 	private List<FlvTag> tagList = new ArrayList<FlvTag>();
 	/**

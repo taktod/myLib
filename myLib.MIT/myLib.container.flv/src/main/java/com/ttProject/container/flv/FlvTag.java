@@ -85,7 +85,7 @@ public abstract class FlvTag extends Container {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void setPts(long pts) {
+	public void setPts(long pts) {
 		timestamp.set((int)(pts & 0x00FFFFFF));
 		timestampExt.set((int)(pts >>> 24) & 0xFF);
 		super.setPts(pts);
