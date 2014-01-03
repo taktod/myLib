@@ -6,7 +6,4 @@ public class Mp4a extends AudioRecord {
 	public Mp4a(Bit32 size, Bit32 name) {
 		super(size, name);
 	}
-	@Override
-	protected void requestUpdate() throws Exception {
-	}
 }
