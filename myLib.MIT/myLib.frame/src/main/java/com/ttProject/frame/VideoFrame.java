@@ -6,7 +6,7 @@ package com.ttProject.frame;
  */
 public abstract class VideoFrame extends Frame implements IVideoFrame {
 	/** dts値 */
-	private long dts = -1;
+	private long dts = 0;
 	/** 横幅 */
 	private int width;
 	/** 縦幅 */
