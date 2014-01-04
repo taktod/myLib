@@ -214,9 +214,12 @@ public class AudioTag extends FlvTag {
 	 * frameBuffer参照
 	 * @return
 	 */
-	private ByteBuffer getFrameBuffer() {
+	private ByteBuffer getFrameBuffer() throws Exception {
 		if(frameBuffer == null) {
 			// frameから復元する必要あり
+			if(frame != null) {
+				frameBuffer = frame.getData();
+			}
 		}
 		return frameBuffer.duplicate();
 	}
@@ -274,7 +277,9 @@ public class AudioTag extends FlvTag {
 	 * @param frame
 	 */
 	public void setFrame(IAudioFrame frame) {
+		logger.info("フレームの設定が呼び出されました。");
 		// frameから各情報を復元しないとだめ。
+		logger.info("frameの時間情報:" + frame.getPts());
 		// 時間情報
 		// size情報
 		// streamId(0固定)
@@ -282,6 +287,14 @@ public class AudioTag extends FlvTag {
 		// (aacの場合はmshであるかフラグ)
 		// frameデータ実体
 		// tail size
+		super.update();
+	}
+	/**
+	 * mshであるかの確認
+	 * @return
+	 */
+	public boolean isSequenceHeader() {
+		return getCodec() == CodecType.AAC && sequenceHeaderFlag.get() == 0;
 	}
 	/**
 	 * {@inheritDoc}

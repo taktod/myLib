@@ -7,6 +7,8 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
+import com.ttProject.container.flv.type.AudioTag;
+import com.ttProject.container.flv.type.VideoTag;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
@@ -40,9 +42,15 @@ public class FlvTagWriter implements IWriter {
 		logger.info("フレームを受け取りました:" + frame);
 		if(frame instanceof IAudioFrame) {
 			// 音声の書き込み
+			AudioTag aTag = new AudioTag();
+			aTag.setFrame((IAudioFrame)frame);
+//			outputChannel.write(aTag.getData());
 		}
 		else if(frame instanceof IVideoFrame) {
 			// 映像の書き込み
+			VideoTag vTag = new VideoTag();
+			vTag.setFrame((IVideoFrame)frame);
+			outputChannel.write(vTag.getData());
 		}
 	}
 	@Override

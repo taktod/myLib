@@ -268,6 +268,13 @@ public class VideoTag extends FlvTag {
 		// tail size
 	}
 	/**
+	 * mshであるかどうか応答
+	 * @return
+	 */
+	public boolean isSequenceHeader() {
+		return getCodec() == CodecType.H264 && packetType.get() == 0;
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
