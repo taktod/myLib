@@ -203,13 +203,20 @@ public class Container extends SetupBase {
 	 */
 	@Test
 	public void mp4() throws Exception {
-		logger.info("mp4準備");
+		logger.info("mp4準備(h264 / aac)");
 		init();
 		IContainer container = IContainer.make();
 		if(container.open(getTargetFile("myLib.MIT/myLib.container.mp4", "test.mp4"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("コンテナが開けませんでした");
 		}
 		processConvert(container, Encoder.h264(container), Encoder.aac(container));
+		// win8でうまく動作しなかった。
+/*		logger.info("mp4準備(h264 / vorbis)");
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.mp4", "test.h264vorbis.mp4"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		processConvert(container, Encoder.h264(container), Encoder.vorbis(container));*/
 	}
 	/**
 	 * mpegtsの検証用データ
