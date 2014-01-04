@@ -14,6 +14,7 @@ import com.ttProject.flazr.unit.MessageManager;
  */
 public class ReceiveWriter implements RtmpWriter {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = LoggerFactory.getLogger(ReceiveWriter.class);
 	private MessageManager messageManager = new MessageManager();
 	@Override
@@ -26,9 +27,12 @@ public class ReceiveWriter implements RtmpWriter {
 	public void write(RtmpMessage message) {
 		// rtmpサーバーからメッセージをうけとった場合の処理
 		try {
+			@SuppressWarnings("unused")
 			FlvTag tag = messageManager.getTag(message);
 			// このtagを別のサーバーにまわしたい。
-			logger.info("他のサーバーに流すデータを取得した。{}", tag);
+//			logger.info("他のサーバーに流すデータを取得した。{}", tag);
+			// publish中でない状態でデータをうけとったら、publishのプロセス準備が必要。
+			// publish中にデータをうけとったら、相手サーバーに送ればOK
 		}
 		catch(Exception e) {
 			e.printStackTrace();

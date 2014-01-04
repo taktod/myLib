@@ -17,12 +17,22 @@ import org.slf4j.LoggerFactory;
 import com.flazr.rtmp.RtmpEncoder;
 import com.flazr.rtmp.client.ClientHandshakeHandler;
 import com.flazr.rtmp.client.ClientOptions;
-import com.ttProject.flazr.client.ClientHandlerEx;
 import com.ttProject.flazr.rtmp.RtmpDecoderEx;
 
 /**
  * rtmpとして、他のサーバーにデータを投げる動作テスト
  * Aからデータを取得して、Bに方針するみたいな動作がしたい。
+ * 
+ * とりあえず次のようにしたい。
+ * ・プロセスが起動されると、Aのサーバーの特定のアプリケーションを観察する。
+ * ・映像をうけとったら・・・接続する・・・にしようか・・・
+ * その方がただしい動作っぽいし。
+ * ・publishNotifyがきたら接続してpublishする。(はじめから放送されている場合はonPublishはこないです。その場合はデータ転送があるかで判定すればいいか？)
+ * ・unpublishNotifyがきたら切断してしまう。
+ * ってのが一番いいかな。
+ * よってclientHandlerExの拡張が必要。(publish unpublishを検知するため)
+ * 
+ * ・転送データはきちんとしたflvにする必要があるけど・・・
  * @author taktod
  */
 public class RtmpPublishTest {
@@ -59,7 +69,7 @@ public class RtmpPublishTest {
 				pipeline.addLast("handshaker", new ClientHandshakeHandler(options));
 				pipeline.addLast("decoder", new RtmpDecoderEx());
 				pipeline.addLast("encoder", new RtmpEncoder());
-				pipeline.addLast("handler", new ClientHandlerEx(options));
+				pipeline.addLast("handler", new ReceiveClientHandler(options));
 				return pipeline;
 			}
 		});

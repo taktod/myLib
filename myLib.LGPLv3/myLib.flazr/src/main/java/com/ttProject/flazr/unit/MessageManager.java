@@ -31,6 +31,7 @@ import com.ttProject.unit.extra.bit.Bit8;
  */
 public class MessageManager {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = LoggerFactory.getLogger(MessageManager.class);
 	// flvTagの読み込みにする。
 	private FlvTagReader flvTagReader = new FlvTagReader();
@@ -42,15 +43,15 @@ public class MessageManager {
 	public FlvTag getTag(RtmpMessage message) throws Exception {
 		RtmpHeader header = message.getHeader();
 		if(header.isAggregate()) {
-			logger.info("aggregateMessage");
+//			logger.info("aggregateMessage");
 			return convertToAggregateTag(message);
 		}
 		else if(header.isAudio()) {
-			logger.info("audio");
+//			logger.info("audio");
 			return convertToAudioTag((Audio)message);
 		}
 		else if(header.isVideo()) {
-			logger.info("video");
+//			logger.info("video");
 			return convertToVideoTag((Video)message);
 		}
 		else if(message instanceof MetadataAmf3) {
@@ -91,7 +92,7 @@ public class MessageManager {
 			in.skipBytes(4);
 			FlvTag tag = (FlvTag)flvTagReader.read(new ByteReadChannel(buffer));
 			if(tag != null) {
-				logger.info("aTagから取り出したTag:{}", tag);
+//				logger.info("aTagから取り出したTag:{}", tag);
 				aTag.add(tag);
 			}
 		}
