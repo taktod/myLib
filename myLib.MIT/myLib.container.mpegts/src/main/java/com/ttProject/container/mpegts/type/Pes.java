@@ -306,11 +306,12 @@ public class Pes extends MpegtsPacket {
 		 * 9 + PESHeaderLength.get()
 		 * これが先頭にあるデータ量
 		 */
-		int headerLength = (isAdaptationFieldExist() ? getAdaptationField().getLength() : 0) + 9 + PESHeaderLength.get();
+		// adaptationFieldはadapatationFieldSizeが抜けているので+1しなければいけない。
+		int headerLength = (isAdaptationFieldExist() ? getAdaptationField().getLength() + 1 : 0) + 9 + PESHeaderLength.get();
 		// 必要なデータ量をしらべないとだめ。
 		logger.info("frameSize:" + frameBuffer.remaining());
 		logger.info((int)(Math.ceil((frameBuffer.remaining() + headerLength) / 184f) * 188));
-		ByteBuffer pesChunk = ByteBuffer.allocate((int)(Math.ceil((frameBuffer.remaining() + headerLength) / 184f) * 188) + 188);
+		ByteBuffer pesChunk = ByteBuffer.allocate((int)(Math.ceil((frameBuffer.remaining() + headerLength) / 184f) * 188));
 		if(headerLength + frameBuffer.remaining() < 184) {
 			// 1packetで済む長さなので、調整しないとだめ。
 //			logger.info("1packetで済む長さなので、adaptationFieldで調整します。");
@@ -318,12 +319,32 @@ public class Pes extends MpegtsPacket {
 			AdaptationField aField = getAdaptationField();
 			aField.setLength(aField.getLength() + 183 - (headerLength + frameBuffer.remaining()));
 			pesChunk.put(getHeaderBuffer());
+			BitConnector connector = new BitConnector();
+			connector.feed(prefix, streamId, pesPacketLength, markerBits,
+					scramblingControl, priority, dataAlignmentIndicator,
+					copyright, originFlg, ptsDtsIndicator, escrFlag,
+					esRateFlag, DSMTrickModeFlag, additionalCopyInfoFlag,
+					CRCFlag, extensionFlag, PESHeaderLength);
+			switch(ptsDtsIndicator.get()) {
+			case 0:
+				break;
+			case 2:
+//				logger.info(pts.getBits());
+				connector.feed(pts.getBits());
+				break;
+			case 3:
+				connector.feed(pts.getBits());
+				connector.feed(dts.getBits());
+				break;
+			default:
+			}
+			pesChunk.put(connector.connect());
 			pesChunk.put(frameBuffer);
 			pesChunk.flip();
 			super.setData(pesChunk);
 			return;
 		}
-		logger.info("通常のパケットなので、まず第１パケットの書き込みを実行します。");
+//		logger.info("通常のパケットなので、まず第１パケットの書き込みを実行します。");
 		// データサイズを計算します。
 		// header4byteとadaptationFieldを取得します。
 		pesChunk.put(getHeaderBuffer());
@@ -337,7 +358,7 @@ public class Pes extends MpegtsPacket {
 		case 0:
 			break;
 		case 2:
-			logger.info(pts.getBits());
+//			logger.info(pts.getBits());
 			connector.feed(pts.getBits());
 			break;
 		case 3:
@@ -361,13 +382,14 @@ public class Pes extends MpegtsPacket {
 		setPayloadUnitStart(0);
 		// pesのunitを書き込んでいく
 		while(frameBuffer.remaining() > 0) {
-			logger.info(pesChunk.position());
+			logger.info("chunkPos:" + pesChunk.position());
+			logger.info("bufferRemaining:" + frameBuffer.remaining());
 			setContinuityCounter(getContinuityCounter() + 1);
 			if(frameBuffer.remaining() < 184) {
-				logger.info("here...:" + frameBuffer.remaining());
+//				logger.info("here...:" + frameBuffer.remaining());
 				setAdaptationFieldExist(1);
 				getAdaptationField().setLength(183 - frameBuffer.remaining());
-				logger.info(getAdaptationField());
+//				logger.info(getAdaptationField());
 				pesChunk.put(getHeaderBuffer().array());
 				data = new byte[frameBuffer.remaining()];
 				frameBuffer.get(data);
@@ -422,7 +444,7 @@ public class Pes extends MpegtsPacket {
 				VideoMultiFrame multiFrame = (VideoMultiFrame)frame;
 				for(IVideoFrame videoFrame : multiFrame.getFrameList()) {
 					if(videoFrame instanceof H264Frame) {
-						logger.info("frame:" + videoFrame + " size:" + videoFrame.getSize());
+//						logger.info("frame:" + videoFrame + " size:" + videoFrame.getSize());
 						length += 3 + videoFrame.getSize();
 					}
 					else {
@@ -434,7 +456,7 @@ public class Pes extends MpegtsPacket {
 				// データ登録
 				for(IVideoFrame videoFrame : multiFrame.getFrameList()) {
 					if(videoFrame instanceof H264Frame) {
-						logger.info("追記videoFrame:" + videoFrame);
+//						logger.info("追記videoFrame:" + videoFrame);
 						frameBuffer.put((byte)0x00);
 						frameBuffer.putShort((short)1);
 						frameBuffer.put(videoFrame.getData());
@@ -481,7 +503,7 @@ public class Pes extends MpegtsPacket {
 			setPts(frame.getPts(), frame.getTimebase());
 			// dtsあるかもしれない
 			IVideoFrame vFrame = (IVideoFrame)frame;
-			if(vFrame.getDts() != -1) {
+			if(vFrame.getDts() != -1 && vFrame.getDts() != 0) {
 				// dtsが存在するので書き込みしておく。
 				setDts(vFrame.getDts(), vFrame.getTimebase());
 				ptsDtsIndicator.set(3);
