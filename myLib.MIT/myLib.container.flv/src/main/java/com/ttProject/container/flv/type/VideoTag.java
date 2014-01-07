@@ -257,7 +257,7 @@ public class VideoTag extends FlvTag {
 	 * frameを設定する
 	 * @param frame
 	 */
-	public void setFrame(IVideoFrame frame) {
+	public void setFrame(IVideoFrame frame) throws Exception {
 		// frameから各情報を復元しないとだめ
 		// 時間情報
 		// size情報

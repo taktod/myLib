@@ -90,4 +90,9 @@ public abstract class FlvTag extends Container {
 		timestampExt.set((int)(pts >>> 24) & 0xFF);
 		super.setPts(pts);
 	}
+	protected void setSize(int size) {
+		dataSize.set(size - 15);
+		prevTagSize.set(size - 4);
+		super.setSize(size);
+	}
 }

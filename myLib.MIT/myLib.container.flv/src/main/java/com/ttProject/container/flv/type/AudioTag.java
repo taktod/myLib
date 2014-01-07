@@ -13,6 +13,7 @@ import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
 import com.ttProject.frame.aac.AacDsiFrameSelector;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
+import com.ttProject.frame.aac.type.Frame;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -23,6 +24,7 @@ import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
+import com.ttProject.util.HexUtil;
 
 /**
  * 音声用のtag
@@ -276,15 +278,24 @@ public class AudioTag extends FlvTag {
 	 * frameを設定する
 	 * @param frame
 	 */
-	public void setFrame(IAudioFrame frame) {
+	public void setFrame(IAudioFrame frame) throws Exception {
 		logger.info("フレームの設定が呼び出されました。");
 		// frameから各情報を復元しないとだめ。
 		logger.info("frameの時間情報:" + frame.getPts());
+		if(frame instanceof Frame) { // frameがaacの場合はframeデータサイズ + 2が必要
+			
+		}
+		else {
+			int size = frame.getSize() + 11 + 1 + 4;
+			logger.info(size);
+		}
+		// mp3(8)やnellymoser(8,16), speex(16)の場合はflagが特殊になります。
+		// aac以外の場合はframeデータサイズ + 1が中核
+		logger.info(HexUtil.toHex(frame.getData(), 0, 10, true));
 		// 時間情報
-		// size情報
+		// size情報 aacの場合はframeのサイズ + 2 その他はframeのサイズ + 1
 		// streamId(0固定)
-		// tagデータ(codec, sampleRate, channel, bit)
-		// この部分にaacのmshデータはこないものとします。
+		// tagデータ(codec, sampleRate, channel, bit) がんばって計算すべし
 		// (aacの場合はmshであるかフラグ)
 		// frameデータ実体
 		// tail size
