@@ -284,6 +284,7 @@ public class AudioTag extends FlvTag {
 		// size情報
 		// streamId(0固定)
 		// tagデータ(codec, sampleRate, channel, bit)
+		// この部分にaacのmshデータはこないものとします。
 		// (aacの場合はmshであるかフラグ)
 		// frameデータ実体
 		// tail size
