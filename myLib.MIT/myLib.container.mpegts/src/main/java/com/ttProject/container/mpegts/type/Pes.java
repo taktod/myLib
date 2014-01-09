@@ -154,7 +154,6 @@ public class Pes extends MpegtsPacket {
 		super.minimumLoad(channel);
 		// payloadStartUnitの場合はデータの読み込みがあるみたいです。
 		if(isPayloadUnitStart()) {
-			logger.info("payloadの開始である");
 			// 開始なので、各種情報があると思われる
 			BitLoader loader = new BitLoader(channel);
 			loader.load(prefix, streamId, pesPacketLength, markerBits,
@@ -215,19 +214,15 @@ public class Pes extends MpegtsPacket {
 		// ここでは読み込んだデータを主体となるpesのdata領域に格納させていきます。
 		unitStartPes.pesPacketLengthLeft -= pesDeltaSize;
 		if(unitStartPes.pesPacketLengthLeft == 0) {
-			logger.info("最後まで読み込めた");
 			// ここまできたら、byteBufferからframeを生成して保持しておけばよい。
 			if(unitStartPes.frameAnalyzer != null) {
 				unitStartPes.pesBuffer.flip();
 				IReadChannel pesBufferChannel = new ByteReadChannel(unitStartPes.pesBuffer);
 				IFrame frame = null;
 				while((frame = unitStartPes.frameAnalyzer.analyze(pesBufferChannel)) != null) {
-					addFrame(frame);
+					unitStartPes.addFrame(frame);
 				}
 			}
-		}
-		else {
-			logger.info("残りデータ:" + unitStartPes.pesPacketLengthLeft);
 		}
 	}
 	/**
@@ -287,7 +282,6 @@ public class Pes extends MpegtsPacket {
 		if(frame == null) {
 			throw new Exception("frameデータがありません。");
 		}
-		// TODO 保持frameからByteBufferのデータを復元します。
 		// unitStartPesのみ動作可能としたいとおもいます。
 		if(!isPayloadUnitStart()) {
 			throw new Exception("データの取得はunitStartのpesから実行してください。");

@@ -47,7 +47,6 @@ public class MpegtsPacketSelector implements ISelector {
 			// データが最後まできているので処理することができない。
 			return null;
 		}
-		logger.info("pos:" + channel.position());
 		Bit8 syncByte = new Bit8();
 		Bit1 transportErrorIndicator = new Bit1();
 		Bit1 payloadUnitStartIndicator = new Bit1();
@@ -66,17 +65,14 @@ public class MpegtsPacketSelector implements ISelector {
 		}
 		MpegtsPacket packet = null;
 		if(pid.get() == sdtPid) {
-			logger.info("sdtデータ");
 			packet = new Sdt(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
 		}
 		else if(pid.get() == patPid) {
-			logger.info("patデータ");
 			// patを保持しておく
 			pat = new Pat(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
 			packet = pat;
 		}
 		else if(pat != null && pid.get() == pat.getPmtPid()){
-			logger.info("pmtデータ");
 			pmt = new Pmt(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
 			// pmtの解析がおわったら必要なanalyzerをつくらないとだめ
 			pmt.minimumLoad(channel);
@@ -99,7 +95,6 @@ public class MpegtsPacketSelector implements ISelector {
 			return pmt;
 		}
 		else if(pmt != null && pmt.isPesPid(pid.get())) {
-			logger.info("pesデータ");
 			Pes pes = new Pes(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter, pmt.getPcrPid() == pid.get());
 			// payLoadの開始位置でなかったら、startUnitのpesを取得して保持しなければならない。
 			if(payloadUnitStartIndicator.get() == 1) {

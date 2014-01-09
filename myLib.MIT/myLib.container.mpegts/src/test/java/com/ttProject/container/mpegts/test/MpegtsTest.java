@@ -6,6 +6,7 @@ import org.junit.Test;
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
 import com.ttProject.container.mpegts.MpegtsPacketReader;
+import com.ttProject.container.mpegts.type.Pes;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
@@ -30,7 +31,13 @@ public class MpegtsTest {
 			IReader reader = new MpegtsPacketReader();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
-				logger.info(container);
+				if(container instanceof Pes) {
+					// 再終端まできていないとデータがきません。
+					if(((Pes) container).getFrame() != null) {
+						logger.info(((Pes) container).getFrame());
+					}
+				}
+//				logger.info(container);
 			}
 		}
 		catch(Exception e) {
