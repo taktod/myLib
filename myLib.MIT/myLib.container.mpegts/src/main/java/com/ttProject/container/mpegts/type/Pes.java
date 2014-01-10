@@ -390,8 +390,6 @@ public class Pes extends MpegtsPacket {
 		setPayloadUnitStart(0);
 		// pesのunitを書き込んでいく
 		while(frameBuffer.remaining() > 0) {
-			logger.info("chunkPos:" + pesChunk.position());
-			logger.info("bufferRemaining:" + frameBuffer.remaining());
 			setContinuityCounter(getContinuityCounter() + 1);
 			if(frameBuffer.remaining() < 184) {
 //				logger.info("here...:" + frameBuffer.remaining());
