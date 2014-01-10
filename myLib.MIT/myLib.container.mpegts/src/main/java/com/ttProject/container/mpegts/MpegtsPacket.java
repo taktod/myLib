@@ -86,7 +86,7 @@ public abstract class MpegtsPacket extends Container {
 	protected AdaptationField getAdaptationField() {
 		return adaptationField;
 	}
-	protected int getPid() {
+	public int getPid() {
 		return pid.get();
 	}
 }
