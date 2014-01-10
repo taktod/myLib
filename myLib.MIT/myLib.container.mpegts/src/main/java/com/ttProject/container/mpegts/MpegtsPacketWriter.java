@@ -18,6 +18,7 @@ import com.ttProject.container.mpegts.type.Sdt;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.frame.h264.type.AccessUnitDelimiter;
@@ -97,6 +98,14 @@ public class MpegtsPacketWriter implements IWriter {
 			for(IVideoFrame vFrame : multiFrame.getFrameList()) {
 				addFrame(trackId, vFrame);
 			}
+			return;
+		}
+		if(frame instanceof AudioMultiFrame) {
+			AudioMultiFrame multiFrame = (AudioMultiFrame) frame;
+			for(IAudioFrame aFrame : multiFrame.getFrameList()) {
+				addFrame(trackId, aFrame);
+			}
+			return;
 		}
 		if(frame instanceof SequenceParameterSet) {
 			sps = (SequenceParameterSet) frame;
