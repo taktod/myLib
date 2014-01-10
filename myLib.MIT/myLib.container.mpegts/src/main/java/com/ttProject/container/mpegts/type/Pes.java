@@ -416,12 +416,15 @@ public class Pes extends MpegtsPacket {
 			if(frame instanceof AudioMultiFrame) {
 				// マルチフレームの場合は結合しなければいけない。
 				for(IAudioFrame audioFrame : ((AudioMultiFrame)frame).getFrameList()) {
-					frameBuffer.put(audioFrame.getData());
+					if(audioFrame.getData() == null) { // なぜかたまに内容データがnullのAudioFrameがくるっぽい・・・うーん
+						continue;
+					}
+					frameBuffer.put(audioFrame.getData().duplicate());
 				}
 			}
 			else {
 				// 単体フレームの場合はそのまま
-				frameBuffer.put(frame.getData());
+				frameBuffer.put(frame.getData().duplicate());
 			}
 			frameBuffer.flip();
 			return frameBuffer;
