@@ -433,12 +433,12 @@ public class Pes extends MpegtsPacket {
 					if(audioFrame.getData() == null) { // なぜかたまに内容データがnullのAudioFrameがくるっぽい・・・うーん
 						continue;
 					}
-					frameBuffer.put(audioFrame.getData().duplicate());
+					frameBuffer.put(audioFrame.getData());
 				}
 			}
 			else {
 				// 単体フレームの場合はそのまま
-				frameBuffer.put(frame.getData().duplicate());
+				frameBuffer.put(frame.getData());
 			}
 			frameBuffer.flip();
 			return frameBuffer;
@@ -470,7 +470,7 @@ public class Pes extends MpegtsPacket {
 //						logger.info("追記videoFrame:" + videoFrame);
 						frameBuffer.put((byte)0x00);
 						frameBuffer.putShort((short)1);
-						frameBuffer.put(videoFrame.getData().duplicate());
+						frameBuffer.put(videoFrame.getData());
 					}
 					else {
 						throw new Exception("h264以外のフレームがmultiFrameに混入していました。:" + videoFrame);

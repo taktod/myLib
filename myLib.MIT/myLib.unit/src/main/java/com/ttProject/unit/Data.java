@@ -39,7 +39,7 @@ public abstract class Data implements IData {
 		if(update) {
 			requestUpdate();
 		}
-		return data;
+		return data.duplicate();
 	}
 	/**
 	 * サイズ設定
