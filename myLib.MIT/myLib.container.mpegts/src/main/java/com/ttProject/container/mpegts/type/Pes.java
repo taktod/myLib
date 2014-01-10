@@ -219,7 +219,19 @@ public class Pes extends MpegtsPacket {
 				unitStartPes.pesBuffer.flip();
 				IReadChannel pesBufferChannel = new ByteReadChannel(unitStartPes.pesBuffer);
 				IFrame frame = null;
+				long audioSampleNum = 0;
 				while((frame = unitStartPes.frameAnalyzer.analyze(pesBufferChannel)) != null) {
+					if(frame instanceof VideoFrame) {
+						((VideoFrame) frame).setPts(unitStartPes.pts.getPts());
+						((VideoFrame) frame).setTimebase(90000);
+					}
+					else if(frame instanceof AudioFrame) {
+						// これじゃだめ。audioFrameはunit数に応じてずれさせないといけない。
+						((AudioFrame) frame).setPts(unitStartPes.pts.getPts() + audioSampleNum * 90000 / ((AudioFrame) frame).getSampleRate());
+						((AudioFrame) frame).setTimebase(90000);
+						audioSampleNum += ((AudioFrame) frame).getSampleNum();
+						logger.info("frameのpts:" + frame.getPts());
+					}
 					unitStartPes.addFrame(frame);
 				}
 			}
