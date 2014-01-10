@@ -224,15 +224,15 @@ public class Pes extends MpegtsPacket {
 				long audioSampleNum = 0;
 				while((frame = unitStartPes.frameAnalyzer.analyze(pesBufferChannel)) != null) {
 					if(frame instanceof VideoFrame) {
-						((VideoFrame) frame).setPts(unitStartPes.pts.getPts());
-						((VideoFrame) frame).setTimebase(90000);
+						VideoFrame vFrame = (VideoFrame)frame;
+						vFrame.setPts(unitStartPes.pts.getPts());
+						vFrame.setTimebase(90000);
 					}
 					else if(frame instanceof AudioFrame) {
-						// これじゃだめ。audioFrameはunit数に応じてずれさせないといけない。
-						((AudioFrame) frame).setPts(unitStartPes.pts.getPts() + audioSampleNum * 90000 / ((AudioFrame) frame).getSampleRate());
-						((AudioFrame) frame).setTimebase(90000);
-						audioSampleNum += ((AudioFrame) frame).getSampleNum();
-						logger.info("frameのpts:" + frame.getPts());
+						AudioFrame aFrame = (AudioFrame)frame;
+						aFrame.setPts(unitStartPes.pts.getPts() + audioSampleNum * 90000 / aFrame.getSampleRate());
+						aFrame.setTimebase(90000);
+						audioSampleNum += aFrame.getSampleNum();
 					}
 					unitStartPes.addFrame(frame);
 				}
@@ -470,7 +470,7 @@ public class Pes extends MpegtsPacket {
 //						logger.info("追記videoFrame:" + videoFrame);
 						frameBuffer.put((byte)0x00);
 						frameBuffer.putShort((short)1);
-						frameBuffer.put(videoFrame.getData());
+						frameBuffer.put(videoFrame.getData().duplicate());
 					}
 					else {
 						throw new Exception("h264以外のフレームがmultiFrameに混入していました。:" + videoFrame);
