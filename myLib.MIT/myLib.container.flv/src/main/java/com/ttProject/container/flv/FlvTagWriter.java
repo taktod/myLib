@@ -19,6 +19,9 @@ import com.ttProject.frame.h264.type.SequenceParameterSet;
 /**
  * flvの書き込み動作
  * @author taktod
+ * 
+ * ここですが、面倒なので、一旦frameからflvTag用のbyteBufferをつくってから、selectorで読み込ませるという形にしたいと思います。
+ * flazrでやっているのと同じ、これだったら既存の処理の使い回しで済む
  */
 public class FlvTagWriter implements IWriter {
 	/** ロガー */
