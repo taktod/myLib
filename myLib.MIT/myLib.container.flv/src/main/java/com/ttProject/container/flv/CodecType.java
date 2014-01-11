@@ -98,4 +98,30 @@ public enum CodecType {
 			throw new Exception("映像コーデックではありません。");
 		}
 	}
+	/**
+	 * コーデックtypeから数値を参照する。
+	 * @param codec
+	 * @return
+	 * @throws Exception
+	 */
+	public static byte getAudioCodecNum(CodecType codec) throws Exception {
+		switch(codec) {
+		case PCM:             return 0;
+		case ADPCM:           return 1;
+		case MP3:             return 2;
+		case LPCM:            return 3;
+		case NELLY_16:        return 4;
+		case NELLY_8:         return 5;
+		case NELLY:           return 6;
+		case G711_A:          return 7;
+		case G711_U:          return 8;
+		case RESERVED:        return 9;
+		case AAC:             return 10;
+		case SPEEX:           return 11;
+		case MP3_8:           return 14;
+		case DEVICE_SPECIFIC: return 15;
+		default:
+			throw new RuntimeException("判定不能なコーデック");
+		}
+	}
 }
