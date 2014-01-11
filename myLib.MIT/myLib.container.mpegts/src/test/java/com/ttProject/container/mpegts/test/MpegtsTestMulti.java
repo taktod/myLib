@@ -107,15 +107,39 @@ public class MpegtsTestMulti {
 					}
 				}
 			}
-			writer1.prepareTailer();
-			writer2.prepareTailer();
-			writer3.prepareTailer();
-			writer4.prepareTailer();
 		}
 		catch(Exception e) {
 			logger.warn("例外発生", e);
 		}
 		finally {
+			if(writer1 != null) {
+				try {
+					writer1.prepareTailer();
+				}
+				catch(Exception e) {}
+				writer1 = null;
+			}
+			if(writer2 != null) {
+				try {
+					writer2.prepareTailer();
+				}
+				catch(Exception e) {}
+				writer2 = null;
+			}
+			if(writer3 != null) {
+				try {
+					writer3.prepareTailer();
+				}
+				catch(Exception e) {}
+				writer3 = null;
+			}
+			if(writer4 != null) {
+				try {
+					writer4.prepareTailer();
+				}
+				catch(Exception e) {}
+				writer4 = null;
+			}
 			if(source != null) {
 				try {
 					source.close();

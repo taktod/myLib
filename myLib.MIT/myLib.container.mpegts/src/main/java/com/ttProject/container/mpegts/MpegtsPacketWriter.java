@@ -198,7 +198,6 @@ public class MpegtsPacketWriter implements IWriter {
 			// 書き込みしないといけないpesデータ
 			Pes pes = entry.getValue();
 			try {
-				logger.info("書き込みしないとだめなpesがみつかった:" + pes);
 				writeMpegtsPacket(pes);
 			}
 			catch(Exception e) {
