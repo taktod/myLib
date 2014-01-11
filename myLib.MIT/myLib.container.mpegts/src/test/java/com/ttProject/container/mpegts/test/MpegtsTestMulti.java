@@ -37,20 +37,25 @@ public class MpegtsTestMulti {
 		MpegtsPacketWriter writer1 = null;
 		MpegtsPacketWriter writer2 = null;
 		MpegtsPacketWriter writer3 = null;
+		MpegtsPacketWriter writer4 = null;
 		PmtElementaryFieldFactory factory = new PmtElementaryFieldFactory();
+		PmtElementaryFieldFactory factory_audio = new PmtElementaryFieldFactory();
 		try {
 			writer1 = new MpegtsPacketWriter("output_640x360.ts");
 			writer2 = new MpegtsPacketWriter("output_320x180.ts");
 			writer3 = new MpegtsPacketWriter("output_160x90.ts");
+			writer4 = new MpegtsPacketWriter("output_audio_only.ts");
 			Sdt sdt = new Sdt();
 			sdt.writeDefaultProvider("test", "hpgehoge");
 			writer1.addContainer(sdt);
 			writer2.addContainer(sdt);
 			writer3.addContainer(sdt);
+			writer4.addContainer(sdt);
 			Pat pat = new Pat();
 			writer1.addContainer(pat);
 			writer2.addContainer(pat);
 			writer3.addContainer(pat);
+			writer4.addContainer(pat);
 			Pmt pmt = new Pmt(pat.getPmtPid());
 			PmtElementaryField videoElementaryField = factory.makeNewField(CodecType.VIDEO_H264);
 			pmt.addNewField(videoElementaryField);
@@ -61,6 +66,12 @@ public class MpegtsTestMulti {
 			writer2.addContainer(pmt);
 			writer3.addContainer(pmt);
 			
+			pmt = new Pmt(pat.getPmtPid());
+			PmtElementaryField audioElementaryField2 = factory_audio.makeNewField(CodecType.AUDIO_AAC);
+			pmt.addNewField(audioElementaryField2);
+			pmt.setPcrPid(audioElementaryField2.getPid());
+			writer4.addContainer(pmt);
+
 			IReader reader = new MpegtsPacketReader();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
@@ -87,6 +98,7 @@ public class MpegtsTestMulti {
 							writer1.addFrame(audioElementaryField.getPid(), pes.getFrame());
 							writer2.addFrame(audioElementaryField.getPid(), pes.getFrame());
 							writer3.addFrame(audioElementaryField.getPid(), pes.getFrame());
+							writer4.addFrame(audioElementaryField2.getPid(), pes.getFrame());
 						}
 						break;
 					default:
@@ -97,6 +109,7 @@ public class MpegtsTestMulti {
 			writer1.prepareTailer();
 			writer2.prepareTailer();
 			writer3.prepareTailer();
+			writer4.prepareTailer();
 		}
 		catch(Exception e) {
 			logger.warn("例外発生", e);
