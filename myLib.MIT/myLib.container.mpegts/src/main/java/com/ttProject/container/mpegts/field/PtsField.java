@@ -42,7 +42,6 @@ public class PtsField {
 		return pts;
 	}
 	public void setPts(long pts) {
-		logger.info("setPts:" + pts);
 		this.pts = pts;
 	}
 /*	public void setSignature(Bit4 signature) {

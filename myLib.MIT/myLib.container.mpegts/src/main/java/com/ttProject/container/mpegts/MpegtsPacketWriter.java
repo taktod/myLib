@@ -26,7 +26,6 @@ import com.ttProject.frame.h264.type.PictureParameterSet;
 import com.ttProject.frame.h264.type.SequenceParameterSet;
 import com.ttProject.frame.h264.type.Slice;
 import com.ttProject.frame.h264.type.SliceIDR;
-import com.ttProject.util.HexUtil;
 
 /**
  * mpegtsのpacketを書き込む動作
@@ -76,7 +75,6 @@ public class MpegtsPacketWriter implements IWriter {
 	@Override
 	public void addContainer(IContainer container) throws Exception {
 		// Containerがはじめて役にたつのかw
-		logger.info(container);
 		if(container instanceof Sdt) {
 			sdt = (Sdt)container;
 		}
@@ -86,7 +84,6 @@ public class MpegtsPacketWriter implements IWriter {
 		else if(container instanceof Pmt) {
 			pmt = (Pmt)container;
 		}
-		logger.info(HexUtil.toHex(container.getData(), true));
 	}
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
@@ -126,7 +123,6 @@ public class MpegtsPacketWriter implements IWriter {
 		}
 		Pes pes = pesMap.get(trackId);
 		if(pes == null) {
-			logger.info("pesデータがないので、作ります。");
 			pes = new Pes(trackId, pmt.getPcrPid() == trackId);
 			for(PmtElementaryField peField : pmt.getFields()) {
 				if(trackId == peField.getPid()) {
@@ -171,7 +167,6 @@ public class MpegtsPacketWriter implements IWriter {
 		else if(frame instanceof IAudioFrame){
 			pes.addFrame(frame);
 			IAudioFrame audioFrame = (IAudioFrame)pes.getFrame();
-			logger.info("time:" + (1.0f * audioFrame.getSampleNum() / audioFrame.getSampleRate()));
 			if(1.0f * audioFrame.getSampleNum() / audioFrame.getSampleRate() > 0.3f) {
 				// データが１秒以上になったら書き込みたいところ。
 				writeMpegtsPacket(pes);

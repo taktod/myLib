@@ -74,6 +74,7 @@ import com.ttProject.util.BufferUtil;
  */
 public class Pes extends MpegtsPacket {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Pes.class);
 	private Bit24 prefix = new Bit24(1); // 0x000001固定
 	private Bit8 streamId = new Bit8(); // audioなら0xC0 - 0xDF videoなら0xE0 - 0xEFただしvlcが吐くデータはその限りではなかった。
@@ -317,8 +318,6 @@ public class Pes extends MpegtsPacket {
 		// adaptationFieldはadapatationFieldSizeが抜けているので+1しなければいけない。
 		int headerLength = (isAdaptationFieldExist() ? getAdaptationField().getLength() + 1 : 0) + 9 + PESHeaderLength.get();
 		// 必要なデータ量をしらべないとだめ。
-		logger.info("frameSize:" + frameBuffer.remaining());
-		logger.info((int)(Math.ceil((frameBuffer.remaining() + headerLength) / 184f) * 188));
 		ByteBuffer pesChunk = ByteBuffer.allocate((int)(Math.ceil((frameBuffer.remaining() + headerLength) / 184f) * 188));
 		if(headerLength + frameBuffer.remaining() < 184) {
 			// 1packetで済む長さなので、調整しないとだめ。
@@ -539,7 +538,6 @@ public class Pes extends MpegtsPacket {
 	private void setPts(long timestamp, long timebase) {
 		pts = new PtsField();
 		pts.setPts((long)(1.0D * timestamp / timebase * 90000));
-		logger.info("pts:" + getPts());
 	}
 	private void setDts(long timestamp, long timebase) {
 		dts = new DtsField();
