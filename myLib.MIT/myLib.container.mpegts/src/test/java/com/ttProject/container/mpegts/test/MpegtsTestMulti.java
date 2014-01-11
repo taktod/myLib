@@ -83,17 +83,17 @@ public class MpegtsTestMulti {
 							writer1.addFrame(videoElementaryField.getPid(), pes.getFrame());
 						}
 						break;
-					case 0x0101:
+					case 0x0101: // track2
 						if(pes.getFrame() != null) {
 							writer2.addFrame(videoElementaryField.getPid(), pes.getFrame());
 						}
 						break;
-					case 0x0102:
+					case 0x0102: // track3
 						if(pes.getFrame() != null) {
 							writer3.addFrame(videoElementaryField.getPid(), pes.getFrame());
 						}
 						break;
-					case 0x0103:
+					case 0x0103: // audioTrack
 						if(pes.getFrame() != null) {
 							writer1.addFrame(audioElementaryField.getPid(), pes.getFrame());
 							writer2.addFrame(audioElementaryField.getPid(), pes.getFrame());
