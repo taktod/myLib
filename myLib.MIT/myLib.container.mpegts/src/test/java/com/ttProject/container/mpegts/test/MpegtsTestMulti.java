@@ -26,7 +26,7 @@ public class MpegtsTestMulti {
 	private Logger logger = Logger.getLogger(MpegtsTestMulti.class);
 	@Test
 	public void test() throws Exception {
-		logger.info("test");
+		logger.info("test開始");
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(
 					"http://49.212.39.17/mario_3video_1audio.ts" // ソースとして、3つのvideoトラック 1つのaudioトラックをもつmpegtsのデータをあてておく
@@ -77,6 +77,7 @@ public class MpegtsTestMulti {
 			while((container = reader.read(source)) != null) {
 				if(container instanceof Pes) {
 					Pes pes = (Pes)container;
+					logger.info(pes);
 					switch(pes.getPid()) {
 					case 0x0100: // track1
 						if(pes.getFrame() != null) {

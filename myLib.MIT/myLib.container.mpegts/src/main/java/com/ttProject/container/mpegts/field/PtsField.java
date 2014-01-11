@@ -15,6 +15,7 @@ import com.ttProject.unit.extra.bit.Bit4;
 
 public class PtsField {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(PtsField.class);
 	// 0010 XXX1 XXXX XXXX XXXX XXX1 XXXX XXXX XXXX XXX1
 	// 0011 XXX1 XXXX XXXX XXXX XXX1 XXXX XXXX XXXX XXX1
@@ -48,7 +49,6 @@ public class PtsField {
 		this.signature = signature;
 	}*/
 	public List<Bit> getBits() {
-		logger.info("pts::" + pts);
 		List<Bit> list = new ArrayList<Bit>();
 		list.add(signature);
 		list.add(new Bit3((int)(pts >>> 30)));

@@ -42,6 +42,7 @@ import com.ttProject.util.BufferUtil;
  */
 public class Sdt extends ProgramPacket {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Sdt.class);
 	private Bit16 originalNetworkId = new Bit16();
 	private Bit8 reservedFutureUse2 = new Bit8();
@@ -99,7 +100,6 @@ public class Sdt extends ProgramPacket {
 			SdtServiceField ssfield = new SdtServiceField();
 			ssfield.load(channel);
 			size -= ssfield.getSize();
-			logger.info(ssfield);
 			serviceFields.add(ssfield);
 		}
 		loader.load(crc32);
