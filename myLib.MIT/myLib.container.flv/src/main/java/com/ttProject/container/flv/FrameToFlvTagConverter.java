@@ -67,6 +67,50 @@ public class FrameToFlvTagConverter {
 	 */
 	private List<FlvTag> getAudioTags(AudioFrame frame) throws Exception {
 		List<FlvTag> result = new ArrayList<FlvTag>();
+		ByteBuffer frameBuffer = null;
+		// codecIdと拡張データについて調整しておく必要あり。
+		if(frame instanceof AacFrame) {
+			// ここだけ特殊なことしないとだめ。
+			Frame aacFrame = (Frame) frame;
+			DecoderSpecificInfo dsi = aacFrame.getDecoderSpecificInfo();
+			if(this.dsi == null || this.dsi.getData().compareTo(dsi.getData()) != 0) {
+				this.dsi = dsi;
+				// このタイミングでDSIからmshをつくって応答しなければいけない。
+				logger.info(HexUtil.toHex(dsi.getData(), true));
+				ByteBuffer dsiData = dsi.getData();
+				frameBuffer = ByteBuffer.allocate(dsiData.remaining() + 1);
+				frameBuffer.put((byte)0x00);
+				frameBuffer.put(dsiData);
+				frameBuffer.flip();
+				result.add(getAudioTag(frame, frameBuffer));
+			}
+			ByteBuffer frameData = frame.getData();
+			frameData.position(7);
+			frameBuffer = ByteBuffer.allocate(1 + frameData.remaining());
+			frameBuffer.put((byte)0x01);
+			frameBuffer.put(frameData);
+			frameBuffer.flip();
+		}
+		else if(frame instanceof Mp3Frame) {
+			frameBuffer = frame.getData();
+		}
+		else if(frame instanceof NellymoserFrame) {
+			frameBuffer = frame.getData();
+		}
+		else if(frame instanceof SpeexFrame) {
+			frameBuffer = frame.getData();
+		}
+		else if(frame instanceof AdpcmswfFrame) {
+			frameBuffer = frame.getData();
+		}
+		else {
+			throw new Exception("未対応なaudioFrameでした:" + frame);
+		}
+		result.add(getAudioTag(frame, frameBuffer));
+		// audioTagを読み込ませます。
+		return result;
+	}
+	private FlvTag getAudioTag(AudioFrame frame, ByteBuffer buffer) throws Exception {
 		Bit8  tagType = new Bit8(0x08);
 		Bit24 size = new Bit24();
 		Bit24 timestamp = new Bit24();
@@ -76,30 +120,11 @@ public class FrameToFlvTagConverter {
 		Bit2  sampleRate = null;
 		Bit1  bitCount = null;
 		Bit1  channels = null;
-		Bit8  sequenceHeaderFlag = null;
 		Bit32 preSize = new Bit32();
-		ByteBuffer frameBuffer = null;
 		// codecIdと拡張データについて調整しておく必要あり。
 		codecId = new Bit4();
 		if(frame instanceof AacFrame) {
 			codecId.set(CodecType.getAudioCodecNum(CodecType.AAC));
-			sequenceHeaderFlag = new Bit8(1); // mshなら0になる、通常のtagを書き込む予定なので1にしておく。
-			// ここだけ特殊なことしないとだめ。
-			Frame aacFrame = (Frame) frame;
-			DecoderSpecificInfo dsi = aacFrame.getDecoderSpecificInfo();
-			if(this.dsi == null) {
-				this.dsi = dsi;
-				// このタイミングでDSIからmshをつくって応答しなければいけない。
-				logger.info(HexUtil.toHex(dsi.getData(), true));
-			}
-			else {
-				if(this.dsi.getData().compareTo(dsi.getData()) != 0) {
-					logger.info(HexUtil.toHex(dsi.getData(), true));
-					// このタイミングでDSIからmshをつくって応答しなければならない。
-				}
-			}
-			frameBuffer = frame.getData();
-			frameBuffer.position(7);
 		}
 		else if(frame instanceof Mp3Frame) {
 			if(frame.getSampleRate() == 8000) {
@@ -111,7 +136,6 @@ public class FrameToFlvTagConverter {
 			else {
 				codecId.set(CodecType.getAudioCodecNum(CodecType.MP3));
 			}
-			frameBuffer = frame.getData();
 		}
 		else if(frame instanceof NellymoserFrame) {
 			if(frame.getSampleRate() == 16000) {
@@ -127,17 +151,14 @@ public class FrameToFlvTagConverter {
 			else {
 				codecId.set(CodecType.getAudioCodecNum(CodecType.NELLY));
 			}
-			frameBuffer = frame.getData();
 		}
 		else if(frame instanceof SpeexFrame) {
 			// 0xB6みたい。
 			codecId.set(CodecType.getAudioCodecNum(CodecType.SPEEX));
 			sampleRate = new Bit2(1);
-			frameBuffer = frame.getData();
 		}
 		else if(frame instanceof AdpcmswfFrame) {
 			codecId.set(CodecType.getAudioCodecNum(CodecType.ADPCM));
-			frameBuffer = frame.getData();
 		}
 		else {
 			throw new Exception("未対応なaudioFrameでした:" + frame);
@@ -189,8 +210,8 @@ public class FrameToFlvTagConverter {
 		}
 		BitConnector connector = new BitConnector();
 		ByteBuffer mediaData = BufferUtil.connect(
-				connector.connect(codecId, sampleRate, bitCount, channels, sequenceHeaderFlag),
-				frameBuffer);
+				connector.connect(codecId, sampleRate, bitCount, channels),
+				buffer);
 		size.set(mediaData.remaining());
 		preSize.set(size.get() + 11);
 		int time = (int)(frame.getPts() * 1000 / frame.getTimebase());
@@ -200,13 +221,9 @@ public class FrameToFlvTagConverter {
 				connector.connect(tagType, size, timestamp, timestampExt, streamId),
 				mediaData,
 				connector.connect(preSize));
-//		logger.info(HexUtil.toHex(tagBuffer, true));
 		ByteReadChannel channel = new ByteReadChannel(tagBuffer);
 		FlvTag tag = (FlvTag)reader.read(channel);
-//		logger.info(tag);
-		result.add(tag);
-		// audioTagを読み込ませます。
-		return result;
+		return tag;
 	}
 	/**
 	 * 映像フレームについて処理します
