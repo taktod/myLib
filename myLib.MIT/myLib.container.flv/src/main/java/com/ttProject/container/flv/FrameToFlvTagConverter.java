@@ -11,7 +11,6 @@ import com.ttProject.frame.IFrame;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.aac.AacFrame;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
-import com.ttProject.frame.aac.type.Frame;
 import com.ttProject.frame.adpcmswf.AdpcmswfFrame;
 import com.ttProject.frame.flv1.Flv1Frame;
 import com.ttProject.frame.h264.H264Frame;
@@ -30,7 +29,6 @@ import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtil;
 
 /**
  * frameデータからflvTagを生成して応答する変換動作
@@ -85,8 +83,6 @@ public class FrameToFlvTagConverter {
 			codecId.set(CodecType.getAudioCodecNum(CodecType.AAC));
 			sequenceHeaderFlag = new Bit8(1); // mshなら0になる、通常のtagを書き込む予定なので1にしておく。
 			// ここだけ特殊なことしないとだめ。
-			AacFrame aacFrame = (AacFrame)frame;
-			frameBuffer = frame.getData();
 		}
 		else if(frame instanceof Mp3Frame) {
 			if(frame.getSampleRate() == 8000) {
@@ -176,7 +172,7 @@ public class FrameToFlvTagConverter {
 		}
 		BitConnector connector = new BitConnector();
 		ByteBuffer mediaData = BufferUtil.connect(
-				connector.connect(codecId, sampleRate, bitCount, channels),
+				connector.connect(codecId, sampleRate, bitCount, channels, sequenceHeaderFlag),
 				frameBuffer);
 		size.set(mediaData.remaining());
 		preSize.set(size.get() + 11);

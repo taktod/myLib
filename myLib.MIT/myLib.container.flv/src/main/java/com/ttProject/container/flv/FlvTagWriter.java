@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
 import com.ttProject.frame.IFrame;
-import com.ttProject.util.HexUtil;
 
 /**
  * flvの書き込み動作
@@ -47,7 +46,6 @@ public class FlvTagWriter implements IWriter {
 		List<FlvTag> tagList = frameConverter.getTags(frame);
 		if(tagList != null) {
 			for(FlvTag tag : tagList) {
-//				logger.info(HexUtil.toHex(tag.getData(), true));
 				outputChannel.write(tag.getData());
 			}
 		}
