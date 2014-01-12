@@ -228,7 +228,7 @@ public class FlvToTest {
 	 * flvからflameを抜き出して再度flvにします。
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void flv_mp3() throws Exception {
 		logger.info("flvに変換するテスト(mp3)");
 		FlvTagWriter writer = new FlvTagWriter("output_mp3.flv");
@@ -239,6 +239,28 @@ public class FlvToTest {
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("mp3.flv")
+			),
+			writer,
+			0,
+			1
+		);
+	}
+	/**
+	 * flvのmp3変換テスト
+	 * flvからflameを抜き出して再度flvにします。
+	 * @throws Exception
+	 */
+	@Test
+	public void flv_aac() throws Exception {
+		logger.info("flvに変換するテスト(aac)");
+		FlvTagWriter writer = new FlvTagWriter("output_aac.flv");
+		FlvHeaderTag flvHeader = new FlvHeaderTag();
+		flvHeader.setAudioFlag(true);
+		flvHeader.setVideoFlag(false);
+		writer.addContainer(flvHeader);
+		convertTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("aac.flv")
 			),
 			writer,
 			0,

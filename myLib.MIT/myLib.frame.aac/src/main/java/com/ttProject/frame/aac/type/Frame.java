@@ -129,4 +129,12 @@ public class Frame extends AacFrame {
 	public ByteBuffer getPackBuffer() throws Exception {
 		return getData();
 	}
+	public DecoderSpecificInfo getDecoderSpecificInfo() {
+		// decoderSpecifcInfo情報を取得して応答します。
+		DecoderSpecificInfo dsi = new DecoderSpecificInfo();
+		dsi.setObjectType(profile.get() + 1);
+		dsi.setFrequencyIndex(samplingFrequenceIndex.get(), 0);
+		dsi.setChannelConfiguration(channelConfiguration.get());
+		return dsi;
+	}
 }

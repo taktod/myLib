@@ -42,6 +42,9 @@ public class FlvTagWriter implements IWriter {
 	}
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
+		if(frame == null) {
+			return;
+		}
 		logger.info("フレームを受け取りました:" + frame);
 		List<FlvTag> tagList = frameConverter.getTags(frame);
 		if(tagList != null) {
