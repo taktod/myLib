@@ -201,7 +201,7 @@ public class AudioTag extends FlvTag {
 		BitConnector connector = new BitConnector();
 		ByteBuffer startBuffer = getStartBuffer();
 		ByteBuffer audioInfoBuffer = connector.connect(
-				codecId, sampleRate, bitCount, channels
+				codecId, sampleRate, bitCount, channels, sequenceHeaderFlag
 		);
 		ByteBuffer frameBuffer = getFrameBuffer();
 		ByteBuffer tailBuffer = getTailBuffer();
