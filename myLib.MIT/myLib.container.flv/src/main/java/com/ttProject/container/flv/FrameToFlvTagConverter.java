@@ -16,6 +16,9 @@ import com.ttProject.frame.mp3.Mp3Frame;
 import com.ttProject.frame.nellymoser.NellymoserFrame;
 import com.ttProject.frame.speex.SpeexFrame;
 import com.ttProject.frame.vp6.Vp6Frame;
+import com.ttProject.unit.extra.bit.Bit1;
+import com.ttProject.unit.extra.bit.Bit2;
+import com.ttProject.unit.extra.bit.Bit4;
 
 /**
  * frameデータからflvTagを生成して応答する変換動作
@@ -46,10 +49,13 @@ public class FrameToFlvTagConverter {
 	 * @param frame
 	 * @return
 	 */
-	private List<FlvTag> getAudioFrames(AudioFrame frame) {
-		
+	private List<FlvTag> getAudioFrames(AudioFrame frame) throws Exception {
+		Bit4 codecId = new Bit4();
+		Bit2 sampleRate = new Bit2();
+		Bit1 bitCount = new Bit1();
+		Bit1 channels = new Bit1();
+		// codecIdと拡張データについて調整しておく必要あり。
 		if(frame instanceof AacFrame) {
-			
 		}
 		else if(frame instanceof Mp3Frame) {
 			
@@ -62,6 +68,45 @@ public class FrameToFlvTagConverter {
 		}
 		else if(frame instanceof AdpcmswfFrame) {
 			
+		}
+		else {
+			throw new Exception("未対応なaudioFrameでした:" + frame);
+		}
+		switch(frame.getChannel()) {
+		case 1:
+			channels.set(0);
+			break;
+		case 2:
+			channels.set(1);
+			break;
+		default:
+			throw new Exception("音声チャンネル数がflvに適合しないものでした。");
+		}
+		switch(frame.getBit()) {
+		case 8:
+			bitCount.set(0);
+			break;
+		case 16:
+			bitCount.set(1);
+			break;
+		default:
+			throw new Exception("ビット深度が適合しないものでした。");
+		}
+		switch((int)(frame.getSampleRate() / 100)) {
+		case 55:
+			sampleRate.set(0);
+			break;
+		case 110:
+			sampleRate.set(1);
+			break;
+		case 220:
+			sampleRate.set(2);
+			break;
+		case 441:
+			sampleRate.set(3);
+			break;
+		default:
+			throw new Exception("frameRateが適合しないものでした。");
 		}
 		return null;
 	}
