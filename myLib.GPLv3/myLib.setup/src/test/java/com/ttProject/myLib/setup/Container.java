@@ -47,6 +47,15 @@ public class Container extends SetupBase {
 			throw new Exception("コンテナが開けませんでした");
 		}
 		processConvert(container, Encoder.flv1(container), Encoder.mp3(container));
+/*		logger.info("flv準備 (flv1 / mp38)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.flv1mp38.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		IStreamCoder coder = Encoder.mp3(container);
+		coder.setSampleRate(8000);
+		processConvert(container, Encoder.flv1(container), coder);*/
 		logger.info("flv準備 (flv1 / adpcmswf)");
 		init();
 		container = IContainer.make();
