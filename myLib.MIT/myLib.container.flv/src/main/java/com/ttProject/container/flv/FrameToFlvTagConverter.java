@@ -204,7 +204,8 @@ public class FrameToFlvTagConverter {
 				bitCount.set(1);
 				break;
 			default:
-				throw new Exception("ビット深度が適合しないものでした。");
+				bitCount.set(1);
+//				throw new Exception("ビット深度が適合しないものでした。:" + frame.getBit());
 			}
 		}
 		if(sampleRate == null) {

@@ -61,6 +61,7 @@ public class FlvTagWriter implements IWriter {
 			for(IAudioFrame aFrame : multiFrame.getFrameList()) {
 				addFrame(trackId, aFrame);
 			}
+			return;
 		}
 		logger.info("フレームを受け取りました:" + frame);
 		List<FlvTag> tagList = frameConverter.getTags(frame);
