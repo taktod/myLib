@@ -204,6 +204,7 @@ public class FrameToFlvTagConverter {
 				bitCount.set(1);
 				break;
 			default:
+				// bit深度情報はもっていないコンテナもあるみたいです。(というか基本的に圧縮データにbit深度という情報はないみたい。(復元したらどうなるか・・・の問題っぽい。))
 				bitCount.set(1);
 //				throw new Exception("ビット深度が適合しないものでした。:" + frame.getBit());
 			}
