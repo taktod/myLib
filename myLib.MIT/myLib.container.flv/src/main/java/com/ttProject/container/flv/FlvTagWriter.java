@@ -8,7 +8,11 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
+import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
+import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.extra.AudioMultiFrame;
+import com.ttProject.frame.extra.VideoMultiFrame;
 
 /**
  * flvの書き込み動作
@@ -44,6 +48,19 @@ public class FlvTagWriter implements IWriter {
 	public void addFrame(int trackId, IFrame frame) throws Exception {
 		if(frame == null) {
 			return;
+		}
+		if(frame instanceof VideoMultiFrame) {
+			VideoMultiFrame multiFrame = (VideoMultiFrame)frame;
+			for(IVideoFrame vFrame : multiFrame.getFrameList()) {
+				addFrame(trackId, vFrame);
+			}
+			return;
+		}
+		if(frame instanceof AudioMultiFrame) {
+			AudioMultiFrame multiFrame = (AudioMultiFrame)frame;
+			for(IAudioFrame aFrame : multiFrame.getFrameList()) {
+				addFrame(trackId, aFrame);
+			}
 		}
 		logger.info("フレームを受け取りました:" + frame);
 		List<FlvTag> tagList = frameConverter.getTags(frame);

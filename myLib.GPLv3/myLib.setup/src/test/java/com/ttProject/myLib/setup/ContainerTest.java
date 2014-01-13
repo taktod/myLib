@@ -64,12 +64,19 @@ public class ContainerTest extends SetupBase {
 			throw new Exception("ファイルが開けませんでした");
 		}
 		processConvert(container, Encoder.h264(container), null);
-		logger.info("h264(flv / aac)準備");
+		logger.info("h264/aac(flv)準備");
 		init();
 		container = IContainer.make();
 		if(container.open(getTargetFile("myLib.MIT/myLib.container.test", "h264_aac.flv"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("ファイルが開けませんでした");
 		}
 		processConvert(container, Encoder.h264(container), Encoder.aac(container));
+		logger.info("flv1(flv)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.test", "flv1.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, Encoder.flv1(container), null);
 	}
 }

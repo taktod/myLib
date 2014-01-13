@@ -14,9 +14,13 @@ import com.ttProject.frame.aac.DecoderSpecificInfo;
 import com.ttProject.frame.aac.type.Frame;
 import com.ttProject.frame.adpcmswf.AdpcmswfFrame;
 import com.ttProject.frame.flv1.Flv1Frame;
+import com.ttProject.frame.flv1.type.DisposableInterFrame;
+import com.ttProject.frame.h264.ConfigData;
 import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.frame.h264.type.PictureParameterSet;
 import com.ttProject.frame.h264.type.SequenceParameterSet;
+import com.ttProject.frame.h264.type.Slice;
+import com.ttProject.frame.h264.type.SliceIDR;
 import com.ttProject.frame.mp3.Mp3Frame;
 import com.ttProject.frame.nellymoser.NellymoserFrame;
 import com.ttProject.frame.speex.SpeexFrame;
@@ -30,7 +34,6 @@ import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtil;
 
 /**
  * frameデータからflvTagを生成して応答する変換動作
@@ -68,28 +71,30 @@ public class FrameToFlvTagConverter {
 	private List<FlvTag> getAudioTags(AudioFrame frame) throws Exception {
 		List<FlvTag> result = new ArrayList<FlvTag>();
 		ByteBuffer frameBuffer = null;
-		// codecIdと拡張データについて調整しておく必要あり。
 		if(frame instanceof AacFrame) {
-			// ここだけ特殊なことしないとだめ。
+			Bit8 sequenceHeaderFlag = new Bit8();
+			BitConnector connector = new BitConnector();
+			// aacではdecoderSpecificInfoの調整を実施する必要あり
 			Frame aacFrame = (Frame) frame;
 			DecoderSpecificInfo dsi = aacFrame.getDecoderSpecificInfo();
+			// 新規にdecoderSpecificInfoの追記が必要
 			if(this.dsi == null || this.dsi.getData().compareTo(dsi.getData()) != 0) {
 				this.dsi = dsi;
-				// このタイミングでDSIからmshをつくって応答しなければいけない。
-				logger.info(HexUtil.toHex(dsi.getData(), true));
-				ByteBuffer dsiData = dsi.getData();
-				frameBuffer = ByteBuffer.allocate(dsiData.remaining() + 1);
-				frameBuffer.put((byte)0x00);
-				frameBuffer.put(dsiData);
-				frameBuffer.flip();
+				sequenceHeaderFlag.set(0);
+				frameBuffer = BufferUtil.connect(
+						connector.connect(sequenceHeaderFlag),
+						dsi.getData()
+				);
 				result.add(getAudioTag(frame, frameBuffer));
 			}
+			// 通常のframe
+			sequenceHeaderFlag.set(1);
 			ByteBuffer frameData = frame.getData();
 			frameData.position(7);
-			frameBuffer = ByteBuffer.allocate(1 + frameData.remaining());
-			frameBuffer.put((byte)0x01);
-			frameBuffer.put(frameData);
-			frameBuffer.flip();
+			frameBuffer = BufferUtil.connect(
+					connector.connect(sequenceHeaderFlag),
+					frameData
+			);
 		}
 		else if(frame instanceof Mp3Frame) {
 			frameBuffer = frame.getData();
@@ -110,17 +115,24 @@ public class FrameToFlvTagConverter {
 		// audioTagを読み込ませます。
 		return result;
 	}
+	/**
+	 * frameと保存するデータからaudioTagを作成して応答します。
+	 * @param frame
+	 * @param buffer
+	 * @return
+	 * @throws Exception
+	 */
 	private FlvTag getAudioTag(AudioFrame frame, ByteBuffer buffer) throws Exception {
-		Bit8  tagType = new Bit8(0x08);
-		Bit24 size = new Bit24();
-		Bit24 timestamp = new Bit24();
+		Bit8  tagType      = new Bit8(0x08);
+		Bit24 size         = new Bit24();
+		Bit24 timestamp    = new Bit24();
 		Bit8  timestampExt = new Bit8();
-		Bit24 streamId = new Bit24();
-		Bit4  codecId = null;
-		Bit2  sampleRate = null;
-		Bit1  bitCount = null;
-		Bit1  channels = null;
-		Bit32 preSize = new Bit32();
+		Bit24 streamId     = new Bit24();
+		Bit4  codecId      = null;
+		Bit2  sampleRate   = null;
+		Bit1  bitCount     = null;
+		Bit1  channels     = null;
+		Bit32 preSize      = new Bit32();
 		// codecIdと拡張データについて調整しておく必要あり。
 		codecId = new Bit4();
 		if(frame instanceof AacFrame) {
@@ -155,6 +167,12 @@ public class FrameToFlvTagConverter {
 		else if(frame instanceof SpeexFrame) {
 			// 0xB6みたい。
 			codecId.set(CodecType.getAudioCodecNum(CodecType.SPEEX));
+			if(frame.getSampleRate() != 16000) {
+				throw new Exception("speexのsampleRateは16kHzのみサポートします。");
+			}
+			if(frame.getChannel() == 1) {
+				throw new Exception("speexはmonoralのみサポートします。");
+			}
 			sampleRate = new Bit2(1);
 		}
 		else if(frame instanceof AdpcmswfFrame) {
@@ -230,16 +248,117 @@ public class FrameToFlvTagConverter {
 	 * @param frame
 	 * @return
 	 */
-	private List<FlvTag> getVideoTags(VideoFrame frame) {
+	private List<FlvTag> getVideoTags(VideoFrame frame) throws Exception {
+		List<FlvTag> result = new ArrayList<FlvTag>();
+		ByteBuffer frameBuffer = null;
+		BitConnector connector = new BitConnector();
 		if(frame instanceof Flv1Frame) {
-			
+			frameBuffer = frame.getData();
 		}
 		else if(frame instanceof Vp6Frame) {
-			
+			// vp6Aとvp6で動作が違います。
+			// とりあえずvp6Aは放置しておく。(判定するすべがないし、そもそも流通ないし)
+			Bit4  horizontalAdjustment = new Bit4();
+			Bit4  verticalAdjustment   = new Bit4();
+//			Bit32 offsetToAlpha        = null;
+			frameBuffer = BufferUtil.connect(connector.connect(horizontalAdjustment, verticalAdjustment),
+					frame.getData()
+			);
 		}
 		else if(frame instanceof H264Frame) {
-			
+			Bit8  packetType = new Bit8(); // mshの場合は0,通常フレームなら1,データ終端なら2
+			Bit24 dts        = new Bit24(); // dts値
+			if(frame instanceof SliceIDR) {
+				// sps ppsを取り出してconfigデータをつくりたいところ
+				logger.info("keyFrame検知");
+				SliceIDR sliceIDR = (SliceIDR)frame;
+				if(sps == null || pps == null
+				|| sps.getData().compareTo(sliceIDR.getSps().getData()) != 0
+				|| pps.getData().compareTo(sliceIDR.getPps().getData()) != 0) {
+					logger.info("h264Config作成が必要");
+					sps = sliceIDR.getSps();
+					pps = sliceIDR.getPps();
+					ConfigData configData = new ConfigData();
+					packetType.set(0);
+					dts.set(0);
+					frameBuffer = BufferUtil.connect(connector.connect(
+							packetType, dts),
+							configData.makeConfigData(sps, pps));
+					result.add(getVideoTag(frame, frameBuffer));
+				}
+			}
+			else if(frame instanceof Slice) {
+				// sps ppsが未設定なら処理しない
+				if(sps == null || pps == null) {
+					return null;
+				}
+				logger.info("innerFrame検知");
+			}
+			else {
+				// slice もしくは sliceIDRでないデータは処理しない
+				return null;
+			}
+			Bit32 nalSize = new Bit32(frame.getSize());
+			packetType.set(1);
+			dts.set((int)(frame.getDts() * 1000 / frame.getTimebase()));
+			frameBuffer = BufferUtil.connect(connector.connect(packetType, dts, nalSize),
+					frame.getData()
+			);
 		}
-		return null;
+		else {
+			throw new Exception("想定外のframeです。:" + frame);
+		}
+		result.add(getVideoTag(frame, frameBuffer));
+		return result;
+	}
+	/**
+	 * 映像tagを作成します
+	 * @param frame
+	 * @param buffer
+	 * @return
+	 */
+	private FlvTag getVideoTag(VideoFrame frame, ByteBuffer buffer) throws Exception {
+		Bit8 tagType      = new Bit8(0x09);
+		Bit24 size        = new Bit24();
+		Bit24 timestamp   = new Bit24();
+		Bit8 timestampExt = new Bit8();
+		Bit24 streamId    = new Bit24();
+		Bit4 frameType    = new Bit4();
+		Bit4 codecId      = new Bit4();
+		Bit32 preSize     = new Bit32();
+		if(frame.isKeyFrame()) {
+			frameType.set(1);
+		}
+		else {
+			frameType.set(2);
+		}
+		if(frame instanceof Flv1Frame) {
+			codecId.set(CodecType.getVideoCodecNum(CodecType.FLV1));
+			if(frame instanceof DisposableInterFrame) {
+				frameType.set(3);
+			}
+		}
+		else if(frame instanceof Vp6Frame) {
+			codecId.set(CodecType.getVideoCodecNum(CodecType.ON2VP6));
+		}
+		else if(frame instanceof H264Frame) {
+			codecId.set(CodecType.getVideoCodecNum(CodecType.H264));
+		}
+		BitConnector connector = new BitConnector();
+		ByteBuffer mediaData = BufferUtil.connect(
+				connector.connect(frameType, codecId),
+				buffer);
+		size.set(mediaData.remaining());
+		preSize.set(size.get() + 11);
+		int time = (int)(frame.getPts() * 1000 / frame.getTimebase());
+		timestamp.set(time & 0x00FFFFFF);
+		timestampExt.set(time >> 24);
+		ByteBuffer tagBuffer = BufferUtil.connect(
+				connector.connect(tagType, size, timestamp, timestampExt, streamId),
+				mediaData,
+				connector.connect(preSize));
+		ByteReadChannel channel = new ByteReadChannel(tagBuffer);
+		FlvTag tag = (FlvTag)reader.read(channel);
+		return tag;
 	}
 }

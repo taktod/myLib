@@ -246,11 +246,11 @@ public class FlvToTest {
 		);
 	}
 	/**
-	 * flvのmp3変換テスト
+	 * flvのaac変換テスト
 	 * flvからflameを抜き出して再度flvにします。
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void flv_aac() throws Exception {
 		logger.info("flvに変換するテスト(aac)");
 		FlvTagWriter writer = new FlvTagWriter("output_aac.flv");
@@ -261,6 +261,50 @@ public class FlvToTest {
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("aac.flv")
+			),
+			writer,
+			0,
+			1
+		);
+	}
+	/**
+	 * flvのaac変換テスト
+	 * flvからflameを抜き出して再度flvにします。
+	 * @throws Exception
+	 */
+//	@Test
+	public void flv_flv1() throws Exception {
+		logger.info("flvに変換するテスト(flv1)");
+		FlvTagWriter writer = new FlvTagWriter("output_flv1.flv");
+		FlvHeaderTag flvHeader = new FlvHeaderTag();
+		flvHeader.setAudioFlag(false);
+		flvHeader.setVideoFlag(true);
+		writer.addContainer(flvHeader);
+		convertTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("flv1.flv")
+			),
+			writer,
+			0,
+			1
+		);
+	}
+	/**
+	 * flvのaac変換テスト
+	 * flvからflameを抜き出して再度flvにします。
+	 * @throws Exception
+	 */
+	@Test
+	public void flv_h264() throws Exception {
+		logger.info("flvに変換するテスト(h264)");
+		FlvTagWriter writer = new FlvTagWriter("output_h264.flv");
+		FlvHeaderTag flvHeader = new FlvHeaderTag();
+		flvHeader.setAudioFlag(false);
+		flvHeader.setVideoFlag(true);
+		writer.addContainer(flvHeader);
+		convertTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("h264.flv")
 			),
 			writer,
 			0,

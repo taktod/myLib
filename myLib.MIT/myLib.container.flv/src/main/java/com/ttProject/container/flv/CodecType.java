@@ -104,6 +104,15 @@ public enum CodecType {
 	 * @return
 	 * @throws Exception
 	 */
+	public static byte getVideoCodecNum(CodecType codec) throws Exception {
+		return getVideoByte(codec);
+	}
+	/**
+	 * コーデックtypeから数値を参照する。
+	 * @param codec
+	 * @return
+	 * @throws Exception
+	 */
 	public static byte getAudioCodecNum(CodecType codec) throws Exception {
 		switch(codec) {
 		case PCM:             return 0;

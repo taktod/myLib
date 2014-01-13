@@ -65,14 +65,14 @@ public abstract class H264Frame extends VideoFrame {
 	 * sps参照
 	 * @return
 	 */
-	protected SequenceParameterSet getSps() {
+	public SequenceParameterSet getSps() {
 		return sps;
 	}
 	/**
 	 * pps参照
 	 * @return
 	 */
-	protected PictureParameterSet getPps() {
+	public PictureParameterSet getPps() {
 		return pps;
 	}
 }
