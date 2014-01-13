@@ -150,6 +150,8 @@ public class SendClientHandler extends ClientHandler {
 				else if("createStream".equals(resultFor)) {
 					streamId = ((Double) command.getArg(0)).intValue();
 					logger.info("streamId is confirmed:" + streamId);
+					// TODO このタイミングでpublishまで実行しておかないとだめだな。
+					publish();
 				}
 				return;
 			}

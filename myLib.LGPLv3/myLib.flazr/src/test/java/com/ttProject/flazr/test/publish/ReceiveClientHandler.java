@@ -39,14 +39,24 @@ public class ReceiveClientHandler extends ClientHandler {
 			Command command = (Command)message;
 			String name = command.getName();
 			if("onStatus".equals(name)) {
+				ReceiveWriter receiveWriter = (ReceiveWriter)options.getWriterToSave();
 				@SuppressWarnings("unchecked")
 				final Map<String, Object> temp = (Map<String, Object>) command.getArg(0);
 				final String code = (String)temp.get("code");
 				if("NetStream.Play.UnpublishNotify".equals(code)) {
 					logger.info("unpublishされた");
+					// 放送しているデータがある場合は停止させる。
+					receiveWriter.publishStop();
 				}
 				else if("NetStream.Play.PublishNotify".equals(code)) {
 					logger.info("publishされた");
+					// 放送開始してなければ開始しないとだめ。
+					receiveWriter.publishStart();
+				}
+				else if("NetStream.Play.Start".equals(code)) {
+					logger.info("playStartされた");
+					// とりあえずpublishスタートしておいて損はない
+					receiveWriter.playStart();;
 				}
 			}
 			break;

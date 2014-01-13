@@ -17,9 +17,35 @@ public class ReceiveWriter implements RtmpWriter {
 	@SuppressWarnings("unused")
 	private Logger logger = LoggerFactory.getLogger(ReceiveWriter.class);
 	private MessageManager messageManager = new MessageManager();
+	// rtmp配信側のプログラム
+	private SendReader sendReader = new SendReader("rtmp://localhost:1935/live");
+	
 	@Override
 	public void close() {
 		// おわった場合の処理
+	}
+	/**
+	 * 
+	 */
+	public void publishStart() {
+		try {
+			sendReader.open();
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * 
+	 */
+	public void publishStop() {
+		
+	}
+	/**
+	 * 
+	 */
+	public void playStart() {
+		
 	}
 	// messageをpublishしなおした場合は、rtmpサーバーから送られてくるデータのtimestampが0からにならないっぽいので、調整が必要。
 	// どうやら続きになるらしい。
