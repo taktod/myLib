@@ -25,6 +25,7 @@ import com.flazr.rtmp.client.ClientHandshakeHandler;
 import com.flazr.rtmp.client.ClientOptions;
 import com.flazr.rtmp.message.Metadata;
 import com.flazr.rtmp.message.MetadataAmf0;
+import com.ttProject.container.flv.CodecType;
 import com.ttProject.container.flv.FlvTag;
 import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.VideoTag;
@@ -65,9 +66,9 @@ public class SendReader implements RtmpReader {
 	private AudioTag audioMshTag = null;
 	private VideoTag videoMshTag = null;
 	/** dataQueue上の処理位置 */
-	private int processPos = -1;
+//	private int processPos = -1;
 	/** 現在の処理位置 */
-	private int savePos = 0;
+//	private int savePos = 0;
 	
 	/** FlvTag -> flvAtomの変換補助 */
 	private final TagManager manager = new TagManager();
@@ -102,8 +103,8 @@ public class SendReader implements RtmpReader {
 						dataQueue.clear();
 						audioMshTag = null;
 						videoMshTag = null;
-						processPos = -1;
-						savePos = 0;
+//						processPos = -1;
+//						savePos = 0;
 						// このタイミングで前のmshデータを要求してやる必要があるっぽいです。
 					}
 					catch(Exception e) {
@@ -273,6 +274,7 @@ public class SendReader implements RtmpReader {
 			}
 			try {
 				FlvAtom atom = dataQueue.take();
+				logger.info("flvAtomを送り出します。");
 				return atom;
 			}
 			catch(Exception e) {
@@ -300,8 +302,45 @@ public class SendReader implements RtmpReader {
 		// mshは保持しておく。
 		// publish中じゃなかったら送らない。
 		// 開始位置がまだ決定していない場合は、timestampを保持しておいて、そこから経過時間とする。
+		if(flvTag == null) {
+			return;
+		}
 		// 前からのずれは任意で処置しておく
-		
+		if(flvTag instanceof VideoTag) {
+			// 映像タグ
+			VideoTag vTag = (VideoTag)flvTag;
+			logger.info("videoTagうけとり{}", vTag);
+			if(vTag.isSequenceHeader()) {
+				videoMshTag = vTag;
+				return;
+			}
+			else if(vTag.getCodec() != CodecType.H264) {
+				videoMshTag = null;
+			}
+			if(vTag.getCodec() == CodecType.H264 && vTag.isKeyFrame() &&videoMshTag != null) {
+				// mshも送っておく。
+				videoMshTag.setPts(vTag.getPts());
+				dataQueue.add(manager.getAtom(videoMshTag));
+			}
+			dataQueue.add(manager.getAtom(flvTag));
+		}
+		else if(flvTag instanceof AudioTag) {
+			// 音声タグ
+			AudioTag aTag = (AudioTag)flvTag;
+			logger.info("audioTagうけとり{}", aTag);
+			if(aTag.isSequenceHeader()) {
+				audioMshTag = aTag;
+				return;
+			}
+			else if(aTag.getCodec() != CodecType.AAC) {
+				audioMshTag = null;
+			}
+			if(aTag.getCodec() == CodecType.AAC && audioMshTag != null) {
+				audioMshTag.setPts(aTag.getPts());
+				dataQueue.add(manager.getAtom(audioMshTag));
+			}
+			dataQueue.add(manager.getAtom(flvTag));
+		}
 		// 始めの転送では、mshを忘れずにおくるようにしておく。
 		// データをqueueにためておく。
 		//  以上でいいはず。

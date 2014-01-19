@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import com.flazr.rtmp.RtmpMessage;
 import com.flazr.rtmp.RtmpWriter;
+import com.ttProject.container.flv.AggregateTag;
 import com.ttProject.container.flv.FlvTag;
 import com.ttProject.flazr.unit.MessageManager;
 
@@ -53,12 +54,19 @@ public class ReceiveWriter implements RtmpWriter {
 	public void write(RtmpMessage message) {
 		// rtmpサーバーからメッセージをうけとった場合の処理
 		try {
-			@SuppressWarnings("unused")
 			FlvTag tag = messageManager.getTag(message);
 			// このtagを別のサーバーにまわしたい。
-//			logger.info("他のサーバーに流すデータを取得した。{}", tag);
 			// publish中でない状態でデータをうけとったら、publishのプロセス準備が必要。
 			// publish中にデータをうけとったら、相手サーバーに送ればOK
+			if(tag instanceof AggregateTag) {
+				AggregateTag aTag = (AggregateTag) tag;
+				for(FlvTag flvTag : aTag.getList()) {
+					sendReader.send(flvTag); // flvTagを渡しておく。
+				}
+			}
+			else {
+				sendReader.send(tag); // flvTagを渡しておく。
+			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();
