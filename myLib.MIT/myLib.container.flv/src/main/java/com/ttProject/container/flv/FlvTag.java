@@ -80,6 +80,7 @@ public abstract class FlvTag extends Container {
 		dataSize.set(data.remaining() - 11 - 4);
 		prevTagSize = new Bit32(dataSize.get() + 11);
 		super.setData(data);
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
@@ -89,10 +90,12 @@ public abstract class FlvTag extends Container {
 		timestamp.set((int)(pts & 0x00FFFFFF));
 		timestampExt.set((int)(pts >>> 24) & 0xFF);
 		super.setPts(pts);
+		super.update();
 	}
 	protected void setSize(int size) {
 		dataSize.set(size - 15);
 		prevTagSize.set(size - 4);
 		super.setSize(size);
+		super.update();
 	}
 }
