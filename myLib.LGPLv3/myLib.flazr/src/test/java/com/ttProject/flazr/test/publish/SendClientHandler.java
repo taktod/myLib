@@ -57,8 +57,10 @@ public class SendClientHandler extends ClientHandler {
 	 */
 	public void publish() {
 		if(options.getPublishType() != null) {
+			logger.info("publishを送信します。:" + streamId);
 			RtmpReader reader = options.getReaderToPublish();
 			publisher = new SendRtmpPublisher(reader, streamId, options.getBuffer(), false, false);
+			logger.info("channelHash2:" + channel.hashCode());
 			channel.write(Command.publish(streamId, options));
 		}
 	}
@@ -150,6 +152,7 @@ public class SendClientHandler extends ClientHandler {
 				else if("createStream".equals(resultFor)) {
 					streamId = ((Double) command.getArg(0)).intValue();
 					logger.info("streamId is confirmed:" + streamId);
+					logger.info("channelHash:" + channel.hashCode());
 					// TODO このタイミングでpublishまで実行しておかないとだめだな。
 					publish();
 				}

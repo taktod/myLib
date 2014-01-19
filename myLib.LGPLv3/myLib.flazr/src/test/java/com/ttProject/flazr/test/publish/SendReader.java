@@ -59,7 +59,7 @@ public class SendReader implements RtmpReader {
 	/** 接続中管理フラグ */
 	private boolean isWorking = true;
 	/** 放送中管理フラグ */
-	private boolean isPublishing = false;
+	private boolean isPublishing = true;
 	
 	/** flvの特別なデータ管理用 */
 	private AudioTag audioMshTag = null;
@@ -89,6 +89,8 @@ public class SendReader implements RtmpReader {
 		options.publishLive();
 		options.setFileToPublish(null);
 		options.setReaderToPublish(this);
+		options.setStreamName("test");
+		logger.info("接続を開きます。");
 		
 		// 接続を開始します。blockするので、threadにやらせます。
 		Thread t = new Thread(new Runnable() {
