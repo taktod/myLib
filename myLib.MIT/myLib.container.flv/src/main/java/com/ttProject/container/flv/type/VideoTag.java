@@ -275,6 +275,13 @@ public class VideoTag extends FlvTag {
 		return getCodec() == CodecType.H264 && packetType.get() == 0;
 	}
 	/**
+	 * キーフレームであるかの判定
+	 * @return
+	 */
+	public boolean isKeyFrame() {
+		return frameType.get() == 1;
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
