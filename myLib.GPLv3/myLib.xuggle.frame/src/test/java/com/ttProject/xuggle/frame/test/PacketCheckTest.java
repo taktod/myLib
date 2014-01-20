@@ -7,6 +7,10 @@ import com.xuggle.xuggler.IContainer;
 
 /**
  * やりとりすべきpacketデータについて調べるためのテスト
+ * 623
+ * 000 0000 0000 1111 0101
+ * 0010 0110 1111
+ * 
  * @author taktod
  */
 public class PacketCheckTest extends SetupBase {

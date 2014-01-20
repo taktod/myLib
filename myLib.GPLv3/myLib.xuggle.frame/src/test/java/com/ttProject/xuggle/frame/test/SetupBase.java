@@ -128,7 +128,7 @@ public class SetupBase {
 				if(packet.isComplete()) {
 					logger.info("映像Packet:" + picture.getWidth() + "x" + picture.getHeight());
 					logger.info(packet.getSize());
-					logger.info(HexUtil.toHex(packet.getByteBuffer(), true));
+					logger.info(HexUtil.toHex(packet.getByteBuffer()));
 					if(container.writePacket(packet) < 0) {
 						System.out.println(packet);
 						packet.setDts(packet.getPts());
@@ -167,7 +167,7 @@ public class SetupBase {
 							packet.setDts(packet.getPts());
 							logger.info("音声Packet:channel:" + samples.getChannels() + " sampleRate:" + samples.getSampleRate());
 							logger.info(packet.getSize());
-							logger.info(HexUtil.toHex(packet.getByteBuffer(), true));
+							logger.info(HexUtil.toHex(packet.getByteBuffer()));
 							if(container.writePacket(packet) < 0) {
 								throw new Exception("コンテナ書き込み失敗");
 							}
