@@ -41,9 +41,11 @@ public class Vp8FrameSelector extends VideoSelector {
 		switch(frameType.get()) {
 		case 0: // keyFrame
 			frame = new KeyFrame(frameType, version, showFrame, firstPartSize);
+			keyFrame = (KeyFrame)frame;
 			break;
 		case 1: // intraFrame
 			frame = new IntraFrame(frameType, version, showFrame, firstPartSize);
+			frame.setKeyFrame(keyFrame);
 			break;
 		default:
 			throw new Exception("解析不能なデータです");
