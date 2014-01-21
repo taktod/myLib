@@ -96,6 +96,11 @@ public class SetupBase {
 			if(audioEncoder.open(null, null) < 0) {
 				throw new Exception("音声エンコーダーが開けませんでした。");
 			}
+			// vorbisの場合はここにidentifierFrame commentFrame setupFrameが入るみたい。
+			// setupframeは自力でつくるのがむずかしそうなので拾う必要がある。
+//			IBuffer buffer = audioEncoder.getExtraData();
+//			logger.info(HexUtil.toHex(buffer.getByteArray(0, buffer.getSize()), true));
+//			return;
 		}
 		// containerのheaderを書く
 		if(container.writeHeader() < 0) {

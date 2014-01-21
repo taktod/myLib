@@ -25,9 +25,9 @@ public class PacketCheckTest extends SetupBase {
 		logger.info("解析テストします。");
 		init();
 		IContainer container = IContainer.make();
-		if(container.open("target.webm", IContainer.Type.WRITE, null) < 0) {
+		if(container.open("target.ogg", IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("ファイルが開けませんでした。");
 		}
-		processConvert(container, Encoder.vp8(container), null);
+		processConvert(container, null, Encoder.vorbis(container));
 	}
 }
