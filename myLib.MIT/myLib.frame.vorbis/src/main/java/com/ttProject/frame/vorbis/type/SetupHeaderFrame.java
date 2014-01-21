@@ -10,6 +10,7 @@ import com.ttProject.nio.channels.IReadChannel;
  * packetType: 1byte 0x05 setup header
  * string: 6Byte "vorbis"
  * あとのデータはよくわからん。
+ * どうやらデコードするときの変換情報が含まれているらしい。
  * 
  * @see http://www.xiph.org/vorbis/doc/Vorbis_I_spec.html#x1-620004.2.2
  * @author taktod
