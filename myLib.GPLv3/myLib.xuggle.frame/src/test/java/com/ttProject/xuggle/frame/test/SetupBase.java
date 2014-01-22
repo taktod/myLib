@@ -11,6 +11,7 @@ import java.nio.ByteOrder;
 import org.apache.log4j.Logger;
 
 import com.ttProject.util.HexUtil;
+import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.IAudioResampler;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec;
@@ -98,8 +99,8 @@ public class SetupBase {
 			}
 			// vorbisの場合はここにidentifierFrame commentFrame setupFrameが入るみたい。
 			// setupframeは自力でつくるのがむずかしそうなので拾う必要がある。
-//			IBuffer buffer = audioEncoder.getExtraData();
-//			logger.info(HexUtil.toHex(buffer.getByteArray(0, buffer.getSize()), true));
+			IBuffer buffer = audioEncoder.getExtraData();
+			logger.info(HexUtil.toHex(buffer.getByteArray(0, buffer.getSize())));
 //			return;
 		}
 		// containerのheaderを書く
