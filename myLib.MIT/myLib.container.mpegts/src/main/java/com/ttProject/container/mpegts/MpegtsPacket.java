@@ -2,6 +2,8 @@ package com.ttProject.container.mpegts;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.container.Container;
 import com.ttProject.container.mpegts.field.AdaptationField;
 import com.ttProject.nio.channels.IReadChannel;
@@ -18,6 +20,9 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public abstract class MpegtsPacket extends Container {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(MpegtsPacket.class);
 	private final Bit8 syncByte;
 	private final Bit1 transportErrorIndicator;
 	private final Bit1 payloadUnitStartIndicator;
