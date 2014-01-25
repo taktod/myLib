@@ -27,7 +27,7 @@ import com.ttProject.nio.channels.IFileReadChannel;
  * @author taktod
  */
 public class FixMpegtsToTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(FixMpegtsToTest.class);
 //	@Test
 	public void test() throws Exception {
