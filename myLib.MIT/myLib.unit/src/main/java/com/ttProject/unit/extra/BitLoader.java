@@ -23,9 +23,25 @@ public class BitLoader {
 	/** 動作buffer */
 	private final IReadChannel channel;
 	/** 中途処理バッファ */
-	private int floatData = 0;
+	private long floatData = 0;
 	/** 残っているbit数 */
 	private int left = 0;
+	/** エンディアンコントロール */
+	private boolean littleEndianFlg = false;
+	/**
+	 * 動作エンディアンをlittleEndianに変更する
+	 * @param flg
+	 */
+	public void setLittleEndianFlg(boolean flg) {
+		littleEndianFlg = flg;
+	}
+	/**
+	 * littleEndianとして動作しているか確認
+	 * @return
+	 */
+	public boolean isLittleEndian() {
+		return littleEndianFlg;
+	}
 	/**
 	 * コンストラクタ
 	 * @param channel
@@ -46,20 +62,36 @@ public class BitLoader {
 				load(bit1);
 			} while(golomb.addBit1(bit1));
 		}
-		else if(bit instanceof BitN) {
-			BitN bitn = (BitN)bit;
-			for(Bit b : bitn.bits) {
-				load(b);
-			}
-		}
 		else {
-			while(left < bit.bitCount) {
-				floatData = (floatData << 8 | (BufferUtil.safeRead(channel, 1).get() & 0xFF));
-				left += 8;
+			if(littleEndianFlg) {
+				while(left < bit.bitCount) {
+					floatData = (floatData | (BufferUtil.safeRead(channel, 1).get() & 0xFF) << left);
+					left += 8;
+				}
+				int bitCount = bit.bitCount;
+				if(bit instanceof BitN) {
+					((BitN) bit).setLong(floatData & ((1 << bitCount) - 1));
+				}
+				else {
+					bit.set((int)(floatData & ((1 << bitCount) - 1)));
+				}
+				floatData >>>= bitCount;
+				left -= bitCount;
 			}
-			int bitCount = bit.bitCount;
-			bit.set(floatData >>> (left - bitCount));
-			left -= bitCount;
+			else {
+				while(left < bit.bitCount) {
+					floatData = (floatData << 8 | (BufferUtil.safeRead(channel, 1).get() & 0xFF));
+					left += 8;
+				}
+				int bitCount = bit.bitCount;
+				if(bit instanceof BitN) {
+					((BitN) bit).setLong(floatData >>> (left - bitCount));
+				}
+				else {
+					bit.set((int)(floatData >>> (left - bitCount)));
+				}
+				left -= bitCount;
+			}
 		}
 	}
 	/**
