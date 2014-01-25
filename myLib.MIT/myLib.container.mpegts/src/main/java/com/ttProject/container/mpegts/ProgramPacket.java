@@ -48,7 +48,12 @@ public abstract class ProgramPacket extends MpegtsPacket {
 				reservedFutureUse1, reserved1, sectionLength, programNumber,
 				reserved2, versionNumber, currentNextOrder,
 				sectionNumber, lastSectionNumber);
-		super.setSize(8 + sectionLength.get());
+		if(isAdaptationFieldExist()) {
+			super.setSize(8 + getAdaptationField().getLength() + 1 + sectionLength.get());
+		}
+		else {
+			super.setSize(8 + sectionLength.get());
+		}
 	}
 	/**
 	 * sectionLengthの変更
