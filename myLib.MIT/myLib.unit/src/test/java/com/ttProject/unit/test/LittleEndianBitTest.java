@@ -8,11 +8,11 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
-import com.ttProject.unit.extra.bit.Bit16;
-import com.ttProject.unit.extra.bit.Bit24;
 import com.ttProject.unit.extra.bit.Bit3;
+import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit5;
+import com.ttProject.unit.extra.bit.Bit64;
 import com.ttProject.unit.extra.bit.Bit7;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.HexUtil;
@@ -24,7 +24,7 @@ import com.ttProject.util.HexUtil;
 public class LittleEndianBitTest {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(LittleEndianBitTest.class);
-	@Test
+//	@Test
 	public void test1() throws Exception {
 		IReadChannel channel = new ByteReadChannel(new byte[]{
 				0x29
@@ -41,20 +41,22 @@ public class LittleEndianBitTest {
 	}
 	@Test
 	public void test2() throws Exception {
-		IReadChannel channel = new ByteReadChannel(new byte[] {
-				0x01, 0x02, 0x03, 0x04, 0x05, 0x06
-		});
-		Bit8 a  = new Bit8();
-		Bit16 b = new Bit16();
-		Bit24 c = new Bit24();
+		IReadChannel channel = new ByteReadChannel(HexUtil.makeBuffer("00000000000000005410913E0000000003CACA8901"));
+		Bit64 a = new Bit64();
+		Bit32 b = new Bit32();
+		Bit32 c = new Bit32();
+		Bit32 d = new Bit32();
+		Bit8 e = new Bit8();
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
-		loader.load(a, b, c);
-		logger.info(a);
-		logger.info(b);
-		logger.info(c);
+		loader.load(a, b, c, d, e);
+		logger.info(Integer.toHexString(a.get()));
+		logger.info(Integer.toHexString(b.get()));
+		logger.info(Integer.toHexString(c.get()));
+		logger.info(Integer.toHexString(d.get()));
+		logger.info(Integer.toHexString(e.get()));
 	}
-	@Test
+//	@Test
 	public void test3() throws Exception {
 		Bit4 a = new Bit4(2);
 		Bit4 b = new Bit4(3);
@@ -66,4 +68,5 @@ public class LittleEndianBitTest {
 		connector.setLittleEndianFlg(true);
 		logger.info(HexUtil.toHex(connector.connect(a, b, c, d, e)));
 	}
+	
 }

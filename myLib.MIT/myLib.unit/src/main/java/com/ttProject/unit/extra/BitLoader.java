@@ -65,32 +65,41 @@ public class BitLoader {
 		else {
 			if(littleEndianFlg) {
 				while(left < bit.bitCount) {
-					floatData = (floatData | (BufferUtil.safeRead(channel, 1).get() & 0xFF) << left);
+					floatData = (floatData | (BufferUtil.safeRead(channel, 1).get() & 0xFFL) << left);
 					left += 8;
 				}
 				int bitCount = bit.bitCount;
 				if(bit instanceof BitN) {
-					((BitN) bit).setLong(floatData & ((1 << bitCount) - 1));
+					((BitN) bit).setLong(floatData & ((1L << bitCount) - 1));
 				}
 				else {
-					bit.set((int)(floatData & ((1 << bitCount) - 1)));
+					bit.set((int)(floatData & ((1L << bitCount) - 1)));
 				}
 				floatData >>>= bitCount;
 				left -= bitCount;
 			}
 			else {
-				while(left < bit.bitCount) {
-					floatData = (floatData << 8 | (BufferUtil.safeRead(channel, 1).get() & 0xFF));
-					left += 8;
-				}
-				int bitCount = bit.bitCount;
-				if(bit instanceof BitN) {
-					((BitN) bit).setLong(floatData >>> (left - bitCount));
+				// TODO BitNを分割して読み込む動作がなくなったことで64bit以上のBitNデータが読み込み不能になっている。(nellymoserの読み込みでこまるはず)
+				// とりあえずbigEndianだけ対応しておく。
+				if(bit instanceof BitN && bit.bitCount > 64) {
+					for(Bit b : ((BitN)bit).bits) {
+						load(b);
+					}
 				}
 				else {
-					bit.set((int)(floatData >>> (left - bitCount)));
+					while(left < bit.bitCount) {
+						floatData = (floatData << 8 | (BufferUtil.safeRead(channel, 1).get() & 0xFFL));
+						left += 8;
+					}
+					int bitCount = bit.bitCount;
+					if(bit instanceof BitN) {
+						((BitN) bit).setLong(floatData >>> (left - bitCount));
+					}
+					else {
+						bit.set((int)(floatData >>> (left - bitCount)));
+					}
+					left -= bitCount;
 				}
-				left -= bitCount;
 			}
 		}
 	}
