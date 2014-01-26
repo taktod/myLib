@@ -12,20 +12,41 @@ import java.util.List;
 public class BitConnector {
 	/** feedしていくbitリスト */
 	private List<Bit> bits = null;
+	/** エンディアンコントロール */
+	private boolean littleEndianFlg = false;
+	/** 内部処理用データ */
+	private long data;
+	private int left;
+	private int size;
+	private ByteBuffer buffer = null;
+	/**
+	 * 動作エンディアンをlittleEndianに変更する
+	 * @param flg
+	 */
+	public void setLittleEndianFlg(boolean flg) {
+		littleEndianFlg = flg;
+	}
+	/**
+	 * littleEndianとして動作しているか確認
+	 * @return
+	 */
+	public boolean isLittleEndian() {
+		return littleEndianFlg;
+	}
 	/**
 	 * 接続します。
 	 * @param bits
 	 */
 	public ByteBuffer connect(Bit... bits) {
-		long data = 0;
-		int left = 0;
-		int size = 0;
+		data = 0;
+		left = 0;
+		size = 0;
 		for(Bit bit : bits) {
 			if(bit != null) {
 				size += bit.bitCount;
 			}
 		}
-		ByteBuffer buffer = ByteBuffer.allocate((int)(Math.ceil(size / 8.0D)));
+		buffer = ByteBuffer.allocate((int)(Math.ceil(size / 8.0D)));
 		for(Bit bit : bits) {
 			if(bit == null) {
 				continue;
@@ -33,41 +54,66 @@ public class BitConnector {
 			if(bit instanceof ExpGolomb) {
 				ExpGolomb eg = (ExpGolomb) bit;
 				for(Bit egBit : eg.bits) {
-					// TODO この部分下と重複している。
-					data = (data << egBit.bitCount) | egBit.get();
-					left += egBit.bitCount;
-					while(left > 8) {
-						left -= 8;
-						buffer.put((byte)((data >>> left) & 0xFF));
-					}
+					appendBit(egBit);
 				}
 			}
 			else if(bit instanceof BitN) {
 				BitN bitN = (BitN)bit;
 				for(Bit b : bitN.bits) {
-					// TODO この部分下と重複している。
-					data = (data << b.bitCount) | b.get();
-					left += b.bitCount;
-					while(left > 8) {
-						left -= 8;
-						buffer.put((byte)((data >>> left) & 0xFF));
-					}
+					appendBit(b);
 				}
 			}
 			else {
-				data = (data << bit.bitCount) | bit.get();
-				left += bit.bitCount;
-				while(left > 8) {
-					left -= 8;
-					buffer.put((byte)((data >>> left) & 0xFF));
-				}
+				appendBit(bit);
 			}
 		}
 		if(buffer.position() != buffer.limit()) {
-			buffer.put((byte)((data >>> (8 - left)) & 0xFF));
+			if(littleEndianFlg) {
+				writeBuffer(8 - left);
+			}
+			else {
+				if(left != 0) {
+					data <<= (8 - left);
+				}
+				writeBuffer(0);
+			}
 		}
 		buffer.flip();
 		return buffer;
+	}
+	/**
+	 * データの書き込み処理
+	 */
+	private void appendBit(Bit b) {
+		if(littleEndianFlg) {
+			data = data | (b.get() << left);
+			left += b.bitCount;
+			while(left >= 8) {
+				left -= 8;
+				writeBuffer(0);
+				data >>>= 8;
+			}
+		}
+		else {
+			data = (data << b.bitCount) | b.get();
+			left += b.bitCount;
+			while(left >= 8) {
+				left -= 8;
+				writeBuffer(left);
+			}
+		}
+	}
+	/**
+	 * byteデータの書き込み
+	 * @param shift
+	 */
+	private void writeBuffer(int shift) {
+		if(littleEndianFlg) {
+			buffer.put((byte)(data & 0xFF));
+		}
+		else {
+			buffer.put((byte)((data >>> shift) & 0xFF));
+		}
 	}
 	/**
 	 * collectionFrameWorkの場合
