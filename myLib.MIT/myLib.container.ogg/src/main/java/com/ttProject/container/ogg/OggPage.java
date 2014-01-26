@@ -84,8 +84,14 @@ public abstract class OggPage extends Container {
 		pageSequenceNo.set(buffer.getInt());
 		pageChecksum.set(buffer.getInt());
 		BitLoader loader = new BitLoader(channel);
+//		loader.setLittleEndianFlg(true);
+//		loader.load(absoluteGranulePosition, streamSerialNumber, pageSequenceNo, pageChecksum);
+/*		logger.info(absoluteGranulePosition);
+		logger.info(streamSerialNumber);
+		logger.info(pageSequenceNo);
+		logger.info(pageChecksum);**/
 		loader.load(segmentCount);
-		logger.info(segmentCount.get());
+		logger.info("segmentCount:" + segmentCount.get());
 		int size = 0;
 		for(int i = 0;i < segmentCount.get();i ++) {
 			Bit8 segmentSize = new Bit8();
