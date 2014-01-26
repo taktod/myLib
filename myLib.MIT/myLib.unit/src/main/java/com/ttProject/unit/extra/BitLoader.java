@@ -75,7 +75,14 @@ public class BitLoader {
 				else {
 					bit.set((int)(floatData & ((1L << bitCount) - 1)));
 				}
-				floatData >>>= bitCount;
+				if(bitCount == 64) {
+					// 64bitのシフト動作はなにもしない動作になるみたいなので、32 x 2にしておく
+					floatData >>>= 32;
+					floatData >>>= 32;
+				}
+				else {
+					floatData >>>= bitCount;
+				}
 				left -= bitCount;
 			}
 			else {

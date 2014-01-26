@@ -18,7 +18,6 @@ import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit64;
 import com.ttProject.unit.extra.bit.Bit8;
-import com.ttProject.util.BufferUtil;
 
 /**
  * oggはoggPageというものができているらしい。
@@ -77,21 +76,9 @@ public abstract class OggPage extends Container {
 		logger.info(logicStartFlag);
 		logger.info(packetContinurousFlag);
 		// データを読み込む
-		ByteBuffer buffer = BufferUtil.safeRead(channel, 20);
-		buffer.order(ByteOrder.LITTLE_ENDIAN);
-		absoluteGranulePosition.setLong(buffer.getLong());
-		streamSerialNumber.set(buffer.getInt());
-		pageSequenceNo.set(buffer.getInt());
-		pageChecksum.set(buffer.getInt());
 		BitLoader loader = new BitLoader(channel);
-//		loader.setLittleEndianFlg(true);
-//		loader.load(absoluteGranulePosition, streamSerialNumber, pageSequenceNo, pageChecksum);
-/*		logger.info(absoluteGranulePosition);
-		logger.info(streamSerialNumber);
-		logger.info(pageSequenceNo);
-		logger.info(pageChecksum);**/
-		loader.load(segmentCount);
-		logger.info("segmentCount:" + segmentCount.get());
+		loader.setLittleEndianFlg(true);
+		loader.load(absoluteGranulePosition, streamSerialNumber, pageSequenceNo, pageChecksum, segmentCount);
 		int size = 0;
 		for(int i = 0;i < segmentCount.get();i ++) {
 			Bit8 segmentSize = new Bit8();
@@ -173,6 +160,7 @@ public abstract class OggPage extends Container {
 	 * @param startPage
 	 */
 	public void setStartPage(StartPage startPage) {
+		logger.info("setStartPage:" + startPage);
 		this.startPage = startPage;
 	}
 	/**
