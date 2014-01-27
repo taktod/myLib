@@ -2,14 +2,14 @@ package com.ttProject.frame.vp8;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.vp8.type.KeyFrame;
 import com.ttProject.unit.extra.BitConnector;
-import com.ttProject.unit.extra.BitN;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit19;
 import com.ttProject.unit.extra.bit.Bit3;
-import com.ttProject.unit.extra.bit.Bit8;
 
 /**
  * Vp8のフレームのベース
@@ -17,6 +17,9 @@ import com.ttProject.unit.extra.bit.Bit8;
  *
  */
 public abstract class Vp8Frame extends VideoFrame {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(Vp8Frame.class);
 	private final Bit1  frameType; // 0ならkyeFrame
 	private final Bit3  version;
 	private final Bit1  showFrame;
@@ -54,11 +57,7 @@ public abstract class Vp8Frame extends VideoFrame {
 	}
 	protected ByteBuffer getHeaderBuffer() {
 		BitConnector connector = new BitConnector();
-		Bit3 size_1 = new Bit3();
-		Bit8 size_2 = new Bit8();
-		Bit8 size_3 = new Bit8();
-		BitN sizeBit = new BitN(size_3, size_2, size_1);
-		sizeBit.set(firstPartSize.get());
-		return connector.connect(size_1, showFrame, version, frameType, size_2, size_3);
+		connector.setLittleEndianFlg(true);
+		return connector.connect(frameType, version, showFrame, firstPartSize);
 	}
 }
