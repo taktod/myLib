@@ -4,12 +4,17 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 /**
  * bitデータのコネクト処理
  * TODO 現状では、固定データをByteBufferにするのは対応しているが、追記しながら様子見つつというのはできてないね。
  * @author taktod
  */
 public class BitConnector {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(BitConnector.class);
 	/** feedしていくbitリスト */
 	private List<Bit> bits = null;
 	/** エンディアンコントロール */
@@ -59,8 +64,15 @@ public class BitConnector {
 			}
 			else if(bit instanceof BitN) {
 				BitN bitN = (BitN)bit;
-				for(Bit b : bitN.bits) {
-					appendBit(b);
+				if(littleEndianFlg) {
+					for(int i = bitN.bits.size() - 1;i >= 0;i --){
+						appendBit(bitN.bits.get(i));
+					}
+				}
+				else {
+					for(Bit b : bitN.bits) {
+						appendBit(b);
+					}
 				}
 			}
 			else {
