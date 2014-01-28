@@ -17,7 +17,7 @@ import com.ttProject.unit.extra.bit.Bit6;
  * sdtの中にあるデータfield部
  * @author taktod
  */
-public class SdtServiceField {
+public class SdtServiceField implements IDescriptorHolder {
 	private Bit16 serviceId = new Bit16(1);
 	private Bit6 reservedFutureUse = new Bit6(0x3F);
 	private Bit1 eitScheduleFlag = new Bit1();
@@ -47,10 +47,7 @@ public class SdtServiceField {
 		if(!descriptors.contains(descriptor)) {
 			descriptors.add(descriptor);
 		}
-		descriptorsLoopLength.set(0);
-		for(Descriptor desc : descriptors) {
-			descriptorsLoopLength.set(descriptorsLoopLength.get() + desc.getSize());
-		}
+		updateSize();
 	}
 	public boolean removeDescripor(Descriptor descriptor) {
 		boolean result = descriptors.remove(descriptor);
@@ -59,7 +56,16 @@ public class SdtServiceField {
 		}
 		return result;
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void updateSize() {
+		descriptorsLoopLength.set(0);
+		for(Descriptor desc : descriptors) {
+			descriptorsLoopLength.set(descriptorsLoopLength.get() + desc.getSize());
+		}
+	}
 	/**
 	 * 保持データサイズを応答しておく
 	 * @return
@@ -80,7 +86,7 @@ public class SdtServiceField {
 		int size = descriptorsLoopLength.get();
 		while(size > 0) {
 			// Descriptorを読み込む必要あり。
-			Descriptor descriptor = Descriptor.getDescriptor(ch);
+			Descriptor descriptor = Descriptor.getDescriptor(ch, this);
 			size -= descriptor.getDescriptorLength().get() + 2; // データ長 + データtype&length定義分
 			descriptors.add(descriptor);
 		}

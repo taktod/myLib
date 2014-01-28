@@ -3,6 +3,7 @@ package com.ttProject.container.mpegts.descriptor;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+import com.ttProject.container.mpegts.field.IDescriptorHolder;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit;
 import com.ttProject.unit.extra.BitLoader;
@@ -24,16 +25,16 @@ public class ServiceDescriptor extends Descriptor {
 	 * コンストラクタ
 	 * @param descriptorLength
 	 */
-	public ServiceDescriptor(Bit8 descriptorLength) {
-		super(new Bit8(DescriptorType.service_descriptor.intValue()), descriptorLength);
+	public ServiceDescriptor(Bit8 descriptorLength, IDescriptorHolder holder) {
+		super(new Bit8(DescriptorType.service_descriptor.intValue()), descriptorLength, holder);
 		// typeだけ1に設定しておく。
 		serviceType = new Bit8(1);
 	}
 	/**
 	 * コンストラクタ
 	 */
-	public ServiceDescriptor() {
-		super(new Bit8(DescriptorType.service_descriptor.intValue()));
+	public ServiceDescriptor(IDescriptorHolder holder) {
+		super(new Bit8(DescriptorType.service_descriptor.intValue()), holder);
 		serviceType = new Bit8(1);
 	}
 	/**
@@ -47,6 +48,7 @@ public class ServiceDescriptor extends Descriptor {
 		serviceName = name;
 		serviceNameLength = new Bit8(name.length());
 		setDescriptorLength(new Bit8(3 + providerName.length() + name.length()));
+		updateSize();
 	}
 	public String getProviderName() {
 		return serviceProviderName;

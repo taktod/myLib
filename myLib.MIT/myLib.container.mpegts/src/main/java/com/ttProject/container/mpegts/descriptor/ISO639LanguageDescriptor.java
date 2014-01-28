@@ -1,5 +1,6 @@
 package com.ttProject.container.mpegts.descriptor;
 
+import com.ttProject.container.mpegts.field.IDescriptorHolder;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit24;
@@ -13,14 +14,14 @@ public class ISO639LanguageDescriptor extends Descriptor {
 	 * コンストラクタ(解析用)
 	 * @param descriptorLength
 	 */
-	public ISO639LanguageDescriptor(Bit8 descriptorLength) {
-		super(new Bit8(DescriptorType.ISO_639_language_descriptor.intValue()), descriptorLength);
+	public ISO639LanguageDescriptor(Bit8 descriptorLength, IDescriptorHolder holder) {
+		super(new Bit8(DescriptorType.ISO_639_language_descriptor.intValue()), descriptorLength, holder);
 	}
 	/**
 	 * コンストラクタ(書き込み用)
 	 */
-	public ISO639LanguageDescriptor() {
-		super(new Bit8(DescriptorType.ISO_639_language_descriptor.intValue()));
+	public ISO639LanguageDescriptor(IDescriptorHolder holder) {
+		super(new Bit8(DescriptorType.ISO_639_language_descriptor.intValue()), holder);
 	}
 	public Bit24 getISO639LanguageCode() {
 		return ISO639LanguageCode;

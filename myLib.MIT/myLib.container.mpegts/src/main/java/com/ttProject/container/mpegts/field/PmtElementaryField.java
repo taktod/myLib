@@ -18,7 +18,7 @@ import com.ttProject.unit.extra.bit.Bit8;
  * pmtのelementaryStreamのデータ記述部
  * @author taktod
  */
-public class PmtElementaryField {
+public class PmtElementaryField implements IDescriptorHolder {
 	// あたらしくトラックをつくった場合の次のpid(TODO この部分を使い回せないおかげで、ちょっとした例外がでてしまった。staticをはずした方がよさそう。)
 	private Bit8  streamType   = new Bit8();
 	private Bit3  reserved1    = new Bit3();
@@ -105,10 +105,17 @@ public class PmtElementaryField {
 		bitLoader.load(streamType, reserved1, pid, reserved2, esInfoLength);
 		int size = esInfoLength.get();
 		while(size > 0) {
-			Descriptor descriptor = Descriptor.getDescriptor(ch);
+			Descriptor descriptor = Descriptor.getDescriptor(ch, this);
 			size -= descriptor.getDescriptorLength().get() + 2; // データ長 + データtype&length定義分
 			descriptors.add(descriptor);
 		}
+	}
+	/**
+	 * サイズを更新すべき場合の処理
+	 */
+	@Override
+	public void updateSize() {
+		
 	}
 	@Override
 	public String toString() {

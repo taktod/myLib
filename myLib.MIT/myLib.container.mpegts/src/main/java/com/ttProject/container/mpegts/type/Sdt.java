@@ -165,7 +165,7 @@ public class Sdt extends ProgramPacket {
 			}
 		}
 		if(targetDescriptor == null) {
-			targetDescriptor = new ServiceDescriptor();
+			targetDescriptor = new ServiceDescriptor(targetField);
 			targetField.addDescriptor(targetDescriptor);
 		}
 		targetDescriptor.setName(provider, name);

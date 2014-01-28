@@ -1,5 +1,6 @@
 package com.ttProject.container.mpegts.descriptor;
 
+import com.ttProject.container.mpegts.field.IDescriptorHolder;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
@@ -12,14 +13,14 @@ public class RegistrationDescriptor extends Descriptor {
 	 * コンストラクタ(解析系で利用する予定)
 	 * @param descriptorLength
 	 */
-	public RegistrationDescriptor(Bit8 descriptorLength) {
-		super(new Bit8(DescriptorType.registration_descriptor.intValue()), descriptorLength);
+	public RegistrationDescriptor(Bit8 descriptorLength, IDescriptorHolder holder) {
+		super(new Bit8(DescriptorType.registration_descriptor.intValue()), descriptorLength, holder);
 	}
 	/**
 	 * コンストラクタ(書き込み系で利用)
 	 */
-	public RegistrationDescriptor() {
-		super(new Bit8(DescriptorType.registration_descriptor.intValue()));
+	public RegistrationDescriptor(IDescriptorHolder holder) {
+		super(new Bit8(DescriptorType.registration_descriptor.intValue()), holder);
 	}
 	public String getFormatIdentifier() {
 		return formatIdentifier;

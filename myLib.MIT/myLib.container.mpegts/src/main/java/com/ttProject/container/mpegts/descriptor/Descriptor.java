@@ -3,6 +3,7 @@ package com.ttProject.container.mpegts.descriptor;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ttProject.container.mpegts.field.IDescriptorHolder;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit;
 import com.ttProject.unit.extra.BitLoader;
@@ -17,16 +18,24 @@ public abstract class Descriptor {
 	private final Bit8 descriptorTag; // これは固定
 	/** 保持データ量 */
 	private Bit8 descriptorLength = new Bit8(); // これは可変っていうか、設定データによって変わる。
+	/** descriptorを保持しているオブジェクト */
+	private IDescriptorHolder holder = null;
 	/**
 	 * コンストラクタ
 	 * @param tag
 	 * @param length
 	 */
-	public Descriptor(Bit8 tag, Bit8 length) {
-		this(tag);
+	public Descriptor(Bit8 tag, Bit8 length, IDescriptorHolder holder) {
+		this(tag, holder);
 		descriptorLength = length;
+		this.holder = holder;
 	}
-	public Descriptor(Bit8 tag) {
+	/**
+	 * コンストラクタ
+	 * @param tag
+	 * @param holder
+	 */
+	public Descriptor(Bit8 tag, IDescriptorHolder holder) {
 		descriptorTag = tag;
 	}
 	/**
@@ -57,6 +66,9 @@ public abstract class Descriptor {
 	public int getSize() {
 		return descriptorLength.get() + 2; // タグの設定長さ + tag&lengthBit
 	}
+	public void updateSize() {
+		holder.updateSize();
+	}
 	public List<Bit> getBits() {
 		List<Bit> list = new ArrayList<Bit>();
 		list.add(descriptorTag);
@@ -69,7 +81,7 @@ public abstract class Descriptor {
 	 * @return
 	 * @throws Exception
 	 */
-	public static Descriptor getDescriptor(IReadChannel channel) throws Exception {
+	public static Descriptor getDescriptor(IReadChannel channel, IDescriptorHolder holder) throws Exception {
 		// 先頭のデータを読み込んでTagがなんであるかみておく。
 		Bit8 descriptorTag = new Bit8();
 		Bit8 descriptorLength = new Bit8();
@@ -77,15 +89,15 @@ public abstract class Descriptor {
 		bitLoader.load(descriptorTag, descriptorLength);
 		switch(DescriptorType.getType(descriptorTag.get())) {
 		case registration_descriptor:
-			RegistrationDescriptor registrationDescriptor = new RegistrationDescriptor(descriptorLength);
+			RegistrationDescriptor registrationDescriptor = new RegistrationDescriptor(descriptorLength, holder);
 			registrationDescriptor.load(channel);
 			return registrationDescriptor;
 		case ISO_639_language_descriptor:
-			ISO639LanguageDescriptor iso639LanguageDescriptor = new ISO639LanguageDescriptor(descriptorLength);
+			ISO639LanguageDescriptor iso639LanguageDescriptor = new ISO639LanguageDescriptor(descriptorLength, holder);
 			iso639LanguageDescriptor.load(channel);
 			return iso639LanguageDescriptor;
 		case service_descriptor:
-			ServiceDescriptor serviceDescriptor = new ServiceDescriptor(descriptorLength);
+			ServiceDescriptor serviceDescriptor = new ServiceDescriptor(descriptorLength, holder);
 			serviceDescriptor.load(channel);
 			return serviceDescriptor;
 		default: // 知らないデータは放置しておく
