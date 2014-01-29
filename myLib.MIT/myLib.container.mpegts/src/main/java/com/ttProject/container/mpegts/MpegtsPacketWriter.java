@@ -137,6 +137,7 @@ public class MpegtsPacketWriter implements IWriter {
 			}
 			pesMap.put(trackId, pes);
 		}
+		// TODO frameからpesを作成する部分は、別のクラスにしておいた方が扱いやすいかも・・・
 		// pesにデータを当てはめていく必要がある。(multiFrameでsliceIDRが2番目以降である可能性も一応ある。)
 		if(frame instanceof SliceIDR) {
 			if(sps == null) {
