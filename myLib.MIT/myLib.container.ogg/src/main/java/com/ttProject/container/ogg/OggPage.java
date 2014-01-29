@@ -1,7 +1,6 @@
 package com.ttProject.container.ogg;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +59,7 @@ public abstract class OggPage extends Container {
 			Bit1 logicStartFlag,
 			Bit1 logicEndFlag,
 			Bit5 zeroFill) {
-		this.syncString = new Bit32(('O' << 24) | ('g' << 16) | ('g' << 8) | 'S');
+		this.syncString = new Bit32('O' | ('g' << 8) | ('g' << 16) | ('S' << 24));
 		this.version = version;
 		this.zeroFill = zeroFill;
 		this.logicEndFlag = logicEndFlag;
@@ -104,12 +103,10 @@ public abstract class OggPage extends Container {
 			segmentSizeList.add(new Bit8(frame.getSize()));
 		}
 		logger.info("headerSize:" + (27 + segmentCount.get()));
-		ByteBuffer result = ByteBuffer.allocate(27 + segmentCount.get());
-		result.order(ByteOrder.LITTLE_ENDIAN);
-		BitConnector connector = new BitConnector();
 		// こっちのコネクターもlittleEndian化しておきたい。
-/*		connector.setLittleEndianFlg(true);
-		connector.feed(syncString, packetContinurousFlag, logicStartFlag, logicEndFlag, zeroFill, version,
+		BitConnector connector = new BitConnector();
+		connector.setLittleEndianFlg(true);
+		connector.feed(syncString, version, packetContinurousFlag, logicStartFlag, logicEndFlag, zeroFill, 
 				absoluteGranulePosition, streamSerialNumber, pageSequenceNo, pageChecksum, segmentCount);
 		int size = 0;
 		for(Bit8 bit : segmentSizeList) {
@@ -118,7 +115,11 @@ public abstract class OggPage extends Container {
 		}
 		super.setSize(27 + segmentCount.get() + size);
 		logger.info("dataSize:" + getSize());
-		return connector.connect();*/
+		return connector.connect();// */
+/*
+		ByteBuffer result = ByteBuffer.allocate(27 + segmentCount.get());
+		result.order(ByteOrder.LITTLE_ENDIAN);
+		BitConnector connector = new BitConnector();
 		result.put(connector.connect(
 				syncString, version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag
 		));
@@ -140,7 +141,7 @@ public abstract class OggPage extends Container {
 		super.setSize(result.remaining() + size);
 		logger.info("dataSize:" + (result.remaining() + size));
 		
-		return result;
+		return result;// */
 	}
 	/**
 	 * 内部保持segmentSizeリストの参照
