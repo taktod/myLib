@@ -59,7 +59,7 @@ public class SliceIDR extends H264Frame {
 		picParameterSetId = new Ueg();
 		loader.load(firstMbInSlice, sliceType, picParameterSetId);
 		extraBit = loader.getExtraBit();
-		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
+		buffer = BufferUtil.safeRead(channel, getSize() - channel.position());
 		super.update();
 	}
 	/**
