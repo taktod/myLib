@@ -70,6 +70,12 @@ public class Slice extends H264Frame {
 				connector.connect(firstMbInSlice, sliceType, picParameterSetId, extraBit),
 				buffer));
 	}
+	public int getFirstMbInSlice() throws Exception {
+		if(firstMbInSlice == null) {
+			throw new Exception("firstMbInSliceがnullでした。loadを実行してください");
+		}
+		return firstMbInSlice.get();
+	}
 	/**
 	 * {@inheritDoc}
 	 */

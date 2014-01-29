@@ -39,6 +39,12 @@ public class SliceIDR extends H264Frame {
 		super(forbiddenZeroBit, nalRefIdc, type);
 		super.setKeyFrame(true);
 	}
+	public int getFirstMbInSlice() throws Exception {
+		if(firstMbInSlice == null) {
+			throw new Exception("firstMbInSliceがnullでした。loadを実行してください");
+		}
+		return firstMbInSlice.get();
+	}
 	/**
 	 * {@inheritDoc}
 	 */
