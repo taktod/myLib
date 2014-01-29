@@ -6,9 +6,13 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.Bit;
+import com.ttProject.unit.extra.BitConnector;
+import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit5;
+import com.ttProject.unit.extra.bit.Ueg;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -19,6 +23,10 @@ public class SliceIDR extends H264Frame {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(SliceIDR.class);
+	private Ueg firstMbInSlice    = null;
+	private Ueg sliceType         = null;
+	private Ueg picParameterSetId = null;
+	private Bit extraBit          = null;
 	/** データ */
 	private ByteBuffer buffer = null;
 	/**
@@ -45,6 +53,12 @@ public class SliceIDR extends H264Frame {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
+		BitLoader loader = new BitLoader(channel);
+		firstMbInSlice    = new Ueg();
+		sliceType         = new Ueg();
+		picParameterSetId = new Ueg();
+		loader.load(firstMbInSlice, sliceType, picParameterSetId);
+		extraBit = loader.getExtraBit();
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
 		super.update();
 	}
@@ -56,7 +70,9 @@ public class SliceIDR extends H264Frame {
 		if(buffer == null) {
 			throw new Exception("データ実体が読み込まれていません");
 		}
+		BitConnector connector = new BitConnector();
 		setData(BufferUtil.connect(getTypeBuffer(),
+				connector.connect(firstMbInSlice, sliceType, picParameterSetId, extraBit),
 				buffer));
 	}
 	/**
