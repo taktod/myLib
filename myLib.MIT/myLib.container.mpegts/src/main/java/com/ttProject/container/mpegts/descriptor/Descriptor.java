@@ -28,7 +28,6 @@ public abstract class Descriptor {
 	public Descriptor(Bit8 tag, Bit8 length, IDescriptorHolder holder) {
 		this(tag, holder);
 		descriptorLength = length;
-		this.holder = holder;
 	}
 	/**
 	 * コンストラクタ
@@ -37,6 +36,7 @@ public abstract class Descriptor {
 	 */
 	public Descriptor(Bit8 tag, IDescriptorHolder holder) {
 		descriptorTag = tag;
+		this.holder = holder;
 	}
 	/**
 	 * タグ参照
