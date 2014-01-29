@@ -29,11 +29,11 @@ public abstract class OggPage extends Container {
 	public static final String capturePattern = "OggS"; // 固定のはず
 
 	private final Bit32 syncString;
-	private final Bit8  version;
-	private final Bit5  zeroFill;
-	private final Bit1  logicEndFlag;
-	private final Bit1  logicStartFlag;
 	private final Bit1  packetContinurousFlag;
+	private final Bit1  logicStartFlag;
+	private final Bit1  logicEndFlag;
+	private final Bit5  zeroFill;
+	private final Bit8  version;
 
 	// ここから先はminimumLoadで実行すればよい bit数に書き直したいけど、littleEndianの取り扱いが微妙
 	// でもこの部分はbyteが逆向きではいっているので、Bit動作としては、ただしくない動作になってしまう。
@@ -55,9 +55,11 @@ public abstract class OggPage extends Container {
 	 * @param logicStartFlag
 	 * @param packetContinurousFlag
 	 */
-	public OggPage(Bit8 version, Bit5 zeroFill,
-			Bit1 logicEndFlag, Bit1 logicStartFlag,
-			Bit1 packetContinurousFlag) {
+	public OggPage(Bit8 version,
+			Bit1 packetContinurousFlag,
+			Bit1 logicStartFlag,
+			Bit1 logicEndFlag,
+			Bit5 zeroFill) {
 		this.syncString = new Bit32(('O' << 24) | ('g' << 16) | ('g' << 8) | 'S');
 		this.version = version;
 		this.zeroFill = zeroFill;

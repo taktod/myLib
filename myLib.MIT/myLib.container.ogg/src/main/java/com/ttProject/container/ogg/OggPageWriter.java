@@ -71,7 +71,7 @@ public class OggPageWriter implements IWriter {
 		logger.info("フレーム追加:" + frame);
 		OggPage targetPage = null;
 		if(pageMap.get(trackId) == null) {
-			targetPage = new StartPage(new Bit8(), new Bit5(),new Bit1(), new Bit1(1), new Bit1());
+			targetPage = new StartPage(new Bit8(), new Bit1(), new Bit1(1), new Bit1(), new Bit5());
 			targetPage.setStreamSerialNumber(trackId);
 			pageMap.put(trackId, targetPage);
 		}
@@ -130,7 +130,7 @@ public class OggPageWriter implements IWriter {
 		outputChannel.write(page.getData());
 		int lastSequenceNo = page.getPageSequenceNo();
 		// 次のpageMapを設定しておく。
-		page = new Page(new Bit8(), new Bit5(), new Bit1(), new Bit1(), new Bit1());
+		page = new Page(new Bit8(), new Bit1(), new Bit1(), new Bit1(), new Bit5());
 		page.setStreamSerialNumber(trackId);
 		page.setPageSequenceNo(lastSequenceNo + 1);
 		pageMap.put(trackId, page);

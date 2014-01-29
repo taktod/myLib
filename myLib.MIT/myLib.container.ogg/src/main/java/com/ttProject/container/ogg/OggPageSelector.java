@@ -42,21 +42,22 @@ public class OggPageSelector implements ISelector {
 		}
 		// 次のbit8とbit5 bit1 bit1を取得する。
 		Bit8 version = new Bit8();
-		Bit5 zeroFill = new Bit5();
-		Bit1 logicEndFlag = new Bit1();
-		Bit1 logicStartFlag = new Bit1();
 		Bit1 packetContinurousFlag = new Bit1();
+		Bit1 logicStartFlag = new Bit1();
+		Bit1 logicEndFlag = new Bit1();
+		Bit5 zeroFill = new Bit5();
 		BitLoader loader = new BitLoader(channel);
-		loader.load(version, zeroFill,
-				logicEndFlag, logicStartFlag,
-				packetContinurousFlag);
+		loader.setLittleEndianFlg(true);
+		loader.load(version, packetContinurousFlag,
+				logicStartFlag, logicEndFlag, zeroFill
+				);
 		// 必要なpage作成
 		OggPage page = null;
 		if(logicStartFlag.get() == 1) {
-			page = new StartPage(version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag);
+			page = new StartPage(version, packetContinurousFlag, logicStartFlag, logicEndFlag, zeroFill);
 		}
 		else {
-			page = new Page(version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag);
+			page = new Page(version, packetContinurousFlag, logicStartFlag, logicEndFlag, zeroFill);
 		}
 		page.minimumLoad(channel);
 		if(page instanceof StartPage) {

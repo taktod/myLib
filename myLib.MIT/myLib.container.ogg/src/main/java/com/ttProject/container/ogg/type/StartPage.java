@@ -41,10 +41,12 @@ public class StartPage extends OggPage {
 	 * @param logicStartFlag
 	 * @param packetContinurousFlag
 	 */
-	public StartPage(Bit8 version, Bit5 zeroFill,
-			Bit1 logicEndFlag, Bit1 logicStartFlag,
-			Bit1 packetContinurousFlag) {
-		super(version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag);
+	public StartPage(Bit8 version,
+			Bit1 packetContinurousFlag,
+			Bit1 logicStartFlag,
+			Bit1 logicEndFlag,
+			Bit5 zeroFill) {
+		super(version, packetContinurousFlag, logicStartFlag, logicEndFlag, zeroFill);
 	}
 	/**
 	 * {@inheritDoc}
