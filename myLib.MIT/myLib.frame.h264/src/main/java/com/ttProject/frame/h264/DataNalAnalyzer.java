@@ -1,5 +1,7 @@
 package com.ttProject.frame.h264;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
@@ -12,6 +14,9 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class DataNalAnalyzer extends VideoAnalyzer {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(DataNalAnalyzer.class);
 	/**
 	 * コンストラクタ
 	 */
