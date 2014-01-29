@@ -107,6 +107,7 @@ public abstract class OggPage extends Container {
 		ByteBuffer result = ByteBuffer.allocate(27 + segmentCount.get());
 		result.order(ByteOrder.LITTLE_ENDIAN);
 		BitConnector connector = new BitConnector();
+		// こっちのコネクターもlittleEndian化しておきたい。
 		result.put(connector.connect(
 				syncString, version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag
 		));
