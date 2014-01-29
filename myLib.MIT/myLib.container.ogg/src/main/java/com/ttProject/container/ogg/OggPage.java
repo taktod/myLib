@@ -108,6 +108,17 @@ public abstract class OggPage extends Container {
 		result.order(ByteOrder.LITTLE_ENDIAN);
 		BitConnector connector = new BitConnector();
 		// こっちのコネクターもlittleEndian化しておきたい。
+/*		connector.setLittleEndianFlg(true);
+		connector.feed(syncString, packetContinurousFlag, logicStartFlag, logicEndFlag, zeroFill, version,
+				absoluteGranulePosition, streamSerialNumber, pageSequenceNo, pageChecksum, segmentCount);
+		int size = 0;
+		for(Bit8 bit : segmentSizeList) {
+			connector.feed(bit);
+			size += bit.get();
+		}
+		super.setSize(27 + segmentCount.get() + size);
+		logger.info("dataSize:" + getSize());
+		return connector.connect();*/
 		result.put(connector.connect(
 				syncString, version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag
 		));
@@ -128,6 +139,7 @@ public abstract class OggPage extends Container {
 		result.flip();
 		super.setSize(result.remaining() + size);
 		logger.info("dataSize:" + (result.remaining() + size));
+		
 		return result;
 	}
 	/**

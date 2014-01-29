@@ -68,7 +68,7 @@ public class FlvToTest {
 	 * oggにコンバートする(speex)
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void ogg() throws Exception {
 		OggPageWriter writer = new OggPageWriter("output.ogg");
 		logger.info("oggに変換する動作テスト");
