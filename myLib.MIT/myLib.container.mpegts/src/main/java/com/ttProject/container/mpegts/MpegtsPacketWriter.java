@@ -156,6 +156,7 @@ public class MpegtsPacketWriter implements IWriter {
 		else if(frame instanceof Slice) {
 			pes.addFrame(new AccessUnitDelimiter());
 			pes.addFrame(frame);
+			// 次のあてがわれたsliceの
 			// frameはここまで
 			writeMpegtsPacket(pes);
 			pesMap.remove(trackId);
