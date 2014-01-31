@@ -6,13 +6,13 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.aac.AacFrame;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
 import com.ttProject.frame.aac.type.Frame;
-import com.ttProject.frame.adpcmswf.AdpcmswfFrame;
 import com.ttProject.frame.flv1.Flv1Frame;
 import com.ttProject.frame.flv1.type.DisposableInterFrame;
 import com.ttProject.frame.h264.ConfigData;
@@ -21,14 +21,9 @@ import com.ttProject.frame.h264.type.PictureParameterSet;
 import com.ttProject.frame.h264.type.SequenceParameterSet;
 import com.ttProject.frame.h264.type.Slice;
 import com.ttProject.frame.h264.type.SliceIDR;
-import com.ttProject.frame.mp3.Mp3Frame;
-import com.ttProject.frame.nellymoser.NellymoserFrame;
-import com.ttProject.frame.speex.SpeexFrame;
 import com.ttProject.frame.vp6.Vp6Frame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.unit.extra.BitConnector;
-import com.ttProject.unit.extra.bit.Bit1;
-import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit24;
 import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit4;
@@ -70,180 +65,22 @@ public class FrameToFlvTagConverter {
 	 */
 	private List<FlvTag> getAudioTags(AudioFrame frame) throws Exception {
 		List<FlvTag> result = new ArrayList<FlvTag>();
-		ByteBuffer frameBuffer = null;
+		// aacの場合はmshチェックをしておく
 		if(frame instanceof AacFrame) {
-			Bit8 sequenceHeaderFlag = new Bit8();
-			BitConnector connector = new BitConnector();
-			// aacではdecoderSpecificInfoの調整を実施する必要あり
 			Frame aacFrame = (Frame) frame;
 			DecoderSpecificInfo dsi = aacFrame.getDecoderSpecificInfo();
-			// 新規にdecoderSpecificInfoの追記が必要
 			if(this.dsi == null || this.dsi.getData().compareTo(dsi.getData()) != 0) {
 				this.dsi = dsi;
-				sequenceHeaderFlag.set(0);
-				frameBuffer = BufferUtil.connect(
-						connector.connect(sequenceHeaderFlag),
-						dsi.getData()
-				);
-				result.add(getAudioTag(frame, frameBuffer));
+				AudioTag audioTag = new AudioTag();
+				audioTag.setAacMediaSequenceHeader(aacFrame, dsi);
+				result.add(audioTag);
 			}
-			// 通常のframe
-			sequenceHeaderFlag.set(1);
-			ByteBuffer frameData = frame.getData();
-			frameData.position(7);
-			frameBuffer = BufferUtil.connect(
-					connector.connect(sequenceHeaderFlag),
-					frameData
-			);
 		}
-		else if(frame instanceof Mp3Frame) {
-			frameBuffer = frame.getData();
-		}
-		else if(frame instanceof NellymoserFrame) {
-			frameBuffer = frame.getData();
-		}
-		else if(frame instanceof SpeexFrame) {
-			frameBuffer = frame.getData();
-		}
-		else if(frame instanceof AdpcmswfFrame) {
-			frameBuffer = frame.getData();
-		}
-		else {
-			throw new Exception("未対応なaudioFrameでした:" + frame);
-		}
-		result.add(getAudioTag(frame, frameBuffer));
-		// audioTagを読み込ませます。
+		// audioTagをつくっておく
+		AudioTag audioTag = new AudioTag();
+		audioTag.addFrame(frame);
+		result.add(audioTag);
 		return result;
-	}
-	/**
-	 * frameと保存するデータからaudioTagを作成して応答します。
-	 * @param frame
-	 * @param buffer
-	 * @return
-	 * @throws Exception
-	 */
-	private FlvTag getAudioTag(AudioFrame frame, ByteBuffer buffer) throws Exception {
-		Bit8  tagType      = new Bit8(0x08);
-		Bit24 size         = new Bit24();
-		Bit24 timestamp    = new Bit24();
-		Bit8  timestampExt = new Bit8();
-		Bit24 streamId     = new Bit24();
-		Bit4  codecId      = null;
-		Bit2  sampleRate   = null;
-		Bit1  bitCount     = null;
-		Bit1  channels     = null;
-		Bit32 preSize      = new Bit32();
-		// codecIdと拡張データについて調整しておく必要あり。
-		codecId = new Bit4();
-		if(frame instanceof AacFrame) {
-			codecId.set(CodecType.getAudioCodecNum(CodecType.AAC));
-		}
-		else if(frame instanceof Mp3Frame) {
-			if(frame.getSampleRate() == 8000) {
-				// mp3 8はデータが手元にないので、どうなるかわからない。
-				// とりあえず0xD2にでもしておくか・・・
-				codecId.set(CodecType.getAudioCodecNum(CodecType.MP3_8));
-				sampleRate = new Bit2();
-			}
-			else {
-				codecId.set(CodecType.getAudioCodecNum(CodecType.MP3));
-			}
-		}
-		else if(frame instanceof NellymoserFrame) {
-			if(frame.getSampleRate() == 16000) {
-				// nelly16 0x42
-				codecId.set(CodecType.getAudioCodecNum(CodecType.NELLY_16));
-				sampleRate = new Bit2();
-			}
-			else if(frame.getSampleRate() == 8000) {
-				// nelly8の場合0x52になる。
-				codecId.set(CodecType.getAudioCodecNum(CodecType.NELLY_8));
-				sampleRate = new Bit2();
-			}
-			else {
-				codecId.set(CodecType.getAudioCodecNum(CodecType.NELLY));
-			}
-		}
-		else if(frame instanceof SpeexFrame) {
-			// 0xB6みたい。
-			codecId.set(CodecType.getAudioCodecNum(CodecType.SPEEX));
-			if(frame.getSampleRate() != 16000) {
-				throw new Exception("speexのsampleRateは16kHzのみサポートします。");
-			}
-			if(frame.getChannel() == 1) {
-				throw new Exception("speexはmonoralのみサポートします。");
-			}
-			sampleRate = new Bit2(1);
-		}
-		else if(frame instanceof AdpcmswfFrame) {
-			codecId.set(CodecType.getAudioCodecNum(CodecType.ADPCM));
-		}
-		else {
-			throw new Exception("未対応なaudioFrameでした:" + frame);
-		}
-		if(channels == null) {
-			channels = new Bit1();
-			switch(frame.getChannel()) {
-			case 1:
-				channels.set(0);
-				break;
-			case 2:
-				channels.set(1);
-				break;
-			default:
-				throw new Exception("音声チャンネル数がflvに適合しないものでした。");
-			}
-		}
-		if(bitCount == null) {
-			bitCount = new Bit1();
-			switch(frame.getBit()) {
-			case 8:
-				bitCount.set(0);
-				break;
-			case 16:
-				bitCount.set(1);
-				break;
-			default:
-				// bit深度情報はもっていないコンテナもあるみたいです。(というか基本的に圧縮データにbit深度という情報はないみたい。(復元したらどうなるか・・・の問題っぽい。))
-				bitCount.set(1);
-//				throw new Exception("ビット深度が適合しないものでした。:" + frame.getBit());
-			}
-		}
-		if(sampleRate == null) {
-			sampleRate = new Bit2();
-			switch((int)(frame.getSampleRate() / 100)) {
-			case 55:
-				sampleRate.set(0);
-				break;
-			case 110:
-				sampleRate.set(1);
-				break;
-			case 220:
-				sampleRate.set(2);
-				break;
-			case 441:
-				sampleRate.set(3);
-				break;
-			default:
-				throw new Exception("frameRateが適合しないものでした。");
-			}
-		}
-		BitConnector connector = new BitConnector();
-		ByteBuffer mediaData = BufferUtil.connect(
-				connector.connect(codecId, sampleRate, bitCount, channels),
-				buffer);
-		size.set(mediaData.remaining());
-		preSize.set(size.get() + 11);
-		int time = (int)(frame.getPts() * 1000 / frame.getTimebase());
-		timestamp.set(time & 0x00FFFFFF);
-		timestampExt.set(time >> 24);
-		ByteBuffer tagBuffer = BufferUtil.connect(
-				connector.connect(tagType, size, timestamp, timestampExt, streamId),
-				mediaData,
-				connector.connect(preSize));
-		ByteReadChannel channel = new ByteReadChannel(tagBuffer);
-		FlvTag tag = (FlvTag)reader.read(channel);
-		return tag;
 	}
 	/**
 	 * 映像フレームについて処理します
