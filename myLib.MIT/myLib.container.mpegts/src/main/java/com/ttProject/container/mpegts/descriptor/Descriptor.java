@@ -67,7 +67,9 @@ public abstract class Descriptor {
 		return descriptorLength.get() + 2; // タグの設定長さ + tag&lengthBit
 	}
 	public void updateSize() {
-		holder.updateSize();
+		if(holder != null) {
+			holder.updateSize();
+		}
 	}
 	public List<Bit> getBits() {
 		List<Bit> list = new ArrayList<Bit>();
