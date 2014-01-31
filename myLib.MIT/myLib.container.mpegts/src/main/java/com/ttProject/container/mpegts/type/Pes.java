@@ -291,6 +291,8 @@ public class Pes extends MpegtsPacket {
 		else {
 			throw new Exception("frameのデータに不明なデータがはいりました。");
 		}
+		// TODO このタイミングでupdateフラグを更新しておかないと、フレームを追加したときに、データがきちんととれないみたいです。
+		super.update();
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
