@@ -139,14 +139,6 @@ public class VideoTag extends FlvTag {
 		}
 	}
 	/**
-	 * tagByte以下の部分の読み込みを実行する動作
-	 * @param channel
-	 * @throws Exception
-	 */
-	public void tagLoad(IReadChannel channel) throws Exception {
-		
-	}
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
