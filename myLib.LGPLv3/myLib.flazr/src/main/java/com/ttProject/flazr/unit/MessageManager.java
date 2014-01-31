@@ -28,6 +28,10 @@ import com.ttProject.unit.extra.bit.Bit8;
 /**
  * flazrのflvAtomからmyLib.container.flvのflvTagを取り出す動作
  * @author taktod
+ * 
+ * memo このプログラムでは、いちいちFlvTag用のByteStreamをつくってから、FlvTagを構築しています。
+ * 直接frameを抜き出すこともできますが、FlvTag化しても対した違いはないと思うので、このままおいときます。
+ * aggregateMessageとvideo、audioの違いを吸収するの面倒でもある。
  */
 public class MessageManager {
 	/** ロガー */
@@ -43,15 +47,12 @@ public class MessageManager {
 	public FlvTag getTag(RtmpMessage message) throws Exception {
 		RtmpHeader header = message.getHeader();
 		if(header.isAggregate()) {
-//			logger.info("aggregateMessage");
 			return convertToAggregateTag(message);
 		}
 		else if(header.isAudio()) {
-//			logger.info("audio");
 			return convertToAudioTag((Audio)message);
 		}
 		else if(header.isVideo()) {
-//			logger.info("video");
 			return convertToVideoTag((Video)message);
 		}
 		else if(message instanceof MetadataAmf3) {
