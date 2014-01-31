@@ -27,7 +27,7 @@ public abstract class OggPage extends Container {
 	private Logger logger = Logger.getLogger(OggPage.class);
 	public static final String capturePattern = "OggS"; // 固定のはず
 
-	private final Bit32 syncString;
+//	private final Bit32 syncString;
 	private final Bit1  packetContinurousFlag;
 	private final Bit1  logicStartFlag;
 	private final Bit1  logicEndFlag;
@@ -59,7 +59,7 @@ public abstract class OggPage extends Container {
 			Bit1 logicStartFlag,
 			Bit1 logicEndFlag,
 			Bit5 zeroFill) {
-		this.syncString = new Bit32('O' | ('g' << 8) | ('g' << 16) | ('S' << 24));
+//		this.syncString = new Bit32('O' | ('g' << 8) | ('g' << 16) | ('S' << 24));
 		this.version = version;
 		this.zeroFill = zeroFill;
 		this.logicEndFlag = logicEndFlag;
@@ -106,7 +106,7 @@ public abstract class OggPage extends Container {
 		// こっちのコネクターもlittleEndian化しておきたい。
 		BitConnector connector = new BitConnector();
 		connector.setLittleEndianFlg(true);
-		connector.feed(syncString, version, packetContinurousFlag, logicStartFlag, logicEndFlag, zeroFill, 
+		connector.feed(new Bit8('O'), new Bit8('g'), new Bit8('g'), new Bit8('S'), version, packetContinurousFlag, logicStartFlag, logicEndFlag, zeroFill, 
 				absoluteGranulePosition, streamSerialNumber, pageSequenceNo, pageChecksum, segmentCount);
 		int size = 0;
 		for(Bit8 bit : segmentSizeList) {
