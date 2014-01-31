@@ -11,6 +11,7 @@ import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.h264.ConfigData;
+import com.ttProject.frame.h264.DataNalAnalyzer;
 import com.ttProject.frame.h264.H264FrameSelector;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -43,8 +44,9 @@ public class VideoTag extends FlvTag {
 
 	private ByteBuffer frameBuffer = null; // フレームデータ
 	private ByteBuffer alphaData   = null; // vp6a用のalphaデータ
-	private IVideoFrame   frame = null; // 動作対象フレーム
+	private IVideoFrame   frame         = null; // 動作対象フレーム
 	private VideoAnalyzer frameAnalyzer = null;
+	private boolean frameAppendFlag     = false; // フレームが追加されたことを検知するフラグ
 	/**
 	 * コンストラクタ
 	 * @param tagType
@@ -78,6 +80,9 @@ public class VideoTag extends FlvTag {
 				channel.position(getPosition() + 16);
 				frameBuffer = BufferUtil.safeRead(channel, getSize() - 16 - 4);
 				if(packetType.get() == 0) {
+					if(frameAnalyzer == null || !(frameAnalyzer instanceof DataNalAnalyzer)) {
+						throw new Exception("h264解析用のNalAnalyzerが設定されていません。");
+					}
 					// mshの場合はconfigDataを構築しておく。
 					ConfigData configData = new ConfigData();
 					configData.setSelector((H264FrameSelector)frameAnalyzer.getSelector());
@@ -168,7 +173,7 @@ public class VideoTag extends FlvTag {
 	 * frame用buffer参照
 	 * @return
 	 */
-	private ByteBuffer getFrameBuffer() {
+	private ByteBuffer getFrameBuffer() throws Exception {
 		if(frameBuffer == null) {
 			// frameから復元する必要あり。
 		}
