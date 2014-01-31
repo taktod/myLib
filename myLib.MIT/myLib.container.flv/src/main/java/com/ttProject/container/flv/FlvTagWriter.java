@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
+import com.ttProject.container.flv.type.AudioTag;
+import com.ttProject.container.flv.type.VideoTag;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
@@ -82,6 +84,14 @@ public class FlvTagWriter implements IWriter {
 	@Override
 	public void prepareTailer() throws Exception {
 		logger.info("tailerを準備します。");
+		AudioTag audioTag = frameConverter.getRemainAudioTag();
+		if(audioTag != null) {
+			outputChannel.write(audioTag.getData());
+		}
+		VideoTag videoTag = frameConverter.getRemainVideoTag();
+		if(videoTag != null) {
+			outputChannel.write(videoTag.getData());
+		}
 		// h264の場合はend tagをいれた方がよい。
 		if(outputStream != null) {
 			try {

@@ -16,7 +16,9 @@ import com.ttProject.frame.aac.type.Frame;
 import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.frame.h264.type.PictureParameterSet;
 import com.ttProject.frame.h264.type.SequenceParameterSet;
+import com.ttProject.frame.h264.type.Slice;
 import com.ttProject.frame.h264.type.SliceIDR;
+import com.ttProject.frame.h264.type.SupplementalEnhancementInformation;
 
 /**
  * frameデータからflvTagを生成して応答する変換動作
@@ -30,6 +32,10 @@ public class FrameToFlvTagConverter {
 	private DecoderSpecificInfo  dsi = null;
 	private SequenceParameterSet sps = null;
 	private PictureParameterSet  pps = null;
+	/** 前回の音声タグデータ */
+	private AudioTag audioTag = null;
+	/** 前回の映像タグデータ */
+	private VideoTag videoTag = null;
 	/**
 	 * FlvTagリストを取得します。
 	 * @return
@@ -78,6 +84,11 @@ public class FrameToFlvTagConverter {
 		List<FlvTag> result = new ArrayList<FlvTag>();
 		// h264の場合はmshのチェックを実施する
 		if(frame instanceof H264Frame) {
+			if(frame instanceof SupplementalEnhancementInformation) {
+				// ヌルポの原因になるので、いらない
+				return result;
+			}
+			// mshについて調整
 			if(frame instanceof SliceIDR) {
 				SliceIDR sliceIDR = (SliceIDR)frame;
 				if(sps == null || pps == null
@@ -94,11 +105,39 @@ public class FrameToFlvTagConverter {
 				// sps ppsが存在しない場合は処理しない。
 				return result;
 			}
+			if(frame instanceof Slice) {
+				Slice slice = (Slice)frame;
+				if(slice.getFirstMbInSlice() == 0) {
+					if(videoTag != null) {
+						result.add(videoTag);
+					}
+					videoTag = new VideoTag();
+				}
+				videoTag.addFrame(frame);
+			}
+			if(frame instanceof SliceIDR) {
+				SliceIDR sliceIDR = (SliceIDR)frame;
+				if(sliceIDR.getFirstMbInSlice() == 0) {
+					if(videoTag != null) {
+						result.add(videoTag);
+					}
+					videoTag = new VideoTag();
+				}
+				videoTag.addFrame(frame);
+			}
 		}
-		// videoTagをつくっておく
-		VideoTag videoTag = new VideoTag();
-		videoTag.addFrame(frame);
-		result.add(videoTag);
+		else {
+			// videoTagをつくっておく
+			videoTag = new VideoTag();
+			videoTag.addFrame(frame);
+			result.add(videoTag);
+		}
 		return result;
+	}
+	public VideoTag getRemainVideoTag() {
+		return videoTag;
+	}
+	public AudioTag getRemainAudioTag() {
+		return audioTag;
 	}
 }
