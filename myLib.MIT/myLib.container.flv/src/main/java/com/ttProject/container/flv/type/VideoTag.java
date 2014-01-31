@@ -256,14 +256,35 @@ public class VideoTag extends FlvTag {
 	 * @param frame
 	 */
 	public void addFrame(IVideoFrame tmpFrame) throws Exception {
-		// frameから各情報を復元しないとだめ
-		// 時間情報
-		// size情報
-		// streamId(0固定)
-		// tagデータ(frameType, codecId)
-		// (vp6,vp6a,h264の場合の特殊データ)
-		// frameデータ実体
-		// tail size
+		logger.info("フレームの追加が呼ばれました。");
+		if(tmpFrame == null) {
+			// 追加データがないなら、処理しない
+			return;
+		}
+		if(!(tmpFrame instanceof IVideoFrame)) {
+			throw new Exception("videoTagの追加バッファとして、videoFrame以外を受けとりました。");
+		}
+		frameAppendFlag = true;
+		if(frame == null) {
+			frame = tmpFrame;
+		}
+		else if(frame instanceof VideoMultiFrame) {
+			((VideoMultiFrame) frame).addFrame(tmpFrame);
+		}
+		else {
+			VideoMultiFrame multiFrame = new VideoMultiFrame();
+			multiFrame.addFrame(frame);
+			if(tmpFrame instanceof VideoMultiFrame) {
+				for(IVideoFrame vFrame : ((VideoMultiFrame) tmpFrame).getFrameList()) {
+					multiFrame.addFrame(vFrame);
+				}
+			}
+			else {
+				multiFrame.addFrame(tmpFrame);
+			}
+			frame = multiFrame;
+		}
+		super.update();
 	}
 	/**
 	 * mshであるかどうか応答
