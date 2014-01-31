@@ -228,7 +228,7 @@ public class FlvToTest {
 	 * flvからflameを抜き出して再度flvにします。
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void flv_mp3() throws Exception {
 		logger.info("flvに変換するテスト(mp3)");
 		FlvTagWriter writer = new FlvTagWriter("output_mp3.flv");
@@ -250,7 +250,7 @@ public class FlvToTest {
 	 * flvからflameを抜き出して再度flvにします。
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void flv_aac() throws Exception {
 		logger.info("flvに変換するテスト(aac)");
 		FlvTagWriter writer = new FlvTagWriter("output_aac.flv");
