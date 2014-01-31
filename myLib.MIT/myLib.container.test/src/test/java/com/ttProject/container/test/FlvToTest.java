@@ -272,7 +272,7 @@ public class FlvToTest {
 	 * flvからflameを抜き出して再度flvにします。
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void flv_flv1() throws Exception {
 		logger.info("flvに変換するテスト(flv1)");
 		FlvTagWriter writer = new FlvTagWriter("output_flv1.flv");
