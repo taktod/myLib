@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.List;
 
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -169,6 +170,27 @@ public class BufferUtil {
 	 * @return
 	 */
 	public static ByteBuffer connect(ByteBuffer ... buffers) {
+		int length = 0;
+		for(ByteBuffer buf : buffers) {
+			if(buf != null) {
+				length += buf.remaining();
+			}
+		}
+		ByteBuffer result = ByteBuffer.allocate(length);
+		for(ByteBuffer buf : buffers) {
+			if(buf != null) {
+				result.put(buf);
+			}
+		}
+		result.flip();
+		return result;
+	}
+	/**
+	 * 複数のByteBufferを結合する
+	 * @param buffers
+	 * @return
+	 */
+	public static ByteBuffer connect(List<ByteBuffer> buffers) {
 		int length = 0;
 		for(ByteBuffer buf : buffers) {
 			if(buf != null) {
