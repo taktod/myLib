@@ -246,10 +246,10 @@ public class VideoTag extends FlvTag {
 		return frame.getHeight();
 	}
 	/**
-	 * frameを設定する
+	 * frameを追加する
 	 * @param frame
 	 */
-	public void setFrame(IVideoFrame frame) throws Exception {
+	public void addFrame(IVideoFrame tmpFrame) throws Exception {
 		// frameから各情報を復元しないとだめ
 		// 時間情報
 		// size情報

@@ -275,10 +275,10 @@ public class AudioTag extends FlvTag {
 		return frame;
 	}
 	/**
-	 * frameを設定する
+	 * frameを追加する
 	 * @param frame
 	 */
-	public void setFrame(IAudioFrame frame) throws Exception {
+	public void addFrame(IAudioFrame tmpFrame) throws Exception {
 		logger.info("フレームの設定が呼び出されました。");
 		// frameから各情報を復元しないとだめ。
 		logger.info("frameの時間情報:" + frame.getPts());
