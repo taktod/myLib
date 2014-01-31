@@ -146,7 +146,11 @@ public class MpegtsPacketWriter implements IWriter {
 			if(pps == null) {
 				throw new Exception("ppsがない");
 			}
-			pes.addFrame(new AccessUnitDelimiter());
+			AccessUnitDelimiter aud = new AccessUnitDelimiter();
+			aud.setPts(frame.getPts());
+			aud.setTimebase(frame.getTimebase());
+			aud.setDts(((SliceIDR) frame).getDts());
+			pes.addFrame(aud);
 			pes.addFrame(sps);
 			pes.addFrame(pps);
 			pes.addFrame(frame);
@@ -155,7 +159,11 @@ public class MpegtsPacketWriter implements IWriter {
 			pesMap.remove(trackId);
 		}
 		else if(frame instanceof Slice) {
-			pes.addFrame(new AccessUnitDelimiter());
+			AccessUnitDelimiter aud = new AccessUnitDelimiter();
+			aud.setPts(frame.getPts());
+			aud.setTimebase(frame.getTimebase());
+			aud.setDts(((Slice) frame).getDts());
+			pes.addFrame(aud);
 			pes.addFrame(frame);
 			// 次のあてがわれたsliceの
 			// frameはここまで

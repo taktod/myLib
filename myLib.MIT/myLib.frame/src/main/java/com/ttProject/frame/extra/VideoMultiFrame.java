@@ -22,11 +22,13 @@ public class VideoMultiFrame extends VideoFrame {
 	 * @throws Exception
 	 */
 	public void addFrame(IVideoFrame frame) throws Exception {
-		setPts(frame.getPts());
-		setTimebase(frame.getTimebase());
+		// 縦横データは毎回一致すると思われるので上書きを繰り返す。
 		setWidth(frame.getWidth());
 		setHeight(frame.getHeight());
 		if(frameList.size() == 0) {
+			// 時間データを特定のデータにしたい場合は自分で追加しなおさなければならない
+			setPts(frame.getPts());
+			setTimebase(frame.getTimebase());
 			if(frame.isKeyFrame()) {
 				setKeyFrame(true);
 			}
