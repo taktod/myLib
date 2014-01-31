@@ -1,6 +1,8 @@
 package com.ttProject.container.flv.type;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -12,9 +14,13 @@ import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
 import com.ttProject.frame.aac.AacDsiFrameSelector;
+import com.ttProject.frame.aac.AacFrame;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
-import com.ttProject.frame.aac.type.Frame;
+import com.ttProject.frame.adpcmswf.AdpcmswfFrame;
 import com.ttProject.frame.extra.AudioMultiFrame;
+import com.ttProject.frame.mp3.Mp3Frame;
+import com.ttProject.frame.nellymoser.NellymoserFrame;
+import com.ttProject.frame.speex.SpeexFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitConnector;
@@ -24,7 +30,6 @@ import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtil;
 
 /**
  * 音声用のtag
@@ -44,6 +49,7 @@ public class AudioTag extends FlvTag {
 	private ByteBuffer    frameBuffer   = null;
 	private IAudioFrame   frame         = null;
 	private AudioAnalyzer frameAnalyzer = null;
+	private boolean       frameAppendFlag = false; // フレームが追加されたことを検知するフラグ
 	/**
 	 * コンストラクタ
 	 * @param tagType
@@ -147,7 +153,7 @@ public class AudioTag extends FlvTag {
 				channel.position(getPosition() + 13);
 				frameBuffer = BufferUtil.safeRead(channel, getSize() - 13 - 4);
 				if(sequenceHeaderFlag.get() == 0) {
-					if(!(frameAnalyzer instanceof AacDsiFrameAnalyzer)) {
+					if(frameAnalyzer == null || !(frameAnalyzer instanceof AacDsiFrameAnalyzer)) {
 						throw new Exception("frameAnalyzerがaac(dsi)対応ではないみたいです。");
 					}
 					DecoderSpecificInfo dsi = new DecoderSpecificInfo();
@@ -198,12 +204,136 @@ public class AudioTag extends FlvTag {
 		if(frameBuffer == null && frame == null) {
 			throw new Exception("データ更新の要求がありましたが、内容データが決定していません。");
 		}
+		ByteBuffer frameBuffer = null;
+		if(frameAppendFlag) {
+			// TODO このframe解析の部分は邪魔なので、別の関数にしたいですね。
+			// codecId, sampleRate, bitCount, channelsをframeから解析する必要があります。
+			IAudioFrame codecCheckFrame = frame;
+			if(frame instanceof AudioMultiFrame) {
+				// コーデック判定用の一番はじめのframeを参照しなければならない。
+				codecCheckFrame = ((AudioMultiFrame) frame).getFrameList().get(0); // 先頭のフレームがあればそれでよい
+			}
+			// 以下のデータはコーデック情報取得時に決定される可能性がある
+			sampleRate   = null;
+			bitCount     = null;
+			channels     = null;
+			int sizeEx = 0;
+			// コーデック判定
+			if(codecCheckFrame instanceof AacFrame) {
+				codecId.set(CodecType.getAudioCodecNum(CodecType.AAC));
+				sequenceHeaderFlag = new Bit8(1);
+				sizeEx = 1;
+			}
+			else if(codecCheckFrame instanceof Mp3Frame) {
+				if(frame.getSampleRate() == 8000) {
+					// mp3 8はデータが手元にないので、どうなるかわからない。
+					// とりあえず0xD2にでもしておくか・・・
+					codecId.set(CodecType.getAudioCodecNum(CodecType.MP3_8));
+					sampleRate = new Bit2();
+				}
+				else {
+					codecId.set(CodecType.getAudioCodecNum(CodecType.MP3));
+				}
+			}
+			else if(codecCheckFrame instanceof NellymoserFrame) {
+				if(frame.getSampleRate() == 16000) {
+					// nelly16 0x42
+					codecId.set(CodecType.getAudioCodecNum(CodecType.NELLY_16));
+					sampleRate = new Bit2();
+				}
+				else if(frame.getSampleRate() == 8000) {
+					// nelly8の場合0x52になる。
+					codecId.set(CodecType.getAudioCodecNum(CodecType.NELLY_8));
+					sampleRate = new Bit2();
+				}
+				else {
+					codecId.set(CodecType.getAudioCodecNum(CodecType.NELLY));
+				}
+			}
+			else if(codecCheckFrame instanceof SpeexFrame) {
+				// 0xB6みたい。
+				codecId.set(CodecType.getAudioCodecNum(CodecType.SPEEX));
+				if(frame.getSampleRate() != 16000) {
+					throw new Exception("speexのsampleRateは16kHzのみサポートします。");
+				}
+				if(frame.getChannel() != 1) {
+					throw new Exception("speexはmonoralのみサポートします。");
+				}
+				sampleRate = new Bit2(1);
+			}
+			else if(codecCheckFrame instanceof AdpcmswfFrame) {
+				codecId.set(CodecType.getAudioCodecNum(CodecType.ADPCM));
+			}
+			else {
+				throw new Exception("未対応なaudioFrameでした:" + frame);
+			}
+			// チャンネル対応
+			if(channels == null) {
+				channels = new Bit1();
+				switch(frame.getChannel()) {
+				case 1:
+					channels.set(0);
+					break;
+				case 2:
+					channels.set(1);
+					break;
+				default:
+					throw new Exception("音声チャンネル数がflvに適合しないものでした。");
+				}
+			}
+			// bitCount
+			if(bitCount == null) {
+				bitCount = new Bit1();
+				switch(frame.getBit()) {
+				case 8:
+					bitCount.set(0);
+					break;
+				case 16:
+					bitCount.set(1);
+					break;
+				default:
+					// bit深度情報はもっていないコンテナもあるみたいです。(というか基本的に圧縮データにbit深度という情報はないみたい。(復元したらどうなるか・・・の問題っぽい。))
+					bitCount.set(1);
+//					throw new Exception("ビット深度が適合しないものでした。:" + frame.getBit());
+				}
+			}
+			// sampleRate
+			if(sampleRate == null) {
+				sampleRate = new Bit2();
+				switch((int)(frame.getSampleRate() / 100)) {
+				case 55:
+					sampleRate.set(0);
+					break;
+				case 110:
+					sampleRate.set(1);
+					break;
+				case 220:
+					sampleRate.set(2);
+					break;
+				case 441:
+					sampleRate.set(3);
+					break;
+				default:
+					throw new Exception("frameRateが適合しないものでした。");
+				}
+			}
+			frameAppendFlag = false;
+			// データの再構成はgetFrameBufferで実行すればよいと思います。
+			// sizeとかの調整も必要です。
+			frameBuffer = getFrameBuffer();
+			setPts((long)(1.0D * frame.getPts() / frame.getTimebase() * 1000));
+			setTimebase(1000);
+			setSize(11 + 1 + sizeEx + frameBuffer.remaining() + 4);
+		}
+		else {
+			frameBuffer = getFrameBuffer();
+		}
 		BitConnector connector = new BitConnector();
 		ByteBuffer startBuffer = getStartBuffer();
 		ByteBuffer audioInfoBuffer = connector.connect(
-				codecId, sampleRate, bitCount, channels, sequenceHeaderFlag
+				codecId, sampleRate, bitCount, channels,
+				sequenceHeaderFlag /* aac用の追加データ */
 		);
-		ByteBuffer frameBuffer = getFrameBuffer();
 		ByteBuffer tailBuffer = getTailBuffer();
 		setData(BufferUtil.connect(
 				startBuffer,
@@ -220,7 +350,26 @@ public class AudioTag extends FlvTag {
 		if(frameBuffer == null) {
 			// frameから復元する必要あり
 			if(frame != null) {
-				frameBuffer = frame.getData();
+				// TODO nellymoserでaudioMultiFrameになっている可能性があるので、その場合は単純連結する必要あり
+				// multiFrameになっている場合は結合する必要あり。
+				if(frame instanceof AudioMultiFrame) {
+					List<ByteBuffer> buffers = new ArrayList<ByteBuffer>();
+					for(IAudioFrame aFrame : ((AudioMultiFrame) frame).getFrameList()) {
+						buffers.add(aFrame.getData());
+					}
+					frameBuffer = BufferUtil.connect(buffers);
+				}
+				else if(frame instanceof AacFrame) {
+					// aacの場合は先頭の7byteをドロップする必要あり。(mshでglobalHeaderがあるので、header部分を落とします)
+					ByteBuffer frameData = frame.getData();
+					frameData.position(7);
+					frameBuffer = ByteBuffer.allocate(frameData.remaining());
+					frameBuffer.put(frameData);
+					frameBuffer.flip();
+				}
+				else {
+					frameBuffer = frame.getData();
+				}
 			}
 		}
 		return frameBuffer.duplicate();
@@ -280,25 +429,34 @@ public class AudioTag extends FlvTag {
 	 */
 	public void addFrame(IAudioFrame tmpFrame) throws Exception {
 		logger.info("フレームの設定が呼び出されました。");
-		// frameから各情報を復元しないとだめ。
-		logger.info("frameの時間情報:" + frame.getPts());
-		if(frame instanceof Frame) { // frameがaacの場合はframeデータサイズ + 2が必要
-			
+		if(tmpFrame == null) {
+			// 追加データがないなら、放置
+			return;
+		}
+		if(!(tmpFrame instanceof IAudioFrame)) {
+			throw new Exception("audioTagの追加バッファとして、audioFrame以外を受けとりました。");
+		}
+		frameAppendFlag = true;
+		if(frame == null) {
+			// 空だったらそのまま追加
+			frame = tmpFrame;
+		}
+		else if(frame instanceof AudioMultiFrame) {
+			((AudioMultiFrame)frame).addFrame(tmpFrame);
 		}
 		else {
-			int size = frame.getSize() + 11 + 1 + 4;
-			logger.info(size);
+			AudioMultiFrame multiFrame = new AudioMultiFrame();
+			multiFrame.addFrame(frame);
+			if(tmpFrame instanceof AudioMultiFrame) {
+				for(IAudioFrame aFrame : ((AudioMultiFrame) tmpFrame).getFrameList()) {
+					multiFrame.addFrame(aFrame);
+				}
+			}
+			else {
+				multiFrame.addFrame(tmpFrame);
+			}
+			frame = multiFrame;
 		}
-		// mp3(8)やnellymoser(8,16), speex(16)の場合はflagが特殊になります。
-		// aac以外の場合はframeデータサイズ + 1が中核
-		logger.info(HexUtil.toHex(frame.getData(), 0, 10, true));
-		// 時間情報
-		// size情報 aacの場合はframeのサイズ + 2 その他はframeのサイズ + 1
-		// streamId(0固定)
-		// tagデータ(codec, sampleRate, channel, bit) がんばって計算すべし
-		// (aacの場合はmshであるかフラグ)
-		// frameデータ実体
-		// tail size
 		super.update();
 	}
 	/**
@@ -307,6 +465,57 @@ public class AudioTag extends FlvTag {
 	 */
 	public boolean isSequenceHeader() {
 		return getCodec() == CodecType.AAC && sequenceHeaderFlag.get() == 0;
+	}
+	/**
+	 * aacのmediaSequenceHeaderとして初期化します
+	 * @param dsi
+	 */
+	public void setAacMediaSequenceHeader(AacFrame frame, DecoderSpecificInfo dsi) throws Exception {
+		codecId.set(CodecType.getAudioCodecNum(CodecType.AAC));
+		switch(frame.getChannel()) {
+		case 1:
+			channels.set(0);
+			break;
+		case 2:
+			channels.set(1);
+			break;
+		default:
+			throw new Exception("音声チャンネル数がflvに適合しないものでした。");
+		}
+		switch(frame.getBit()) {
+		case 8:
+			bitCount.set(0);
+			break;
+		case 16:
+			bitCount.set(1);
+			break;
+		default:
+			// bit深度情報はもっていないコンテナもあるみたいです。(というか基本的に圧縮データにbit深度という情報はないみたい。(復元したらどうなるか・・・の問題っぽい。))
+			bitCount.set(1);
+		}
+		switch((int)(frame.getSampleRate() / 100)) {
+		case 55:
+			sampleRate.set(0);
+			break;
+		case 110:
+			sampleRate.set(1);
+			break;
+		case 220:
+			sampleRate.set(2);
+			break;
+		case 441:
+			sampleRate.set(3);
+			break;
+		default:
+			throw new Exception("frameRateが適合しないものでした。");
+		}
+		sequenceHeaderFlag = new Bit8(0);
+		frameBuffer = dsi.getData();
+		// サイズの計算が必要
+		setPts((long)(1.0D * frame.getPts() / frame.getTimebase() * 1000));
+		setTimebase(1000);
+		setSize(11 + 1 + 1 + frameBuffer.remaining() + 4);
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
