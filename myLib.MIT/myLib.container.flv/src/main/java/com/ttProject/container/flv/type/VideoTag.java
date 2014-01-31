@@ -1,6 +1,8 @@
 package com.ttProject.container.flv.type;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -10,9 +12,15 @@ import com.ttProject.frame.IVideoFrame;
 import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
+import com.ttProject.frame.flv1.Flv1Frame;
+import com.ttProject.frame.flv1.type.DisposableInterFrame;
 import com.ttProject.frame.h264.ConfigData;
 import com.ttProject.frame.h264.DataNalAnalyzer;
+import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.frame.h264.H264FrameSelector;
+import com.ttProject.frame.h264.type.PictureParameterSet;
+import com.ttProject.frame.h264.type.SequenceParameterSet;
+import com.ttProject.frame.vp6.Vp6Frame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitConnector;
@@ -44,10 +52,9 @@ public class VideoTag extends FlvTag {
 
 	private ByteBuffer frameBuffer = null; // フレームデータ
 	private ByteBuffer alphaData   = null; // vp6a用のalphaデータ
-
-	private IVideoFrame   frame           = null; // 動作対象フレーム
-	private VideoAnalyzer frameAnalyzer   = null;
-	private boolean       frameAppendFlag = false; // フレームが追加されたことを検知するフラグ
+	private IVideoFrame   frame         = null; // 動作対象フレーム
+	private VideoAnalyzer frameAnalyzer = null;
+	private boolean frameAppendFlag     = false; // フレームが追加されたことを検知するフラグ
 	/**
 	 * コンストラクタ
 	 * @param tagType
@@ -152,6 +159,57 @@ public class VideoTag extends FlvTag {
 		if(frameBuffer == null && frame == null) {
 			throw new Exception("データ更新の要求がありましたが、内容データが決定していません。");
 		}
+		ByteBuffer frameBuffer = null;
+		if(frameAppendFlag) {
+			// フレームの追加があったとき(frameデータの再構築が必要です。)
+			IVideoFrame codecCheckFrame = frame;
+			if(frame instanceof VideoMultiFrame) {
+				codecCheckFrame = ((VideoMultiFrame) frame).getFrameList().get(0);
+			}
+//			frameType;
+//			codecId;
+			int sizeEx = 0;
+			if(codecCheckFrame instanceof Flv1Frame) {
+				codecId.set(CodecType.getVideoCodecNum(CodecType.FLV1));
+				sizeEx = 0;
+			}
+			else if(codecCheckFrame instanceof Vp6Frame) {
+				// vp6aは対応しないことにします。
+				horizontalAdjustment = new Bit4();
+				verticalAdjustment = new Bit4();
+				codecId.set(CodecType.getVideoCodecNum(CodecType.ON2VP6));
+				sizeEx = 1;
+			}
+			else if(codecCheckFrame instanceof H264Frame) {
+				codecId.set(CodecType.getVideoCodecNum(CodecType.H264));
+				packetType = new Bit8(1);
+				dts = new Bit24((int)(1.0D * frame.getDts() / frame.getTimebase() * 1000));
+				sizeEx = 4;
+			}
+			else {
+				throw new Exception("未対応なvideoFrameでした:" + frame);
+			}
+			if(frame instanceof DisposableInterFrame) {
+				frameType.set(3);
+			}
+			else {
+				if(frame.isKeyFrame()) {
+					frameType.set(1);
+				}
+				else {
+					frameType.set(2);
+				}
+			}
+			frameBuffer = getFrameBuffer();
+			// pts timebase sizeの更新が必要
+			setPts((long)(1.0D * frame.getPts() / frame.getTimebase() * 1000));
+			setTimebase(1000);
+			setSize(11 + 1 + sizeEx + frameBuffer.remaining() + 4);
+		}
+		else {
+			// フレームの追加がなかったとき
+			frameBuffer = getFrameBuffer();
+		}
 		BitConnector connector = new BitConnector();
 		ByteBuffer startBuffer = getStartBuffer();
 		ByteBuffer videoInfoBuffer = connector.connect(
@@ -160,7 +218,6 @@ public class VideoTag extends FlvTag {
 				offsetToAlpha, // vp6a
 				packetType, dts // avc
 		);
-		ByteBuffer frameBuffer = getFrameBuffer();
 		ByteBuffer tailBuffer = getTailBuffer();
 		setData(BufferUtil.connect(
 				startBuffer,
@@ -177,6 +234,43 @@ public class VideoTag extends FlvTag {
 	private ByteBuffer getFrameBuffer() throws Exception {
 		if(frameBuffer == null) {
 			// frameから復元する必要あり。
+			// この部分注意が必要
+			// vp6やflv1はそのまま戻せばよいが
+			// h264の場合は、sizeNalにしないとだめ。
+			if(CodecType.getVideoCodecType(codecId.get()) == CodecType.H264) {
+				// h264のフレームの場合は、調整することがあるので、やらないとだめ。
+				ByteBuffer sizeBuffer = null;
+				ByteBuffer nalBuffer = null;
+				if(frame instanceof VideoMultiFrame) {
+					List<ByteBuffer> buffers = new ArrayList<ByteBuffer>();
+					for(IVideoFrame vFrame : ((VideoMultiFrame) frame).getFrameList()) {
+						if(vFrame instanceof H264Frame) {
+							nalBuffer = vFrame.getData();
+							sizeBuffer = ByteBuffer.allocate(4);
+							sizeBuffer.putInt(nalBuffer.remaining());
+							sizeBuffer.flip();
+							buffers.add(sizeBuffer);
+							buffers.add(nalBuffer);
+						}
+					}
+					frameBuffer = BufferUtil.connect(buffers);
+				}
+				else {
+					nalBuffer = frame.getData();
+					sizeBuffer = ByteBuffer.allocate(4);
+					sizeBuffer.putInt(nalBuffer.remaining());
+					sizeBuffer.flip();
+					frameBuffer = BufferUtil.connect(sizeBuffer, nalBuffer);
+				}
+			}
+			else {
+				if(frame instanceof VideoMultiFrame) {
+					throw new Exception("h264以外でマルチフレームの映像は許可されていません。");
+				}
+				else {
+					frameBuffer = frame.getData();
+				}
+			}
 		}
 		return frameBuffer.duplicate();
 	}
@@ -274,16 +368,17 @@ public class VideoTag extends FlvTag {
 		else {
 			VideoMultiFrame multiFrame = new VideoMultiFrame();
 			multiFrame.addFrame(frame);
-			if(tmpFrame instanceof VideoMultiFrame) {
-				for(IVideoFrame vFrame : ((VideoMultiFrame) tmpFrame).getFrameList()) {
-					multiFrame.addFrame(vFrame);
-				}
-			}
-			else {
-				multiFrame.addFrame(tmpFrame);
-			}
+			multiFrame.addFrame(tmpFrame);
 			frame = multiFrame;
 		}
+		// frameから各情報を復元しないとだめ
+		// 時間情報
+		// size情報
+		// streamId(0固定)
+		// tagデータ(frameType, codecId)
+		// (vp6,vp6a,h264の場合の特殊データ)
+		// frameデータ実体
+		// tail size
 		super.update();
 	}
 	/**
@@ -299,6 +394,25 @@ public class VideoTag extends FlvTag {
 	 */
 	public boolean isKeyFrame() {
 		return frameType.get() == 1;
+	}
+	/**
+	 * h264のmediaSequenceHeaderとして初期化します
+	 * @param frame
+	 * @param sps
+	 * @param pps
+	 * @throws Exception
+	 */
+	public void setH264MediaSequenceHeader(H264Frame frame, SequenceParameterSet sps, PictureParameterSet pps) throws Exception {
+		codecId.set(CodecType.getVideoCodecNum(CodecType.H264));
+		frameType.set(1); // keyFrame指定
+		packetType = new Bit8(0);
+		dts = new Bit24(0);
+		ConfigData configData = new ConfigData();
+		frameBuffer = configData.makeConfigData(sps, pps);
+		setPts((long)(1.0D * frame.getPts() / frame.getTimebase() * 1000));
+		setTimebase(1000);
+		setSize(11 + 1 + 4 + frameBuffer.remaining() + 4);
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
