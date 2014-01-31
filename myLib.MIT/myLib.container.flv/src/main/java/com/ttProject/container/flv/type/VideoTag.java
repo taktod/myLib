@@ -44,9 +44,10 @@ public class VideoTag extends FlvTag {
 
 	private ByteBuffer frameBuffer = null; // フレームデータ
 	private ByteBuffer alphaData   = null; // vp6a用のalphaデータ
-	private IVideoFrame   frame         = null; // 動作対象フレーム
-	private VideoAnalyzer frameAnalyzer = null;
-	private boolean frameAppendFlag     = false; // フレームが追加されたことを検知するフラグ
+
+	private IVideoFrame   frame           = null; // 動作対象フレーム
+	private VideoAnalyzer frameAnalyzer   = null;
+	private boolean       frameAppendFlag = false; // フレームが追加されたことを検知するフラグ
 	/**
 	 * コンストラクタ
 	 * @param tagType
