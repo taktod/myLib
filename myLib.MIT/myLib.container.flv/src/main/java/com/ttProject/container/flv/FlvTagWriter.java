@@ -56,6 +56,9 @@ public class FlvTagWriter implements IWriter {
 			}
 			return;
 		}
+		// nellymoserの場合はmultiFrameの場合はそのままmultiFrameとしていれてしまった方が楽かもしれません。
+		// とはいえ、mpegtsからコンバートするときみたいに、mp3もmultiFrameでくる可能性があるわけで、その場合は、分割してaudioTag化しないとだめ
+		// 面倒な・・・
 		if(frame instanceof AudioMultiFrame) {
 			AudioMultiFrame multiFrame = (AudioMultiFrame)frame;
 			for(IAudioFrame aFrame : multiFrame.getFrameList()) {
