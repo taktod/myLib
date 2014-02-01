@@ -81,56 +81,65 @@ public class FrameToFlvTagConverter {
 	 * @return
 	 */
 	private List<FlvTag> getVideoTags(VideoFrame frame) throws Exception {
-		List<FlvTag> result = new ArrayList<FlvTag>();
 		// h264の場合はmshのチェックを実施する
 		if(frame instanceof H264Frame) {
-			if(frame instanceof SupplementalEnhancementInformation) {
-				// ヌルポの原因になるので、いらない
-				return result;
-			}
-			// mshについて調整
-			if(frame instanceof SliceIDR) {
-				SliceIDR sliceIDR = (SliceIDR)frame;
-				if(sps == null || pps == null
-				|| sps.getData().compareTo(sliceIDR.getSps().getData()) != 0
-				|| pps.getData().compareTo(sliceIDR.getPps().getData()) != 0) {
-					sps = sliceIDR.getSps();
-					pps = sliceIDR.getPps();
-					VideoTag videoTag = new VideoTag();
-					videoTag.setH264MediaSequenceHeader(sliceIDR, sps, pps);
-					result.add(videoTag);
-				}
-			}
-			if(sps == null || pps == null) {
-				// sps ppsが存在しない場合は処理しない。
-				return result;
-			}
-			if(frame instanceof Slice) {
-				Slice slice = (Slice)frame;
-				if(slice.getFirstMbInSlice() == 0) {
-					if(videoTag != null) {
-						result.add(videoTag);
-					}
-					videoTag = new VideoTag();
-				}
-				videoTag.addFrame(frame);
-			}
-			if(frame instanceof SliceIDR) {
-				SliceIDR sliceIDR = (SliceIDR)frame;
-				if(sliceIDR.getFirstMbInSlice() == 0) {
-					if(videoTag != null) {
-						result.add(videoTag);
-					}
-					videoTag = new VideoTag();
-				}
-				videoTag.addFrame(frame);
+			return getH264Tags(frame);
+		}
+		List<FlvTag> result = new ArrayList<FlvTag>();
+		// videoTagをつくっておく
+		videoTag = new VideoTag();
+		videoTag.addFrame(frame);
+		result.add(videoTag);
+		return result;
+	}
+	/**
+	 * h264フレームについて処理しておく
+	 * @param frame
+	 * @return
+	 * @throws Exception
+	 */
+	private List<FlvTag> getH264Tags(VideoFrame frame) throws Exception {
+		List<FlvTag> result = new ArrayList<FlvTag>();
+		if(frame instanceof SupplementalEnhancementInformation) {
+			// ヌルポの原因になるので、いらない
+			return result;
+		}
+		// mshについて調整
+		if(frame instanceof SliceIDR) {
+			SliceIDR sliceIDR = (SliceIDR)frame;
+			if(sps == null || pps == null
+			|| sps.getData().compareTo(sliceIDR.getSps().getData()) != 0
+			|| pps.getData().compareTo(sliceIDR.getPps().getData()) != 0) {
+				sps = sliceIDR.getSps();
+				pps = sliceIDR.getPps();
+				VideoTag videoTag = new VideoTag();
+				videoTag.setH264MediaSequenceHeader(sliceIDR, sps, pps);
+				result.add(videoTag);
 			}
 		}
-		else {
-			// videoTagをつくっておく
-			videoTag = new VideoTag();
+		if(sps == null || pps == null) {
+			// sps ppsが存在しない場合は処理しない。
+			return result;
+		}
+		if(frame instanceof Slice) {
+			Slice slice = (Slice)frame;
+			if(slice.getFirstMbInSlice() == 0) {
+				if(videoTag != null) {
+					result.add(videoTag);
+				}
+				videoTag = new VideoTag();
+			}
 			videoTag.addFrame(frame);
-			result.add(videoTag);
+		}
+		if(frame instanceof SliceIDR) {
+			SliceIDR sliceIDR = (SliceIDR)frame;
+			if(sliceIDR.getFirstMbInSlice() == 0) {
+				if(videoTag != null) {
+					result.add(videoTag);
+				}
+				videoTag = new VideoTag();
+			}
+			videoTag.addFrame(frame);
 		}
 		return result;
 	}
