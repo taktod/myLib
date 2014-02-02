@@ -2,15 +2,11 @@ package com.ttProject.frame.h264.type;
 
 import java.nio.ByteBuffer;
 
-import com.ttProject.frame.h264.H264Frame;
+import com.ttProject.frame.h264.SliceFrame;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.extra.Bit;
-import com.ttProject.unit.extra.BitConnector;
-import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit5;
-import com.ttProject.unit.extra.bit.Ueg;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -18,11 +14,7 @@ import com.ttProject.util.BufferUtil;
  * h264の基本となる中間フレーム
  * @author taktod
  */
-public class Slice extends H264Frame {
-	private Ueg firstMbInSlice    = null;
-	private Ueg sliceType         = null;
-	private Ueg picParameterSetId = null;
-	private Bit extraBit          = null;
+public class Slice extends SliceFrame {
 	/** データ */
 	private ByteBuffer buffer = null;
 	/**
@@ -39,6 +31,7 @@ public class Slice extends H264Frame {
 	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
+		super.minimumLoad(channel);
 		setReadPosition(channel.position());
 		setSize(channel.size());
 		super.update();
@@ -48,12 +41,7 @@ public class Slice extends H264Frame {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		BitLoader loader = new BitLoader(channel);
-		firstMbInSlice    = new Ueg();
-		sliceType         = new Ueg();
-		picParameterSetId = new Ueg();
-		loader.load(firstMbInSlice, sliceType, picParameterSetId);
-		extraBit = loader.getExtraBit();
+		channel.position(getReadPosition());
 		buffer = BufferUtil.safeRead(channel, getSize() - channel.position());
 		super.update();
 	}
@@ -65,16 +53,9 @@ public class Slice extends H264Frame {
 		if(buffer == null) {
 			throw new Exception("データ実体が読み込まれていません");
 		}
-		BitConnector connector = new BitConnector();
 		setData(BufferUtil.connect(getTypeBuffer(),
-				connector.connect(firstMbInSlice, sliceType, picParameterSetId, extraBit),
+				getSliceHeaderBuffer(),
 				buffer));
-	}
-	public int getFirstMbInSlice() throws Exception {
-		if(firstMbInSlice == null) {
-			throw new Exception("firstMbInSliceがnullでした。loadを実行してください");
-		}
-		return firstMbInSlice.get();
 	}
 	/**
 	 * {@inheritDoc}
