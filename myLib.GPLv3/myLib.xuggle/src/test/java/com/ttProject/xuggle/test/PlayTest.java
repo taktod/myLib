@@ -205,6 +205,7 @@ public class PlayTest {
 		while(container.readNextPacket(packet) >= 0 && running) {
 			// パケットデータが読み込めた場合
 			if(packet.getStreamIndex() == videoStreamId) {
+				logger.info("packet:" + HexUtil.toHex(packet.getData().getByteBuffer(0, packet.getSize())));
 				// 動画データの場合
 				IVideoPicture picture = IVideoPicture.make(videoCoder.getPixelType(), videoCoder.getWidth(), videoCoder.getHeight());
 				int offset = 0;
