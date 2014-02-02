@@ -50,7 +50,7 @@ public abstract class SliceFrame extends H264Frame {
 	public int getFirstMbInSlice() throws Exception {
 		return firstMbInSlice.get();
 	}
-	public List<H264Frame> getAssociateFrame() {
+	public List<H264Frame> getGroupNalList() {
 		return frameList;
 	}
 	public boolean isFirstNal() {
