@@ -10,22 +10,16 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
-import com.ttProject.container.mpegts.field.PmtElementaryField;
 import com.ttProject.container.mpegts.type.Pat;
 import com.ttProject.container.mpegts.type.Pes;
 import com.ttProject.container.mpegts.type.Pmt;
 import com.ttProject.container.mpegts.type.Sdt;
+import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
-import com.ttProject.frame.h264.H264Frame;
-import com.ttProject.frame.h264.type.AccessUnitDelimiter;
-import com.ttProject.frame.h264.type.PictureParameterSet;
-import com.ttProject.frame.h264.type.SequenceParameterSet;
-import com.ttProject.frame.h264.type.Slice;
-import com.ttProject.frame.h264.type.SliceIDR;
 
 /**
  * mpegtsのpacketを書き込む動作
@@ -52,11 +46,10 @@ public class MpegtsPacketWriter implements IWriter {
 	private Pat pat = null;
 	/** pmtデータ */
 	private Pmt pmt = null;
-	/** 処理中pesMap */
-	private Map<Integer, Pes> pesMap = new HashMap<Integer, Pes>();
-	// h264のppsとspsは保持しておいて、sliceIDRのデータをpesにはめるときに一緒にはめておいた方がいいかも。
-	private SequenceParameterSet sps = null;
-	private PictureParameterSet pps = null;
+	/** frameからpesを作成 */
+	private FrameToPesConverter converter = new FrameToPesConverter();
+	/** 初データの処理を実施したかフラグ */
+	private boolean isWriteFirstMeta = false;
 	/**
 	 * コンストラクタ
 	 * @param fileName
@@ -90,6 +83,9 @@ public class MpegtsPacketWriter implements IWriter {
 		if(frame == null) {
 			return;
 		}
+		if(frame instanceof AudioFrame) {
+			return;
+		}
 		if(frame instanceof VideoMultiFrame) {
 			VideoMultiFrame multiFrame = (VideoMultiFrame) frame;
 			for(IVideoFrame vFrame : multiFrame.getFrameList()) {
@@ -104,89 +100,21 @@ public class MpegtsPacketWriter implements IWriter {
 			}
 			return;
 		}
-		if(frame instanceof SequenceParameterSet) {
-			sps = (SequenceParameterSet) frame;
-			return;
-		}
-		if(frame instanceof PictureParameterSet) {
-			pps = (PictureParameterSet) frame;
-			return;
-		}
-		if(pesMap.size() == 0) {
-			// データがまだない場合は、はじめてのデータなので、sdt, pat, pmtを書き込む必要があります。
+		if(!isWriteFirstMeta) {
+			// 初データなので、sdt pat pmtの書き込みが必要です。
 			if(sdt == null || pat == null || pmt == null) {
 				throw new Exception("必要な情報がありません。");
 			}
 			writeMpegtsPacket(sdt);
 			writeMpegtsPacket(pat);
 			writeMpegtsPacket(pmt);
+			isWriteFirstMeta = true;
 		}
-		Pes pes = pesMap.get(trackId);
+		Pes pes = converter.getPeses(trackId, pmt, frame);
 		if(pes == null) {
-			pes = new Pes(trackId, pmt.getPcrPid() == trackId);
-			for(PmtElementaryField peField : pmt.getFields()) {
-				if(trackId == peField.getPid()) {
-					if(pes.getStreamId() != 0) {
-						peField.setSuggestStreamId(pes.getStreamId());
-					}
-					else {
-						pes.setStreamId(peField.getSuggestStreamId());
-					}
-					break;
-				}
-			}
-			pesMap.put(trackId, pes);
+			return;
 		}
-		// TODO frameからpesを作成する部分は、別のクラスにしておいた方が扱いやすいかも・・・
-		// pesにデータを当てはめていく必要がある。(multiFrameでsliceIDRが2番目以降である可能性も一応ある。)
-		if(frame instanceof SliceIDR) {
-			if(sps == null) {
-				throw new Exception("spsがない");
-			}
-			if(pps == null) {
-				throw new Exception("ppsがない");
-			}
-			AccessUnitDelimiter aud = new AccessUnitDelimiter();
-			aud.setPts(frame.getPts());
-			aud.setTimebase(frame.getTimebase());
-			aud.setDts(((SliceIDR) frame).getDts());
-			pes.addFrame(aud);
-			pes.addFrame(sps);
-			pes.addFrame(pps);
-			pes.addFrame(frame);
-			// frameはここまで
-			writeMpegtsPacket(pes);
-			pesMap.remove(trackId);
-		}
-		else if(frame instanceof Slice) {
-			AccessUnitDelimiter aud = new AccessUnitDelimiter();
-			aud.setPts(frame.getPts());
-			aud.setTimebase(frame.getTimebase());
-			aud.setDts(((Slice) frame).getDts());
-			pes.addFrame(aud);
-			pes.addFrame(frame);
-			// 次のあてがわれたsliceの
-			// frameはここまで
-			writeMpegtsPacket(pes);
-			pesMap.remove(trackId);
-		}
-		else if(frame instanceof H264Frame) {
-			// その他のh264Frameは必要ない情報だと思われるのでスキップします。
-			;
-		}
-		else if(frame instanceof IAudioFrame){
-			pes.addFrame(frame);
-			IAudioFrame audioFrame = (IAudioFrame)pes.getFrame();
-			if(1.0f * audioFrame.getSampleNum() / audioFrame.getSampleRate() > 0.3f) {
-				// データが１秒以上になったら書き込みたいところ。
-				writeMpegtsPacket(pes);
-				pesMap.remove(trackId);
-			}
-		}
-		else {
-//			throw new Exception("不明なデータを受け取りました。");
-		}
-		// pesの中身のデータ量がある程度以上になったらpes完了なので、一旦データを破棄しなければだめ。
+		writeMpegtsPacket(pes);
 	}
 	private void writeMpegtsPacket(MpegtsPacket packet) throws Exception {
 		Integer counter = continuityCounterMap.get(packet.getPid());
@@ -203,8 +131,9 @@ public class MpegtsPacketWriter implements IWriter {
 	}
 	@Override
 	public void prepareTailer() throws Exception {
+		Map<Integer, Pes> remainMap = converter.getPesMap();
 		// のこっているpesデータはすべて書き込む
-		for(Entry<Integer, Pes> entry : pesMap.entrySet()) {
+		for(Entry<Integer, Pes> entry : remainMap.entrySet()) {
 			// 書き込みしないといけないpesデータ
 			Pes pes = entry.getValue();
 			try {
