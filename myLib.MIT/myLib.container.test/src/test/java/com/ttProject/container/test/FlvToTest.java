@@ -93,7 +93,7 @@ public class FlvToTest {
 	 * mpegtsにコンバートする(h264 aac mp3)
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void mpegts_mp3() throws Exception {
 		logger.info("mpegtsに変換するテスト(mp3)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_mp3.ts");
@@ -126,7 +126,7 @@ public class FlvToTest {
 	 * mpegtsのaacの変換テスト
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void mpegts_aac() throws Exception {
 		logger.info("mpegtsに変換するテスト(aac)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_aac.ts");
@@ -159,7 +159,7 @@ public class FlvToTest {
 	 * mpegtsのh264の変換テスト
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void mpegts_h264() throws Exception {
 		logger.info("mpegtsに変換するテスト(h264)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_h264.ts");
@@ -192,7 +192,7 @@ public class FlvToTest {
 	 * mpegtsのh264の変換テスト
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void mpegts_h264_aac() throws Exception {
 		logger.info("mpegtsに変換するテスト(h264 / aac)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_h264_aac.ts");
