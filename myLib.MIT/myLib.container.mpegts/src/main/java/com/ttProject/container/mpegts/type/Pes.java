@@ -167,7 +167,7 @@ public class Pes extends MpegtsPacket {
 					CRCFlag, extensionFlag, PESHeaderLength);
 			// TODO ここのPESPacketLengthLeftのサイズがマイナスになる可能性がありうる。
 			pesPacketLengthLeft = pesPacketLength.get() - 3 - PESHeaderLength.get(); // このあとのデータも含むので(その分引かないとだめ(3とheaderLength分))
-			pesBuffer = ByteBuffer.allocate(pesPacketLengthLeft);
+//			pesBuffer = ByteBuffer.allocate(pesPacketLengthLeft);
 			int length = PESHeaderLength.get();
 			switch(ptsDtsIndicator.get()) {
 			case 0x03:
@@ -215,13 +215,17 @@ public class Pes extends MpegtsPacket {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		// frameの実データを読み込みます。読み込んだデータはpayloadStartUnitをもっているpesに格納されます
-		unitStartPes.pesBuffer.put(BufferUtil.safeRead(channel, pesDeltaSize));
+//		unitStartPes.pesBuffer.put(BufferUtil.safeRead(channel, pesDeltaSize));
+		unitStartPes.pesBuffer = BufferUtil.connect(
+				unitStartPes.pesBuffer,
+				BufferUtil.safeRead(channel, pesDeltaSize)
+		);
 		// ここでは読み込んだデータを主体となるpesのdata領域に格納させていきます。
 		unitStartPes.pesPacketLengthLeft -= pesDeltaSize;
 		if(unitStartPes.pesPacketLengthLeft == 0) {
 			// ここまできたら、byteBufferからframeを生成して保持しておけばよい。
 			if(unitStartPes.frameAnalyzer != null) {
-				unitStartPes.pesBuffer.flip();
+//				unitStartPes.pesBuffer.flip();
 				IReadChannel pesBufferChannel = new ByteReadChannel(unitStartPes.pesBuffer);
 				IFrame frame = null;
 				long audioSampleNum = 0;
