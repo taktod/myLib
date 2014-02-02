@@ -27,6 +27,7 @@ public class SupplementalEnhancementInformation extends H264Frame {
 	 */
 	public SupplementalEnhancementInformation(Bit1 forbiddenZeroBit, Bit2 nalRefIdc, Bit5 type) {
 		super(forbiddenZeroBit, nalRefIdc, type);
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
@@ -35,6 +36,7 @@ public class SupplementalEnhancementInformation extends H264Frame {
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		setReadPosition(channel.position());
 		setSize(channel.size());
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
@@ -42,6 +44,7 @@ public class SupplementalEnhancementInformation extends H264Frame {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
