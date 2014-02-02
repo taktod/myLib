@@ -97,20 +97,30 @@ public class MpegtsPacketSelector implements ISelector {
 		else if(pmt != null && pmt.isPesPid(pid.get())) {
 			Pes pes = new Pes(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter, pmt.getPcrPid() == pid.get());
 			// payLoadの開始位置でなかったら、startUnitのpesを取得して保持しなければならない。
+			// TODO ここには２つほど問題がある。
+			/*
+			 * １つ目は、pesのデータ読み込み時に、frame用のbufferにデータをいれていくが、このデータがどういったサイズになるかは、65536byte以上の場合には、実際に読み込まないとわからない。(まぁこれはどうとでもなる。)
+			 * ２つ目は、loadを実行できないこと。loadを実行しないと、frameデータが取得できない状態になっているが、selectorではminimumLoadのみ実行するように設計されているので、loadが実行されるかわからない。
+			 * よって、reader側に応答は返さないけど、中途なデータであることを返さないとだめという中途半端なデータになってしまう。
+			 * つまりselectorはpacketデータを解析して、応答したいように応答すればよい。
+			 * reader側でどういう返し方をすると、frameが取り出しやすいか考えるようにすればいいか？
+			 */
 			if(payloadUnitStartIndicator.get() == 1) {
+				// 前のデータがある場合はそれを応答しなければならない
 				// unitの開始位置なので、pesを記録しておく。
 				pesMap.put(pid.get(), pes);
 				pes.setFrameAnalyzer(analyzerMap.get(pid.get()));
 			}
 			else {
 				pes.setUnitStartPes(pesMap.get(pid.get()));
+				// 中途データの場合は、NullUnitを応答しておく必要がある。
 			}
 			packet = pes;
 		}
 		else {
 			logger.info("その他データ" + Integer.toHexString(pid.get()));
 			// esPidであるか確認
-			// その他
+			// その他(よくわからないのでスルーする)
 			return null;
 		}
 		packet.minimumLoad(channel);
