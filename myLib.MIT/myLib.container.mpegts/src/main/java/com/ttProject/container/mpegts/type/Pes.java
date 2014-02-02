@@ -17,6 +17,7 @@ import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.h264.H264Frame;
+import com.ttProject.frame.h264.SliceFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitConnector;
@@ -308,7 +309,12 @@ public class Pes extends MpegtsPacket {
 		// frameデータ取得
 		ByteBuffer frameBuffer = frameBuffer();
 		// pesPacketLengthを更新する。
-		pesPacketLength.set(3 + PESHeaderLength.get() + frameBuffer.remaining());
+		if(3 + PESHeaderLength.get() + frameBuffer.remaining() > 0x010000) {
+			pesPacketLength.set(0);
+		}
+		else {
+			pesPacketLength.set(3 + PESHeaderLength.get() + frameBuffer.remaining());
+		}
 
 		// header部分のサイズがどのくらいあるか確認しておく。
 		/*
@@ -452,10 +458,22 @@ public class Pes extends MpegtsPacket {
 				// 結合すべきデータ長を計算しなければならない。
 				int length = 0;
 				VideoMultiFrame multiFrame = (VideoMultiFrame)frame;
+				boolean findSliceFrame = false;
 				for(IVideoFrame videoFrame : multiFrame.getFrameList()) {
-					if(videoFrame instanceof H264Frame) {
+					if(videoFrame instanceof SliceFrame) {
+						if(findSliceFrame) {
+							length += 3 + videoFrame.getSize(); // 同じframeの２つ目だったら3になるっぽいですね。
+						}
+						else {
+							length += 4 + videoFrame.getSize(); // 同じframeの２つ目だったら3になるっぽいですね。
+						}
+						findSliceFrame = true;
+					}
+					else if(videoFrame instanceof H264Frame) {
 //						logger.info("frame:" + videoFrame + " size:" + videoFrame.getSize());
-						length += 3 + videoFrame.getSize();
+						// TODO 各フレームの１つ目は00 00 00 01がいい。
+						// TODO 同一フレームが２つ以上はいっている場合の２つ目は00 00 01になるらしい。
+						length += 4 + videoFrame.getSize(); // 同じframeの２つ目だったら3になるっぽいですね。
 					}
 					else {
 						throw new Exception("h264以外のフレームがmultiFrameに混入していました。:" + videoFrame);
@@ -464,11 +482,22 @@ public class Pes extends MpegtsPacket {
 				// メモリー確保
 				frameBuffer = ByteBuffer.allocate(length);
 				// データ登録
+				findSliceFrame = false;
 				for(IVideoFrame videoFrame : multiFrame.getFrameList()) {
-					if(videoFrame instanceof H264Frame) {
-//						logger.info("追記videoFrame:" + videoFrame);
-						frameBuffer.put((byte)0x00);
-						frameBuffer.putShort((short)1);
+					if(videoFrame instanceof SliceFrame) {
+						if(findSliceFrame) {
+							frameBuffer.put((byte)0x00);
+							frameBuffer.putShort((short)1);
+							frameBuffer.put(videoFrame.getData());
+						}
+						else {
+							frameBuffer.putInt(1);
+							frameBuffer.put(videoFrame.getData());
+						}
+						findSliceFrame = true;
+					}
+					else if(videoFrame instanceof H264Frame) {
+						frameBuffer.putInt(1);
 						frameBuffer.put(videoFrame.getData());
 					}
 					else {
