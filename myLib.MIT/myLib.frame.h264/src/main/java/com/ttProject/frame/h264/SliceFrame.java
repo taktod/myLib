@@ -1,6 +1,8 @@
 package com.ttProject.frame.h264;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit;
@@ -20,6 +22,10 @@ public abstract class SliceFrame extends H264Frame {
 	private Ueg sliceType             = new Ueg();
 	private Ueg pictureParameterSetId = new Ueg();
 	private Bit extraBit              = null;
+	
+	/** nalグループを一手に保持しておく */
+	private final List<H264Frame> frameList = new ArrayList<H264Frame>();
+
 	/**
 	 * コンストラクタ
 	 * @param forbiddendZeroBit
@@ -45,5 +51,8 @@ public abstract class SliceFrame extends H264Frame {
 	}
 	public int getFirstMbInSlice() throws Exception {
 		return firstMbInSlice.get();
+	}
+	public List<H264Frame> getAssociateFrame() {
+		return frameList;
 	}
 }
