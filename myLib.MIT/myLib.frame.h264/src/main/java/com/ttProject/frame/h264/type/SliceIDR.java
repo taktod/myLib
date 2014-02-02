@@ -17,6 +17,13 @@ import com.ttProject.util.BufferUtil;
 
 /**
  * h264のkeyFrameにあたるSliceIDR
+ * sliceIDRはIFrame(keyFrame)ならかならずsliceIDRになっているわけではなさそうです。
+ * KeyFrameでもその前のフレームを参照するBFrameがあると、randomAccessできないので、randomAccessしてOKの場合のみ
+ * sliceIDRになっているらしい。
+ * 
+ * TODO slice系のクラスは複数のnalで１つになっていることがあるので、複数のnalで構成されている場合は始めのnalに参照を持たせておいて
+ * getPackBufferの動作で、一度に参照できるようにしておきたいところ。
+ * こうしないとxuggleがエラーを吐く
  * @author taktod
  */
 public class SliceIDR extends H264Frame {
