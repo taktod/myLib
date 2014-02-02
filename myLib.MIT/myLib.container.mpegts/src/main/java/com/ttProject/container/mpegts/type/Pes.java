@@ -165,6 +165,7 @@ public class Pes extends MpegtsPacket {
 					copyright, originFlg, ptsDtsIndicator, escrFlag,
 					esRateFlag, DSMTrickModeFlag, additionalCopyInfoFlag,
 					CRCFlag, extensionFlag, PESHeaderLength);
+			// TODO ここのPESPacketLengthLeftのサイズがマイナスになる可能性がありうる。
 			pesPacketLengthLeft = pesPacketLength.get() - 3 - PESHeaderLength.get(); // このあとのデータも含むので(その分引かないとだめ(3とheaderLength分))
 			pesBuffer = ByteBuffer.allocate(pesPacketLengthLeft);
 			int length = PESHeaderLength.get();

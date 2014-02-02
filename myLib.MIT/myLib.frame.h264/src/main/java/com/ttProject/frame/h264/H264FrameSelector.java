@@ -28,6 +28,8 @@ public class H264FrameSelector extends VideoSelector {
 	private SequenceParameterSet sps = null;
 	/** 解析pps */
 	private PictureParameterSet  pps = null;
+	/** 複数のnalの応答として */
+	private SliceFrame sliceFrame = null;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -41,7 +43,6 @@ public class H264FrameSelector extends VideoSelector {
 		H264Frame frame = null;
 		switch(Type.getType(type.get())) {
 		case AccessUnitDelimiter:
-//			logger.info("accessUnitDelimiter発見");
 			frame = new AccessUnitDelimiter(forbiddenZeroBit, nalRefIdc, type);
 			break;
 		case PictureParameterSet:
