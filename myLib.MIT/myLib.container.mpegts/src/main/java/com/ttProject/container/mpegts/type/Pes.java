@@ -1,6 +1,8 @@
 package com.ttProject.container.mpegts.type;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -106,8 +108,9 @@ public class Pes extends MpegtsPacket {
 	private Pes unitStartPes = null; // 主軸のpes
 	// pesからデータを取り出すとこのframeListがとれるような感じにしておきたい。
 	private IFrame frame = null;
-	private ByteBuffer pesBuffer = null; // 実データ
-	private int pesPacketLengthLeft = 0;
+//	private ByteBuffer pesBuffer = null; // 実データ
+//	private int pesPacketLengthLeft = 0;
+	private List<ByteBuffer> pesBufferList = null;
 	private IAnalyzer frameAnalyzer = null;
 	private boolean pcrFlag;
 	/**
@@ -166,8 +169,9 @@ public class Pes extends MpegtsPacket {
 					esRateFlag, DSMTrickModeFlag, additionalCopyInfoFlag,
 					CRCFlag, extensionFlag, PESHeaderLength);
 			// TODO ここのPESPacketLengthLeftのサイズがマイナスになる可能性がありうる。
-			pesPacketLengthLeft = pesPacketLength.get() - 3 - PESHeaderLength.get(); // このあとのデータも含むので(その分引かないとだめ(3とheaderLength分))
+//			pesPacketLengthLeft = pesPacketLength.get() - 3 - PESHeaderLength.get(); // このあとのデータも含むので(その分引かないとだめ(3とheaderLength分))
 //			pesBuffer = ByteBuffer.allocate(pesPacketLengthLeft);
+			pesBufferList = new ArrayList<ByteBuffer>();
 			int length = PESHeaderLength.get();
 			switch(ptsDtsIndicator.get()) {
 			case 0x03:
@@ -216,7 +220,8 @@ public class Pes extends MpegtsPacket {
 	public void load(IReadChannel channel) throws Exception {
 		// frameの実データを読み込みます。読み込んだデータはpayloadStartUnitをもっているpesに格納されます
 //		unitStartPes.pesBuffer.put(BufferUtil.safeRead(channel, pesDeltaSize));
-		unitStartPes.pesBuffer = BufferUtil.connect(
+		unitStartPes.pesBufferList.add(BufferUtil.safeRead(channel, pesDeltaSize));
+/*		unitStartPes.pesBuffer = BufferUtil.connect(
 				unitStartPes.pesBuffer,
 				BufferUtil.safeRead(channel, pesDeltaSize)
 		);
@@ -243,6 +248,30 @@ public class Pes extends MpegtsPacket {
 					}
 					unitStartPes.addFrame(frame);
 				}
+			}
+		}*/
+	}
+	/**
+	 * データの解析を実行させます
+	 */
+	public void analyzeFrame() throws Exception {
+		if(unitStartPes.frameAnalyzer != null) {
+			IReadChannel pesBufferChannel = new ByteReadChannel(BufferUtil.connect(unitStartPes.pesBufferList));
+			IFrame frame = null;
+			long audioSampleNum = 0;
+			while((frame = unitStartPes.frameAnalyzer.analyze(pesBufferChannel)) != null) {
+				if(frame instanceof VideoFrame) {
+					VideoFrame vFrame = (VideoFrame)frame;
+					vFrame.setPts(unitStartPes.pts.getPts());
+					vFrame.setTimebase(90000);
+				}
+				else if(frame instanceof AudioFrame) {
+					AudioFrame aFrame = (AudioFrame)frame;
+					aFrame.setPts(unitStartPes.pts.getPts() + audioSampleNum * 90000 / aFrame.getSampleRate());
+					aFrame.setTimebase(90000);
+					audioSampleNum += aFrame.getSampleNum();
+				}
+				unitStartPes.addFrame(frame);
 			}
 		}
 	}
