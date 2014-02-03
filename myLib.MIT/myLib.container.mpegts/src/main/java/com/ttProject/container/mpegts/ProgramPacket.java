@@ -18,6 +18,9 @@ import com.ttProject.util.BufferUtil;
 /**
  * programPacket
  * @author taktod
+ * 
+ * TODO programPacketの場合は、crc32を確認して同じだったら読み込みを実施しないという動作が必要となるとおもいます。
+ * 読み込みをスキップすると動作が軽くなる。
  */
 public abstract class ProgramPacket extends MpegtsPacket {
 	private Bit8 pointerField = new Bit8(); // 0000 0000
