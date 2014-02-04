@@ -1,6 +1,7 @@
 package com.ttProject.frame.h264;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ttProject.frame.VideoFrame;
@@ -78,7 +79,13 @@ public abstract class H264Frame extends VideoFrame {
 	public PictureParameterSet getPps() {
 		return pps;
 	}
-	public List<H264Frame> getGroupNalList() {
+	public void addFrame(H264Frame frame) {
+		if(frameList == null) {
+			frameList = new ArrayList<H264Frame>();
+		}
+		frameList.add(frame);
+	}
+	public List<H264Frame> getGroupFrameList() {
 		return frameList;
 	}
 	public boolean isFirstNal() {

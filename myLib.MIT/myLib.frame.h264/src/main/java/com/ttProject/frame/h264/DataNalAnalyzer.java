@@ -17,6 +17,8 @@ public class DataNalAnalyzer extends VideoAnalyzer {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(DataNalAnalyzer.class);
+	/** 現在処理フレーム */
+	private H264Frame h264Frame = null;
 	/**
 	 * コンストラクタ
 	 */
@@ -39,8 +41,16 @@ public class DataNalAnalyzer extends VideoAnalyzer {
 			throw new Exception("データが足りません");
 		}
 		IReadChannel byteChannel = new ByteReadChannel(BufferUtil.safeRead(channel, size));
-		IFrame frame = (IFrame)getSelector().select(byteChannel);
+		H264Frame frame = (H264Frame)getSelector().select(byteChannel);
 		frame.load(byteChannel);
+		if(h264Frame == null || h264Frame.getClass() != frame.getClass() || (frame instanceof SliceFrame && ((SliceFrame)frame).getFirstMbInSlice() == 0)) {
+			logger.info("新規データみたいです。");
+			h264Frame = frame;
+		}
+		else {
+			logger.info("追記データみたいです。");
+		}
+		h264Frame.addFrame(frame);
 		return frame;
 	}
 }

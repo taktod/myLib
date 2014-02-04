@@ -2,6 +2,8 @@ package com.ttProject.frame.h264;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
@@ -14,6 +16,16 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class NalAnalyzer extends VideoAnalyzer {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(NalAnalyzer.class);
+	/** 現在処理フレーム */
+	/*
+	 * このフレームデータのクラスがかわる
+	 * SliceFrameの場合firstMbInSliceが0になる
+	 * を満たすとあたらしいフレームに切り替わったとして前のフレームを応答しなければいけない。
+	 */
+	private H264Frame h264Frame = null;
 	/**
 	 * コンストラクタ
 	 */
@@ -105,8 +117,16 @@ public class NalAnalyzer extends VideoAnalyzer {
 	 */
 	private IFrame setupFrame(ByteBuffer buffer) throws Exception {
 		IReadChannel channel = new ByteReadChannel(buffer);
-		IFrame frame = (IFrame)getSelector().select(channel);
+		H264Frame frame = (H264Frame)getSelector().select(channel);
 		frame.load(channel);
+		if(h264Frame == null || h264Frame.getClass() != frame.getClass() || (frame instanceof SliceFrame && ((SliceFrame)frame).getFirstMbInSlice() == 0)) {
+//			logger.info("新規データみたいです。" + frame.getClass());
+			h264Frame = frame;
+		}
+		else {
+//			logger.info("追記データみたいです。" + frame.getClass());
+		}
+		h264Frame.addFrame(frame);
 		return frame;
 	}
 	/**
