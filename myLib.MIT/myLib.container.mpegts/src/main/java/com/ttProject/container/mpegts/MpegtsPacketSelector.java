@@ -92,10 +92,13 @@ public class MpegtsPacketSelector implements ISelector {
 			else {
 				return pmt;
 			}
+			// elementaryFieldを初期化するために、先にloadを実施してしまいます。
+			pmt.load(channel);
 			// pmtの解析がおわったら必要なanalyzerをつくらないとだめ
 //			pmt.minimumLoad(channel);
 			// analyzerをつくっておく。
 			for(PmtElementaryField elementaryField : pmt.getFields()) {
+				logger.info(elementaryField.getCodecType());
 				switch(elementaryField.getCodecType()) {
 				case AUDIO_AAC:
 					analyzerMap.put((int)elementaryField.getPid(), new AacFrameAnalyzer());
