@@ -41,7 +41,7 @@ public class MpegtsPacketReader extends Reader {
 			unit.load(channel);
 		}
 		/*
-		 * 未完了pesの場合はNullUnitを応答します。
+		 * 未完了pesの場合はNullContainerを応答します。
 		 */
 		if(unit instanceof Pes) {
 			Pes pes = (Pes) unit;
@@ -58,12 +58,11 @@ public class MpegtsPacketReader extends Reader {
 		return (IContainer) unit;
 	}
 	/**
-	 * 終端までいったときに残っているpesデータを応答します
-	 * @return
-	 * @throws Exception
+	 * {@inheritDoc}
 	 */
-	public List<Pes> getRemainPesList() throws Exception {
-		List<Pes> result = new ArrayList<Pes>();
+	@Override
+	public List<IContainer> getRemainData() throws Exception {
+		List<IContainer> result = new ArrayList<IContainer>();
 		for(Entry<Integer, Pes> entry : pesMap.entrySet()) {
 			Pes pes = entry.getValue();
 			if(pes != null) {

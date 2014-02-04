@@ -1,5 +1,7 @@
 package com.ttProject.container;
 
+import java.util.List;
+
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 
@@ -7,7 +9,7 @@ import com.ttProject.unit.ISelector;
  * ファイルの読み込みを実行する動作
  * @author taktod
  */
-public class Reader implements IReader {
+public abstract class Reader implements IReader {
 	/** 動作selector */
 	private final ISelector selector;
 	/**
@@ -34,5 +36,12 @@ public class Reader implements IReader {
 			container.load(channel);
 		}
 		return container;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<IContainer> getRemainData() throws Exception {
+		return null;
 	}
 }
