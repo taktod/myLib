@@ -44,8 +44,8 @@ public class Sdt extends ProgramPacket {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Sdt.class);
-	private Bit16 originalNetworkId = new Bit16();
-	private Bit8 reservedFutureUse2 = new Bit8();
+	private Bit16 originalNetworkId  = null;
+	private Bit8  reservedFutureUse2 = null;
 	private List<SdtServiceField> serviceFields = new ArrayList<SdtServiceField>();
 	private Bit32 crc32 = new Bit32();
 	/**
@@ -82,8 +82,8 @@ public class Sdt extends ProgramPacket {
 			super.minimumLoad(new ByteReadChannel(new byte[]{
 				0x00, 0x42, (byte)0xF0, 0x24, 0x00, 0x01, (byte)0xC1, 0x00, 0x00,
 			}));
-			originalNetworkId.set(1);
-			reservedFutureUse2.set(0xFF);
+			originalNetworkId = new Bit16(1);
+			reservedFutureUse2 = new Bit8(0xFF);
 		}
 		catch(Exception e) {
 		}
@@ -92,18 +92,6 @@ public class Sdt extends ProgramPacket {
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
-/*		BitLoader loader = new BitLoader(channel);
-		loader.load(originalNetworkId, reservedFutureUse2);
-		// ここからsdtServiceFieldの値を読み込む必要あり
-		int size = getSectionLength() - 8;
-		while(size > 4) { // 4byte以上ある場合は処理するデータがあると見る(4byteはcrc)
-			SdtServiceField ssfield = new SdtServiceField();
-			ssfield.load(channel);
-			size -= ssfield.getSize();
-			serviceFields.add(ssfield);
-		}
-		loader.load(crc32);*/
-		
 		BitLoader loader = new BitLoader(channel);
 		loader.load(crc32);
 		super.update();
@@ -117,6 +105,8 @@ public class Sdt extends ProgramPacket {
 		IReadChannel holdChannel = new ByteReadChannel(getBuffer());
 		super.load(holdChannel);
 		BitLoader loader = new BitLoader(holdChannel);
+		originalNetworkId  = new Bit16();
+		reservedFutureUse2 = new Bit8();
 		loader.load(originalNetworkId, reservedFutureUse2);
 		int size = getSectionLength() - 8 - 4;
 		while(size > 0) {

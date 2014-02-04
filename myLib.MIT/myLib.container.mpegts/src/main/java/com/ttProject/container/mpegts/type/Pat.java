@@ -28,9 +28,9 @@ public class Pat extends ProgramPacket {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Pat.class);
-	private Bit16 programNum = new Bit16();
-	private Bit3  reserved   = new Bit3();
-	private Bit13 pmtPid     = new Bit13();
+	private Bit16 programNum = null;
+	private Bit3  reserved   = null;
+	private Bit13 pmtPid     = null;
 	private Bit32 crc32      = new Bit32();
 	/**
 	 * コンストラクタ
@@ -68,26 +68,29 @@ public class Pat extends ProgramPacket {
 		}
 		catch(Exception e) {
 		}
-		programNum.set(1);
-		reserved.set(0x07);
-		pmtPid.set(0x1000);
+		programNum = new Bit16(1);
+		reserved   = new Bit3(0x07);
+		pmtPid     = new Bit13(0x1000);
 		setSectionLength(13);
 		super.update();
 	}
 	public int getPmtPid() {
 		return pmtPid.get();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
-		// ここでは、crc32のみ先行して取得しないとだめ。
-//		BitLoader loader = new BitLoader(channel);
-//		loader.load(programNum, reserved, pmtPid, crc32);
 		BitLoader loader = new BitLoader(channel);
+		// crc32のみ先行して取得します
 		loader.load(crc32);
 		super.update();
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		if(isLoaded()) {
@@ -96,13 +99,15 @@ public class Pat extends ProgramPacket {
 		IReadChannel holdChannel = new ByteReadChannel(getBuffer());
 		super.load(holdChannel);
 		BitLoader loader = new BitLoader(holdChannel);
+		programNum = new Bit16();
+		reserved   = new Bit3();
+		pmtPid     = new Bit13();
 		loader.load(programNum, reserved, pmtPid);
-		// こちらの動作では、詳細を読み込む必要があります。
-		// とりあえず残りのデータ数分skipさせとくか・・・
-//		BufferUtil.quickDispose(channel, 188 - getSize());
 		super.update();
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		BitConnector connector = new BitConnector();

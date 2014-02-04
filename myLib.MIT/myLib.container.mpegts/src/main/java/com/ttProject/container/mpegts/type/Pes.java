@@ -80,14 +80,14 @@ public class Pes extends MpegtsPacket {
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Pes.class);
 	private Bit24 prefix = new Bit24(1); // 0x000001固定
-	private Bit8 streamId = new Bit8(); // audioなら0xC0 - 0xDF videoなら0xE0 - 0xEFただしvlcが吐くデータはその限りではなかった。
+	private Bit8  streamId = new Bit8(); // audioなら0xC0 - 0xDF videoなら0xE0 - 0xEFただしvlcが吐くデータはその限りではなかった。
 	private Bit16 pesPacketLength = new Bit16();
-	private Bit2 markerBits = new Bit2(2); // 10固定
-	private Bit2 scramblingControl = new Bit2(); // 00
-	private Bit1 priority = new Bit1(); // 0
-	private Bit1 dataAlignmentIndicator = new Bit1(); // 0
-	private Bit1 copyright = new Bit1(); // 0
-	private Bit1 originFlg = new Bit1(); // 0:original 1:copy
+	private Bit2  markerBits = new Bit2(2); // 10固定
+	private Bit2  scramblingControl = new Bit2(); // 00
+	private Bit1  priority = new Bit1(); // 0
+	private Bit1  dataAlignmentIndicator = new Bit1(); // 0
+	private Bit1  copyright = new Bit1(); // 0
+	private Bit1  originFlg = new Bit1(); // 0:original 1:copy
 
 	private Bit2 ptsDtsIndicator = new Bit2(); // ここ・・・wikiによると11だとboth、1だとPTSのみと書いてあるけど10の間違いではないですかね。
 	private Bit1 escrFlag = new Bit1(); // 0
@@ -108,8 +108,6 @@ public class Pes extends MpegtsPacket {
 	private Pes unitStartPes = null; // 主軸のpes
 	// pesからデータを取り出すとこのframeListがとれるような感じにしておきたい。
 	private IFrame frame = null;
-//	private ByteBuffer pesBuffer = null; // 実データ
-//	private int pesPacketLengthLeft = 0;
 	private List<ByteBuffer> pesBufferList = null;
 	private IAnalyzer frameAnalyzer = null;
 	private boolean pcrFlag;
@@ -155,6 +153,9 @@ public class Pes extends MpegtsPacket {
 	public void setFrameAnalyzer(IAnalyzer analyzer) {
 		frameAnalyzer = analyzer;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		int startPos = channel.position();
@@ -168,9 +169,7 @@ public class Pes extends MpegtsPacket {
 					copyright, originFlg, ptsDtsIndicator, escrFlag,
 					esRateFlag, DSMTrickModeFlag, additionalCopyInfoFlag,
 					CRCFlag, extensionFlag, PESHeaderLength);
-			// TODO ここのPESPacketLengthLeftのサイズがマイナスになる可能性がありうる。
-//			pesPacketLengthLeft = pesPacketLength.get() - 3 - PESHeaderLength.get(); // このあとのデータも含むので(その分引かないとだめ(3とheaderLength分))
-//			pesBuffer = ByteBuffer.allocate(pesPacketLengthLeft);
+			// BufferListをつくっておきます
 			pesBufferList = new ArrayList<ByteBuffer>();
 			int length = PESHeaderLength.get();
 			switch(ptsDtsIndicator.get()) {
@@ -213,43 +212,13 @@ public class Pes extends MpegtsPacket {
 				throw new Exception("読み込みできていないデータがあるみたいです。");
 			}
 			unitStartPes = this;
-		} // 844
+		}
 		pesDeltaSize = 184 - (channel.position() - startPos);
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		// frameの実データを読み込みます。読み込んだデータはpayloadStartUnitをもっているpesに格納されます
-//		unitStartPes.pesBuffer.put(BufferUtil.safeRead(channel, pesDeltaSize));
 		unitStartPes.pesBufferList.add(BufferUtil.safeRead(channel, pesDeltaSize));
-/*		unitStartPes.pesBuffer = BufferUtil.connect(
-				unitStartPes.pesBuffer,
-				BufferUtil.safeRead(channel, pesDeltaSize)
-		);
-		// ここでは読み込んだデータを主体となるpesのdata領域に格納させていきます。
-		unitStartPes.pesPacketLengthLeft -= pesDeltaSize;
-		if(unitStartPes.pesPacketLengthLeft == 0) {
-			// ここまできたら、byteBufferからframeを生成して保持しておけばよい。
-			if(unitStartPes.frameAnalyzer != null) {
-//				unitStartPes.pesBuffer.flip();
-				IReadChannel pesBufferChannel = new ByteReadChannel(unitStartPes.pesBuffer);
-				IFrame frame = null;
-				long audioSampleNum = 0;
-				while((frame = unitStartPes.frameAnalyzer.analyze(pesBufferChannel)) != null) {
-					if(frame instanceof VideoFrame) {
-						VideoFrame vFrame = (VideoFrame)frame;
-						vFrame.setPts(unitStartPes.pts.getPts());
-						vFrame.setTimebase(90000);
-					}
-					else if(frame instanceof AudioFrame) {
-						AudioFrame aFrame = (AudioFrame)frame;
-						aFrame.setPts(unitStartPes.pts.getPts() + audioSampleNum * 90000 / aFrame.getSampleRate());
-						aFrame.setTimebase(90000);
-						audioSampleNum += aFrame.getSampleNum();
-					}
-					unitStartPes.addFrame(frame);
-				}
-			}
-		}*/
 	}
 	/**
 	 * データの解析を実行させます
@@ -363,7 +332,6 @@ public class Pes extends MpegtsPacket {
 		ByteBuffer pesChunk = ByteBuffer.allocate((int)(Math.ceil((frameBuffer.remaining() + headerLength) / 184f) * 188));
 		if(headerLength + frameBuffer.remaining() < 184) {
 			// 1packetで済む長さなので、調整しないとだめ。
-//			logger.info("1packetで済む長さなので、adaptationFieldで調整します。");
 			setAdaptationFieldExist(1); // adaptationFieldを有効にする。
 			AdaptationField aField = getAdaptationField();
 			aField.setLength(aField.getLength() + 183 - (headerLength + frameBuffer.remaining()));
@@ -378,7 +346,6 @@ public class Pes extends MpegtsPacket {
 			case 0:
 				break;
 			case 2:
-//				logger.info(pts.getBits());
 				connector.feed(pts.getBits());
 				break;
 			case 3:
@@ -393,7 +360,6 @@ public class Pes extends MpegtsPacket {
 			super.setData(pesChunk);
 			return;
 		}
-//		logger.info("通常のパケットなので、まず第１パケットの書き込みを実行します。");
 		// データサイズを計算します。
 		// header4byteとadaptationFieldを取得します。
 		pesChunk.put(getHeaderBuffer());
@@ -407,7 +373,6 @@ public class Pes extends MpegtsPacket {
 		case 0:
 			break;
 		case 2:
-//			logger.info(pts.getBits());
 			connector.feed(pts.getBits());
 			break;
 		case 3:
@@ -433,10 +398,8 @@ public class Pes extends MpegtsPacket {
 		while(frameBuffer.remaining() > 0) {
 			setContinuityCounter(getContinuityCounter() + 1);
 			if(frameBuffer.remaining() < 184) {
-//				logger.info("here...:" + frameBuffer.remaining());
 				setAdaptationFieldExist(1);
 				getAdaptationField().setLength(183 - frameBuffer.remaining());
-//				logger.info(getAdaptationField());
 				pesChunk.put(getHeaderBuffer().array());
 				data = new byte[frameBuffer.remaining()];
 				frameBuffer.get(data);
@@ -452,7 +415,6 @@ public class Pes extends MpegtsPacket {
 		}
 		pesChunk.flip();
 		// header部checkOK
-//		logger.info(HexUtil.toHex(pesChunk, true));
 		setData(pesChunk);
 		// pesの内容をもとに戻しておく。
 	}
@@ -504,7 +466,6 @@ public class Pes extends MpegtsPacket {
 						findSliceFrame = true;
 					}
 					else if(videoFrame instanceof H264Frame) {
-//						logger.info("frame:" + videoFrame + " size:" + videoFrame.getSize());
 						// TODO 各フレームの１つ目は00 00 00 01がいい。
 						// TODO 同一フレームが２つ以上はいっている場合の２つ目は00 00 01になるらしい。
 						length += 4 + videoFrame.getSize(); // 同じframeの２つ目だったら3になるっぽいですね。
@@ -541,8 +502,6 @@ public class Pes extends MpegtsPacket {
 			}
 			else {
 				throw new Exception("知らないframeデータでした。:" + frame);
-//				frameBuffer = ByteBuffer.allocate(frame.getSize());
-//				frameBuffer.put(frame.getData());
 			}
 			frameBuffer.flip();
 			return frameBuffer;

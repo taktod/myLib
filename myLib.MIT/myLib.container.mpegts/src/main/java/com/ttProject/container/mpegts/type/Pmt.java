@@ -73,10 +73,10 @@ public class Pmt extends ProgramPacket {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Pmt.class);
-	private Bit3 reserved1 = new Bit3();
-	private Bit13 pcrPid = new Bit13();
-	private Bit4 reserved2 = new Bit4();
-	private Bit12 programInfoLength = new Bit12();
+	private Bit3  reserved1         = null;
+	private Bit13 pcrPid            = null;
+	private Bit4  reserved2         = null;
+	private Bit12 programInfoLength = null;
 	private List<PmtElementaryField> fields = new ArrayList<PmtElementaryField>();
 	private Bit32 crc32 = new Bit32();
 	/**
@@ -116,26 +116,15 @@ public class Pmt extends ProgramPacket {
 		}
 		catch(Exception e) {
 		}
-		reserved1.set(0x07);
-		pcrPid.set(0x0100);
-		reserved2.set(0x0F);
-		programInfoLength.set(0x0000);
+		reserved1         = new Bit3(0x07);
+		pcrPid            = new Bit13(0x0100);
+		reserved2         = new Bit4(0x0F);
+		programInfoLength = new Bit12();
 		super.update();
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
-/*		BitLoader loader = new BitLoader(channel);
-		loader.load(reserved1, pcrPid,
-				reserved2, programInfoLength);
-		int size = getSectionLength() - 5 - 4;
-		while(size > 4) {
-			PmtElementaryField elementaryField = new PmtElementaryField();
-			elementaryField.load(channel);
-			size -= elementaryField.getSize();
-			fields.add(elementaryField);
-		}
-		loader.load(crc32);*/
 		BitLoader loader = new BitLoader(channel);
 		loader.load(crc32);
 		super.update();
@@ -145,10 +134,13 @@ public class Pmt extends ProgramPacket {
 		if(isLoaded()) {
 			return;
 		}
-//		BufferUtil.quickDispose(channel, 188 - getSize());
 		IReadChannel holdChannel = new ByteReadChannel(getBuffer());
 		super.load(holdChannel);
 		BitLoader loader = new BitLoader(holdChannel);
+		reserved1         = new Bit3();
+		pcrPid            = new Bit13();
+		reserved2         = new Bit4();
+		programInfoLength = new Bit12();
 		loader.load(reserved1, pcrPid, reserved2, programInfoLength);
 		int size = getSectionLength() - 5 - 4 - 4;
 		while(size > 0) {

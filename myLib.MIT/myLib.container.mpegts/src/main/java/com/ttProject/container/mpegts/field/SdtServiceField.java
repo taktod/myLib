@@ -18,13 +18,13 @@ import com.ttProject.unit.extra.bit.Bit6;
  * @author taktod
  */
 public class SdtServiceField implements IDescriptorHolder {
-	private Bit16 serviceId = new Bit16(1);
-	private Bit6 reservedFutureUse = new Bit6(0x3F);
-	private Bit1 eitScheduleFlag = new Bit1();
-	private Bit1 eitPresentFollowingFlag = new Bit1();
-	private Bit3 runningStatus = new Bit3(4);
-	private Bit1 freeCAMode = new Bit1();
-	private Bit12 descriptorsLoopLength = new Bit12();
+	private Bit16 serviceId               = new Bit16(1);
+	private Bit6  reservedFutureUse       = new Bit6(0x3F);
+	private Bit1  eitScheduleFlag         = new Bit1();
+	private Bit1  eitPresentFollowingFlag = new Bit1();
+	private Bit3  runningStatus           = new Bit3(4);
+	private Bit1  freeCAMode              = new Bit1();
+	private Bit12 descriptorsLoopLength   = new Bit12();
 	private List<Descriptor> descriptors = new ArrayList<Descriptor>();
 	/**
 	 * @param id

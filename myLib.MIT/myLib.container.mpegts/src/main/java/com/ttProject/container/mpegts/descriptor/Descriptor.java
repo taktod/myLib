@@ -66,6 +66,9 @@ public abstract class Descriptor {
 	public int getSize() {
 		return descriptorLength.get() + 2; // タグの設定長さ + tag&lengthBit
 	}
+	/**
+	 * サイズの更新を実施します
+	 */
 	public void updateSize() {
 		if(holder != null) {
 			holder.updateSize();

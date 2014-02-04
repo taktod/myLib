@@ -28,18 +28,18 @@ public abstract class ProgramPacket extends MpegtsPacket {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(ProgramPacket.class);
-	private Bit8 pointerField           = new Bit8(); // 0000 0000
-	private Bit8 tableId                = new Bit8(); // packet固定値
-	private Bit1 sectionSyntaxIndicator = new Bit1(); // 1
-	private Bit1 reservedFutureUse1     = new Bit1(); // 0
-	private Bit2 reserved1              = new Bit2(); // 11
-	private Bit12 sectionLength         = new Bit12(); // 12bit
-	private Bit16 programNumber         = new Bit16(); // 16bit
-	private Bit2 reserved2              = new Bit2(); // 11
-	private Bit5 versionNumber          = new Bit5(); // 00000
-	private Bit1 currentNextOrder       = new Bit1(); // 1
-	private Bit8 sectionNumber          = new Bit8(); // 00000000
-	private Bit8 lastSectionNumber      = new Bit8(); // 00000000
+	private Bit8  pointerField           = null; // 0000 0000
+	private Bit8  tableId                = null; // packet固定値
+	private Bit1  sectionSyntaxIndicator = null; // 1
+	private Bit1  reservedFutureUse1     = null; // 0
+	private Bit2  reserved1              = null; // 11
+	private Bit12 sectionLength          = null; // 12bit
+	private Bit16 programNumber          = null; // 16bit
+	private Bit2  reserved2              = null; // 11
+	private Bit5  versionNumber          = null; // 00000
+	private Bit1  currentNextOrder       = null; // 1
+	private Bit8  sectionNumber          = null; // 00000000
+	private Bit8  lastSectionNumber      = null; // 00000000
 	
 	/** minimumLoadで保持しておくデータ */
 	private ByteBuffer buffer = null;
@@ -77,24 +77,22 @@ public abstract class ProgramPacket extends MpegtsPacket {
 			bufferLength -= (1 + getAdaptationField().getLength());
 		}
 		buffer = BufferUtil.safeRead(channel, bufferLength);
-		// TODO ここの処理はminimumLoadからloadに変更したいとおもいます。
-		// 理由はcrc32のみ先に取得するすべをつくっておきたいので
-		// crc32を最速で作成する動作のみ、ここにいれたいと思います。
-/*		BitLoader loader = new BitLoader(channel);
-		loader.load(pointerField, tableId, sectionSyntaxIndicator,
-				reservedFutureUse1, reserved1, sectionLength, programNumber,
-				reserved2, versionNumber, currentNextOrder,
-				sectionNumber, lastSectionNumber);
-		if(isAdaptationFieldExist()) {
-			super.setSize(8 + getAdaptationField().getLength() + 1 + sectionLength.get());
-		}
-		else {
-			super.setSize(8 + sectionLength.get());
-		}*/
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		BitLoader loader = new BitLoader(channel);
+		pointerField           = new Bit8();
+		tableId                = new Bit8();
+		sectionSyntaxIndicator = new Bit1();
+		reservedFutureUse1     = new Bit1();
+		reserved1              = new Bit2();
+		sectionLength          = new Bit12();
+		programNumber          = new Bit16();
+		reserved2              = new Bit2();
+		versionNumber          = new Bit5();
+		currentNextOrder       = new Bit1();
+		sectionNumber          = new Bit8();
+		lastSectionNumber      = new Bit8();
 		loader.load(pointerField, tableId, sectionSyntaxIndicator,
 				reservedFutureUse1, reserved1, sectionLength, programNumber,
 				reserved2, versionNumber, currentNextOrder,
