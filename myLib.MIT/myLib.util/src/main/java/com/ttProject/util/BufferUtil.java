@@ -45,6 +45,9 @@ public class BufferUtil {
 		return safeRead(ch, length, timeout, -1);
 	}
 	public static ByteBuffer safeRead(IReadChannel ch, int length, int timeout, int tryCount) throws Exception {
+		if(ch.size() - ch.position() < length) {
+			throw new Exception("読み込みチャンネルより大きなデータを取得しようとしました。");
+		}
 		ByteBuffer buffer = ByteBuffer.allocate(length);
 		int count = 0;
 		while(true) {

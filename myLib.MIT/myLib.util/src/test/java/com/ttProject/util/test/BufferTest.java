@@ -5,6 +5,8 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import com.ttProject.nio.channels.ByteReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 import com.ttProject.util.HexUtil;
 
@@ -33,5 +35,15 @@ public class BufferTest {
 		logger.info(src);
 		logger.info(dst);
 		logger.info(BufferUtil.isSame(src, dst));
+	}
+	@Test
+	public void test2() throws Exception {
+		try {
+			IReadChannel channel = new ByteReadChannel(HexUtil.makeBuffer("00010203040506"));
+			BufferUtil.safeRead(channel, 8);
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
