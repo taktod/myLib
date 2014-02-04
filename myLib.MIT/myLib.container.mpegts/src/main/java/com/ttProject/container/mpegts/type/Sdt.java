@@ -92,7 +92,7 @@ public class Sdt extends ProgramPacket {
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
-		BitLoader loader = new BitLoader(channel);
+/*		BitLoader loader = new BitLoader(channel);
 		loader.load(originalNetworkId, reservedFutureUse2);
 		// ここからsdtServiceFieldの値を読み込む必要あり
 		int size = getSectionLength() - 8;
@@ -102,13 +102,29 @@ public class Sdt extends ProgramPacket {
 			size -= ssfield.getSize();
 			serviceFields.add(ssfield);
 		}
+		loader.load(crc32);*/
+		
+		BitLoader loader = new BitLoader(channel);
 		loader.load(crc32);
 		super.update();
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
+		if(isLoaded()) {
+			return;
+		}
 		// とりあえず残りのデータ数分skipさせとくか・・・
-		BufferUtil.quickDispose(channel, 188 - getSize());
+		IReadChannel holdChannel = new ByteReadChannel(getBuffer());
+		super.load(holdChannel);
+		BitLoader loader = new BitLoader(holdChannel);
+		loader.load(originalNetworkId, reservedFutureUse2);
+		int size = getSectionLength() - 8 - 4;
+		while(size > 0) {
+			SdtServiceField ssfield = new SdtServiceField();
+			ssfield.load(holdChannel);
+			size -= ssfield.getSize();
+			serviceFields.add(ssfield);
+		}
 		super.update();
 	}
 	@Override

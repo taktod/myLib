@@ -33,6 +33,7 @@ public class MpegtsPacketSelector implements ISelector {
 	private Logger logger = Logger.getLogger(MpegtsPacketSelector.class);
 	private final int patPid = 0x0000;
 	private final int sdtPid = 0x0011;
+	private Sdt sdt = null;
 	private Pat pat = null;
 	private Pmt pmt = null;
 	private Map<Integer, Pes> pesMap = new HashMap<Integer, Pes>();
@@ -65,17 +66,34 @@ public class MpegtsPacketSelector implements ISelector {
 		}
 		MpegtsPacket packet = null;
 		if(pid.get() == sdtPid) {
-			packet = new Sdt(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
+			Sdt tmpSdt = new Sdt(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
+			tmpSdt.minimumLoad(channel);
+			if(sdt == null || sdt.getCrc() != tmpSdt.getCrc()) {
+				// sdtがない場合とcrc32が一致しない場合は、上書きしてそちらをloadにまわす。
+				sdt = tmpSdt;
+			}
+			return sdt;
 		}
 		else if(pid.get() == patPid) {
 			// patを保持しておく
-			pat = new Pat(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
-			packet = pat;
+			Pat tmpPat = new Pat(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
+			tmpPat.minimumLoad(channel);
+			if(pat == null || pat.getCrc() != tmpPat.getCrc()) {
+				pat = tmpPat;
+			}
+			return pat;
 		}
 		else if(pat != null && pid.get() == pat.getPmtPid()){
-			pmt = new Pmt(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
+			Pmt tmpPmt = new Pmt(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
+			tmpPmt.minimumLoad(channel);
+			if(pmt == null || pmt.getCrc() != tmpPmt.getCrc()) {
+				pmt = tmpPmt;
+			}
+			else {
+				return pmt;
+			}
 			// pmtの解析がおわったら必要なanalyzerをつくらないとだめ
-			pmt.minimumLoad(channel);
+//			pmt.minimumLoad(channel);
 			// analyzerをつくっておく。
 			for(PmtElementaryField elementaryField : pmt.getFields()) {
 				switch(elementaryField.getCodecType()) {

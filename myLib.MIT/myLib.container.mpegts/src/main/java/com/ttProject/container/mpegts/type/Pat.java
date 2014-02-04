@@ -2,6 +2,8 @@ package com.ttProject.container.mpegts.type;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.container.mpegts.ProgramPacket;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -23,6 +25,9 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Pat extends ProgramPacket {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(Pat.class);
 	private Bit16 programNum = new Bit16();
 	private Bit3  reserved   = new Bit3();
 	private Bit13 pmtPid     = new Bit13();
@@ -75,15 +80,26 @@ public class Pat extends ProgramPacket {
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
+		// ここでは、crc32のみ先行して取得しないとだめ。
+//		BitLoader loader = new BitLoader(channel);
+//		loader.load(programNum, reserved, pmtPid, crc32);
 		BitLoader loader = new BitLoader(channel);
-		loader.load(programNum, reserved, pmtPid, crc32);
+		loader.load(crc32);
 		super.update();
 	}
 
 	@Override
 	public void load(IReadChannel channel) throws Exception {
+		if(isLoaded()) {
+			return;
+		}
+		IReadChannel holdChannel = new ByteReadChannel(getBuffer());
+		super.load(holdChannel);
+		BitLoader loader = new BitLoader(holdChannel);
+		loader.load(programNum, reserved, pmtPid);
+		// こちらの動作では、詳細を読み込む必要があります。
 		// とりあえず残りのデータ数分skipさせとくか・・・
-		BufferUtil.quickDispose(channel, 188 - getSize());
+//		BufferUtil.quickDispose(channel, 188 - getSize());
 		super.update();
 	}
 

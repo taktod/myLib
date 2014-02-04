@@ -36,15 +36,9 @@ public class MpegtsPacketReader extends Reader {
 	 */
 	@Override
 	public IContainer read(IReadChannel channel) throws Exception {
-		int pos = channel.position();
 		IUnit unit = getSelector().select(channel);
 		if(unit != null) {
-			if(unit instanceof Pes) {
-				unit.load(channel);
-			}
-			else {
-				channel.position(pos + 188);
-			}
+			unit.load(channel);
 		}
 		/*
 		 * 未完了pesの場合はNullUnitを応答します。

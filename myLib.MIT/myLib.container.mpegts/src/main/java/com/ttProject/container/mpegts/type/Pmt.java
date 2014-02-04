@@ -4,6 +4,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.container.mpegts.ProgramPacket;
 import com.ttProject.container.mpegts.field.PmtElementaryField;
 import com.ttProject.nio.channels.ByteReadChannel;
@@ -68,6 +70,9 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Pmt extends ProgramPacket {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(Pmt.class);
 	private Bit3 reserved1 = new Bit3();
 	private Bit13 pcrPid = new Bit13();
 	private Bit4 reserved2 = new Bit4();
@@ -120,7 +125,7 @@ public class Pmt extends ProgramPacket {
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
-		BitLoader loader = new BitLoader(channel);
+/*		BitLoader loader = new BitLoader(channel);
 		loader.load(reserved1, pcrPid,
 				reserved2, programInfoLength);
 		int size = getSectionLength() - 5 - 4;
@@ -130,12 +135,28 @@ public class Pmt extends ProgramPacket {
 			size -= elementaryField.getSize();
 			fields.add(elementaryField);
 		}
+		loader.load(crc32);*/
+		BitLoader loader = new BitLoader(channel);
 		loader.load(crc32);
 		super.update();
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		BufferUtil.quickDispose(channel, 188 - getSize());
+		if(isLoaded()) {
+			return;
+		}
+//		BufferUtil.quickDispose(channel, 188 - getSize());
+		IReadChannel holdChannel = new ByteReadChannel(getBuffer());
+		super.load(holdChannel);
+		BitLoader loader = new BitLoader(holdChannel);
+		loader.load(reserved1, pcrPid, reserved2, programInfoLength);
+		int size = getSectionLength() - 5 - 4 - 4;
+		while(size > 0) {
+			PmtElementaryField elementaryField = new PmtElementaryField();
+			elementaryField.load(holdChannel);
+			size -= elementaryField.getSize();
+			fields.add(elementaryField);
+		}
 		super.update();
 	}
 	@Override
