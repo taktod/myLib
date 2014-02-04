@@ -185,4 +185,11 @@ public class Sdt extends ProgramPacket {
 		// 更新したので、修正依頼をしておく
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getCrc() {
+		return crc32.get();
+	}
 }

@@ -106,4 +106,11 @@ public class Pat extends ProgramPacket {
 		buffer.flip();
 		super.setData(buffer);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getCrc() {
+		return crc32.get();
+	}
 }

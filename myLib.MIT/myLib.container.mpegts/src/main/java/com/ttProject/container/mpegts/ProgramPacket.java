@@ -45,6 +45,9 @@ public abstract class ProgramPacket extends MpegtsPacket {
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
+		// TODO ここの処理はminimumLoadからloadに変更したいとおもいます。
+		// 理由はcrc32のみ先に取得するすべをつくっておきたいので
+		// crc32を最速で作成する動作のみ、ここにいれたいと思います。
 		super.minimumLoad(channel);
 		BitLoader loader = new BitLoader(channel);
 		loader.load(pointerField, tableId, sectionSyntaxIndicator,
@@ -82,7 +85,20 @@ public abstract class ProgramPacket extends MpegtsPacket {
 			)
 		);
 	}
+	/**
+	 * crcの値を参照します
+	 * @return
+	 */
+	public abstract int getCrc();
+	/**
+	 * crcの値を算出します
+	 * @param buffer
+	 * @return
+	 */
 	protected int calculateCrc(ByteBuffer buffer) {
+		// TODO この計算の仕方は正確にはただしくない。
+		// 先頭にadaptationFieldがあって位置がずれている場合にきちんと動作しません。
+		// 本当はpointerFieldを抜いたデータから計算すべき
 		Crc32 crc32 = new Crc32();
 		ByteBuffer tmpBuffer = buffer.duplicate();
 		tmpBuffer.position(5);

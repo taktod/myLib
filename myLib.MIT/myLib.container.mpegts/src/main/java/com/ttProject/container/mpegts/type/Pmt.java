@@ -192,4 +192,11 @@ public class Pmt extends ProgramPacket {
 	public List<PmtElementaryField> getFields() {
 		return new ArrayList<PmtElementaryField>(fields);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int getCrc() {
+		return crc32.get();
+	}
 }
