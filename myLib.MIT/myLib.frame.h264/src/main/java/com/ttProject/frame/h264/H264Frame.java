@@ -1,6 +1,7 @@
 package com.ttProject.frame.h264;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.h264.type.PictureParameterSet;
@@ -23,6 +24,8 @@ public abstract class H264Frame extends VideoFrame {
 	private SequenceParameterSet sps = null;
 	/** 解析済みpps */
 	private PictureParameterSet pps = null;
+	/** 複数フレームで同一データとする場合のフレームリスト */
+	private List<H264Frame> frameList = null;
 	/**
 	 * コンストラクタ
 	 * @param forbiddenZeroBit
@@ -74,5 +77,17 @@ public abstract class H264Frame extends VideoFrame {
 	 */
 	public PictureParameterSet getPps() {
 		return pps;
+	}
+	public List<H264Frame> getGroupNalList() {
+		return frameList;
+	}
+	public boolean isFirstNal() {
+		if(frameList == null) {
+			return false;
+		}
+		if(frameList.get(0).hashCode() != this.hashCode()) {
+			return false;
+		}
+		return true;
 	}
 }

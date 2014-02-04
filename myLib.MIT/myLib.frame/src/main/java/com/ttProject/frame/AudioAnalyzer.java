@@ -34,4 +34,8 @@ public abstract class AudioAnalyzer implements IAnalyzer {
 		}
 		return frame;
 	}
+	@Override
+	public IFrame getRemainFrame() throws Exception {
+		return null;
+	}
 }

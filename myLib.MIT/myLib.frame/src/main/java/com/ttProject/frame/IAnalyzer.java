@@ -17,4 +17,10 @@ public interface IAnalyzer {
 	 * @throws Exception
 	 */
 	public IFrame analyze(IReadChannel channel) throws Exception;
+	/**
+	 * 処理途上のデータを応答します
+	 * @return
+	 * @throws Exception
+	 */
+	public IFrame getRemainFrame() throws Exception;
 }
