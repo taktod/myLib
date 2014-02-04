@@ -79,7 +79,7 @@ public class Sdt extends ProgramPacket {
 				new Bit1(1), new Bit4());
 		// デフォルトのminimumLoadをここで発動する必要あり
 		try {
-			super.minimumLoad(new ByteReadChannel(new byte[]{
+			super.load(new ByteReadChannel(new byte[]{
 				0x00, 0x42, (byte)0xF0, 0x24, 0x00, 0x01, (byte)0xC1, 0x00, 0x00,
 			}));
 			originalNetworkId = new Bit16(1);

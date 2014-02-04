@@ -62,7 +62,7 @@ public class Pat extends ProgramPacket {
 				new Bit4()
 		);
 		try {
-			super.minimumLoad(new ByteReadChannel(new byte[]{
+			super.load(new ByteReadChannel(new byte[]{
 					0x00, 0x00, (byte)0xB0, 0x0D, 0x00, 0x01, (byte)0xC1, 0x00, 0x00
 			}));
 		}
