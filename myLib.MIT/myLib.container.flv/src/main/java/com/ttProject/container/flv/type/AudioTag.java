@@ -372,7 +372,12 @@ public class AudioTag extends FlvTag {
 				}
 			}
 		}
-		return frameBuffer.duplicate();
+		if(frameBuffer == null) {
+			return null;
+		}
+		else {
+			return frameBuffer.duplicate();
+		}
 	}
 	/**
 	 * フレーム解析

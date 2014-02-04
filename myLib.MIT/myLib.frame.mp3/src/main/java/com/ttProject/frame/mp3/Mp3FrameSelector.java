@@ -36,7 +36,7 @@ public class Mp3FrameSelector extends AudioSelector {
 			frame = new ID3Frame();
 			break;
 		case 'T': // TAG?
-			break;
+			throw new Exception("Tag動作は未実装です。");
 		case 0xFF: // Frame
 			frame = new Frame();
 			break;

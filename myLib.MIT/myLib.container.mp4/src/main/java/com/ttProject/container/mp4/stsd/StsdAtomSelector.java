@@ -40,6 +40,9 @@ public class StsdAtomSelector implements ISelector {
 		else if("esds".equals(nameString)) {
 			atom = new Esds(size, name);
 		}
+		else {
+			throw new Exception("解析できない。mp4Atomでした。:" + nameString);
+		}
 		atom.minimumLoad(channel);
 		return atom;
 	}

@@ -200,9 +200,7 @@ public class SetupBase {
 		if(audioEncoder != null) {
 			audioEncoder.close();
 		}
-		if(container != null) {
-			container.close();
-		}
+		container.close();
 	}
 	/**
 	 * ラの音のaudioデータをつくって応答する。
