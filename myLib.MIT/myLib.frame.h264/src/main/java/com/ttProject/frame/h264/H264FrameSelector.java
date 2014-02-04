@@ -28,8 +28,6 @@ public class H264FrameSelector extends VideoSelector {
 	private SequenceParameterSet sps = null;
 	/** 解析pps */
 	private PictureParameterSet  pps = null;
-	/** 複数のnalの応答として */
-	private SliceFrame sliceFrame = null;
 	/**
 	 * {@inheritDoc}
 	 */
