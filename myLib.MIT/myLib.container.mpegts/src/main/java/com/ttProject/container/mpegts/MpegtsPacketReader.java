@@ -53,7 +53,7 @@ public class MpegtsPacketReader extends Reader {
 					return prevPes;
 				}
 			}
-			return new NullContainer();
+			return NullContainer.getInstance();
 		}
 		return (IContainer) unit;
 	}

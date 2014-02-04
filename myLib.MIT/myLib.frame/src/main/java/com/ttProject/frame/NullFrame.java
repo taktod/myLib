@@ -9,24 +9,52 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class NullFrame extends Frame {
+	/** インスタンス */
+	private static final NullFrame instance = new NullFrame();
+	/**
+	 * 応答として代表のインスタンスを応答します
+	 */
+	public static NullFrame getInstance() {
+		return instance;
+	}
+	/**
+	 * コンストラクタ(privateにして他で作成禁止)
+	 */
+	private NullFrame() {
+	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
-		return null;
+		throw new RuntimeException("NullFrameのpacket用bufferが要求されました。");
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public float getDuration() {
-		return 0;
+		throw new RuntimeException("NullFrameのduration値が要求されました。");
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-
+		throw new RuntimeException("NullFrameのデータ読み込みが要求されました。");
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-
+		throw new RuntimeException("NullFrameのデータ読み込みが要求されました。");
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-
+		throw new RuntimeException("NullFrameのデータ更新が要求されました。");
 	}
 }
