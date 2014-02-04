@@ -18,7 +18,8 @@ public class Crc32Test {
 	@Test
 	public void test() throws Exception {
 		Crc32 crc32 = new Crc32();
-		ByteBuffer buffer = HexUtil.makeBuffer("00B00D0001C100000001F000");
+//		ByteBuffer buffer = HexUtil.makeBuffer("00B00D0001C100000001F000");
+		ByteBuffer buffer = HexUtil.makeBuffer("00B00D5504C500000001E042");
 		while(buffer.remaining() != 0) {
 			crc32.update(buffer.get());
 		}
