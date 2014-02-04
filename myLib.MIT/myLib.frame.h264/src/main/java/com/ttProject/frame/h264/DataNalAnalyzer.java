@@ -44,13 +44,19 @@ public class DataNalAnalyzer extends VideoAnalyzer {
 		H264Frame frame = (H264Frame)getSelector().select(byteChannel);
 		frame.load(byteChannel);
 		if(h264Frame == null || h264Frame.getClass() != frame.getClass() || (frame instanceof SliceFrame && ((SliceFrame)frame).getFirstMbInSlice() == 0)) {
-			logger.info("新規データみたいです。");
+//			logger.info("新規データみたいです。");
 			h264Frame = frame;
 		}
 		else {
-			logger.info("追記データみたいです。");
+//			logger.info("追記データみたいです。");
 		}
 		h264Frame.addFrame(frame);
+		return frame;
+	}
+	@Override
+	public IFrame getRemainFrame() throws Exception {
+		H264Frame frame = h264Frame;
+		h264Frame = null;
 		return frame;
 	}
 }

@@ -154,4 +154,10 @@ public class NalAnalyzer extends VideoAnalyzer {
 			}
 		}
 	}
+	@Override
+	public IFrame getRemainFrame() throws Exception {
+		H264Frame frame = h264Frame;
+		h264Frame = null;
+		return frame;
+	}
 }
