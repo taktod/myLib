@@ -53,7 +53,7 @@ public class FlvToTest {
 	 * adtsにコンバートする(aac)
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void adts() throws Exception {
 		logger.info("adtsに変換する動作テスト");
 		convertTest(
