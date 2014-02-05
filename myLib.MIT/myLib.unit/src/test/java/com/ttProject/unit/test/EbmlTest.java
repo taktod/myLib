@@ -32,6 +32,19 @@ public class EbmlTest {
 		Ebml ebml2 = new Ebml();
 		loader.load(ebml1, ebml2);
 		logger.info(Long.toHexString(ebml1.getLong()));
+		logger.info(Long.toHexString(ebml1.getEbmlValue()));
+		logger.info(ebml1);
 		logger.info(Long.toHexString(ebml2.getLong()));
+		logger.info(Long.toHexString(ebml2.getEbmlValue()));
+		logger.info(ebml2);
+	}
+	@Test
+	public void test2() throws Exception {
+		logger.info("test2");
+		Ebml ebml = new Ebml();
+		ebml.setLong(0x0A45dfA3);
+		logger.info(Long.toHexString(ebml.getLong()));
+		logger.info(Long.toHexString(ebml.getEbmlValue()));
+		logger.info(ebml);
 	}
 }

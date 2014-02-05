@@ -20,6 +20,9 @@ public class BitN extends Bit {
 		super(0);
 		int count = 0;
 		for(Bit bit : bits) {
+			if(bit == null) {
+				continue;
+			}
 			count += bit.bitCount;
 			this.bits.add(bit);
 		}
