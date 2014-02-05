@@ -1,14 +1,21 @@
 package com.ttProject.frame.h264.type;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.frame.h264.SliceFrame;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit2;
+import com.ttProject.unit.extra.bit.Bit24;
+import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit5;
+import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -75,7 +82,27 @@ public class SliceIDR extends SliceFrame {
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		// packデータとしては、00 00 00 01 sps 00 00 00 01 pps 00 00 00 01 sliceIdrをつくればいいはず。
-		ByteBuffer spsBuffer = getSps().getData();
+		BitConnector connector = new BitConnector();
+		List<ByteBuffer> bufferList = new ArrayList<ByteBuffer>();
+		// sps
+		bufferList.add(connector.connect(new Bit32(1)));
+		bufferList.add(getSps().getData());
+		// pps
+		bufferList.add(connector.connect(new Bit32(1)));
+		bufferList.add(getPps().getData());
+		// idrFrame
+		bufferList.add(connector.connect(new Bit8()));
+		for(H264Frame frame : getGroupFrameList()) {
+			if(frame instanceof SliceIDR) {
+				bufferList.add(connector.connect(new Bit24(1)));
+				bufferList.add(frame.getData());
+			}
+			else {
+				throw new Exception("想定外のframeが含まれていました。:" + getClass());
+			}
+		}
+		return BufferUtil.connect(bufferList);
+/*		ByteBuffer spsBuffer = getSps().getData();
 		ByteBuffer ppsBuffer = getPps().getData();
 		ByteBuffer idrBuffer = getData();
 		ByteBuffer packBuffer = ByteBuffer.allocate(4 + spsBuffer.remaining() + 4 + ppsBuffer.remaining() + 4 + idrBuffer.remaining());
@@ -86,6 +113,6 @@ public class SliceIDR extends SliceFrame {
 		packBuffer.putInt(1);
 		packBuffer.put(idrBuffer);
 		packBuffer.flip();
-		return packBuffer;
+		return packBuffer;*/
 	}
 }
