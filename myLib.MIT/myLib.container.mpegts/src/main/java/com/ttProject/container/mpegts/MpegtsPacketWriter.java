@@ -14,7 +14,6 @@ import com.ttProject.container.mpegts.type.Pat;
 import com.ttProject.container.mpegts.type.Pes;
 import com.ttProject.container.mpegts.type.Pmt;
 import com.ttProject.container.mpegts.type.Sdt;
-import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
@@ -81,9 +80,6 @@ public class MpegtsPacketWriter implements IWriter {
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
 		if(frame == null) {
-			return;
-		}
-		if(frame instanceof AudioFrame) {
 			return;
 		}
 		if(frame instanceof VideoMultiFrame) {
