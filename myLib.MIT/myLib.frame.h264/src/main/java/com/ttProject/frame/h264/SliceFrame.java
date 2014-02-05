@@ -1,6 +1,8 @@
 package com.ttProject.frame.h264;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit;
@@ -8,8 +10,10 @@ import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit2;
+import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Ueg;
+import com.ttProject.util.BufferUtil;
 
 /**
  * slice系のデータのベースになるクラス
@@ -46,5 +50,20 @@ public abstract class SliceFrame extends H264Frame {
 	}
 	public int getFirstMbInSlice() throws Exception {
 		return firstMbInSlice.get();
+	}
+	/**
+	 * flvやmp4のようなサイズベースのnal結合bufferを取得します。
+	 * @return
+	 * @throws Exception
+	 */
+	public ByteBuffer getDataPackBuffer() throws Exception {
+		BitConnector connector = new BitConnector();
+		List<ByteBuffer> bufferList = new ArrayList<ByteBuffer>();
+		for(H264Frame frame : getGroupFrameList()) {
+			ByteBuffer targetBuffer = frame.getData();
+			bufferList.add(connector.connect(new Bit32(targetBuffer.remaining())));
+			bufferList.add(targetBuffer);
+		}
+		return BufferUtil.connect(bufferList);
 	}
 }
