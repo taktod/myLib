@@ -54,7 +54,16 @@ public class BitLoader {
 	 * @param bit 一応8bitより大きなデータがきても大丈夫なはずですが、32bit超えるとoverflowします。
 	 */
 	public void load(Bit bit) throws Exception {
-		if(bit instanceof ExpGolomb) {
+		if(bit instanceof Ebml) {
+			Ebml ebml = (Ebml) bit;
+			Bit1 bit1 = null;
+			do {
+				bit1 = new Bit1();
+				load(bit1);
+			} while(ebml.addBit1(bit1)); // 1bitずつ読み込んでいって、実際のデータサイズをしる。
+			load(ebml.getDataBit()); // 残りのデータbit数を読み込ませる
+		}
+		else if(bit instanceof ExpGolomb) {
 			ExpGolomb golomb = (ExpGolomb) bit;
 			Bit1 bit1 = null;
 			do {
