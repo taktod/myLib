@@ -5,6 +5,7 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
 import com.ttProject.frame.IFrame;
+import com.ttProject.frame.NullFrame;
 import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -120,14 +121,20 @@ public class NalAnalyzer extends VideoAnalyzer {
 		H264Frame frame = (H264Frame)getSelector().select(channel);
 		frame.load(channel);
 		if(h264Frame == null || h264Frame.getClass() != frame.getClass() || (frame instanceof SliceFrame && ((SliceFrame)frame).getFirstMbInSlice() == 0)) {
-//			logger.info("新規データみたいです。" + frame.getClass());
+			// 1つ前のデータを応答しますので、保持しておく
+			IFrame oldFrame = h264Frame;
+			if(oldFrame == null) { // 初データで内容なしの場合、NullFrameを応答しておく
+				oldFrame = NullFrame.getInstance();
+			}
 			h264Frame = frame;
+			h264Frame.addFrame(frame);
+			return oldFrame;
 		}
 		else {
-//			logger.info("追記データみたいです。" + frame.getClass());
+			// 中途データの場合はNullFrameを応答しておく。
+			h264Frame.addFrame(frame);
+			return NullFrame.getInstance();
 		}
-		h264Frame.addFrame(frame);
-		return frame;
 	}
 	/**
 	 * 最終読み込み途上データを設定

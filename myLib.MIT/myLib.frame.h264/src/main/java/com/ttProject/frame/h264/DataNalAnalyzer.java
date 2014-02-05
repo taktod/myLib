@@ -3,6 +3,7 @@ package com.ttProject.frame.h264;
 import org.apache.log4j.Logger;
 
 import com.ttProject.frame.IFrame;
+import com.ttProject.frame.NullFrame;
 import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -44,14 +45,20 @@ public class DataNalAnalyzer extends VideoAnalyzer {
 		H264Frame frame = (H264Frame)getSelector().select(byteChannel);
 		frame.load(byteChannel);
 		if(h264Frame == null || h264Frame.getClass() != frame.getClass() || (frame instanceof SliceFrame && ((SliceFrame)frame).getFirstMbInSlice() == 0)) {
-//			logger.info("新規データみたいです。");
+			// 1つ前のデータを応答しますので、保持しておく。
+			IFrame oldFrame = h264Frame;
+			if(oldFrame == null) { // 初データの場合はNullFrameを応答する
+				oldFrame = NullFrame.getInstance();
+			}
 			h264Frame = frame;
+			h264Frame.addFrame(frame);
+			return oldFrame;
 		}
 		else {
-//			logger.info("追記データみたいです。");
+			// 中途データの場合は強制的にNullFrame応答でOK
+			h264Frame.addFrame(frame);
+			return NullFrame.getInstance();
 		}
-		h264Frame.addFrame(frame);
-		return frame;
 	}
 	@Override
 	public IFrame getRemainFrame() throws Exception {
