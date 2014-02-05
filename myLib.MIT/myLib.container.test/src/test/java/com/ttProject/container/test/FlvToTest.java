@@ -224,6 +224,41 @@ public class FlvToTest {
 		);
 	}
 	/**
+	 * mpegtsのh264の変換テスト
+	 * @throws Exception
+	 */
+	@Test
+	public void mpegts_h264_aac_ex() throws Exception {
+		logger.info("mpegtsに変換するテスト(h264 / aac)");
+		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_h264_aac_ex.ts");
+		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
+		// とりあえずsdt pat pmtを設定しなければいけない。
+		// sdtを追加
+		Sdt sdt = new Sdt();
+		sdt.writeDefaultProvider("test", "hogehoge");
+		writer.addContainer(sdt);
+		// patを追加
+		Pat pat = new Pat();
+		writer.addContainer(pat);
+		// pmtを追加
+		Pmt pmt = new Pmt(pat.getPmtPid());
+		PmtElementaryField videoElementaryField = pmtFieldFactory.makeNewField(CodecType.VIDEO_H264);
+		pmt.setPcrPid(videoElementaryField.getPid());
+		pmt.addNewField(videoElementaryField);
+		PmtElementaryField audioElementaryField = pmtFieldFactory.makeNewField(CodecType.AUDIO_AAC);
+		pmt.addNewField(audioElementaryField);
+		writer.addContainer(pmt);
+		// frame追記にあわせてpesを書き込んでいく
+		convertTest(
+			FileReadChannel.openFileReadChannel(
+					"http://49.212.39.17/ahiru.flv"
+			),
+			writer,
+			videoElementaryField.getPid(),
+			audioElementaryField.getPid()
+		);
+	}
+	/**
 	 * flvのmp3変換テスト
 	 * flvからflameを抜き出して再度flvにします。
 	 * @throws Exception
