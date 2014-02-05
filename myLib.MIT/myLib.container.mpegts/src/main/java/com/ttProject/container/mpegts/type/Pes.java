@@ -15,11 +15,13 @@ import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.NullFrame;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.frame.h264.SliceFrame;
+import com.ttProject.frame.h264.type.AccessUnitDelimiter;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitConnector;
@@ -29,6 +31,7 @@ import com.ttProject.unit.extra.bit.Bit13;
 import com.ttProject.unit.extra.bit.Bit16;
 import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit24;
+import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
@@ -77,7 +80,6 @@ import com.ttProject.util.BufferUtil;
  */
 public class Pes extends MpegtsPacket {
 	/** ロガー */
-	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Pes.class);
 	private Bit24 prefix = new Bit24(1); // 0x000001固定
 	private Bit8  streamId = new Bit8(); // audioなら0xC0 - 0xDF videoなら0xE0 - 0xEFただしvlcが吐くデータはその限りではなかった。
@@ -229,7 +231,13 @@ public class Pes extends MpegtsPacket {
 			IFrame frame = null;
 			long audioSampleNum = 0;
 			while((frame = unitStartPes.frameAnalyzer.analyze(pesBufferChannel)) != null) {
+				if(frame instanceof NullFrame) {
+					continue;
+				}
 				if(frame instanceof VideoFrame) {
+					if(!(frame instanceof SliceFrame)) { // 取得データとして、h264の場合はsliceFrameのみほしい
+						continue;
+					}
 					VideoFrame vFrame = (VideoFrame)frame;
 					vFrame.setPts(unitStartPes.pts.getPts());
 					vFrame.setTimebase(90000);
@@ -447,64 +455,22 @@ public class Pes extends MpegtsPacket {
 		else if(frame instanceof IVideoFrame) {
 			// 映像フレームの場合
 			if(frame instanceof H264Frame) {
-				// これはまずありえない。
-				throw new Exception("h264Frameが単体で設定されています。なにかがおかしいです。:" + frame);
+				logger.info("こっちがくるはず");
+				// ここでフレームをつくる必要あり。
+				// やることは、audをつくることと、pesPacketFrameをつくることの２つ
+				List<ByteBuffer> bufferList = new ArrayList<ByteBuffer>();
+				BitConnector connector = new BitConnector();
+				bufferList.add(connector.connect(new Bit32(1)));
+				bufferList.add(new AccessUnitDelimiter().getData());
+				bufferList.add(frame.getPackBuffer());
+				return BufferUtil.connect(bufferList);
 			}
 			else if(frame instanceof VideoMultiFrame) {
-				// 結合すべきデータ長を計算しなければならない。
-				int length = 0;
-				VideoMultiFrame multiFrame = (VideoMultiFrame)frame;
-				boolean findSliceFrame = false;
-				for(IVideoFrame videoFrame : multiFrame.getFrameList()) {
-					if(videoFrame instanceof SliceFrame) {
-						if(findSliceFrame) {
-							length += 3 + videoFrame.getSize(); // 同じframeの２つ目だったら3になるっぽいですね。
-						}
-						else {
-							length += 4 + videoFrame.getSize(); // 同じframeの２つ目だったら3になるっぽいですね。
-						}
-						findSliceFrame = true;
-					}
-					else if(videoFrame instanceof H264Frame) {
-						// TODO 各フレームの１つ目は00 00 00 01がいい。
-						// TODO 同一フレームが２つ以上はいっている場合の２つ目は00 00 01になるらしい。
-						length += 4 + videoFrame.getSize(); // 同じframeの２つ目だったら3になるっぽいですね。
-					}
-					else {
-						throw new Exception("h264以外のフレームがmultiFrameに混入していました。:" + videoFrame);
-					}
-				}
-				// メモリー確保
-				frameBuffer = ByteBuffer.allocate(length);
-				// データ登録
-				findSliceFrame = false;
-				for(IVideoFrame videoFrame : multiFrame.getFrameList()) {
-					if(videoFrame instanceof SliceFrame) {
-						if(findSliceFrame) {
-							frameBuffer.put((byte)0x00);
-							frameBuffer.putShort((short)1);
-							frameBuffer.put(videoFrame.getData());
-						}
-						else {
-							frameBuffer.putInt(1);
-							frameBuffer.put(videoFrame.getData());
-						}
-						findSliceFrame = true;
-					}
-					else if(videoFrame instanceof H264Frame) {
-						frameBuffer.putInt(1);
-						frameBuffer.put(videoFrame.getData());
-					}
-					else {
-						throw new Exception("h264以外のフレームがmultiFrameに混入していました。:" + videoFrame);
-					}
-				}
+				throw new Exception("複合フレームでくることはないと思われます。");
 			}
 			else {
-				throw new Exception("知らないframeデータでした。:" + frame);
+				throw new Exception("h264以外のframeが送信されてきました。未実装です。:" + frame);
 			}
-			frameBuffer.flip();
-			return frameBuffer;
 		}
 		else {
 			throw new Exception("pesが映像でも音声でもないデータを保持していました。:" + frame);

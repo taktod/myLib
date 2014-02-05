@@ -13,10 +13,7 @@ import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.h264.H264Frame;
-import com.ttProject.frame.h264.type.AccessUnitDelimiter;
-import com.ttProject.frame.h264.type.Slice;
-import com.ttProject.frame.h264.type.SliceIDR;
-import com.ttProject.frame.h264.type.SupplementalEnhancementInformation;
+import com.ttProject.frame.h264.SliceFrame;
 
 /**
  * frameデータからPesを作成するコンバーター
@@ -125,76 +122,16 @@ public class FrameToPesConverter {
 	 * @throws Exception
 	 */
 	private Pes getH264Pes(int pid, Pmt pmt, H264Frame frame) throws Exception {
-		if(frame instanceof SupplementalEnhancementInformation) {
-			// ヌルポの原因になるので、いらない
+		// h264FrameはsliceFrame以外必要ない。
+		if(!(frame instanceof SliceFrame)) {
 			return null;
 		}
-		Pes result = null;
 		Pes pes = pesMap.get(pid);
 		// 始めのデータがsliceIdrでない場合は処理しない
-		if(pes == null && !(frame instanceof SliceIDR)) {
-			return null;
-		}
-		// 前のデータがある場合
-		if(pes != null) {
-			if(frame instanceof SliceIDR) {
-				SliceIDR sliceIDR = (SliceIDR)frame;
-				if(sliceIDR.getFirstMbInSlice() == 0) {
-					result = pes;
-					pes = makeNewPes(pid, pmt);
-					AccessUnitDelimiter aud = new AccessUnitDelimiter();
-					aud.setPts(frame.getPts());
-					aud.setTimebase(frame.getTimebase());
-					aud.setDts(frame.getDts());
-					pes.addFrame(aud);
-					pes.addFrame(sliceIDR.getSps());
-					pes.addFrame(sliceIDR.getPps());
-				}
-			}
-			else if(frame instanceof Slice) {
-				Slice slice = (Slice)frame;
-				if(slice.getFirstMbInSlice() == 0) {
-					result = pes;
-					pes = makeNewPes(pid, pmt);
-					AccessUnitDelimiter aud = new AccessUnitDelimiter();
-					aud.setPts(frame.getPts());
-					aud.setTimebase(frame.getTimebase());
-					aud.setDts(frame.getDts());
-					pes.addFrame(aud);
-				}
-			}
-			else {
-				logger.info("想定外のフレームを受け取りました:" + frame.toString());
-				return null;
-			}
-		}
-		else {
-			if(frame instanceof SliceIDR) {
-				pes = makeNewPes(pid, pmt);
-				SliceIDR sliceIDR = (SliceIDR)frame;
-				AccessUnitDelimiter aud = new AccessUnitDelimiter();
-				aud.setPts(frame.getPts());
-				aud.setTimebase(frame.getTimebase());
-				aud.setDts(frame.getDts());
-				pes.addFrame(aud);
-				pes.addFrame(sliceIDR.getSps());
-				pes.addFrame(sliceIDR.getPps());
-			}
-			else if(frame instanceof Slice) {
-				pes = makeNewPes(pid, pmt);
-				AccessUnitDelimiter aud = new AccessUnitDelimiter();
-				aud.setPts(frame.getPts());
-				aud.setTimebase(frame.getTimebase());
-				aud.setDts(frame.getDts());
-				pes.addFrame(aud);
-			}
-			else {
-				logger.info("想定外のフレームを受け取りました2:" + frame.toString());
-				return null;
-			}
-		}
-		pes.addFrame(frame);
-		return result;
+		pes = makeNewPes(pid, pmt);
+		pes.addFrame(frame); // sliceFrameを１ついれればそれで完了するはず。
+		pesMap.remove(pid); // 使い回すことはないので、mapから外しておく。
+		return pes;
 	}
 	public Map<Integer, Pes> getPesMap() {
 		return pesMap;

@@ -1,14 +1,14 @@
 package com.ttProject.container.flv.type;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.flv.CodecType;
 import com.ttProject.container.flv.FlvTag;
+import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.NullFrame;
 import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
@@ -18,6 +18,7 @@ import com.ttProject.frame.h264.ConfigData;
 import com.ttProject.frame.h264.DataNalAnalyzer;
 import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.frame.h264.H264FrameSelector;
+import com.ttProject.frame.h264.SliceFrame;
 import com.ttProject.frame.h264.type.PictureParameterSet;
 import com.ttProject.frame.h264.type.SequenceParameterSet;
 import com.ttProject.frame.vp6.Vp6Frame;
@@ -239,28 +240,12 @@ public class VideoTag extends FlvTag {
 			// h264の場合は、sizeNalにしないとだめ。
 			if(CodecType.getVideoCodecType(codecId.get()) == CodecType.H264) {
 				// h264のフレームの場合は、調整することがあるので、やらないとだめ。
-				ByteBuffer sizeBuffer = null;
-				ByteBuffer nalBuffer = null;
-				if(frame instanceof VideoMultiFrame) {
-					List<ByteBuffer> buffers = new ArrayList<ByteBuffer>();
-					for(IVideoFrame vFrame : ((VideoMultiFrame) frame).getFrameList()) {
-						if(vFrame instanceof H264Frame) {
-							nalBuffer = vFrame.getData();
-							sizeBuffer = ByteBuffer.allocate(4);
-							sizeBuffer.putInt(nalBuffer.remaining());
-							sizeBuffer.flip();
-							buffers.add(sizeBuffer);
-							buffers.add(nalBuffer);
-						}
-					}
-					frameBuffer = BufferUtil.connect(buffers);
+				if(frame instanceof SliceFrame) {
+					frameBuffer = ((SliceFrame) frame).getDataPackBuffer();
 				}
 				else {
-					nalBuffer = frame.getData();
-					sizeBuffer = ByteBuffer.allocate(4);
-					sizeBuffer.putInt(nalBuffer.remaining());
-					sizeBuffer.flip();
-					frameBuffer = BufferUtil.connect(sizeBuffer, nalBuffer);
+					// マルチフレームがくることももうないはず
+					throw new Exception("h264でSliceFrame以外のフレームを保持することはないはずです。");
 				}
 			}
 			else {
@@ -293,7 +278,11 @@ public class VideoTag extends FlvTag {
 		IReadChannel channel = new ByteReadChannel(buffer);
 		// video側はコンテナからwidthとheightの情報取得できないので、放置しておく。
 		do {
-			VideoFrame videoFrame = (VideoFrame)frameAnalyzer.analyze(channel);
+			IFrame analyzedFrame = frameAnalyzer.analyze(channel);
+			if(analyzedFrame instanceof NullFrame) {
+				continue;
+			}
+			VideoFrame videoFrame = (VideoFrame)analyzedFrame;
 			videoFrame.setPts(getPts());
 			videoFrame.setTimebase(getTimebase());
 			if(dts != null) {
@@ -311,6 +300,27 @@ public class VideoTag extends FlvTag {
 				frame = (IVideoFrame)videoFrame;
 			}
 		} while(channel.size() != channel.position());
+		// frameAnalyzerにデータがのこっている場合はそのデータを取得する。
+		IFrame lastFrame = frameAnalyzer.getRemainFrame();
+		if(lastFrame != null && !(lastFrame instanceof NullFrame)) {
+			VideoFrame videoFrame = (VideoFrame)lastFrame;
+			videoFrame.setPts(getPts());
+			videoFrame.setTimebase(getTimebase());
+			if(dts != null) {
+				videoFrame.setDts(dts.get());
+			}
+			if(frame != null) {
+				if(!(frame instanceof VideoMultiFrame)) {
+					VideoMultiFrame multiFrame = new VideoMultiFrame();
+					multiFrame.addFrame(frame);
+					frame = multiFrame;
+				}
+				((VideoMultiFrame)frame).addFrame((IVideoFrame)videoFrame);
+			}
+			else {
+				frame = (IVideoFrame)videoFrame;
+			}
+		}
 	}
 	/**
 	 * フレーム参照
