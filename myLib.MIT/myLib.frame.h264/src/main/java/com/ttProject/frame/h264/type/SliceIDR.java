@@ -102,17 +102,5 @@ public class SliceIDR extends SliceFrame {
 			}
 		}
 		return BufferUtil.connect(bufferList);
-/*		ByteBuffer spsBuffer = getSps().getData();
-		ByteBuffer ppsBuffer = getPps().getData();
-		ByteBuffer idrBuffer = getData();
-		ByteBuffer packBuffer = ByteBuffer.allocate(4 + spsBuffer.remaining() + 4 + ppsBuffer.remaining() + 4 + idrBuffer.remaining());
-		packBuffer.putInt(1);
-		packBuffer.put(spsBuffer);
-		packBuffer.putInt(1);
-		packBuffer.put(ppsBuffer);
-		packBuffer.putInt(1);
-		packBuffer.put(idrBuffer);
-		packBuffer.flip();
-		return packBuffer;*/
 	}
 }

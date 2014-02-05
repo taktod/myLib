@@ -82,11 +82,5 @@ public class Slice extends SliceFrame {
 			}
 		}
 		return BufferUtil.connect(bufferList);
-/*		ByteBuffer data = getData();
-		ByteBuffer packBuffer = ByteBuffer.allocate(4 + data.remaining());
-		packBuffer.putInt(1);
-		packBuffer.put(data);
-		packBuffer.flip();
-		return packBuffer;*/
 	}
 }
