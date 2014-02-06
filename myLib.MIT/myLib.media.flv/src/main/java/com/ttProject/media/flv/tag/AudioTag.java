@@ -12,7 +12,7 @@ import com.ttProject.util.BufferUtil;
  * audioデータ
  * @author taktod
  */
-public class AudioTag extends Tag {
+public class AudioTag extends Tag implements Cloneable {
 	/** コーデック */
 	private CodecType codec;
 	/** サンプリングレート */

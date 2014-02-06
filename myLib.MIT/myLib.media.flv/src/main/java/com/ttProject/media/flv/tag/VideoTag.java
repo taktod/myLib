@@ -23,7 +23,7 @@ import com.ttProject.util.BufferUtil;
  *                                                                                                       [   ] ppsLength
  *                                                                                                             [         ] ppsData
  */
-public class VideoTag extends Tag {
+public class VideoTag extends Tag implements Cloneable {
 	/** コーデック */
 	private CodecType codec;
 	/** フレーム情報 */
