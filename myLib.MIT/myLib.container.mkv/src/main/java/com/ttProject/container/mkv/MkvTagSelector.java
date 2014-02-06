@@ -2,6 +2,7 @@ package com.ttProject.container.mkv;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.container.mkv.type.EBML;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
@@ -31,10 +32,13 @@ public class MkvTagSelector implements ISelector {
 		loader.load(tag, size);
 		MkvTag mkvTag = null;
 		switch(Type.getType(tag.getEbmlValue())) {
+		case EBML:
+			mkvTag = new EBML(size);
+			break;
 		default:
 			throw new Exception("未実装のTypeデータが応答されました。" + Type.getType(tag.getEbmlValue()));
 		}
-//		mkvTag.minimumLoad(channel);
-//		return mkvTag;
+		mkvTag.minimumLoad(channel);
+		return mkvTag;
 	}
 }
