@@ -8,7 +8,7 @@ import javax.sound.sampled.AudioFormat;
  * ベーシックなオーディオデータ
  * @author taktod
  */
-public class AudioData {
+public class AudioData implements Cloneable {
 	/** 保持audioFormat */
 	private AudioFormat format;
 	/** 保持buffer */

@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
  * @author taktod
  * 1ミリ秒単位で再生位置を保持しておきます。
  */
-public class VideoData {
+public class VideoData implements Cloneable {
 	/** timestampデータ */
 	private long timestamp;
 	/** 表示する画像データ */
