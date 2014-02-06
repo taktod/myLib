@@ -2,6 +2,19 @@ package com.ttProject.container.mkv;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.container.mkv.type.Audio;
+import com.ttProject.container.mkv.type.BitDepth;
+import com.ttProject.container.mkv.type.Channels;
+import com.ttProject.container.mkv.type.Cluster;
+import com.ttProject.container.mkv.type.CodecID;
+import com.ttProject.container.mkv.type.CodecPrivate;
+import com.ttProject.container.mkv.type.CueClusterPosition;
+import com.ttProject.container.mkv.type.CuePoint;
+import com.ttProject.container.mkv.type.CueTime;
+import com.ttProject.container.mkv.type.CueTrack;
+import com.ttProject.container.mkv.type.CueTrackPositions;
+import com.ttProject.container.mkv.type.Cues;
+import com.ttProject.container.mkv.type.DefaultDuration;
 import com.ttProject.container.mkv.type.DocType;
 import com.ttProject.container.mkv.type.DocTypeReadVersion;
 import com.ttProject.container.mkv.type.DocTypeVersion;
@@ -11,15 +24,34 @@ import com.ttProject.container.mkv.type.EBMLMaxIDLength;
 import com.ttProject.container.mkv.type.EBMLMaxSizeLength;
 import com.ttProject.container.mkv.type.EBMLReadVersion;
 import com.ttProject.container.mkv.type.EBMLVersion;
+import com.ttProject.container.mkv.type.FlagLacing;
 import com.ttProject.container.mkv.type.Info;
+import com.ttProject.container.mkv.type.Language;
 import com.ttProject.container.mkv.type.MuxingApp;
+import com.ttProject.container.mkv.type.PixelHeight;
+import com.ttProject.container.mkv.type.PixelWidth;
+import com.ttProject.container.mkv.type.SamplingFrequency;
 import com.ttProject.container.mkv.type.Seek;
 import com.ttProject.container.mkv.type.SeekHead;
 import com.ttProject.container.mkv.type.SeekID;
 import com.ttProject.container.mkv.type.SeekPosition;
 import com.ttProject.container.mkv.type.Segment;
 import com.ttProject.container.mkv.type.SegmentUID;
+import com.ttProject.container.mkv.type.SimpleBlock;
+import com.ttProject.container.mkv.type.SimpleTag;
+import com.ttProject.container.mkv.type.Tag;
+import com.ttProject.container.mkv.type.TagName;
+import com.ttProject.container.mkv.type.TagString;
+import com.ttProject.container.mkv.type.Tags;
+import com.ttProject.container.mkv.type.Targets;
+import com.ttProject.container.mkv.type.Timecode;
 import com.ttProject.container.mkv.type.TimecodeScale;
+import com.ttProject.container.mkv.type.TrackEntry;
+import com.ttProject.container.mkv.type.TrackNumber;
+import com.ttProject.container.mkv.type.TrackType;
+import com.ttProject.container.mkv.type.TrackUID;
+import com.ttProject.container.mkv.type.Tracks;
+import com.ttProject.container.mkv.type.Video;
 import com.ttProject.container.mkv.type.Void;
 import com.ttProject.container.mkv.type.WritingApp;
 import com.ttProject.nio.channels.IReadChannel;
@@ -110,6 +142,102 @@ public class MkvTagSelector implements ISelector {
 			break;
 		case Duration:
 			mkvTag = new Duration(size);
+			break;
+		case Tracks:
+			mkvTag = new Tracks(size);
+			break;
+		case TrackEntry:
+			mkvTag = new TrackEntry(size);
+			break;
+		case TrackNumber:
+			mkvTag = new TrackNumber(size);
+			break;
+		case TrackUID:
+			mkvTag = new TrackUID(size);
+			break;
+		case FlagLacing:
+			mkvTag = new FlagLacing(size);
+			break;
+		case Language:
+			mkvTag = new Language(size);
+			break;
+		case CodecID:
+			mkvTag = new CodecID(size);
+			break;
+		case TrackType:
+			mkvTag = new TrackType(size);
+			break;
+		case DefaultDuration:
+			mkvTag = new DefaultDuration(size);
+			break;
+		case Video:
+			mkvTag = new Video(size);
+			break;
+		case PixelWidth:
+			mkvTag = new PixelWidth(size);
+			break;
+		case PixelHeight:
+			mkvTag = new PixelHeight(size);
+			break;
+		case CodecPrivate:
+			mkvTag = new CodecPrivate(size);
+			break;
+		case Audio:
+			mkvTag = new Audio(size);
+			break;
+		case Channels:
+			mkvTag = new Channels(size);
+			break;
+		case SamplingFrequency:
+			mkvTag = new SamplingFrequency(size);
+			break;
+		case BitDepth:
+			mkvTag = new BitDepth(size);
+			break;
+		case Tags:
+			mkvTag = new Tags(size);
+			break;
+		case Tag:
+			mkvTag = new Tag(size);
+			break;
+		case Targets:
+			mkvTag = new Targets(size);
+			break;
+		case SimpleTag:
+			mkvTag = new SimpleTag(size);
+			break;
+		case TagName:
+			mkvTag = new TagName(size);
+			break;
+		case TagString:
+			mkvTag = new TagString(size);
+			break;
+		case Cluster:
+			mkvTag = new Cluster(size);
+			break;
+		case Timecode:
+			mkvTag = new Timecode(size);
+			break;
+		case SimpleBlock:
+			mkvTag = new SimpleBlock(size);
+			break;
+		case Cues:
+			mkvTag = new Cues(size);
+			break;
+		case CuePoint:
+			mkvTag = new CuePoint(size);
+			break;
+		case CueTime:
+			mkvTag = new CueTime(size);
+			break;
+		case CueTrackPositions:
+			mkvTag = new CueTrackPositions(size);
+			break;
+		case CueTrack:
+			mkvTag = new CueTrack(size);
+			break;
+		case CueClusterPosition:
+			mkvTag = new CueClusterPosition(size);
 			break;
 		default:
 			throw new Exception("未実装のTypeデータが応答されました。" + Type.getType(tag.getEbmlValue()));
