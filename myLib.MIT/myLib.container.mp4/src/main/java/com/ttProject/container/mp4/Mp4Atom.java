@@ -3,7 +3,6 @@ package com.ttProject.container.mp4;
 import java.nio.ByteBuffer;
 
 import com.ttProject.container.Container;
-import com.ttProject.container.Reader;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.bit.Bit32;
@@ -51,7 +50,7 @@ public abstract class Mp4Atom extends Container {
 	 * mp4解析用のreaderを参照します
 	 * @return
 	 */
-	protected Reader getMp4AtomReader() {
+	protected Mp4AtomReader getMp4AtomReader() {
 		return reader;
 	}
 	/**
