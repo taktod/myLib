@@ -10,6 +10,12 @@ import com.ttProject.container.mkv.type.EBMLMaxIDLength;
 import com.ttProject.container.mkv.type.EBMLMaxSizeLength;
 import com.ttProject.container.mkv.type.EBMLReadVersion;
 import com.ttProject.container.mkv.type.EBMLVersion;
+import com.ttProject.container.mkv.type.Seek;
+import com.ttProject.container.mkv.type.SeekHead;
+import com.ttProject.container.mkv.type.SeekID;
+import com.ttProject.container.mkv.type.SeekPosition;
+import com.ttProject.container.mkv.type.Segment;
+import com.ttProject.container.mkv.type.Void;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
@@ -62,6 +68,24 @@ public class MkvTagSelector implements ISelector {
 			break;
 		case DocTypeReadVersion:
 			mkvTag = new DocTypeReadVersion(size);
+			break;
+		case Segment:
+			mkvTag = new Segment(size);
+			break;
+		case SeekHead:
+			mkvTag = new SeekHead(size);
+			break;
+		case Seek:
+			mkvTag = new Seek(size);
+			break;
+		case SeekID:
+			mkvTag = new SeekID(size);
+			break;
+		case SeekPosition:
+			mkvTag = new SeekPosition(size);
+			break;
+		case Void:
+			mkvTag = new Void(size);
 			break;
 		default:
 			throw new Exception("未実装のTypeデータが応答されました。" + Type.getType(tag.getEbmlValue()));
