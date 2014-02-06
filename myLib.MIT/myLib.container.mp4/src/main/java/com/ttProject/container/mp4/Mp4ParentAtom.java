@@ -11,6 +11,7 @@ import com.ttProject.unit.extra.bit.Bit32;
  * @author taktod
  */
 public abstract class Mp4ParentAtom extends Mp4Atom {
+	/** ロガー */
 	private Logger logger = Logger.getLogger(Mp4ParentAtom.class);
 	/**
 	 * コンストラクタ

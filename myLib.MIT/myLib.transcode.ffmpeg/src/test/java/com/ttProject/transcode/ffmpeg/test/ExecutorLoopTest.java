@@ -4,15 +4,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.junit.Test;
-
 /**
  * executorをつかって無限ループする場合の動作テストやってみる。
  * @author taktod
  */
 public class ExecutorLoopTest {
 	private int count = 10;
-	@Test
+//	@Test
 	public void test() {
 		final ExecutorService exec = Executors.newSingleThreadExecutor();
 		if(exec instanceof ThreadPoolExecutor) {
