@@ -6,7 +6,7 @@ import org.junit.Test;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
-import com.ttProject.unit.extra.Ebml;
+import com.ttProject.unit.extra.EbmlValue;
 
 /**
  * mkvやwebmのebmlのデータ読み込みテスト
@@ -28,8 +28,8 @@ public class EbmlTest {
 				0x1A, 0x45, (byte)0xDF, (byte)0xA3, 0x42, (byte)0x86
 		});
 		BitLoader loader = new BitLoader(channel);
-		Ebml ebml1 = new Ebml();
-		Ebml ebml2 = new Ebml();
+		EbmlValue ebml1 = new EbmlValue();
+		EbmlValue ebml2 = new EbmlValue();
 		loader.load(ebml1, ebml2);
 		logger.info(Long.toHexString(ebml1.getLong()));
 		logger.info(Long.toHexString(ebml1.getEbmlValue()));
@@ -41,7 +41,7 @@ public class EbmlTest {
 	@Test
 	public void test2() throws Exception {
 		logger.info("test2");
-		Ebml ebml = new Ebml();
+		EbmlValue ebml = new EbmlValue();
 		ebml.setLong(0x0A45dfA3);
 		logger.info(Long.toHexString(ebml.getLong()));
 		logger.info(Long.toHexString(ebml.getEbmlValue()));

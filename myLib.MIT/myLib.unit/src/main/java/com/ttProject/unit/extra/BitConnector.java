@@ -62,8 +62,8 @@ public class BitConnector {
 					appendBit(egBit);
 				}
 			}
-			else if(bit instanceof Ebml) {
-				Ebml ebml = (Ebml)bit;
+			else if(bit instanceof EbmlValue) {
+				EbmlValue ebml = (EbmlValue)bit;
 				appendBit(ebml.getNumBit());
 				appendBit(ebml.getDataBit());
 			}

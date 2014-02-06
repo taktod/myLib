@@ -54,8 +54,8 @@ public class BitLoader {
 	 * @param bit 一応8bitより大きなデータがきても大丈夫なはずですが、32bit超えるとoverflowします。
 	 */
 	public void load(Bit bit) throws Exception {
-		if(bit instanceof Ebml) {
-			Ebml ebml = (Ebml) bit;
+		if(bit instanceof EbmlValue) {
+			EbmlValue ebml = (EbmlValue) bit;
 			Bit1 bit1 = null;
 			do {
 				bit1 = new Bit1();
