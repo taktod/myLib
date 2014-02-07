@@ -18,7 +18,7 @@ import com.ttProject.media.flv.TagAnalyzer;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
-public class FlvTestReader implements RtmpReader {
+public final class FlvTestReader implements RtmpReader {
 	private Logger logger = LoggerFactory.getLogger(FlvTestReader.class);
 	private final LinkedBlockingQueue<FlvAtom> dataQueue = new LinkedBlockingQueue<FlvAtom>();
 	private Metadata metadata;
