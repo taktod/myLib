@@ -242,7 +242,7 @@ public class MkvTagSelector implements ISelector {
 			break;
 		case TagLanguage:
 			mkvTag = new TagLanguage(size);
-//			break;
+			break;
 		default:
 			throw new Exception("未実装のTypeデータが応答されました。" + Type.getType(tag.getEbmlValue()));
 		}
