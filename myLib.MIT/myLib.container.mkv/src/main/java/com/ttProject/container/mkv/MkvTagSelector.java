@@ -40,6 +40,7 @@ import com.ttProject.container.mkv.type.SegmentUID;
 import com.ttProject.container.mkv.type.SimpleBlock;
 import com.ttProject.container.mkv.type.SimpleTag;
 import com.ttProject.container.mkv.type.Tag;
+import com.ttProject.container.mkv.type.TagLanguage;
 import com.ttProject.container.mkv.type.TagName;
 import com.ttProject.container.mkv.type.TagString;
 import com.ttProject.container.mkv.type.Tags;
@@ -239,6 +240,9 @@ public class MkvTagSelector implements ISelector {
 		case CueClusterPosition:
 			mkvTag = new CueClusterPosition(size);
 			break;
+		case TagLanguage:
+			mkvTag = new TagLanguage(size);
+//			break;
 		default:
 			throw new Exception("未実装のTypeデータが応答されました。" + Type.getType(tag.getEbmlValue()));
 		}

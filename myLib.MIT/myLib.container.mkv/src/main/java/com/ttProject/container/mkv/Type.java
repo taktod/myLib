@@ -83,6 +83,7 @@ public enum Type {
 				Targets(0x63c0),
 				SimpleTag(0x67c8),
 					TagName(0x45a3),
+					TagLanguage(0x447A),
 					TagString(0x4487),
 	Void(0xEC),
 	CRC32(0xBF);

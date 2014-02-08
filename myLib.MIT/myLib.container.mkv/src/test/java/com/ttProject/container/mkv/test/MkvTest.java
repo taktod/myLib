@@ -24,7 +24,8 @@ public class MkvTest {
 		IFileReadChannel source = null;
 		try {
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("test.mkv")
+//					Thread.currentThread().getContextClassLoader().getResource("test.mkv")
+					"http://49.212.39.17/ahiru.mkv"
 			);
 			IReader reader = new MkvTagReader();
 			IContainer container = null;
