@@ -38,6 +38,13 @@ public abstract class MkvUnsignedIntTag extends MkvTag {
 		super.load(channel);
 	}
 	/**
+	 * データ応答
+	 * @return
+	 */
+	public long getValue() {
+		return value.get() & 0xFFFFFFFFL;
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override

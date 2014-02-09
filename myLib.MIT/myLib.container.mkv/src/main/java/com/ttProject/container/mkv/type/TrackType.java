@@ -1,7 +1,6 @@
 package com.ttProject.container.mkv.type;
 
 import com.ttProject.container.mkv.MkvUnsignedIntTag;
-import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
@@ -14,12 +13,35 @@ public class TrackType extends MkvUnsignedIntTag {
 	 * @param size
 	 */
 	public TrackType(EbmlValue size) {
-		super(Type.TrackType, size);
+		super(com.ttProject.container.mkv.Type.TrackType, size);
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
+	}
+	public Type getType() throws Exception {
+		return Type.getType((int)super.getValue());
+	}
+	public static enum Type {
+		Video(0x01),
+		Audio(0x02),
+		Complex(0x03),
+		Logo(0x10),
+		Subtitle(0x11),
+		Buttons(0x20);
+		private final int value;
+		private Type(int value) {
+			this.value = value;
+		}
+		public static Type getType(int value) throws Exception {
+			for(Type t : values()) {
+				if(t.value == value) {
+					return t;
+				}
+			}
+			throw new Exception("typeが決定しませんでした:" + value);
+		}
 	}
 }
