@@ -6,6 +6,8 @@ import com.ttProject.unit.extra.EbmlValue;
 
 /**
  * TimecodeScaleタグ
+ * こっちは全体のtimescale値になるっぽい
+ * これとは別にTrackTimecodeScaleというのもある(非推奨になってるけど)
  * @author taktod
  */
 public class TimecodeScale extends MkvUnsignedIntTag {
@@ -16,6 +18,9 @@ public class TimecodeScale extends MkvUnsignedIntTag {
 	public TimecodeScale(EbmlValue size) {
 		super(Type.TimecodeScale, size);
 	}
+//	public long getTimebaseValue() {
+//		1000000000L / get
+//	}
 	/**
 	 * {@inheritDoc}
 	 */

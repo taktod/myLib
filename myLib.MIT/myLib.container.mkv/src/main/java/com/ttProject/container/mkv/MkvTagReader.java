@@ -15,13 +15,10 @@ import com.ttProject.nio.channels.IReadChannel;
 public class MkvTagReader extends Reader {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(MkvTagReader.class);
-	// TODO ここで必要なインスタンスを保持しておいて、参照できるようにする必要がある。
-	// info
-	// tracks
-	// timescaleとかcodecTypeとかCodecPrivateとか・・・
-	// 面倒なので次のようにしよう・・・
-	private Info info;
-	private Tracks tracks;
+	// TODO ここで必要なインスタンスを保持しておいて、参照できるようにする必要がある
+	private Info info; // timecodeScaleがほしい。
+	private Tracks tracks; // TrackIDcodec情報とcodecPrivate、FlagLacing videoWidth videoHeight Channels SampleFrequency BitDepthあたりが必要
+	// これだとちょっと扱いにくいか・・・
 	/**
 	 * コンストラクタ
 	 */
