@@ -52,7 +52,7 @@ public abstract class MkvBinaryTag extends MkvTag {
 			data.append(" binary:").append("null");
 		}
 		else {
-			data.append(" binary:").append(buffer.remaining());
+			data.append(" binary:").append(Integer.toHexString(buffer.remaining()));
 		}
 		return data.toString();
 	}

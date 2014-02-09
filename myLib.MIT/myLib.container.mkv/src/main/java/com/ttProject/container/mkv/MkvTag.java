@@ -75,7 +75,7 @@ public abstract class MkvTag extends Container {
 	 * @return
 	 */
 	public String toString(String space) {
-		StringBuilder data = new StringBuilder();
+		StringBuilder data = new StringBuilder(space);
 		data.append(getClass().getSimpleName());
 		data.append(" size:").append(Integer.toHexString(getMkvSize()));
 		return data.toString();

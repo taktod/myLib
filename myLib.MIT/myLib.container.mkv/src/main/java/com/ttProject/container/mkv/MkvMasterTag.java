@@ -1,5 +1,8 @@
 package com.ttProject.container.mkv;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
@@ -12,7 +15,10 @@ import com.ttProject.unit.extra.EbmlValue;
  */
 public abstract class MkvMasterTag extends MkvTag {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MkvMasterTag.class);
+	/** 保持タグリスト */
+	private List<MkvTag> childTags = new ArrayList<MkvTag>();
 	/**
 	 * コンストラクタ
 	 * @param tag
@@ -30,8 +36,24 @@ public abstract class MkvMasterTag extends MkvTag {
 		IContainer container = null;
 		while(targetSize > 0 && (container = getMkvTagReader().read(channel)) != null) {
 			targetSize -= container.getSize();
-			logger.info(container);
+			if(container instanceof MkvTag) {
+				childTags.add((MkvTag)container);
+			}
+//			logger.info(container);
 		}
 		super.load(channel);
+	}
+	public List<MkvTag> getChildList() {
+		return new ArrayList<MkvTag>(childTags);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString(String space) {
+		StringBuilder data = new StringBuilder();
+		data.append(super.toString(space));
+		data.append("*");
+		return data.toString();
 	}
 }

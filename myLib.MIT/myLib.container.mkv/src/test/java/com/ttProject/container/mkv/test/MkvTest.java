@@ -31,6 +31,7 @@ public class MkvTest {
 			while((container = reader.read(source)) != null) {
 				logger.info(container);
 			}
+			((MkvTagReader)reader).showData();
 		}
 		catch(Exception e) {
 			logger.warn("例外発生", e);

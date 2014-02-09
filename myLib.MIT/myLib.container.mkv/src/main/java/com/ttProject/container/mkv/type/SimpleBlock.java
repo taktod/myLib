@@ -75,6 +75,7 @@ public class SimpleBlock extends MkvBinaryTag {
 		StringBuilder data = new StringBuilder();
 		data.append(super.toString(space));
 		data.append(" trackId:").append(trackId.get());
+		data.append(" timeDiff:").append(timestampDiff.get());
 		return data.toString();
 	}
 }
