@@ -71,9 +71,9 @@ public class SimpleBlock extends MkvBinaryTag {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String toString() {
+	public String toString(String space) {
 		StringBuilder data = new StringBuilder();
-		data.append(super.toString());
+		data.append(super.toString(space));
 		data.append(" trackId:").append(trackId.get());
 		return data.toString();
 	}
