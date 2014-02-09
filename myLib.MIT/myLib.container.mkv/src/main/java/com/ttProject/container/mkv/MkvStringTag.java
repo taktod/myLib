@@ -9,7 +9,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public abstract class MkvStringTag extends MkvTag{
-	private String value;
+	private String value = null;
 	/**
 	 * コンストラクタ
 	 * @param id
@@ -25,6 +25,12 @@ public abstract class MkvStringTag extends MkvTag{
 	public void load(IReadChannel channel) throws Exception {
 		value = new String(BufferUtil.safeRead(channel, getMkvSize()).array()).intern();
 		super.load(channel);
+	}
+	/**
+	 * 保持文字列参照
+	 */
+	public String getValue() {
+		return value;
 	}
 	/**
 	 * {@inheritDoc}

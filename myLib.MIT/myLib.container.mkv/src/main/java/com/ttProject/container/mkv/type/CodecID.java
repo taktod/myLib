@@ -1,5 +1,6 @@
 package com.ttProject.container.mkv.type;
 
+import com.ttProject.container.mkv.CodecType;
 import com.ttProject.container.mkv.MkvStringTag;
 import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
@@ -15,6 +16,18 @@ public class CodecID extends MkvStringTag {
 	 */
 	public CodecID(EbmlValue size) {
 		super(Type.CodecID, size);
+	}
+	/**
+	 * codecTypeを参照
+	 * @return
+	 * @throws Exception
+	 */
+	public CodecType getCodecType() throws Exception {
+		String name = getValue();
+		if(name == null) {
+			throw new Exception("loadを実行して実体を取得してください。");
+		}
+		return CodecType.getCodecType(name);
 	}
 	/**
 	 * {@inheritDoc}
