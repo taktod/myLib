@@ -9,6 +9,8 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class MkvTagReader extends Reader {
+	// TODO ここで必要なインスタンスを保持しておいて、参照できるようにする必要がある。
+	// timescaleとかcodecTypeとかCodecPrivateとか・・・
 	/**
 	 * コンストラクタ
 	 */
