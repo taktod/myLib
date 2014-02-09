@@ -69,4 +69,22 @@ public abstract class MkvTag extends Container {
 	protected int getMkvSize() {
 		return size.get();
 	}
+	/**
+	 * 内容dump用
+	 * @param space 子要素の場合に前に挿入するspaceデータ
+	 * @return
+	 */
+	public String toString(String space) {
+		StringBuilder data = new StringBuilder();
+		data.append(getClass().getSimpleName());
+		data.append(" size:").append(Integer.toHexString(getMkvSize()));
+		return data.toString();
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return toString("");
+	}
 }

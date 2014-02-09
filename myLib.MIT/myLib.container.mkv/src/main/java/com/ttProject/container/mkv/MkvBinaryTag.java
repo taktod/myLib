@@ -45,10 +45,9 @@ public abstract class MkvBinaryTag extends MkvTag {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String toString() {
+	public String toString(String space) {
 		StringBuilder data = new StringBuilder();
-		data.append("class:").append(getClass().getSimpleName());
-		data.append(" size:").append(Integer.toHexString(getMkvSize()));
+		data.append(super.toString(space));
 		if(buffer == null) {
 			data.append(" binary:").append("null");
 		}
