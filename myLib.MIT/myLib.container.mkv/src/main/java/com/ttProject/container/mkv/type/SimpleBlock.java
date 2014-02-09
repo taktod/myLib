@@ -2,7 +2,13 @@ package com.ttProject.container.mkv.type;
 
 import com.ttProject.container.mkv.MkvBinaryTag;
 import com.ttProject.container.mkv.Type;
+import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.EbmlValue;
+import com.ttProject.unit.extra.bit.Bit1;
+import com.ttProject.unit.extra.bit.Bit16;
+import com.ttProject.unit.extra.bit.Bit2;
+import com.ttProject.unit.extra.bit.Bit3;
 
 /**
  * SimpleBlockタグ
@@ -24,6 +30,13 @@ import com.ttProject.unit.extra.EbmlValue;
  * @author taktod
  */
 public class SimpleBlock extends MkvBinaryTag {
+	private EbmlValue trackId            = new EbmlValue();
+	private Bit16     timestampDiff      = new Bit16();
+	private Bit1      keyFrameFlag       = new Bit1();
+	private Bit3      reserved           = new Bit3();
+	private Bit1      invisibleFrameFlag = new Bit1();
+	private Bit2      lacing             = new Bit2();
+	private Bit1      discardableFlag    = new Bit1();
 	/**
 	 * コンストラクタ
 	 * @param size
@@ -35,7 +48,33 @@ public class SimpleBlock extends MkvBinaryTag {
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void minimumLoad(IReadChannel channel) throws Exception {
+		super.minimumLoad(channel);
+		BitLoader loader = new BitLoader(channel);
+		loader.load(trackId, timestampDiff, keyFrameFlag, reserved, invisibleFrameFlag, lacing, discardableFlag);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected int getRemainedSize() {
+		return getMkvSize() - (trackId.getBitCount() + 24) / 8;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	protected void requestUpdate() throws Exception {
 		
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder();
+		data.append(super.toString());
+		data.append(" trackId:").append(trackId.get());
+		return data.toString();
 	}
 }

@@ -34,6 +34,14 @@ public abstract class MkvBinaryTag extends MkvTag {
 		super.load(channel);
 	}
 	/**
+	 * loadで読み込むべき残りデータ量を応答
+	 * minimumLoadで継承先クラスがデータ量を変更している場合はここで調整する必要あり
+	 * @return
+	 */
+	protected int getRemainedSize() {
+		return getMkvSize();
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
