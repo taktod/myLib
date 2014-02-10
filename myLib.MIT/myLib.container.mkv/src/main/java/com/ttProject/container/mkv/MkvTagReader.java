@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.IContainer;
 import com.ttProject.container.Reader;
 import com.ttProject.container.mkv.type.Info;
+import com.ttProject.container.mkv.type.TimecodeScale;
 import com.ttProject.container.mkv.type.Tracks;
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -16,9 +17,8 @@ public class MkvTagReader extends Reader {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(MkvTagReader.class);
 	// TODO ここで必要なインスタンスを保持しておいて、参照できるようにする必要がある
-	private Info info; // timecodeScaleがほしい。
+	private long defaultTimebase = 1000;
 	private Tracks tracks; // TrackIDcodec情報とcodecPrivate、FlagLacing videoWidth videoHeight Channels SampleFrequency BitDepthあたりが必要
-	// これだとちょっと扱いにくいか・・・
 	/**
 	 * コンストラクタ
 	 */
@@ -35,21 +35,15 @@ public class MkvTagReader extends Reader {
 			tag.setMkvTagReader(this);
 			tag.load(channel);
 		}
-		if(tag instanceof Info) {
-			info = (Info)tag;
+		if(tag instanceof TimecodeScale) {
+			defaultTimebase = ((TimecodeScale) tag).getTimebaseValue();
 		}
-		else if(tag instanceof Tracks) {
+		if(tag instanceof Tracks) {
 			tracks = (Tracks)tag;
 		}
 		return tag;
 	}
 	public void showData() {
-		if(info == null) {
-			logger.info("infoがありません");
-		}
-		else {
-			showData("", info);
-		}
 		if(tracks == null) {
 			logger.info("tracksがありません");
 		}
