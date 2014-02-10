@@ -78,7 +78,7 @@ public class ProcessEntry {
 		bootstrap.setOption("keepAlive", true);
 		
 		System.err.println("コネクト開始します。");
-		ChannelFuture future = bootstrap.connect(new InetSocketAddress(port));
+		ChannelFuture future = bootstrap.connect(new InetSocketAddress("localhost", port));
 		future.awaitUninterruptibly();
 		if(future.isSuccess()) {
 			future.getChannel().getCloseFuture().awaitUninterruptibly();
