@@ -18,9 +18,13 @@ public class TimecodeScale extends MkvUnsignedIntTag {
 	public TimecodeScale(EbmlValue size) {
 		super(Type.TimecodeScale, size);
 	}
-//	public long getTimebaseValue() {
-//		1000000000L / get
-//	}
+	/**
+	 * timebaseとして利用する値を応答します。
+	 * @return
+	 */
+	public long getTimebaseValue() {
+		return 1000000000L / getValue();
+	}
 	/**
 	 * {@inheritDoc}
 	 */
