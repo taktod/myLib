@@ -76,7 +76,8 @@ public class MpegtsPesAnalyzer implements IPesAnalyzer {
 					audioDataAnalyzer = new Mp3AudioDataAnalyzer();
 					break;
 				default:
-					break;
+					throw new RuntimeException("analyzerが決定しませんでした。");
+//					break;
 				}
 			}
 			List<IAudioData> audioList = audioDataAnalyzer.analyzeAudioData(pes);

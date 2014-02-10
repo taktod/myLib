@@ -78,7 +78,7 @@ public class MpegtsChunkManager extends MediaChunkManager {
 	 * 再定義したい場合はpmtを作り直してください。
 	 */
 	public void setupTracks(CodecType videoCodec, CodecType audioCodec) throws Exception {
-		if(pat != null || pmt != null || pmt.getFields().size() != 0) {
+		if(pat != null || pmt != null || pmt == null || pmt.getFields().size() != 0) {
 			throw new Exception("すでにfield定義がおわっています。");
 		}
 		Pat pat = new Pat();
