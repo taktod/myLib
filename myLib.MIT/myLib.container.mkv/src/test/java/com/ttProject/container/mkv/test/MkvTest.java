@@ -6,6 +6,7 @@ import org.junit.Test;
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
 import com.ttProject.container.mkv.MkvTagReader;
+import com.ttProject.container.mkv.type.SimpleBlock;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
@@ -29,9 +30,11 @@ public class MkvTest {
 			IReader reader = new MkvTagReader();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
-				logger.info(container);
+				if(container instanceof SimpleBlock) {
+					SimpleBlock simpleBlock = (SimpleBlock)container;
+					logger.info(simpleBlock.getFrame());
+				}
 			}
-			((MkvTagReader)reader).showData();
 		}
 		catch(Exception e) {
 			logger.warn("例外発生", e);

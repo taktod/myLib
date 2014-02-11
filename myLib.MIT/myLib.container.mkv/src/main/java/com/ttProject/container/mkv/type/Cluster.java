@@ -2,6 +2,7 @@ package com.ttProject.container.mkv.type;
 
 import com.ttProject.container.mkv.MkvMasterTag;
 import com.ttProject.container.mkv.Type;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
@@ -21,5 +22,9 @@ public class Cluster extends MkvMasterTag {
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
+	}
+	@Override
+	public void load(IReadChannel channel) throws Exception {
+		super.load(channel);
 	}
 }

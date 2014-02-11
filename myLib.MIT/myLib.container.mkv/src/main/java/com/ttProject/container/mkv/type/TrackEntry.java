@@ -7,7 +7,11 @@ import com.ttProject.container.mkv.MkvMasterTag;
 import com.ttProject.container.mkv.MkvTag;
 import com.ttProject.container.mkv.Type;
 import com.ttProject.container.mkv.type.TrackType.Media;
+import com.ttProject.frame.AudioAnalyzer;
+import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.IAnalyzer;
+import com.ttProject.frame.VideoAnalyzer;
+import com.ttProject.frame.VideoSelector;
 import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
 import com.ttProject.frame.aac.AacDsiFrameSelector;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
@@ -19,7 +23,6 @@ import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
 import com.ttProject.frame.vp8.Vp8FrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.unit.extra.EbmlValue;
-import com.ttProject.util.HexUtil;
 
 /**
  * TrackEntryタグ
@@ -119,9 +122,16 @@ public class TrackEntry extends MkvMasterTag {
 		default:
 			throw new Exception("想定外のcodecでした。");
 		}
-		logger.info(codecId.getCodecType());
-		if(codecPrivate != null) {
-			logger.info(HexUtil.toHex(codecPrivate.getMkvData(), true));
+		if(analyzer instanceof AudioAnalyzer) {
+			AudioSelector selector = ((AudioAnalyzer)analyzer).getSelector();
+			selector.setBit(getBitDepth());
+			selector.setChannel(getChannels());
+			selector.setSampleRate((int)getSampleRate());
+		}
+		else if(analyzer instanceof VideoAnalyzer) {
+			VideoSelector selector = ((VideoAnalyzer)analyzer).getSelector();
+			selector.setWidth(getWidth());
+			selector.setHeight(getHeight());
 		}
 		return (int)trackUid.getValue();
 	}

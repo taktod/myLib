@@ -7,9 +7,12 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.Reader;
+import com.ttProject.container.mkv.type.Cluster;
+import com.ttProject.container.mkv.type.Segment;
+import com.ttProject.container.mkv.type.SimpleBlock;
+import com.ttProject.container.mkv.type.Timecode;
 import com.ttProject.container.mkv.type.TimecodeScale;
 import com.ttProject.container.mkv.type.TrackEntry;
-import com.ttProject.container.mkv.type.Tracks;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
@@ -18,11 +21,11 @@ import com.ttProject.nio.channels.IReadChannel;
  */
 public class MkvTagReader extends Reader {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MkvTagReader.class);
-	// TODO ここで必要なインスタンスを保持しておいて、参照できるようにする必要がある
-	private long defaultTimebase = 1000;
-	private Tracks tracks; // TrackIDcodec情報とcodecPrivate、FlagLacing videoWidth videoHeight Channels SampleFrequency BitDepthあたりが必要
 	private Map<Integer, TrackEntry> trackEntryMap = new ConcurrentHashMap<Integer, TrackEntry>();
+	private long defaultTimebase = 1000;
+	private long clusterTime = 0;
 	/**
 	 * コンストラクタ
 	 */
@@ -37,7 +40,10 @@ public class MkvTagReader extends Reader {
 		MkvTag tag = (MkvTag)getSelector().select(channel);
 		if(tag != null) {
 			tag.setMkvTagReader(this);
-			tag.load(channel);
+			if(!(tag instanceof Cluster) && !(tag instanceof Segment)) {
+				// clusterとsegmentの読み込みをスキップすることで、simpleBlockのデータを応答するようにしておく
+				tag.load(channel);
+			}
 		}
 		if(tag instanceof TimecodeScale) {
 			defaultTimebase = ((TimecodeScale) tag).getTimebaseValue();
@@ -47,30 +53,18 @@ public class MkvTagReader extends Reader {
 			int id = trackEntry.setupEntry(defaultTimebase);
 			trackEntryMap.put(id, trackEntry);
 		}
-		if(tag instanceof Tracks) {
-			tracks = (Tracks)tag;
+		if(tag instanceof Timecode) {
+			clusterTime = ((Timecode)tag).getValue();
+		}
+		if(tag instanceof SimpleBlock) {
+			// simpleBlockはtrackEntryが必要
 		}
 		return tag;
 	}
-	public void showData() {
-		if(tracks == null) {
-			logger.info("tracksがありません");
-		}
-		else {
-			showData("", tracks);
-		}
+	public TrackEntry getTrackEntry(int trackId) {
+		return trackEntryMap.get(trackId);
 	}
-	public void showData(String space, MkvTag tag) {
-		if(tag instanceof MkvMasterTag) {
-			logger.info(tag.toString(space));
-			for(MkvTag t : ((MkvMasterTag) tag).getChildList()) {
-				if(t instanceof MkvMasterTag) {
-					showData(space + "  ", t);
-				}
-				else {
-					logger.info(t.toString(space + "  "));
-				}
-			}
-		}
+	public long getClusterTime() {
+		return clusterTime;
 	}
 }

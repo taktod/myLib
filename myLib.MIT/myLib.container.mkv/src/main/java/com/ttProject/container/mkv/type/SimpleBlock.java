@@ -4,6 +4,15 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.mkv.MkvBinaryTag;
 import com.ttProject.container.mkv.Type;
+import com.ttProject.frame.Frame;
+import com.ttProject.frame.IAnalyzer;
+import com.ttProject.frame.IAudioFrame;
+import com.ttProject.frame.IFrame;
+import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.NullFrame;
+import com.ttProject.frame.extra.AudioMultiFrame;
+import com.ttProject.frame.extra.VideoMultiFrame;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.EbmlValue;
@@ -42,6 +51,8 @@ public class SimpleBlock extends MkvBinaryTag {
 	private Bit1      invisibleFrameFlag = new Bit1();
 	private Bit2      lacing             = new Bit2();
 	private Bit1      discardableFlag    = new Bit1();
+	private long time = 0;
+	private IFrame frame = null;
 	/**
 	 * コンストラクタ
 	 * @param size
@@ -58,6 +69,15 @@ public class SimpleBlock extends MkvBinaryTag {
 		BitLoader loader = new BitLoader(channel);
 		loader.load(trackId, timestampDiff, keyFrameFlag, reserved, invisibleFrameFlag, lacing, discardableFlag);
 	}
+	@Override
+	public void load(IReadChannel channel) throws Exception {
+		super.load(channel);
+		// データが取得できたので、必要なframeを取得しておきたい。
+		// まず時間データについて調整しておく。
+		time = getMkvTagReader().getClusterTime() + timestampDiff.get();
+
+		// この部分はanalyzeFrameとして別関数にしておく。
+	}
 	/**
 	 * {@inheritDoc}
 	 */
@@ -71,6 +91,91 @@ public class SimpleBlock extends MkvBinaryTag {
 	@Override
 	protected void requestUpdate() throws Exception {
 		
+	}
+	/**
+	 * フレームを参照する
+	 * @return
+	 */
+	public IFrame getFrame() throws Exception {
+		if(frame == null) {
+			analyzeFrame();
+		}
+		return frame;
+	}
+	/**
+	 * フレームを解析する
+	 * @throws Exception
+	 */
+	private void analyzeFrame() throws Exception {
+		// frameデータを調整したい。
+		TrackEntry entry = getMkvTagReader().getTrackEntry(trackId.get());
+		IReadChannel frameDataChannel = new ByteReadChannel(getMkvData());
+		IAnalyzer analyzer = entry.getAnalyzer();
+		IFrame analyzedFrame = null;
+		do {
+			analyzedFrame = analyzer.analyze(frameDataChannel);
+			if(analyzedFrame instanceof NullFrame || !(analyzedFrame instanceof Frame)) {
+				continue;
+			}
+			Frame tmpFrame = (Frame)analyzedFrame;
+			tmpFrame.setPts(time);
+			tmpFrame.setTimebase(entry.getTimebase());
+			addFrame(tmpFrame);
+		} while(frameDataChannel.size() != frameDataChannel.position());
+		// のこっているデータがある場合は解析しなければならない。
+		analyzedFrame = analyzer.getRemainFrame();
+		if(analyzedFrame != null && !(analyzedFrame instanceof NullFrame) && analyzedFrame instanceof Frame) {
+			Frame tmpFrame = (Frame)analyzedFrame;
+			tmpFrame.setPts(time);
+			tmpFrame.setTimebase(entry.getTimebase());
+			addFrame(tmpFrame);
+		}
+	}
+	/**
+	 * フレームを追加する。
+	 * @param tmpFrame
+	 * @throws Exception
+	 */
+	public void addFrame(IFrame tmpFrame) throws Exception {
+		if(tmpFrame == null) {
+			return;
+		}
+		if(frame == null) {
+			frame = tmpFrame;
+		}
+		else if(frame instanceof AudioMultiFrame) {
+			if(!(tmpFrame instanceof IAudioFrame)) {
+				throw new Exception("audioFrameの追加バッファとしてaudioFrame以外をうけとりました。");
+			}
+			((AudioMultiFrame)frame).addFrame((IAudioFrame)tmpFrame);
+		}
+		else if(frame instanceof VideoMultiFrame) {
+			if(!(tmpFrame instanceof IVideoFrame)) {
+				throw new Exception("videoFrameの追加バッファとしてvideoFrame以外を受け取りました:" + tmpFrame);
+			}
+			((VideoMultiFrame)frame).addFrame((IVideoFrame)tmpFrame);
+		}
+		else if(frame instanceof IAudioFrame) {
+			AudioMultiFrame multiFrame = new AudioMultiFrame();
+			multiFrame.addFrame((IAudioFrame)frame);
+			if(!(tmpFrame instanceof IAudioFrame)) {
+				throw new Exception("audioFrameの追加バッファとしてaudioFrame以外を受け取りました");
+			}
+			multiFrame.addFrame((IAudioFrame)tmpFrame);
+			frame = multiFrame;
+		}
+		else if(frame instanceof IVideoFrame) {
+			VideoMultiFrame multiFrame = new VideoMultiFrame();
+			multiFrame.addFrame((IVideoFrame)frame);
+			if(!(tmpFrame instanceof IVideoFrame)) {
+				throw new Exception("videoFrameの追加バッファとしてvideoFrame以外を受け取りました");
+			}
+			multiFrame.addFrame((IVideoFrame)tmpFrame);
+			frame = multiFrame;
+		}
+		else {
+			throw new Exception("frameのデータに不明なデータがはいりました。");
+		}
 	}
 	/**
 	 * {@inheritDoc}
