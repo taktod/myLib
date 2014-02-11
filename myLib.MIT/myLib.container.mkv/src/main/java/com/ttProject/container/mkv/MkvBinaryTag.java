@@ -42,6 +42,13 @@ public abstract class MkvBinaryTag extends MkvTag {
 		return getMkvSize();
 	}
 	/**
+	 * データ参照
+	 * @return
+	 */
+	public ByteBuffer getMkvData() {
+		return buffer;
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
