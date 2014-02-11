@@ -30,7 +30,7 @@ public abstract class MkvBinaryTag extends MkvTag {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		buffer = BufferUtil.safeRead(channel, getMkvSize());
+		buffer = BufferUtil.safeRead(channel, getRemainedSize());
 		super.load(channel);
 	}
 	/**

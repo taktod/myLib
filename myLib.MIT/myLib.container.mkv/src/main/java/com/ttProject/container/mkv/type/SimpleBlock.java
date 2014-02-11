@@ -1,5 +1,7 @@
 package com.ttProject.container.mkv.type;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.container.mkv.MkvBinaryTag;
 import com.ttProject.container.mkv.Type;
 import com.ttProject.nio.channels.IReadChannel;
@@ -30,6 +32,9 @@ import com.ttProject.unit.extra.bit.Bit3;
  * @author taktod
  */
 public class SimpleBlock extends MkvBinaryTag {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(SimpleBlock.class);
 	private EbmlValue trackId            = new EbmlValue();
 	private Bit16     timestampDiff      = new Bit16();
 	private Bit1      keyFrameFlag       = new Bit1();

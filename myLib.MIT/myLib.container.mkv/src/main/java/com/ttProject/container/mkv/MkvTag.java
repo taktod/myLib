@@ -2,6 +2,8 @@ package com.ttProject.container.mkv;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.container.Container;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitConnector;
@@ -12,6 +14,9 @@ import com.ttProject.unit.extra.EbmlValue;
  * @author taktod
  */
 public abstract class MkvTag extends Container {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(MkvTag.class);
 	private final EbmlValue id;
 	private final EbmlValue size;
 	private MkvTagReader reader = null;
@@ -22,7 +27,7 @@ public abstract class MkvTag extends Container {
 	 */
 	public MkvTag(Type id, EbmlValue size) {
 		this.id = new EbmlValue();
-		this.id.setLong(Type.getValue(id));
+		this.id.setEbmlValue(Type.getValue(id));
 		this.size = size;
 		super.setSize((int)(size.getLong() + (this.id.getBitCount() + this.size.getBitCount()) / 8));
 	}

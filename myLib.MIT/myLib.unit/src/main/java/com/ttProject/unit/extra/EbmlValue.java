@@ -58,6 +58,52 @@ public class EbmlValue extends Bit {
 	public long getEbmlValue() {
 		return new BitN(numBit, dataBit).getLong();
 	}
+	/**
+	 * ebmlの生データを設定する
+	 * @param value
+	 */
+	public void setEbmlValue(long value) {
+		if(value >>> 7 == 1) {
+			numBit = new Bit1(1);
+			dataBit = new Bit7((int)(value & 0x7F));
+		}
+		else if(value >>> 14 == 1) {
+			numBit = new Bit2(1);
+			dataBit = new Bit14((int)(value & 0x3FFF));
+		}
+		else if(value >>> 21 == 1) {
+			numBit = new Bit3(1);
+			dataBit = new Bit21((int)(value & 0x1FFFFF));
+		}
+		else if(value >>> 28 == 1) {
+			numBit = new Bit4(1);
+			dataBit = new Bit28((int)(value & 0x0FFFFFFF));
+		}
+		else if(value >>> 35 == 1) {
+			numBit = new Bit5(1);
+			BitN data = new Bit35();
+			data.setLong(value & 0x07FFFFFFFFL);
+			dataBit = data;
+		}
+		else if(value >>> 42 == 1) {
+			numBit = new Bit6(1);
+			BitN data = new Bit42();
+			data.setLong(value & 0x03FFFFFFFFFFL);
+			dataBit = data;
+		}
+		else if(value >>> 49 == 1) {
+			numBit = new Bit7(1);
+			BitN data = new Bit49();
+			data.setLong(value & 0x01FFFFFFFFFFFFL);
+			dataBit = data;
+		}
+		else if(value >>> 56 == 1) {
+			numBit = new Bit8(1);
+			BitN data = new Bit56();
+			data.setLong(value & 0x00FFFFFFFFFFFFFFL);
+			dataBit = data;
+		}
+	}
 	@Override
 	public void set(int value) {
 		if(value >>> 7 == 0) {

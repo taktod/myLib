@@ -39,7 +39,6 @@ public abstract class MkvMasterTag extends MkvTag {
 			if(container instanceof MkvTag) {
 				childTags.add((MkvTag)container);
 			}
-//			logger.info(container);
 		}
 		super.load(channel);
 	}
