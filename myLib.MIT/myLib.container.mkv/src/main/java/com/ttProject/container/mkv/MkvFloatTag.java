@@ -40,6 +40,14 @@ public abstract class MkvFloatTag extends MkvTag {
 		loader.load(value);
 		super.load(channel);
 	}
+	public double getValue() {
+		if(value instanceof Bit32) {
+			return Float.intBitsToFloat(value.get());
+		}
+		else {
+			return Double.longBitsToDouble(value.getLong());
+		}
+	}
 	/**
 	 * {@inheritDoc}
 	 */
@@ -47,15 +55,7 @@ public abstract class MkvFloatTag extends MkvTag {
 	public String toString(String space) {
 		StringBuilder data = new StringBuilder();
 		data.append(super.toString(space));
-		if(value instanceof Bit32) {
-			data.append(" float:").append(Float.intBitsToFloat(value.get()));
-		}
-		else if(value instanceof Bit64) {
-			data.append(" float:").append(Double.longBitsToDouble(value.getLong()));
-		}
-		else {
-			throw new RuntimeException("想定外のデータを保持しています。:" + value);
-		}
+		data.append(" float:").append(getValue());
 		return data.toString();
 	}
 }
