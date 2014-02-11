@@ -1,11 +1,14 @@
 package com.ttProject.container.mkv;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.Reader;
-import com.ttProject.container.mkv.type.Info;
 import com.ttProject.container.mkv.type.TimecodeScale;
+import com.ttProject.container.mkv.type.TrackEntry;
 import com.ttProject.container.mkv.type.Tracks;
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -19,6 +22,7 @@ public class MkvTagReader extends Reader {
 	// TODO ここで必要なインスタンスを保持しておいて、参照できるようにする必要がある
 	private long defaultTimebase = 1000;
 	private Tracks tracks; // TrackIDcodec情報とcodecPrivate、FlagLacing videoWidth videoHeight Channels SampleFrequency BitDepthあたりが必要
+	private Map<Integer, TrackEntry> trackEntryMap = new ConcurrentHashMap<Integer, TrackEntry>();
 	/**
 	 * コンストラクタ
 	 */
@@ -37,6 +41,11 @@ public class MkvTagReader extends Reader {
 		}
 		if(tag instanceof TimecodeScale) {
 			defaultTimebase = ((TimecodeScale) tag).getTimebaseValue();
+		}
+		if(tag instanceof TrackEntry) {
+			TrackEntry trackEntry = (TrackEntry)tag;
+			int id = trackEntry.setupEntry(defaultTimebase);
+			trackEntryMap.put(id, trackEntry);
 		}
 		if(tag instanceof Tracks) {
 			tracks = (Tracks)tag;
