@@ -177,6 +177,9 @@ public class SimpleBlock extends MkvBinaryTag {
 			throw new Exception("frameのデータに不明なデータがはいりました。");
 		}
 	}
+	public int getTrackId() {
+		return trackId.get();
+	}
 	/**
 	 * {@inheritDoc}
 	 */

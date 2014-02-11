@@ -1,10 +1,12 @@
 package com.ttProject.container.webm.test;
 
 import org.apache.log4j.Logger;
+import org.junit.Test;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
 import com.ttProject.container.mkv.MkvTagReader;
+import com.ttProject.container.mkv.type.SimpleBlock;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
@@ -18,7 +20,7 @@ public class WebmTest {
 	/**
 	 * analyerの動作テスト
 	 */
-//	@Test
+	@Test
 	public void analyzerTest() {
 		IFileReadChannel source = null;
 		try {
@@ -29,6 +31,10 @@ public class WebmTest {
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
 				logger.info(container);
+				if(container instanceof SimpleBlock) {
+					SimpleBlock simpleBlock = (SimpleBlock)container;
+					logger.info(simpleBlock.getFrame());
+				}
 			}
 		}
 		catch(Exception e) {
