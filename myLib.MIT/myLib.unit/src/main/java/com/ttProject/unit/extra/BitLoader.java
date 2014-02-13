@@ -9,6 +9,7 @@ import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit6;
+import com.ttProject.unit.extra.bit.Bit64;
 import com.ttProject.unit.extra.bit.Bit7;
 import com.ttProject.util.BufferUtil;
 
@@ -78,7 +79,10 @@ public class BitLoader {
 					left += 8;
 				}
 				int bitCount = bit.bitCount;
-				if(bit instanceof BitN) {
+				if(bit instanceof Bit64) {
+					((Bit64)bit).setLong(floatData);
+				}
+				else if(bit instanceof BitN) {
 					((BitN) bit).setLong(floatData & ((1L << bitCount) - 1));
 				}
 				else {
