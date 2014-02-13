@@ -31,10 +31,12 @@ public class VorbisFrameSelector extends AudioSelector {
 		}
 		else if(commentHeaderFrame == null) {
 			commentHeaderFrame = new CommentHeaderFrame();
+			identificationHeaderFrame.setCommentHeaderFrame(commentHeaderFrame);
 			frame = commentHeaderFrame;
 		}
 		else if(setupHeaderFrame == null) {
 			setupHeaderFrame = new SetupHeaderFrame();
+			identificationHeaderFrame.setSetupHeaderFrame(setupHeaderFrame);
 			frame = setupHeaderFrame;
 		}
 		else {
