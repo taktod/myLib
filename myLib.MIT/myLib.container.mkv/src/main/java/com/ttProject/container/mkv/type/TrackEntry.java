@@ -22,7 +22,11 @@ import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
 import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
 import com.ttProject.frame.vp8.Vp8FrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.EbmlValue;
+import com.ttProject.unit.extra.bit.Bit8;
+import com.ttProject.util.BufferUtil;
 
 /**
  * TrackEntryタグ
@@ -107,6 +111,26 @@ public class TrackEntry extends MkvMasterTag {
 		case A_VORBIS:
 			logger.info("vorbisは動作がだめだと思います。");
 			analyzer = new VorbisFrameAnalyzer();
+			// ここでcodecPrivateのデータを先行して解析する必要あり。
+			// 02 1E 56
+			// サイズ指定要素２つ
+			// １つ目は0x1E
+			// ２つ目は0x56
+			// 残りは３つ目の要素
+			// となります。
+			// なおxuggleで変換する場合はIStreamCoderにこのcodecPrivateと同じものを渡す必要があるみたいです。
+			IReadChannel privateChannel = new ByteReadChannel(codecPrivate.getMkvData());
+			BitLoader loader = new BitLoader(privateChannel);
+			Bit8 count = new Bit8();
+			Bit8 identificationHeaderSize = new Bit8();
+			Bit8 commentHeaderSize = new Bit8();
+			loader.load(count, identificationHeaderSize, commentHeaderSize);
+			if(count.get() != 2) {
+				throw new Exception("count数がvorbisに合致していません。");
+			}
+			analyzer.analyze(new ByteReadChannel(BufferUtil.safeRead(privateChannel, identificationHeaderSize.get())));
+			analyzer.analyze(new ByteReadChannel(BufferUtil.safeRead(privateChannel, commentHeaderSize.get())));
+			analyzer.analyze(new ByteReadChannel(BufferUtil.safeRead(privateChannel, privateChannel.size() - privateChannel.position())));
 			break;
 		case V_MPEG4_ISO_AVC:
 			analyzer = new DataNalAnalyzer();
