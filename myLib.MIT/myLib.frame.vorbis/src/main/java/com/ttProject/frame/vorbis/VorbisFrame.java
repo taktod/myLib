@@ -23,6 +23,10 @@ public abstract class VorbisFrame extends AudioFrame {
 	 */
 	public void setIdentificationHeaderFrame(IdentificationHeaderFrame headerFrame) {
 		this.identificationHeaderFrame = headerFrame;
+		super.setBit(headerFrame.getBit());
+		super.setChannel(headerFrame.getChannel());
+		super.setSampleRate(headerFrame.getSampleRate());
+		super.setSampleNum(headerFrame.getSampleNum());
 	}
 	/**
 	 * identificationHeaderFrameを参照
