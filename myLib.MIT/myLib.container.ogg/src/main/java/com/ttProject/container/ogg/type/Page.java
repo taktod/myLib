@@ -16,7 +16,6 @@ import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtil;
 
 /**
  * oggの基本単位のpage
@@ -105,15 +104,10 @@ public class Page extends OggPage {
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		logger.info("ここにきた。");
 		ByteBuffer headerBuffer = getHeaderBuffer();
-		logger.info(HexUtil.toHex(headerBuffer, true));
 		ByteBuffer buffer = ByteBuffer.allocate(getSize());
-		logger.info("bufSize:" + buffer.capacity());
-		logger.info("pageSize:" + getSize());
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		buffer.put(headerBuffer);
-		logger.info(getFrameList());
 		for(IFrame frame : getFrameList()) {
 			buffer.put(frame.getData());
 		}

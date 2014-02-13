@@ -210,4 +210,7 @@ public abstract class OggPage extends Container {
 			logicEndFlag.set(0);
 		}
 	}
+	public long getAbsoluteGranulePosition() {
+		return absoluteGranulePosition.getLong();
+	}
 }

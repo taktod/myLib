@@ -50,11 +50,9 @@ public class SpeexFrameSelector extends AudioSelector {
 		else {
 			// 通常のフレームとして処理する
 			frame = new Frame();
-		}
-		frame.minimumLoad(channel);
-		if(!(frame instanceof HeaderFrame)) {
 			frame.setHeaderFrame(headerFrame);
 		}
+		frame.minimumLoad(channel);
 		return frame;
 	}
 }

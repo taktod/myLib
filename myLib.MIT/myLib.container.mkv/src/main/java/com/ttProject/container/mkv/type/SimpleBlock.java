@@ -114,6 +114,9 @@ public class SimpleBlock extends MkvBinaryTag {
 		IFrame analyzedFrame = null;
 		do {
 			analyzedFrame = analyzer.analyze(frameDataChannel);
+			if(analyzedFrame == null) {
+				throw new Exception("frameがありませんでした。");
+			}
 			if(analyzedFrame instanceof NullFrame || !(analyzedFrame instanceof Frame)) {
 				continue;
 			}
