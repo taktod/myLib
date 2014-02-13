@@ -1,9 +1,20 @@
 package com.ttProject.frame.vorbis.type;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import com.ttProject.frame.vorbis.VorbisFrame;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.Bit;
+import com.ttProject.unit.extra.BitLoader;
+import com.ttProject.unit.extra.bit.Bit1;
+import com.ttProject.unit.extra.bit.Bit32;
+import com.ttProject.unit.extra.bit.Bit48;
+import com.ttProject.unit.extra.bit.Bit8;
+import com.ttProject.util.BufferUtil;
 
 /**
  * vorbisのheaderフレーム
@@ -22,27 +33,65 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class CommentHeaderFrame extends VorbisFrame {
-
+	/** ロガー */
+	private Logger logger = Logger.getLogger(CommentHeaderFrame.class);
+	private Bit8   packetType = new Bit8();
+	private Bit48  string     = new Bit48();
+	private String venderName = null;
+	private Bit32  iterateNum = new Bit32();
+	private List<String> elementList = new ArrayList<String>();
+	private Bit1   lastFlag = new Bit1();
+	private Bit    extraBit = null;
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		// TODO Auto-generated method stub
-		
+		BitLoader loader = new BitLoader(channel);
+		loader.setLittleEndianFlg(true);
+		loader.load(packetType, string);
+		if(packetType.get() != 3) {
+			throw new Exception("packetTypeが不正です。");
+		}
+		if(string.getLong() != 0x736962726F76L) {
+			throw new Exception("string文字列が不正です。");
+		}
+		Bit32 size = new Bit32();
+		loader.load(size);
+		venderName = new String(BufferUtil.safeRead(channel, size.get()).array());
+		logger.info(venderName);
+		loader.load(iterateNum);
+		for(int i = 0;i < iterateNum.get();i ++) {
+			loader.load(size);
+			String data = new String(BufferUtil.safeRead(channel, size.get()).array());
+			elementList.add(data);
+			logger.info(data);
+		}
+		loader.load(lastFlag);
+		if(lastFlag.get() != 1) {
+			throw new Exception("終端データがおかしい");
+		}
+		extraBit = loader.getExtraBit();
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// TODO Auto-generated method stub
 		
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		// TODO Auto-generated method stub
 		
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() {
 		return null;
 	}
-	
 }

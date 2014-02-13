@@ -2,8 +2,14 @@ package com.ttProject.frame.vorbis.type;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.vorbis.VorbisFrame;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitLoader;
+import com.ttProject.unit.extra.bit.Bit48;
+import com.ttProject.unit.extra.bit.Bit8;
+import com.ttProject.util.BufferUtil;
 
 /**
  * vorbisのheaderフレーム
@@ -16,25 +22,45 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class SetupHeaderFrame extends VorbisFrame {
-
+	/** ロガー */
+	private Logger logger = Logger.getLogger(SetupHeaderFrame.class);
+	private Bit8  packetType  = new Bit8();
+	private Bit48 string      = new Bit48();
+	private ByteBuffer buffer = null; // データ本体
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		// TODO Auto-generated method stub
-		
+		BitLoader loader = new BitLoader(channel);
+		loader.setLittleEndianFlg(true);
+		loader.load(packetType, string);
+		if(packetType.get() != 5) {
+			throw new Exception("packetTypeが不正です");
+		}
+		if(string.getLong() != 0x736962726F76L) {
+			throw new Exception("string文字列が不正です。");
+		}
+		super.setSize(channel.size());
+		buffer = BufferUtil.safeRead(channel, channel.size() - channel.position());
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// TODO Auto-generated method stub
 		
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		// TODO Auto-generated method stub
 		
 	}
-	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() {
 		return null;
