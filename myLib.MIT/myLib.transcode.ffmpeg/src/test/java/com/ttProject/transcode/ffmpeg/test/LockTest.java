@@ -14,9 +14,9 @@ public class LockTest {
 	public void test() throws Exception {
 		// これやると帰ってこなくなる。
 		// よって先にlockかかっている必要がある。
-		synchronized(set) {
-			set.wait();
-		}
-		System.out.println("おわり");
+//		synchronized(set) {
+//			set.wait();
+//		}
+//		System.out.println("おわり");
 	}
 }

@@ -197,6 +197,9 @@ public class FlvPacketizer {
 					break;
 				}
 			}
+			if(avcFrame == null) {
+				throw new Exception("frameがありませんでした。");
+			}
 			ByteBuffer spsData = sps.getData();
 			ByteBuffer ppsData = pps.getData();
 			ByteBuffer sliceIDRData = avcFrame.getData();
@@ -217,7 +220,10 @@ public class FlvPacketizer {
 					break;
 				}
 			}
-			ByteBuffer sliceData =avcFrame.getData();
+			if(avcFrame == null) {
+				throw new Exception("frameがありませんでした。");
+			}
+			ByteBuffer sliceData = avcFrame.getData();
 			buffer = ByteBuffer.allocate(4 + sliceData.remaining());
 			buffer.putInt(1);
 			buffer.put(sliceData);
