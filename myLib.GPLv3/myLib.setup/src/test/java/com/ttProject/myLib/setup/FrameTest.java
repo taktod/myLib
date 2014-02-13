@@ -9,9 +9,9 @@ import com.xuggle.xuggler.IContainer;
  * myLib.frame用のメディアデータセットアップ
  * @author taktod
  */
-public class Frame extends SetupBase {
+public class FrameTest extends SetupBase {
 	/** 動作ロガー */
-	private Logger logger = Logger.getLogger(Frame.class);
+	private Logger logger = Logger.getLogger(FrameTest.class);
 	/**
 	 * flv1の検証用データ
 	 * @throws Exception
