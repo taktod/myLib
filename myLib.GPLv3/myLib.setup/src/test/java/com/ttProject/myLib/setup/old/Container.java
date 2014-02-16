@@ -1,13 +1,16 @@
-package com.ttProject.myLib.setup;
+package com.ttProject.myLib.setup.old;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import com.ttProject.myLib.setup.Encoder;
+import com.ttProject.myLib.setup.SetupBase;
 import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IStreamCoder;
 
 /**
  * container用のテストデータ自動作成プログラム
+ * continerは撤去して、containerTestにマージしておきたい。
  * @author taktod
  */
 public class Container extends SetupBase {
