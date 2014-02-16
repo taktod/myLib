@@ -1,7 +1,6 @@
 package com.ttProject.frame.mp3.test;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
@@ -11,6 +10,7 @@ import com.ttProject.unit.IUnit;
 
 /**
  * ファイル読み込み関連動作テスト
+ * このテストはここではなく、myLib.container.mp3で実施するべき
  * @author taktod
  */
 public class FileLoadTest {
@@ -19,7 +19,7 @@ public class FileLoadTest {
 	/**
 	 * analyzerの動作テスト
 	 */
-	@Test
+//	@Test
 	public void analyzerTest() {
 		IFileReadChannel source = null;
 		try {
