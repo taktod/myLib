@@ -33,10 +33,10 @@ public class OggContainerTest {
 	public void vorbis() throws Exception {
 		logger.info("vorbisテスト");
 		decodeTest(
-				FileReadChannel.openFileReadChannel(
-						Thread.currentThread().getContextClassLoader().getResource("vorbis.ogg")
-				)
-			);
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("vorbis.ogg")
+			)
+		);
 	}
 	private void decodeTest(IFileReadChannel source) {
 		DecodeBase base = new DecodeBase();

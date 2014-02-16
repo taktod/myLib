@@ -21,6 +21,7 @@ import com.ttProject.frame.vorbis.type.CommentHeaderFrame;
 import com.ttProject.frame.vorbis.type.IdentificationHeaderFrame;
 import com.ttProject.frame.vorbis.type.SetupHeaderFrame;
 import com.ttProject.frame.vp6.Vp6Frame;
+import com.ttProject.frame.vp8.Vp8Frame;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IPacket;
@@ -163,6 +164,13 @@ public class Packetizer {
 				int size = buffer.remaining();
 				IBuffer extraData = IBuffer.make(decoder, buffer.array(), 0, size);
 				decoder.setExtraData(extraData, 0, size, true);
+			}
+		}
+		if(frame instanceof Vp8Frame) {
+			if(decoder == null
+					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_VP8) {
+				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_VP8);
+				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
 			}
 		}
 		return decoder;

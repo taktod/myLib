@@ -15,11 +15,6 @@
   </repositories>
  <dependencies>
   <dependency>
-   <groupId>xuggle</groupId>
-   <artifactId>xuggle-xuggler</artifactId>
-   <version>5.4</version>
-  </dependency>
-  <dependency>
     <groupId>com.ttProject</groupId>
     <artifactId>myLib.container.flv</artifactId>
     <version>0.0.2-SNAPSHOT</version>
@@ -43,6 +38,16 @@
   	<groupId>com.ttProject</groupId>
   	<artifactId>myLib.container.ogg</artifactId>
   	<version>0.0.2-SNAPSHOT</version>
+  </dependency>
+  <dependency>
+    <groupId>com.ttProject</groupId>
+    <artifactId>myLib.container.mkv</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+  </dependency>
+  <dependency>
+    <groupId>com.ttProject</groupId>
+    <artifactId>myLib.container.webm</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
   </dependency>
  </dependencies>
  <name>myLib.xuggle.test</name>

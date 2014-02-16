@@ -174,6 +174,19 @@ public class SetupForXuggleTest extends SetupBase {
 	}
 	@Test
 	public void webm() throws Exception {
-		
+		logger.info("vp8(webm)準備");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "vp8.webm"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, Encoder.vp8(container), null);
+		logger.info("vorbis(webm)準備");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.GPLv3/myLib.xuggle.test", "vorbis.webm"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("ファイルが開けませんでした");
+		}
+		processConvert(container, null, Encoder.vorbis(container));
 	}
 }
