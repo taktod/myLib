@@ -80,6 +80,7 @@ import com.ttProject.util.BufferUtil;
  */
 public class Pes extends MpegtsPacket {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Pes.class);
 	private Bit24 prefix = new Bit24(1); // 0x000001固定
 	private Bit8  streamId = new Bit8(); // audioなら0xC0 - 0xDF videoなら0xE0 - 0xEFただしvlcが吐くデータはその限りではなかった。
@@ -455,7 +456,7 @@ public class Pes extends MpegtsPacket {
 		else if(frame instanceof IVideoFrame) {
 			// 映像フレームの場合
 			if(frame instanceof H264Frame) {
-				logger.info("こっちがくるはず");
+//				logger.info("こっちがくるはず");
 				// ここでフレームをつくる必要あり。
 				// やることは、audをつくることと、pesPacketFrameをつくることの２つ
 				List<ByteBuffer> bufferList = new ArrayList<ByteBuffer>();
