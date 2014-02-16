@@ -9,7 +9,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.xuggle.xuggler.IAudioResampler;
 import com.xuggle.xuggler.IAudioSamples;
@@ -43,7 +42,7 @@ public class SetupForTest {
 	 * mp3のテスト用データを作成する。
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void mp3Setup() throws Exception {
 		logger.info("mp3のテスト用データを作成する。");
 		audioCounter = 0;
@@ -62,7 +61,7 @@ public class SetupForTest {
 	 * adpcmのflvを作成します
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void adpcmSwfSetup() throws Exception {
 		logger.info("adpcmのテスト用データを作成する。");
 		audioCounter = 0;
@@ -81,7 +80,7 @@ public class SetupForTest {
 	 * nellymoserのflvを作成します
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void nellymoserSetup() throws Exception {
 		logger.info("nellyMoserのテスト用データを作成する。");
 		audioCounter = 0;
@@ -129,7 +128,7 @@ public class SetupForTest {
 	 * speexのflvを作成します
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void speexSetup() throws Exception {
 		logger.info("speexのテスト用データを作成する。");
 		audioCounter = 0;
@@ -150,7 +149,7 @@ public class SetupForTest {
 	 * aacのテスト用データを作成する
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void aacSetup() throws Exception {
 		logger.info("aacのテスト用データを作成する。");
 		audioCounter = 0;
@@ -169,7 +168,7 @@ public class SetupForTest {
 	 * h264のテスト用データを作成する。
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void h264Setup() throws Exception {
 		logger.info("h264のテスト用データを作成する。");
 		videoCounter = 0;
@@ -187,7 +186,7 @@ public class SetupForTest {
 	 * flvのテスト用データを生成する
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void flvSetup() throws Exception {
 		logger.info("flvのテスト用データを作成する。");
 		audioCounter = 0;
@@ -208,7 +207,7 @@ public class SetupForTest {
 	 * mpegtsのテスト用データを生成する
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void mpegtsSetup() throws Exception {
 		logger.info("mpegtsのテスト用データを作成する。");
 		audioCounter = 0;
@@ -229,7 +228,7 @@ public class SetupForTest {
 	 * mp4のテスト用データを生成する。
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void mp4Setup() throws Exception {
 		logger.info("mp4のテスト用データを作成する。");
 		audioCounter = 0;
@@ -250,7 +249,7 @@ public class SetupForTest {
 	 * mkvのテスト用データを生成する。
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void webmSetup() throws Exception {
 		logger.info("webmのテスト用データを作成する。");
 		audioCounter = 0;
@@ -271,7 +270,7 @@ public class SetupForTest {
 	 * flv1のテスト用データを作成する。
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void flv1Setup() throws Exception {
 		logger.info("flv1のテスト用データを作成する。");
 		videoCounter = 0;
@@ -289,7 +288,7 @@ public class SetupForTest {
 	 * mp3Chunkのテスト用データを作成する。
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void mp3ChunkSetup() throws Exception {
 		logger.info("mp3Chunkのテスト用データを作成する。");
 		audioCounter = 0;
@@ -308,7 +307,7 @@ public class SetupForTest {
 	 * aacChunkのテスト用データを作成する。
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void aacChunkSetup() throws Exception {
 		logger.info("aacChunkのテスト用データを作成する。");
 		audioCounter = 0;
@@ -327,7 +326,7 @@ public class SetupForTest {
 	 * mpegtsChunkのテスト用データを作成する。
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void mpegtsChunkSetup() throws Exception {
 		logger.info("mpegtsChunkのテスト用データを作成する。");
 		audioCounter = 0;

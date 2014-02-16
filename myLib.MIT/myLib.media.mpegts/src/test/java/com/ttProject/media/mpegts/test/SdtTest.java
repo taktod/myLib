@@ -1,7 +1,6 @@
 package com.ttProject.media.mpegts.test;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.media.mpegts.descriptor.ServiceDescriptor;
 import com.ttProject.media.mpegts.packet.Sdt;
@@ -22,7 +21,7 @@ public class SdtTest {
 		Sdt sdt = new Sdt(HexUtil.makeBuffer("474011100042F0240001C100000001FF0001FC8013481101054C696261760953657276696365303168C5DB49"));
 		logger.info(sdt);
 	}
-	@Test
+//	@Test
 	public void test() throws Exception {
 		Sdt sdt = new Sdt();
 		sdt.writeDefaultProvider("taktodTools", "mpegtsMuxer");
