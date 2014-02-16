@@ -1,7 +1,6 @@
 package com.ttProject.myLib.setup.old;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.myLib.setup.Encoder;
 import com.ttProject.myLib.setup.SetupBase;
@@ -33,7 +32,7 @@ public class ContainerTest extends SetupBase {
 	 * flv用変換元データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void flv() throws Exception {
 		logger.info("aac(flv)準備");
 		init();

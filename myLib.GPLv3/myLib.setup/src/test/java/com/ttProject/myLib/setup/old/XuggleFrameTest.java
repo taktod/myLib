@@ -1,7 +1,6 @@
 package com.ttProject.myLib.setup.old;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.myLib.setup.Encoder;
 import com.ttProject.myLib.setup.SetupBase;
@@ -20,7 +19,7 @@ public class XuggleFrameTest extends SetupBase {
 	 * aac用の検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void aac() throws Exception {
 		logger.info("aac(flv)準備");
 		init();
@@ -62,7 +61,7 @@ public class XuggleFrameTest extends SetupBase {
 	 * adpcmswf用の検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void adpcmswf() throws Exception {
 		logger.info("adpcmswf(flv)準備");
 		init();
@@ -76,7 +75,7 @@ public class XuggleFrameTest extends SetupBase {
 	 * flv1の検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void flv1() throws Exception {
 		logger.info("flv1(flv)準備");
 		init();
@@ -90,7 +89,7 @@ public class XuggleFrameTest extends SetupBase {
 	 * h264用の検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void h264() throws Exception {
 		logger.info("h264(flv)準備");
 		init();
@@ -125,7 +124,7 @@ public class XuggleFrameTest extends SetupBase {
 	 * mp3用の検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void mp3() throws Exception {
 		logger.info("mp3(flv)準備");
 		init();
@@ -160,7 +159,7 @@ public class XuggleFrameTest extends SetupBase {
 	 * nellymoser用の検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void nellymoser() throws Exception {
 		logger.info("nellymoser(flv)準備");
 		init();
@@ -176,7 +175,7 @@ public class XuggleFrameTest extends SetupBase {
 	 * speex用の検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void speex() throws Exception {
 		logger.info("speex(flv)準備");
 		init();

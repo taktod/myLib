@@ -24,7 +24,7 @@ public class FlvTest {
 		IFileReadChannel source = null;
 		try {
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("test.flv")
+					Thread.currentThread().getContextClassLoader().getResource("test.flv1.flv")
 			);
 			IReader reader = new FlvTagReader();
 			IContainer container = null;

@@ -24,7 +24,7 @@ public class AdtsTest {
 		IFileReadChannel source = null;
 		try {
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("test.aac")
+					Thread.currentThread().getContextClassLoader().getResource("test.aac.aac")
 			);
 			IReader reader = new AdtsUnitReader();
 			IContainer container = null;

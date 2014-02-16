@@ -29,7 +29,7 @@ public class MpegtsTest {
 		logger.info("test");
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("test.ts")
+					Thread.currentThread().getContextClassLoader().getResource("test.h264aac.ts")
 			)
 		);
 	}

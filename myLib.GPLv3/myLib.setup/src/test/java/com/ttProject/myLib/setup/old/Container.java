@@ -1,7 +1,6 @@
 package com.ttProject.myLib.setup.old;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.myLib.setup.Encoder;
 import com.ttProject.myLib.setup.SetupBase;
@@ -20,7 +19,7 @@ public class Container extends SetupBase {
 	 * adts検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void adts() throws Exception {
 		logger.info("adts準備");
 		init();
@@ -34,7 +33,7 @@ public class Container extends SetupBase {
 	 * flvの検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void flv() throws Exception {
 		logger.info("flv準備 (flv1)");
 		init();
@@ -185,7 +184,7 @@ public class Container extends SetupBase {
 	 * mkvの検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void mkv() throws Exception {
 		logger.info("mkv準備");
 		init();
@@ -199,7 +198,7 @@ public class Container extends SetupBase {
 	 * mp3検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void mp3() throws Exception {
 		logger.info("mp3準備");
 		init();
@@ -213,7 +212,7 @@ public class Container extends SetupBase {
 	 * mp4の検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void mp4() throws Exception {
 		logger.info("mp4準備(h264 / aac)");
 		init();
@@ -234,7 +233,7 @@ public class Container extends SetupBase {
 	 * mpegtsの検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void mpegts() throws Exception {
 		logger.info("mpegts準備");
 		init();
@@ -248,7 +247,7 @@ public class Container extends SetupBase {
 	 * oggの検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void ogg() throws Exception {
 		logger.info("ogg準備 (vorbis)");
 		init();
@@ -276,7 +275,7 @@ public class Container extends SetupBase {
 	 * webmの検証用データ
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void webm() throws Exception {
 		logger.info("webm準備");
 		init();

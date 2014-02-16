@@ -21,7 +21,7 @@ public class Mp3Test {
 		IFileReadChannel source = null;
 		try {
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("test.mp3")
+					Thread.currentThread().getContextClassLoader().getResource("test.mp3.mp3")
 			);
 			IReader reader = new Mp3UnitReader();
 			IContainer container = null;
