@@ -28,6 +28,14 @@ public class MkvContainerTest {
 			)
 		);
 	}
+	@Test
+	public void aac() throws Exception {
+		decodeTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("aac.mkv")
+			)
+		);
+	}
 	private void decodeTest(IFileReadChannel source) {
 		DecodeBase base = new DecodeBase();
 		try {

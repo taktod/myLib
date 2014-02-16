@@ -28,6 +28,14 @@ public class WebmContainerTest {
 			)
 		);
 	}
+	@Test
+	public void vorbis() throws Exception {
+		decodeTest(
+			FileReadChannel.openFileReadChannel(
+					Thread.currentThread().getContextClassLoader().getResource("vorbis.webm")
+			)
+		);
+	}
 	private void decodeTest(IFileReadChannel source) {
 		DecodeBase base = new DecodeBase();
 		try {
