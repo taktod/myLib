@@ -18,6 +18,7 @@ public class Frame extends VorbisFrame {
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.setSize(channel.size());
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
@@ -25,19 +26,23 @@ public class Frame extends VorbisFrame {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		buffer = BufferUtil.safeRead(channel, channel.size());
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-
+		if(buffer == null) {
+			throw new Exception("データがありません");
+		}
+		setData(buffer);
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ByteBuffer getPackBuffer() {
-		return null;
+	public ByteBuffer getPackBuffer() throws Exception {
+		return getData();
 	}
 }

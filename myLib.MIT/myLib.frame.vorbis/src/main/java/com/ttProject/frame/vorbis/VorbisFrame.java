@@ -1,5 +1,7 @@
 package com.ttProject.frame.vorbis;
 
+import java.nio.ByteBuffer;
+
 import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.vorbis.type.IdentificationHeaderFrame;
 
@@ -34,5 +36,16 @@ public abstract class VorbisFrame extends AudioFrame {
 	 */
 	protected IdentificationHeaderFrame getHeaderFrame() {
 		return identificationHeaderFrame;
+	}
+	/**
+	 * codec用のprivateデータを応答します。
+	 * identification + comment + setupの組み合わせのデータとなります。
+	 * @return
+	 */
+	public ByteBuffer getCodecPrivate() throws Exception {
+		if(identificationHeaderFrame == null) {
+			return null;
+		}
+		return identificationHeaderFrame.getPackBuffer();
 	}
 }

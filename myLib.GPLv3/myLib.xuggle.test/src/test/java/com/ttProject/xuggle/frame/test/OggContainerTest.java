@@ -29,6 +29,15 @@ public class OggContainerTest {
 			)
 		);
 	}
+	@Test
+	public void vorbis() throws Exception {
+		logger.info("vorbisテスト");
+		decodeTest(
+				FileReadChannel.openFileReadChannel(
+						Thread.currentThread().getContextClassLoader().getResource("vorbis.ogg")
+				)
+			);
+	}
 	private void decodeTest(IFileReadChannel source) {
 		DecodeBase base = new DecodeBase();
 		try {

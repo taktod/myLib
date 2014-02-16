@@ -1,6 +1,7 @@
 package com.ttProject.frame.vorbis.type;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,6 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.frame.vorbis.VorbisFrame;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.extra.Bit;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit32;
@@ -34,6 +34,7 @@ import com.ttProject.util.BufferUtil;
  */
 public class CommentHeaderFrame extends VorbisFrame {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(CommentHeaderFrame.class);
 	private Bit8   packetType = new Bit8();
 	private Bit48  string     = new Bit48();
@@ -41,7 +42,6 @@ public class CommentHeaderFrame extends VorbisFrame {
 	private Bit32  iterateNum = new Bit32();
 	private List<String> elementList = new ArrayList<String>();
 	private Bit1   lastFlag = new Bit1();
-	private Bit    extraBit = null;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -59,39 +59,74 @@ public class CommentHeaderFrame extends VorbisFrame {
 		Bit32 size = new Bit32();
 		loader.load(size);
 		venderName = new String(BufferUtil.safeRead(channel, size.get()).array());
-		logger.info(venderName);
 		loader.load(iterateNum);
 		for(int i = 0;i < iterateNum.get();i ++) {
 			loader.load(size);
 			String data = new String(BufferUtil.safeRead(channel, size.get()).array());
 			elementList.add(data);
-			logger.info(data);
 		}
 		loader.load(lastFlag);
 		if(lastFlag.get() != 1) {
 			throw new Exception("終端データがおかしい");
 		}
-		extraBit = loader.getExtraBit();
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		
+		if(venderName == null) {
+			venderName = "myLib.vorbis.muxer";
+		}
+		int size = 1 + 6 + 4 + venderName.length() + 4 + 1;
+		for(String element : elementList) {
+			size += 4 + element.length();
+		}
+		ByteBuffer buffer = ByteBuffer.allocate(size);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		buffer.put((byte)0x03);
+		buffer.put("vorbis".getBytes());
+		buffer.putInt(venderName.length());
+		buffer.put(venderName.getBytes());
+		buffer.putInt(elementList.size());
+		for(String element : elementList) {
+			buffer.putInt(element.length());
+			buffer.put(element.getBytes());
+		}
+		buffer.put((byte)0x01);
+		buffer.flip();
+		setSize(buffer.remaining());
+		setData(buffer);
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ByteBuffer getPackBuffer() {
-		return null;
+	public ByteBuffer getPackBuffer() throws Exception {
+		return getData();
+	}
+	/**
+	 * 最短のデータを応答しておく
+	 * @return
+	 */
+	public ByteBuffer getMinimumBuffer() {
+		ByteBuffer buffer = ByteBuffer.allocate(35);
+		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		buffer.put((byte)0x03);
+		buffer.put("vorbis".getBytes());
+		String name = "myLib.vorbis.muxer";
+		buffer.putInt(name.length());
+		buffer.put(name.getBytes());
+		buffer.putInt(0);
+		buffer.put((byte)1);
+		buffer.flip();
+		return buffer;
 	}
 }

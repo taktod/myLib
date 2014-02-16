@@ -7,12 +7,14 @@ import org.apache.log4j.Logger;
 import com.ttProject.frame.vorbis.VorbisFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit48;
 import com.ttProject.unit.extra.bit.Bit8;
+import com.ttProject.util.BufferUtil;
 
 /**
  * vorbisのheaderフレーム
@@ -53,7 +55,7 @@ public class IdentificationHeaderFrame extends VorbisFrame {
 	private Bit4  blockSize0      = new Bit4();
 	private Bit4  blockSize1      = new Bit4();
 	private Bit1  framingFlag     = new Bit1();
-	private Bit   extraBit = null;
+	private Bit   extraBit        = null;
 
 	private boolean isFirstPassed = false;
 	private int blockSize0Value = 0;
@@ -91,6 +93,7 @@ public class IdentificationHeaderFrame extends VorbisFrame {
 		logger.info(getSampleRate());
 		logger.info(blockSize0Value);
 		logger.info(blockSize1Value);
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
@@ -110,21 +113,37 @@ public class IdentificationHeaderFrame extends VorbisFrame {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		
+		BitConnector connector = new BitConnector();
+		connector.setLittleEndianFlg(true);
+		setData(connector.connect(packetType,
+				string, vorbisVersion, audioChannels, audioSampleRate, 
+				bitrateMaximum, bitrateNormal, bitrateMinimum,
+				blockSize0, blockSize1, framingFlag, extraBit));
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ByteBuffer getPackBuffer() {
-		return null;
+	public ByteBuffer getPackBuffer() throws Exception {
+		// ここで応答するデータはidentificationHeaderFrame + commentHeaderFrame + setupHeaderFrameのデータの組み合わせとなります。
+		ByteBuffer identificationData = getData();
+		ByteBuffer commentData = commentHeaderFrame.getMinimumBuffer();
+		ByteBuffer setupData = setupHeaderFrame.getPackBuffer();
+		BitConnector connector = new BitConnector();
+		return BufferUtil.connect(
+				connector.connect(new Bit8(2),
+						new Bit8(identificationData.remaining()),
+						new Bit8(commentData.remaining())),
+				identificationData,
+				commentData,
+				setupData);
 	}
 	/**
 	 * CommentHeaderFrame設定

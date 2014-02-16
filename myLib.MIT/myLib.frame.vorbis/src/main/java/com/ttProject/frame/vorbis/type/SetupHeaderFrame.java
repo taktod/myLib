@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.frame.vorbis.VorbisFrame;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit48;
 import com.ttProject.unit.extra.bit.Bit8;
@@ -45,26 +46,31 @@ public class SetupHeaderFrame extends VorbisFrame {
 		}
 		super.setSize(channel.size());
 		buffer = BufferUtil.safeRead(channel, channel.size() - channel.position());
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		
+		BitConnector connector = new BitConnector();
+		connector.setLittleEndianFlg(true);
+		setData(BufferUtil.connect(
+				connector.connect(packetType, string),
+				buffer));
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ByteBuffer getPackBuffer() {
-		return null;
+	public ByteBuffer getPackBuffer() throws Exception {
+		return getData();
 	}
 }

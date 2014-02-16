@@ -16,6 +16,10 @@ import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.frame.mp3.Mp3Frame;
 import com.ttProject.frame.nellymoser.NellymoserFrame;
 import com.ttProject.frame.speex.SpeexFrame;
+import com.ttProject.frame.vorbis.VorbisFrame;
+import com.ttProject.frame.vorbis.type.CommentHeaderFrame;
+import com.ttProject.frame.vorbis.type.IdentificationHeaderFrame;
+import com.ttProject.frame.vorbis.type.SetupHeaderFrame;
 import com.ttProject.frame.vp6.Vp6Frame;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.ICodec;
@@ -55,7 +59,6 @@ public class Packetizer {
 		else if(frame instanceof IVideoFrame) {
 			return getVideoPacket((IVideoFrame)frame, packet);
 		}
-		
 		return null;
 	}
 	private IPacket getVideoPacket(IVideoFrame frame, IPacket packet) throws Exception {
@@ -93,7 +96,7 @@ public class Packetizer {
 	 * @param decoder
 	 * @return
 	 */
-	public IStreamCoder getDecoder(IFrame frame, IStreamCoder decoder) {
+	public IStreamCoder getDecoder(IFrame frame, IStreamCoder decoder) throws Exception {
 		if(frame instanceof Flv1Frame) {
 			if(decoder == null // デコーダーが未設定の場合はつくる必要あり
 					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_FLV1) { // コーデックがflv1でない場合も作り直し
@@ -140,9 +143,26 @@ public class Packetizer {
 			}
 		}
 		if(frame instanceof SpeexFrame) {
+			// speexはprivateDataがあるみたいだが、sampleRate、timebase、Channelsを設定しているので、そちらで決定できるので問題ないみたい。
 			if(decoder == null // デコーダーが未設定の場合は生成する必要あり
 					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_SPEEX) {
 				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_SPEEX);
+			}
+		}
+		if(frame instanceof VorbisFrame) {
+			if(decoder == null
+					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_VORBIS) {
+				if(frame instanceof IdentificationHeaderFrame || frame instanceof CommentHeaderFrame || frame instanceof SetupHeaderFrame) {
+					// 初期化中のデータの場合は処理できない。
+					return null;
+				}
+				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_VORBIS);
+				VorbisFrame vorbisFrame = (VorbisFrame)frame;
+				// このタイミングでextraDataをいれないとだめっぽい
+				ByteBuffer buffer = vorbisFrame.getCodecPrivate();
+				int size = buffer.remaining();
+				IBuffer extraData = IBuffer.make(decoder, buffer.array(), 0, size);
+				decoder.setExtraData(extraData, 0, size, true);
 			}
 		}
 		return decoder;
