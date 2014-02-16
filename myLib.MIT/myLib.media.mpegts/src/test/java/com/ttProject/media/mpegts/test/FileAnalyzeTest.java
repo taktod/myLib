@@ -1,7 +1,6 @@
 package com.ttProject.media.mpegts.test;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.media.mpegts.IPacketAnalyzer;
 import com.ttProject.media.mpegts.Packet;
@@ -21,7 +20,7 @@ public class FileAnalyzeTest {
 	/**
 	 * 固定ファイル用
 	 */
-	@Test
+//	@Test
 	public void fixedFileTest() throws Exception {
 		try {
 			IReadChannel source = FileReadChannel.openFileReadChannel(

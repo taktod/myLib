@@ -3,7 +3,6 @@ package com.ttProject.media.flv1.test;
 import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.media.flv.CodecType;
 import com.ttProject.media.flv.FlvHeader;
@@ -28,7 +27,7 @@ public class FileAnalyzeTest {
 	 * ファイルを解析するテスト
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void fixedFileTest() throws Exception {
 		IFileReadChannel source = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("test.flv")

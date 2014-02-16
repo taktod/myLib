@@ -3,7 +3,6 @@ package com.ttProject.media.extra.test;
 import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.media.extra.Bit1;
 import com.ttProject.media.extra.Bit2;
@@ -29,7 +28,7 @@ public class BitTest {
 	 * 読み込み書き込みテスト
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void test() throws Exception {
 		IReadChannel channel = new ByteReadChannel(new byte[] {
 				(byte)0xFF, (byte)0xF1, 0x50, (byte)0x80, 0x02, 0x1F, (byte)0xFC
@@ -72,7 +71,7 @@ public class BitTest {
 	 * extGolomb付きの動作テスト
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void test2() throws Exception {
 		IReadChannel channel = new ByteReadChannel(new byte[] {
 				(byte)0xF7

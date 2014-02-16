@@ -3,7 +3,6 @@ package com.ttProject.media.mpegts.test;
 import java.nio.ByteBuffer;
 
 import org.junit.Assert;
-import org.junit.Test;
 
 import com.ttProject.media.mpegts.Crc32;
 import com.ttProject.util.HexUtil;
@@ -17,7 +16,7 @@ public class Crc32Test {
 	 * 計算があうか確認
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void test() throws Exception {
 		Crc32 crc32 = new Crc32();
 		// Patのサンプル474000100000B00D0001C100000001F0002AB104B2

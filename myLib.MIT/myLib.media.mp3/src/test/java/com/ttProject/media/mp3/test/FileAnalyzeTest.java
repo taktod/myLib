@@ -3,7 +3,6 @@ package com.ttProject.media.mp3.test;
 import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.media.mp3.Frame;
 import com.ttProject.media.mp3.FrameAnalyzer;
@@ -22,7 +21,7 @@ public class FileAnalyzeTest {
 	/**
 	 * ファイルサイズが固定されている状態での動作テスト
 	 */
-	@Test
+//	@Test
 	public void fixedFileTest() throws Exception {
 		IReadChannel source = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("test.mp3")
@@ -40,7 +39,7 @@ public class FileAnalyzeTest {
 	 * ファイルサイズはわからないがbyteBufferデータが順番に追加される状態での動作テスト
 	 * stdinみたいにサイズがわかっていないデータはこちら側
 	 */
-	@Test
+//	@Test
 	public void appendingBufferTest() throws Exception {
 		logger.info("追記動作のテスト開始");
 		IReadChannel source = FileReadChannel.openFileReadChannel(

@@ -1,7 +1,6 @@
 package com.ttProject.media.mpegts.test;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.media.mpegts.packet.Pat;
 import com.ttProject.util.HexUtil;
@@ -16,7 +15,7 @@ public class PatTest {
 		Pat pat = new Pat(HexUtil.makeBuffer("474000100000B00D0001C100000001F0002AB104B2"));
 		logger.info(pat);
 	}
-	@Test
+//	@Test
 	public void test() throws Exception {
 		Pat pat = new Pat();
 		logger.info(pat);

@@ -1,7 +1,6 @@
 package com.ttProject.media.aac.test;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.media.aac.Frame;
 import com.ttProject.media.aac.FrameAnalyzer;
@@ -15,7 +14,7 @@ import com.ttProject.nio.channels.IReadChannel;
  */
 public class FileAnalyzeTest {
 	private Logger logger = Logger.getLogger(FileAnalyzeTest.class);
-	@Test
+//	@Test
 	public void fixedFileTest() throws Exception {
 		IReadChannel source = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("test.aac")

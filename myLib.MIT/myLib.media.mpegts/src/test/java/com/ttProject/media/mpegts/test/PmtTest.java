@@ -1,7 +1,6 @@
 package com.ttProject.media.mpegts.test;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.media.mpegts.CodecType;
 import com.ttProject.media.mpegts.field.PmtElementaryField;
@@ -18,7 +17,7 @@ public class PmtTest {
 		Pmt pmt = new Pmt(HexUtil.makeBuffer("475000100002B0170001C10000E100F0001BE100F0000FE101F0002F44B99B"));
 		logger.info(pmt);
 	}
-	@Test
+//	@Test
 	public void test() throws Exception {
 		Pmt pmt = new Pmt();
 		logger.info(pmt);

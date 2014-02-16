@@ -3,7 +3,6 @@ package com.ttProject.flv.test;
 import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.media.flv.FlvHeader;
 import com.ttProject.media.flv.FlvManager;
@@ -23,7 +22,7 @@ public class FileAnalyzeTest {
 	/**
 	 * ファイル全体を解析するテスト
 	 */
-	@Test
+//	@Test
 	public void fixedFileTest() throws Exception {
 		IFileReadChannel source = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("test.flv")
@@ -42,7 +41,7 @@ public class FileAnalyzeTest {
 	/**
 	 * サイズがわかっていないデータを順に受け取るときにflvを解析する動作テスト
 	 */
-	@Test
+//	@Test
 	public void appendingBufferTest() throws Exception {
 		IFileReadChannel source = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("test.flv")

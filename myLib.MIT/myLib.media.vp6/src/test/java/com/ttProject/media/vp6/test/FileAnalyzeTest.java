@@ -3,7 +3,6 @@ package com.ttProject.media.vp6.test;
 import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.media.flv.CodecType;
 import com.ttProject.media.flv.FlvHeader;
@@ -20,7 +19,7 @@ import com.ttProject.nio.channels.IReadChannel;
 
 public class FileAnalyzeTest {
 	private Logger logger = Logger.getLogger(FileAnalyzeTest.class);
-	@Test
+//	@Test
 	public void test() throws Exception {
 		IFileReadChannel source = FileReadChannel.openFileReadChannel("http://red5.googlecode.com/svn-history/r4071/java/example/trunk/oflaDemo/www/streams/toystory3-vp6.flv");
 		FlvHeader flvheader = new FlvHeader();

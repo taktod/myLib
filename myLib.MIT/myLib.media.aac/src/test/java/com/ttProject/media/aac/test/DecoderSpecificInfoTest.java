@@ -1,7 +1,6 @@
 package com.ttProject.media.aac.test;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.media.aac.DecoderSpecificInfo;
 import com.ttProject.media.aac.Frame;
@@ -15,14 +14,14 @@ import com.ttProject.util.HexUtil;
 
 public class DecoderSpecificInfoTest {
 	private Logger logger = Logger.getLogger(DecoderSpecificInfoTest.class);
-	@Test
+//	@Test
 	public void restore() throws Exception {
 		IReadChannel channel = new ByteReadChannel(HexUtil.makeBuffer("1210"));
 		DecoderSpecificInfo specificInfo = new DecoderSpecificInfo();
 		specificInfo.analyze(channel);
 		logger.info(specificInfo);
 	}
-	@Test
+//	@Test
 	public void make() throws Exception {
 		IReadChannel source = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("test.aac")

@@ -3,8 +3,6 @@ package com.ttProject.flv.test;
 import java.io.File;
 import java.util.List;
 
-import org.junit.Test;
-
 import com.ttProject.media.flv.Tag;
 import com.ttProject.media.flv.model.FlvOrderModel;
 import com.ttProject.media.flv.model.IndexFileCreator;
@@ -16,7 +14,7 @@ import com.ttProject.nio.channels.IFileReadChannel;
  * @author taktod
  */
 public class IndexFileTest {
-	@Test
+//	@Test
 	public void test() throws Exception {
 		IFileReadChannel target = null;
 		IndexFileCreator idx = null;

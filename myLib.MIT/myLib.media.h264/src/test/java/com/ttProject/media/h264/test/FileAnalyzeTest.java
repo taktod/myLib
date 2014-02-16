@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-import org.junit.Test;
 
 import com.ttProject.media.flv.CodecType;
 import com.ttProject.media.flv.FlvHeader;
@@ -23,7 +22,7 @@ import com.ttProject.nio.channels.IReadChannel;
 
 public class FileAnalyzeTest {
 	private Logger logger = Logger.getLogger(FileAnalyzeTest.class);
-	@Test
+//	@Test
 	public void test() throws Exception {
 		// h264データの読み込みテストを実施します。
 		// ただしh264を読み込む適当なフォーマットがないので、flvからデータを読み込むことにします。

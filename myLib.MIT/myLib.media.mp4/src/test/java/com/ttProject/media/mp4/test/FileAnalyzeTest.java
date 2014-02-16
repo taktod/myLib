@@ -1,7 +1,6 @@
 package com.ttProject.media.mp4.test;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.media.mp4.Atom;
 import com.ttProject.media.mp4.AtomAnalyzer;
@@ -19,7 +18,7 @@ public class FileAnalyzeTest {
 	/**
 	 * 固定ファイルの読み込みテスト
 	 */
-	@Test
+//	@Test
 	public void fixedFileTest() throws Exception {
 		IReadChannel source = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("test.mp4")
@@ -34,7 +33,7 @@ public class FileAnalyzeTest {
 	/**
 	 * 追記されているデータ読み込みテスト(mp4ではありえないので、やらない(moofのあるデータならあり得るかも))
 	 */
-	@Test
+//	@Test
 	public void appendingBufferTest() throws Exception {
 		logger.error("mp4に関しては追記動作がありえないので、このテストはなしです。");
 	}
