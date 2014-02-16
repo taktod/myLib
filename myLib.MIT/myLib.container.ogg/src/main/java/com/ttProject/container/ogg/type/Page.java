@@ -77,8 +77,15 @@ public class Page extends OggPage {
 	public void load(IReadChannel channel) throws Exception {
 		channel.position(getPosition() + 27 + getSegmentSizeList().size());
 		List<IFrame> frameList = getFrameList();
+		int targetSize = 0;
 		for(Bit8 size : getSegmentSizeList()) {
-			ByteBuffer buffer = BufferUtil.safeRead(channel, size.get());
+			if(size.get() == 0xFF) {
+				targetSize += 0xFF;
+				continue;
+			}
+			targetSize += size.get();
+			ByteBuffer buffer = BufferUtil.safeRead(channel, targetSize);
+			targetSize = 0;
 			// 解析したい。
 			IReadChannel bufferChannel = new ByteReadChannel(buffer);
 			// TODO 他のコンテナでは、このタイミングでflame化していません。byteデータを保持しているだけ

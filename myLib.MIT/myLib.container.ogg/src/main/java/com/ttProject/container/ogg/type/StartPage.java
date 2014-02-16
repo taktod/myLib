@@ -63,8 +63,13 @@ public class StartPage extends OggPage {
 	public void load(IReadChannel channel) throws Exception {
 		boolean isFirstData = true;
 		channel.position(getPosition() + 27 + getSegmentSizeList().size());
+		int targetSize = 0;
 		for(Bit8 size : getSegmentSizeList()) {
-			ByteBuffer buffer = BufferUtil.safeRead(channel, size.get());
+			if(size.get() == 0xFF) {
+				targetSize += 0xFF;
+			}
+			targetSize += size.get();
+			ByteBuffer buffer = BufferUtil.safeRead(channel, targetSize);
 			if(isFirstData) {
 				// はじめのデータの場合はコーデックheaderがあると思われるので、なんのコーデックか判定する必要あり。
 				switch(buffer.get()) {

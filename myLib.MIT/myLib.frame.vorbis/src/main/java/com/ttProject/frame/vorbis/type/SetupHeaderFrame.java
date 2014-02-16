@@ -23,6 +23,7 @@ import com.ttProject.util.BufferUtil;
  */
 public class SetupHeaderFrame extends VorbisFrame {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(SetupHeaderFrame.class);
 	private Bit8  packetType  = new Bit8();
 	private Bit48 string      = new Bit48();
@@ -32,6 +33,7 @@ public class SetupHeaderFrame extends VorbisFrame {
 	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
+//		logger.info(channel.size());
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
 		loader.load(packetType, string);
