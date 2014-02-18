@@ -36,11 +36,11 @@ import com.ttProject.util.BufferUtil;
 public class TrackEntry extends MkvMasterTag {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(TrackEntry.class);
-	private long timebase;
-	private int lacingFlag = 0;
+	private long  timebase;
+	private int   lacingFlag = 0;
 	private Media type = null;
 
-	private CodecID   codecId   = null;
+	private CodecID codecId = null;
 	private PixelWidth  pixelWidth  = null;
 	private PixelHeight pixelHeight = null;
 	private Channels          channels          = null;
@@ -68,11 +68,13 @@ public class TrackEntry extends MkvMasterTag {
 	 */
 	public int setupEntry(long defaultTimebase) throws Exception {
 		timebase = defaultTimebase;
-		TrackUID trackUid = null;
+		TrackNumber trackNumber = null;
 		CodecPrivate codecPrivate = null;
 		for(MkvTag tag : getChildList()) {
-			if(tag instanceof TrackUID) {
-				trackUid = (TrackUID)tag;
+			logger.info(tag);
+			// trackUIDをつかわずにtrackNumberをつかった方がいいっぽい。
+			if(tag instanceof TrackNumber) {
+				trackNumber = (TrackNumber)tag;
 			}
 			else if(tag instanceof FlagLacing) {
 				lacingFlag = (int)((FlagLacing) tag).getValue();
@@ -95,8 +97,8 @@ public class TrackEntry extends MkvMasterTag {
 				type = ((TrackType)tag).getType();
 			}
 		}
-		if(trackUid == null) {
-			throw new Exception("trackUidが見つかりませんでした。");
+		if(trackNumber == null) {
+			throw new Exception("trackNumberが見つかりませんでした。");
 		}
 		switch(codecId.getCodecType()) {
 		case A_AAC:
@@ -157,7 +159,7 @@ public class TrackEntry extends MkvMasterTag {
 			selector.setWidth(getWidth());
 			selector.setHeight(getHeight());
 		}
-		return (int)trackUid.getValue();
+		return (int)trackNumber.getValue();
 	}
 	private void setupVideo(Video video) {
 		for(MkvTag tag : video.getChildList()) {
