@@ -1,7 +1,12 @@
 package com.ttProject.container.mkv.type;
 
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
+import com.ttProject.container.mkv.Lacing;
 import com.ttProject.container.mkv.MkvBinaryTag;
 import com.ttProject.container.mkv.MkvTag;
 import com.ttProject.container.mkv.Type;
@@ -21,6 +26,7 @@ import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit16;
 import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit3;
+import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 import com.ttProject.util.HexUtil;
 
@@ -110,6 +116,53 @@ public class SimpleBlock extends MkvBinaryTag {
 	 * @throws Exception
 	 */
 	private void analyzeFrame() throws Exception {
+		// lacingについて調べておく
+		List<Integer> lacingSizeList = new ArrayList<Integer>();
+		IReadChannel channel = new ByteReadChannel(getMkvData());
+		switch(Lacing.getType(lacing.get())) {
+		case No:
+			// 単純に残りデータ全部
+			lacingSizeList.add(channel.size());
+			break;
+		case Xiph:
+			throw new Exception("サンプルがないため作成していません。");
+		case EBML:
+			{
+				Bit8 num = new Bit8();
+				BitLoader loader = new BitLoader(channel);
+				loader.load(num);
+				int size = 0;
+				for(int i = 0;i < num.get();i ++) {
+					EbmlValue value = new EbmlValue();
+					loader.load(value);
+					if(i == 0) {
+						size = value.get();
+					}
+					else {
+						// 差分を計算する。
+						int diff = value.get() - ((1 << (7 * value.getBitCount() / 8 - 1)) - 1);
+						size = size + diff;
+					}
+					lacingSizeList.add(size);
+				}
+			}
+			break;
+		case FixedSize:
+			{
+				Bit8 num = new Bit8();
+				BitLoader loader = new BitLoader(channel);
+				loader.load(num);
+				// num + 1の数でのこりのデータ量を分割したのが、lacingSize
+				int lacingSize = (channel.size() - 1) / (num.get() + 1);
+				for(int i = 0;i < num.get() + 1;i ++) {
+					lacingSizeList.add(lacingSize);
+				}
+			}
+			break;
+		default:
+			throw new Exception("不明な型です。");
+		}
+		logger.info(lacingSizeList);
 		// frameデータを調整したい。
 		TrackEntry entry = getMkvTagReader().getTrackEntry(trackId.get());
 		IReadChannel frameDataChannel = null;

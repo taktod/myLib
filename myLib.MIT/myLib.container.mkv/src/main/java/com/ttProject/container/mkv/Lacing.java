@@ -16,7 +16,7 @@ public enum Lacing {
 	public int intValue() {
 		return value;
 	}
-	public Lacing getType(int value) throws Exception {
+	public static Lacing getType(int value) throws Exception {
 		for(Lacing t : values()) {
 			if(t.value == value) {
 				return t;
