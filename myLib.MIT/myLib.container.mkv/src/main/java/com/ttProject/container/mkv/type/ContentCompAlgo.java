@@ -31,11 +31,11 @@ public class ContentCompAlgo extends MkvUnsignedIntTag {
 		return Algo.getType((int)getValue());
 	}
 	public static enum Algo {
-		Zlib(1),
+		Zlib(0),
 		@Deprecated
-		Bzlib(2),
+		Bzlib(1),
 		@Deprecated
-		Lzo1x(3),
+		Lzo1x(2),
 		HeaderStripping(3);
 		private final int value;
 		private Algo(int value) {
