@@ -3,6 +3,7 @@ package com.ttProject.container.mkv.type;
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.mkv.MkvBinaryTag;
+import com.ttProject.container.mkv.MkvTag;
 import com.ttProject.container.mkv.Type;
 import com.ttProject.frame.Frame;
 import com.ttProject.frame.IAnalyzer;
@@ -20,6 +21,8 @@ import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit16;
 import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit3;
+import com.ttProject.util.BufferUtil;
+import com.ttProject.util.HexUtil;
 
 /**
  * SimpleBlockタグ
@@ -109,7 +112,47 @@ public class SimpleBlock extends MkvBinaryTag {
 	private void analyzeFrame() throws Exception {
 		// frameデータを調整したい。
 		TrackEntry entry = getMkvTagReader().getTrackEntry(trackId.get());
-		IReadChannel frameDataChannel = new ByteReadChannel(getMkvData());
+		IReadChannel frameDataChannel = null;
+		ContentEncodings encodings = entry.getEncodings();
+		// TODO この書き方だと、lacing対策していないので、調整する必要あり。
+		if(encodings == null) {
+			frameDataChannel = new ByteReadChannel(getMkvData());
+		}
+		else {
+			for(MkvTag tag : encodings.getChildList()) {
+				if(tag instanceof ContentEncoding) {
+					ContentEncoding encoding = (ContentEncoding)tag;
+					logger.info(encoding);
+					for(MkvTag etag : encoding.getChildList()) {
+						if(etag instanceof ContentCompression) {
+							ContentCompression compression = (ContentCompression)etag;
+							logger.info(compression);
+							switch(compression.getAlgoType()) {
+							case Zlib:
+								throw new Exception("zlib動作は作成できていません。作者に問い合わせてください");
+							case Bzlib:
+							case Lzo1x:
+								throw new Exception("非推奨な圧縮形式でした。:" + compression.getAlgoType());
+							case HeaderStripping:
+								logger.info("stripでした。");
+								logger.info(HexUtil.toHex(BufferUtil.connect(compression.getSettingData(), getMkvData()), 0, 5, true));
+								logger.info(HexUtil.toHex(BufferUtil.connect(compression.getSettingData(), getMkvData()), 0, 5, true));
+								frameDataChannel = new ByteReadChannel(BufferUtil.connect(compression.getSettingData(), getMkvData()));
+								break;
+							default:
+								throw new Exception("想定外の圧縮algoです");
+							}
+						}
+						else {
+							throw new Exception("encodingの保持データが未知なものを発見しました。:" + etag);
+						}
+					}
+				}
+				else {
+					throw new Exception("contentEncodingsが想定外のデータを保持していました。:" + tag);
+				}
+			}
+		}
 		IAnalyzer analyzer = entry.getAnalyzer();
 		IFrame analyzedFrame = null;
 		do {

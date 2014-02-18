@@ -46,6 +46,9 @@ public class TrackEntry extends MkvMasterTag {
 	private Channels          channels          = null;
 	private SamplingFrequency samplingFrequency = null;
 	private BitDepth          bitDepth          = null; // このデータはnullなことがあるみたいです。(aacで実際そうなってた。)
+	
+	// 圧縮や暗号化がある場合のデータ指定
+	private ContentEncodings encodings = null;
 	/** frame解析用のオブジェクト */
 	private IAnalyzer analyzer = null;
 	/**
@@ -95,6 +98,9 @@ public class TrackEntry extends MkvMasterTag {
 			}
 			else if(tag instanceof TrackType) {
 				type = ((TrackType)tag).getType();
+			}
+			else if(tag instanceof ContentEncodings) {
+				encodings = (ContentEncodings)tag;
 			}
 		}
 		if(trackNumber == null) {
@@ -232,5 +238,8 @@ public class TrackEntry extends MkvMasterTag {
 			return 32;
 		}
 		return (int)bitDepth.getValue();
+	}
+	public ContentEncodings getEncodings() {
+		return encodings;
 	}
 }

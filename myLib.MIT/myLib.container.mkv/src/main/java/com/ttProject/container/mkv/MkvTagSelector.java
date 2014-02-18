@@ -302,7 +302,7 @@ public class MkvTagSelector implements ISelector {
 		case FlagForced:
 			mkvTag = new FlagForced(size);
 			break;
-		case TrackTimecodeScale:
+		case TrackTimecodeScale: // deprecated
 			mkvTag = new TrackTimecodeScale(size);
 			break;
 		case MaxBlockAdditionID:
