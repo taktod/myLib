@@ -1,0 +1,53 @@
+package com.ttProject.container.mkv.type;
+
+import com.ttProject.container.mkv.MkvUnsignedIntTag;
+import com.ttProject.container.mkv.Type;
+import com.ttProject.unit.extra.EbmlValue;
+
+/**
+ * ContentCompAlgoタグ
+ * @author taktod
+ */
+public class ContentCompAlgo extends MkvUnsignedIntTag {
+	/**
+	 * コンストラクタ
+	 * @param size
+	 */
+	public ContentCompAlgo(EbmlValue size) {
+		super(Type.ContentCompAlgo, size);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void requestUpdate() throws Exception {
+	}
+	/**
+	 * 動作タイプを設定
+	 * @return
+	 * @throws Exception
+	 */
+	public Algo getType() throws Exception {
+		return Algo.getType((int)getValue());
+	}
+	public static enum Algo {
+		Zlib(1),
+		@Deprecated
+		Bzlib(2),
+		@Deprecated
+		Lzo1x(3),
+		HeaderStripping(3);
+		private final int value;
+		private Algo(int value) {
+			this.value = value;
+		}
+		public static Algo getType(int value) throws Exception {
+			for(Algo t : values()) {
+				if(t.value == value) {
+					return t;
+				}
+			}
+			throw new Exception("typeが決定しませんでした:" + value);
+		}
+	}
+}
