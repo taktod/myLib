@@ -46,7 +46,7 @@ public abstract class MkvBinaryTag extends MkvTag {
 	 * @return
 	 */
 	public ByteBuffer getMkvData() {
-		return buffer;
+		return buffer.duplicate();
 	}
 	/**
 	 * {@inheritDoc}
