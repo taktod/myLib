@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.mkv.type.Audio;
 import com.ttProject.container.mkv.type.BitDepth;
 import com.ttProject.container.mkv.type.Block;
+import com.ttProject.container.mkv.type.BlockDuration;
 import com.ttProject.container.mkv.type.BlockGroup;
 import com.ttProject.container.mkv.type.Channels;
 import com.ttProject.container.mkv.type.Cluster;
@@ -322,6 +323,9 @@ public class MkvTagSelector implements ISelector {
 			break;
 		case ReferenceBlock:
 			mkvTag = new ReferenceBlock(size);
+			break;
+		case BlockDuration:
+			mkvTag = new BlockDuration(size);
 			break;
 		default:
 			throw new Exception("未実装のTypeデータが応答されました。" + Type.getType(tag.getEbmlValue()));
