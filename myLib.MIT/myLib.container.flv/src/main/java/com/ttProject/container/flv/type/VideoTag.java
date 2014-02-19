@@ -432,6 +432,9 @@ public class VideoTag extends FlvTag {
 		StringBuilder data = new StringBuilder();
 		data.append("VideoTag:");
 		data.append(" timestamp:").append(getPts());
+		if(dts != null) {
+			data.append(" dts:").append(dts.get());
+		}
 		data.append(" codec:").append(getCodec());
 		try {
 			int width = getWidth();
