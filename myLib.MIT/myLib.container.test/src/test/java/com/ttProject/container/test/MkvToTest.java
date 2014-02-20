@@ -55,7 +55,7 @@ public class MkvToTest {
 			while((container = reader.read(source)) != null) {
 				if(container instanceof SimpleBlock) {
 					SimpleBlock simpleBlock = (SimpleBlock)container;
-					writer.addFrame(simpleBlock.getTrackId(), simpleBlock.getFrame());
+					writer.addFrame(simpleBlock.getTrackId().get(), simpleBlock.getFrame());
 				}
 			}
 			writer.prepareTailer();
