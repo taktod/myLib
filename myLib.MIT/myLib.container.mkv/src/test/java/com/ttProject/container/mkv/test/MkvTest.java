@@ -5,8 +5,10 @@ import org.junit.Test;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
+import com.ttProject.container.mkv.MkvBlockTag;
+import com.ttProject.container.mkv.MkvTag;
 import com.ttProject.container.mkv.MkvTagReader;
-import com.ttProject.container.mkv.type.SimpleBlock;
+import com.ttProject.container.mkv.type.BlockGroup;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
@@ -30,9 +32,20 @@ public class MkvTest {
 			IReader reader = new MkvTagReader();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
-				if(container instanceof SimpleBlock) {
-					SimpleBlock simpleBlock = (SimpleBlock)container;
-					logger.info(simpleBlock.getFrame());
+				if(container instanceof BlockGroup) {
+					logger.info(container);
+					for(MkvTag tag : ((BlockGroup)container).getChildList()) {
+						if(tag instanceof MkvBlockTag) {
+							MkvBlockTag blockTag = (MkvBlockTag)tag;
+							logger.info(blockTag);
+							logger.info(blockTag.getFrame());
+						}
+					}
+				}
+				if(container instanceof MkvBlockTag) {
+					MkvBlockTag blockTag = (MkvBlockTag)container;
+					logger.info(blockTag);
+					logger.info(blockTag.getFrame());
 				}
 			}
 		}

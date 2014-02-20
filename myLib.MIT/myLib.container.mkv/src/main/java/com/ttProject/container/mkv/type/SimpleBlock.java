@@ -35,11 +35,11 @@ public class SimpleBlock extends MkvBlockTag {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(SimpleBlock.class);
-	private Bit1      keyFrameFlag       = new Bit1();
-	private Bit3      reserved           = new Bit3();
-	private Bit1      invisibleFrameFlag = new Bit1();
-	private Bit2      lacing             = new Bit2();
-	private Bit1      discardableFlag    = new Bit1();
+	private Bit1 keyFrameFlag       = new Bit1();
+	private Bit3 reserved           = new Bit3();
+	private Bit1 invisibleFrameFlag = new Bit1();
+	private Bit2 lacing             = new Bit2();
+	private Bit1 discardableFlag    = new Bit1();
 	/**
 	 * コンストラクタ
 	 * @param size
@@ -56,6 +56,9 @@ public class SimpleBlock extends MkvBlockTag {
 		BitLoader loader = new BitLoader(channel);
 		loader.load(keyFrameFlag, reserved, invisibleFrameFlag, lacing, discardableFlag);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected Lacing getLacingType() throws Exception {
 		return Lacing.getType(lacing.get());
