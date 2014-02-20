@@ -1,6 +1,5 @@
 package com.ttProject.container.mkv.type;
 
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +27,6 @@ import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtil;
 
 /**
  * SimpleBlockタグ
@@ -51,7 +49,6 @@ import com.ttProject.util.HexUtil;
  */
 public class SimpleBlock extends MkvBinaryTag {
 	/** ロガー */
-	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(SimpleBlock.class);
 	private EbmlValue trackId            = new EbmlValue();
 	private Bit16     timestampDiff      = new Bit16();
@@ -107,7 +104,7 @@ public class SimpleBlock extends MkvBinaryTag {
 	 */
 	public IFrame getFrame() throws Exception {
 		if(frame == null) {
-			analyzeFrame();
+			analyzeFrames();
 		}
 		return frame;
 	}
@@ -115,7 +112,7 @@ public class SimpleBlock extends MkvBinaryTag {
 	 * フレームを解析する
 	 * @throws Exception
 	 */
-	private void analyzeFrame() throws Exception {
+	private void analyzeFrames() throws Exception {
 		// lacingについて調べておく
 		List<Integer> lacingSizeList = new ArrayList<Integer>();
 		IReadChannel channel = new ByteReadChannel(getMkvData());
@@ -165,11 +162,12 @@ public class SimpleBlock extends MkvBinaryTag {
 		logger.info(lacingSizeList);
 		// frameデータを調整したい。
 		TrackEntry entry = getMkvTagReader().getTrackEntry(trackId.get());
-		IReadChannel frameDataChannel = null;
 		ContentEncodings encodings = entry.getEncodings();
 		// TODO この書き方だと、lacing対策していないので、調整する必要あり。
 		if(encodings == null) {
-			frameDataChannel = new ByteReadChannel(getMkvData());
+			for(Integer size : lacingSizeList) {
+				analyzeFrame(entry, new ByteReadChannel(BufferUtil.safeRead(channel, size)));
+			}
 		}
 		else {
 			for(MkvTag tag : encodings.getChildList()) {
@@ -183,17 +181,14 @@ public class SimpleBlock extends MkvBinaryTag {
 							switch(compression.getAlgoType()) {
 							case Zlib:
 								throw new Exception("zlib動作は作成できていません。作者に問い合わせてください");
-							case Bzlib:
-							case Lzo1x:
-								throw new Exception("非推奨な圧縮形式でした。:" + compression.getAlgoType());
 							case HeaderStripping:
 								logger.info("stripでした。");
-								logger.info(HexUtil.toHex(BufferUtil.connect(compression.getSettingData(), getMkvData()), 0, 5, true));
-								logger.info(HexUtil.toHex(BufferUtil.connect(compression.getSettingData(), getMkvData()), 0, 5, true));
-								frameDataChannel = new ByteReadChannel(BufferUtil.connect(compression.getSettingData(), getMkvData()));
+								for(Integer size : lacingSizeList) {
+									analyzeFrame(entry, new ByteReadChannel(BufferUtil.connect(compression.getSettingData(), BufferUtil.safeRead(channel, size))));
+								}
 								break;
 							default:
-								throw new Exception("想定外の圧縮algoです");
+								throw new Exception("非推奨な圧縮形式でした。:" + compression.getAlgoType());
 							}
 						}
 						else {
@@ -206,10 +201,18 @@ public class SimpleBlock extends MkvBinaryTag {
 				}
 			}
 		}
+	}
+	/**
+	 * フレームを解析して追加する
+	 * @param entry
+	 * @param channel
+	 * @throws Exception
+	 */
+	private void analyzeFrame(TrackEntry entry, IReadChannel channel) throws Exception {
 		IAnalyzer analyzer = entry.getAnalyzer();
 		IFrame analyzedFrame = null;
 		do {
-			analyzedFrame = analyzer.analyze(frameDataChannel);
+			analyzedFrame = analyzer.analyze(channel);
 			if(analyzedFrame == null) {
 				throw new Exception("frameがありませんでした。");
 			}
@@ -220,7 +223,7 @@ public class SimpleBlock extends MkvBinaryTag {
 			tmpFrame.setPts(time);
 			tmpFrame.setTimebase(entry.getTimebase());
 			addFrame(tmpFrame);
-		} while(frameDataChannel.size() != frameDataChannel.position());
+		} while(channel.size() != channel.position());
 		// のこっているデータがある場合は解析しなければならない。
 		analyzedFrame = analyzer.getRemainFrame();
 		if(analyzedFrame != null && !(analyzedFrame instanceof NullFrame) && analyzedFrame instanceof Frame) {
