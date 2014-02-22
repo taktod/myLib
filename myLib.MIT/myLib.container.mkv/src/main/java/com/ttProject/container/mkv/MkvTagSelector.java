@@ -2,6 +2,7 @@ package com.ttProject.container.mkv;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.container.NullContainer;
 import com.ttProject.container.mkv.type.Audio;
 import com.ttProject.container.mkv.type.BitDepth;
 import com.ttProject.container.mkv.type.Block;
@@ -84,6 +85,7 @@ import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.EbmlValue;
+import com.ttProject.unit.extra.bit.Bit1;
 
 /**
  * mkvのelementを解析して取り出すselector
@@ -103,10 +105,28 @@ public class MkvTagSelector implements ISelector {
 			return null;
 		}
 		// TODO test4より、このタイミングでtagのデータ量が4バイト以上になる場合は異常であるので、スキップしないとだめっぽい。
-		EbmlValue tag  = new EbmlValue();
-		EbmlValue size = new EbmlValue();
 		BitLoader loader = new BitLoader(channel);
-		loader.load(tag, size);
+		EbmlValue tag  = new EbmlValue();
+		Bit1 bit1 = null;
+		int zeroCount = 0;
+		do {
+			bit1 = new Bit1();
+			loader.load(bit1);
+			zeroCount ++;
+		}while(tag.addBit1(bit1));
+		if(zeroCount > 4) {
+			for(int i = 0;i < 8 - zeroCount;i ++) {
+				bit1 = new Bit1();
+				loader.load(bit1);
+			}
+			return NullContainer.getInstance();
+			// ebmltagにするには数値が大きすぎます。
+//			throw new Exception("ebmlタグにするには数値がおおきすぎます。");
+		}
+		loader.load(tag.getDataBit());
+		
+		EbmlValue size = new EbmlValue();
+		loader.load(size);
 		MkvTag mkvTag = null;
 		switch(Type.getType(tag.getEbmlValue())) {
 		case EBML:

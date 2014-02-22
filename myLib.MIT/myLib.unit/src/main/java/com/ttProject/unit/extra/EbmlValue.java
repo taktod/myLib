@@ -203,7 +203,7 @@ public class EbmlValue extends Bit {
 	 * データの基本bitを応答する
 	 * @return
 	 */
-	protected Bit getDataBit() {
+	public Bit getDataBit() {
 		switch(zeroCount) {
 		case 0: dataBit = new Bit7();  break;
 		case 1: dataBit = new Bit14(); break;

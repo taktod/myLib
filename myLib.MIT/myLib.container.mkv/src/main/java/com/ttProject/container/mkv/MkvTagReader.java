@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
+import com.ttProject.container.NullContainer;
 import com.ttProject.container.Reader;
 import com.ttProject.container.mkv.type.Cluster;
 import com.ttProject.container.mkv.type.Segment;
@@ -37,8 +38,13 @@ public class MkvTagReader extends Reader {
 	 */
 	@Override
 	public IContainer read(IReadChannel channel) throws Exception {
-		MkvTag tag = (MkvTag)getSelector().select(channel);
-		if(tag != null) {
+		IContainer container = (IContainer)getSelector().select(channel);
+		MkvTag tag = null;
+		if(container != null) {
+			if(container instanceof NullContainer) {
+				return container;
+			}
+			tag = (MkvTag)container;
 			tag.setMkvTagReader(this);
 			if(!(tag instanceof Cluster) && !(tag instanceof Segment)) {
 				// clusterとsegmentの読み込みをスキップすることで、simpleBlockのデータを応答するようにしておく
