@@ -38,6 +38,8 @@ public enum Type {
 			WritingApp(0x5741),
 		Cluster(0x1F43B675),
 			Timecode(0xE7),
+			Position(0xA7),
+			PrevSize(0xAB),
 			SimpleBlock(0xA3),
 			BlockGroup(0xa0),
 				Block(0xa1),

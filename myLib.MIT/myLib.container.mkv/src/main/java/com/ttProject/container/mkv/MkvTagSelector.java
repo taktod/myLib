@@ -7,6 +7,7 @@ import com.ttProject.container.mkv.type.BitDepth;
 import com.ttProject.container.mkv.type.Block;
 import com.ttProject.container.mkv.type.BlockDuration;
 import com.ttProject.container.mkv.type.BlockGroup;
+import com.ttProject.container.mkv.type.CRC32;
 import com.ttProject.container.mkv.type.Channels;
 import com.ttProject.container.mkv.type.Cluster;
 import com.ttProject.container.mkv.type.CodecDecodeAll;
@@ -48,6 +49,8 @@ import com.ttProject.container.mkv.type.MinCache;
 import com.ttProject.container.mkv.type.MuxingApp;
 import com.ttProject.container.mkv.type.PixelHeight;
 import com.ttProject.container.mkv.type.PixelWidth;
+import com.ttProject.container.mkv.type.Position;
+import com.ttProject.container.mkv.type.PrevSize;
 import com.ttProject.container.mkv.type.ReferenceBlock;
 import com.ttProject.container.mkv.type.SamplingFrequency;
 import com.ttProject.container.mkv.type.Seek;
@@ -99,6 +102,7 @@ public class MkvTagSelector implements ISelector {
 			// データがもうない
 			return null;
 		}
+		// TODO test4より、このタイミングでtagのデータ量が4バイト以上になる場合は異常であるので、スキップしないとだめっぽい。
 		EbmlValue tag  = new EbmlValue();
 		EbmlValue size = new EbmlValue();
 		BitLoader loader = new BitLoader(channel);
@@ -326,6 +330,15 @@ public class MkvTagSelector implements ISelector {
 			break;
 		case BlockDuration:
 			mkvTag = new BlockDuration(size);
+			break;
+		case CRC32:
+			mkvTag = new CRC32(size);
+			break;
+		case Position:
+			mkvTag = new Position(size);
+			break;
+		case PrevSize:
+			mkvTag = new PrevSize(size);
 			break;
 		default:
 			throw new Exception("未実装のTypeデータが応答されました。" + Type.getType(tag.getEbmlValue()));
