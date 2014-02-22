@@ -72,7 +72,8 @@ public class URLFileReadChannel implements IFileReadChannel {
 			if(position != 0) {
 				conn.addRequestProperty("Range", "bytes=" + position + "-");
 			}
-			conn.setRequestProperty("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 6_1 like Mac OS X; ja-jp) AppleWebKit/536.26 (KHTML, like Gecko) CriOS/23.0.1271.100 Mobile/10B142 Safari/8536.25");
+//			conn.setRequestProperty("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 6_1 like Mac OS X; ja-jp) AppleWebKit/536.26 (KHTML, like Gecko) CriOS/23.0.1271.100 Mobile/10B142 Safari/8536.25");
+			conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.63 Safari/537.36");
 			// proxyアクセスであることを名乗っておく。
 			conn.setRequestProperty("Via", "1.1(jetty)");
 			conn.connect(); // つなぐ
