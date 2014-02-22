@@ -86,7 +86,23 @@ public abstract class MkvBlockTag extends MkvBinaryTag {
 				lacingSizeList.add(channel.size());
 				break;
 			case Xiph:
-				throw new Exception("サンプルがないため作成していません。");
+				{
+					Bit8 num = new Bit8();
+					BitLoader loader = new BitLoader(channel);
+					loader.load(num);
+					int size = 0;
+					for(int i = 0;i < num.get();i ++) {
+						Bit8 sizeByte = null;
+						do {
+							sizeByte = new Bit8();
+							loader.load(sizeByte);
+							size += sizeByte.get();
+						} while(sizeByte.get() == 0xFF);
+						lacingSizeList.add(size);
+						size = 0;
+					}
+				}
+				break;
 			case EBML:
 				{
 					Bit8 num = new Bit8();
