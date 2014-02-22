@@ -48,7 +48,12 @@ public class BitN extends Bit {
 		long value = 0;
 		for(Bit bit : bits) {
 			value <<= bit.bitCount;
-			value |= bit.get();
+			if(bit instanceof BitN) {
+				value |= ((BitN) bit).getLong();
+			}
+			else {
+				value |= bit.get();
+			}
 		}
 		return value;
 	}
