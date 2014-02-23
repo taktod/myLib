@@ -46,19 +46,19 @@ public class MkvTest {
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
 				if(container instanceof BlockGroup) {
-					logger.info(container);
+//					logger.info(container);
 					for(MkvTag tag : ((BlockGroup)container).getChildList()) {
 						if(tag instanceof MkvBlockTag) {
-							MkvBlockTag blockTag = (MkvBlockTag)tag;
-							logger.info(blockTag);
-							logger.info(blockTag.getFrame());
+//							MkvBlockTag blockTag = (MkvBlockTag)tag;
+//							logger.info(blockTag);
+//							logger.info(blockTag.getFrame());
 						}
 					}
 				}
 				if(container instanceof MkvBlockTag) {
-					MkvBlockTag blockTag = (MkvBlockTag)container;
-					logger.info(blockTag);
-					logger.info(blockTag.getFrame());
+//					MkvBlockTag blockTag = (MkvBlockTag)container;
+//					logger.info(blockTag);
+//					logger.info(blockTag.getFrame());
 				}
 				lastPosition = source.position();
 			}
