@@ -25,9 +25,22 @@ public class MkvTest {
 	@Test
 	public void analyzerTest() {
 		IFileReadChannel source = null;
+		int lastPosition = 0;
 		try {
+			/*
+			 * test2 3 4 5 7 8はh264 + aac or mp3
+			 * test1 msmpeg4v2
+			 */
 			source = FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("test.mkv")
+//					Thread.currentThread().getContextClassLoader().getResource("test1.mkv") // msmpeg4v2なのでframeがいまのところない
+//					Thread.currentThread().getContextClassLoader().getResource("test2.mkv")
+//					Thread.currentThread().getContextClassLoader().getResource("test3.mkv")
+//					Thread.currentThread().getContextClassLoader().getResource("test4.mkv") // theoraらしい
+//					Thread.currentThread().getContextClassLoader().getResource("test5.mkv") // subtitleがはいっていて動作しない。S_TEXT/UTF8
+//					Thread.currentThread().getContextClassLoader().getResource("test6.mkv") // msmpeg4v2なのでframeがいまのところない
+//					Thread.currentThread().getContextClassLoader().getResource("test7.mkv")
+//					Thread.currentThread().getContextClassLoader().getResource("test8.mkv")
 			);
 			IReader reader = new MkvTagReader();
 			IContainer container = null;
@@ -47,10 +60,17 @@ public class MkvTest {
 					logger.info(blockTag);
 					logger.info(blockTag.getFrame());
 				}
+				lastPosition = source.position();
 			}
 		}
 		catch(Exception e) {
 			logger.warn("例外発生", e);
+			try {
+				logger.warn("エラー発生場所:" + Integer.toHexString(lastPosition));
+			}
+			catch(Exception ex) {
+				
+			}
 		}
 		finally {
 			if(source != null) {
