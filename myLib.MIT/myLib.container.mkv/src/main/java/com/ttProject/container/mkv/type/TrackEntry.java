@@ -31,6 +31,7 @@ import com.ttProject.util.BufferUtil;
 /**
  * TrackEntryタグ
  * ここからデータを拾えるようにだけ調整しておきたいね。
+ * TODO static関数でTrackEntryをねつ造できるようにしておきたいところ。
  * @author taktod
  */
 public class TrackEntry extends MkvMasterTag {
