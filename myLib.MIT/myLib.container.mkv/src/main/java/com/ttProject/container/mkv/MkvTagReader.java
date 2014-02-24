@@ -22,7 +22,7 @@ import com.ttProject.nio.channels.IReadChannel;
  */
 public class MkvTagReader extends Reader {
 	/** ロガー */
-	@SuppressWarnings("unused")
+//	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MkvTagReader.class);
 	private Map<Integer, TrackEntry> trackEntryMap = new ConcurrentHashMap<Integer, TrackEntry>();
 	private long defaultTimebase = 1000;
