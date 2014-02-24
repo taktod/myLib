@@ -1,10 +1,26 @@
 package com.ttProject.container.mkv;
 
+import com.ttProject.container.IContainer;
+import com.ttProject.container.IWriter;
+import com.ttProject.frame.IFrame;
+
 /**
  * mkvを作成するためのwriter
  * @author taktod
  */
-public class MkvTagWriter {
+public class MkvTagWriter implements IWriter {
+	// 最少の場合はMuxer名だけ追加入力してもらって、あとは自動入力でなんとかした方がよさそう。
+	// frameを入力する前に送ったmkvTagがある場合は、そっちを使うようにする。(なるべく)
+	// 実際の書き込みはframeうけとってから実行みたいな感じがいいとおもう。
+	/*
+	 * ebmlは適当に書く
+	 * Segmentの内容、tracksまでは１つのファイルに書き出しておく。
+	 * tracks指定がなかったらclusterの１つ目をつくりつつデータを構築する。
+	 * １つ目のclusterが処理おわったら、tracksは決定したものとする。
+	 * Clusterの内容は１つずつどこかに書き出しておく
+	 * Cueデータをつくっておく。(Clusterの並びしだい)
+	 * 最後にデータを結合して、おわり。
+	 */
 	/*
 	 * 必要であろう、エレメントリスト
 06:25:14,113 [main] INFO [MkvTagReader] - EBML size:23*
@@ -40,7 +56,7 @@ public class MkvTagWriter {
 06:25:14,126 [main] INFO [MkvTagReader] -   TrackEntry size:64*
 06:25:14,123 [main] INFO [MkvTagReader] -    TrackNumber size:1 uint:1(この数値はSimpleBlockと一致させる必要あり)
 06:25:14,123 [main] INFO [MkvTagReader] -    TrackUID size:1 uint:1 (ランダムでOKっぽい)
-06:25:14,123 [main] INFO [MkvTagReader] -    FlagLacing size:1 uint:0 (いらないだろ)
+06:25:14,123 [main] INFO [MkvTagReader] -    FlagLacing size:1 uint:0 (いらないだろ)(デフォでONなのでOFF強制するなら必要)
 06:25:14,123 [main] INFO [MkvTagReader] -    Language size:3 string:und
 06:25:14,124 [main] INFO [MkvTagReader] -    CodecID size:f string:V_MPEG4/ISO/AVC
 06:25:14,124 [main] INFO [MkvTagReader] -    TrackType size:1 uint:1
@@ -149,35 +165,51 @@ public class MkvTagWriter {
 06:25:14,183 [main] INFO [MkvTagReader] -   CueTrackPositions size:7*
 06:25:14,183 [main] INFO [MkvTagReader] -    CueTrack size:1 uint:1
 06:25:14,183 [main] INFO [MkvTagReader] -    CueClusterPosition size:2 uint:556
-06:25:14,184 [main] INFO [MkvTagReader] -  CueTime size:1 uint:125
-06:25:14,184 [main] INFO [MkvTagReader] -  CueTrack size:1 uint:1
-06:25:14,184 [main] INFO [MkvTagReader] -  CueClusterPosition size:2 uint:556
-06:25:14,184 [main] INFO [MkvTagReader] -  CueTrackPositions size:7*
 06:25:14,184 [main] INFO [MkvTagReader] -  CuePoint size:c*
-06:25:14,185 [main] INFO [MkvTagReader] -  CueTime size:1 uint:225
-06:25:14,185 [main] INFO [MkvTagReader] -  CueTrack size:1 uint:1
-06:25:14,185 [main] INFO [MkvTagReader] -  CueClusterPosition size:2 uint:6583
-06:25:14,185 [main] INFO [MkvTagReader] -  CueTrackPositions size:7*
+06:25:14,184 [main] INFO [MkvTagReader] -   CueTime size:1 uint:125
+06:25:14,184 [main] INFO [MkvTagReader] -   CueTrackPositions size:7*
+06:25:14,184 [main] INFO [MkvTagReader] -    CueTrack size:1 uint:1
+06:25:14,184 [main] INFO [MkvTagReader] -    CueClusterPosition size:2 uint:556
 06:25:14,185 [main] INFO [MkvTagReader] -  CuePoint size:c*
-06:25:14,186 [main] INFO [MkvTagReader] -  CueTime size:2 uint:350
-06:25:14,186 [main] INFO [MkvTagReader] -  CueTrack size:1 uint:1
-06:25:14,186 [main] INFO [MkvTagReader] -  CueClusterPosition size:2 uint:6583
-06:25:14,186 [main] INFO [MkvTagReader] -  CueTrackPositions size:7*
+06:25:14,185 [main] INFO [MkvTagReader] -   CueTime size:1 uint:225
+06:25:14,185 [main] INFO [MkvTagReader] -   CueTrackPositions size:7*
+06:25:14,185 [main] INFO [MkvTagReader] -    CueTrack size:1 uint:1
+06:25:14,185 [main] INFO [MkvTagReader] -    CueClusterPosition size:2 uint:6583
 06:25:14,187 [main] INFO [MkvTagReader] -  CuePoint size:d*
-06:25:14,187 [main] INFO [MkvTagReader] -  CueTime size:2 uint:475
-06:25:14,187 [main] INFO [MkvTagReader] -  CueTrack size:1 uint:1
-06:25:14,188 [main] INFO [MkvTagReader] -  CueClusterPosition size:2 uint:13107
-06:25:14,188 [main] INFO [MkvTagReader] -  CueTrackPositions size:7*
+06:25:14,186 [main] INFO [MkvTagReader] -   CueTime size:2 uint:350
+06:25:14,186 [main] INFO [MkvTagReader] -   CueTrackPositions size:7*
+06:25:14,186 [main] INFO [MkvTagReader] -    CueTrack size:1 uint:1
+06:25:14,186 [main] INFO [MkvTagReader] -    CueClusterPosition size:2 uint:6583
 06:25:14,188 [main] INFO [MkvTagReader] -  CuePoint size:d*
-06:25:14,188 [main] INFO [MkvTagReader] -  CueTime size:2 uint:575
-06:25:14,189 [main] INFO [MkvTagReader] -  CueTrack size:1 uint:1
-06:25:14,189 [main] INFO [MkvTagReader] -  CueClusterPosition size:2 uint:13107
-06:25:14,189 [main] INFO [MkvTagReader] -  CueTrackPositions size:7*
+06:25:14,187 [main] INFO [MkvTagReader] -   CueTime size:2 uint:475
+06:25:14,188 [main] INFO [MkvTagReader] -   CueTrackPositions size:7*
+06:25:14,187 [main] INFO [MkvTagReader] -    CueTrack size:1 uint:1
+06:25:14,188 [main] INFO [MkvTagReader] -    CueClusterPosition size:2 uint:13107
 06:25:14,189 [main] INFO [MkvTagReader] -  CuePoint size:d*
-06:25:14,189 [main] INFO [MkvTagReader] -  CueTime size:2 uint:700
-06:25:14,190 [main] INFO [MkvTagReader] -  CueTrack size:1 uint:1
-06:25:14,190 [main] INFO [MkvTagReader] -  CueClusterPosition size:2 uint:19042
-06:25:14,190 [main] INFO [MkvTagReader] -  CueTrackPositions size:7*
+06:25:14,188 [main] INFO [MkvTagReader] -   CueTime size:2 uint:575
+06:25:14,189 [main] INFO [MkvTagReader] -   CueTrackPositions size:7*
+06:25:14,189 [main] INFO [MkvTagReader] -    CueTrack size:1 uint:1
+06:25:14,189 [main] INFO [MkvTagReader] -    CueClusterPosition size:2 uint:13107
 06:25:14,190 [main] INFO [MkvTagReader] -  CuePoint size:d*
+06:25:14,189 [main] INFO [MkvTagReader] -   CueTime size:2 uint:700
+06:25:14,190 [main] INFO [MkvTagReader] -   CueTrackPositions size:7*
+06:25:14,190 [main] INFO [MkvTagReader] -    CueTrack size:1 uint:1
+06:25:14,190 [main] INFO [MkvTagReader] -    CueClusterPosition size:2 uint:19042
 	 */
+	@Override
+	public void prepareHeader() throws Exception {
+		// header情報はデータがこないとなんともいえないので、放置しておくことにするか？
+	}
+	@Override
+	public void prepareTailer() throws Exception {
+		
+	}
+	@Override
+	public void addContainer(IContainer container) throws Exception {
+		// TODO addContainerでTrackEntryの値はあらかじめいれておきたいところ・・・
+	}
+	@Override
+	public void addFrame(int trackId, IFrame frame) throws Exception {
+		
+	}
 }
