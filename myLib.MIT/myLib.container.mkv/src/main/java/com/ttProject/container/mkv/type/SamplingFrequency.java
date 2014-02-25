@@ -17,9 +17,9 @@ public class SamplingFrequency extends MkvFloatTag {
 		super(Type.SamplingFrequency, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public SamplingFrequency() {
+		this(new EbmlValue());
 	}
 }

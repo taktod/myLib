@@ -17,9 +17,9 @@ public class Duration extends MkvFloatTag {
 		super(Type.Duration, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public Duration() {
+		this(new EbmlValue());
 	}
 }

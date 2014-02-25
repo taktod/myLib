@@ -18,9 +18,9 @@ public class TrackTimecodeScale extends MkvFloatTag {
 		super(Type.TrackTimecodeScale, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public TrackTimecodeScale() {
+		this(new EbmlValue());
 	}
 }

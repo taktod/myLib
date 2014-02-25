@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import com.ttProject.container.mkv.type.CodecName;
 import com.ttProject.container.mkv.type.DocType;
+import com.ttProject.container.mkv.type.Duration;
 import com.ttProject.container.mkv.type.EBMLVersion;
 import com.ttProject.container.mkv.type.ReferenceBlock;
 import com.ttProject.util.HexUtil;
@@ -38,10 +39,18 @@ public class MkvDataTest {
 		docType.setValue("matroska");
 		logger.info(HexUtil.toHex(docType.getData()));
 	}
-	@Test
+//	@Test
 	public void utf8Tag() throws Exception {
 		CodecName codecName = new CodecName();
 		codecName.setValue("あいうえお");
 		logger.info(HexUtil.toHex(codecName.getData()));
+	}
+	@Test
+	public void floatTag() throws Exception {
+		Duration duration = new Duration();
+		duration.setValue(120f);
+		logger.info(HexUtil.toHex(duration.getData()));
+		duration.setValue(120D);
+		logger.info(HexUtil.toHex(duration.getData()));
 	}
 }

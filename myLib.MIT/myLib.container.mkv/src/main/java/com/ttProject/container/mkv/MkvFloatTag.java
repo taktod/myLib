@@ -1,6 +1,9 @@
 package com.ttProject.container.mkv;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.BitN;
 import com.ttProject.unit.extra.EbmlValue;
@@ -12,6 +15,8 @@ import com.ttProject.unit.extra.bit.Bit64;
  * @author taktod
  */
 public abstract class MkvFloatTag extends MkvTag {
+	/** ロガー */
+	private Logger logger = Logger.getLogger(MkvFloatTag.class);
 	private BitN value;
 	/**
 	 * コンストラクタ
@@ -39,6 +44,15 @@ public abstract class MkvFloatTag extends MkvTag {
 		BitLoader loader = new BitLoader(channel);
 		loader.load(value);
 		super.load(channel);
+		super.update();
+	}
+	@Override
+	protected void requestUpdate() throws Exception {
+		if(value == null) {
+			throw new Exception("値が決定していないので、動作できません。");
+		}
+		BitConnector connector = new BitConnector();
+		super.setData(connector.connect(getTagId(), getTagSize(), value));
 	}
 	public double getValue() {
 		if(value instanceof Bit32) {
@@ -47,6 +61,19 @@ public abstract class MkvFloatTag extends MkvTag {
 		else {
 			return Double.longBitsToDouble(value.getLong());
 		}
+	}
+	public void setValue(float data) {
+		logger.info("floatがよばれた");
+		value = new Bit32(Float.floatToIntBits(data));
+		getTagSize().set(4);
+		super.update();
+	}
+	public void setValue(double data) {
+		logger.info("doubleがよばれた");
+		value = new Bit64();
+		value.setLong(Double.doubleToLongBits(data));
+		getTagSize().set(8);
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
