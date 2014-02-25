@@ -18,6 +18,12 @@ public class CodecID extends MkvStringTag {
 		super(Type.CodecID, size);
 	}
 	/**
+	 * コンストラクタ
+	 */
+	public CodecID() {
+		this(new EbmlValue());
+	}
+	/**
 	 * codecTypeを参照
 	 * @return
 	 * @throws Exception
@@ -29,10 +35,7 @@ public class CodecID extends MkvStringTag {
 		}
 		return CodecType.getCodecType(name);
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public void setCodecType(CodecType codecType) throws Exception {
+		setValue(codecType.toString());
 	}
 }

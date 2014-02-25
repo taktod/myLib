@@ -17,9 +17,9 @@ public class TagLanguage extends MkvStringTag {
 		super(Type.TagLanguage, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public TagLanguage() {
+		this(new EbmlValue());
 	}
 }
