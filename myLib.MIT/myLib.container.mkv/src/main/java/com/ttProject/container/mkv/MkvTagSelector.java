@@ -13,6 +13,7 @@ import com.ttProject.container.mkv.type.Channels;
 import com.ttProject.container.mkv.type.Cluster;
 import com.ttProject.container.mkv.type.CodecDecodeAll;
 import com.ttProject.container.mkv.type.CodecID;
+import com.ttProject.container.mkv.type.CodecName;
 import com.ttProject.container.mkv.type.CodecPrivate;
 import com.ttProject.container.mkv.type.ContentCompAlgo;
 import com.ttProject.container.mkv.type.ContentCompSettings;
@@ -66,6 +67,7 @@ import com.ttProject.container.mkv.type.Tag;
 import com.ttProject.container.mkv.type.TagLanguage;
 import com.ttProject.container.mkv.type.TagName;
 import com.ttProject.container.mkv.type.TagString;
+import com.ttProject.container.mkv.type.TagTrackUID;
 import com.ttProject.container.mkv.type.Tags;
 import com.ttProject.container.mkv.type.Targets;
 import com.ttProject.container.mkv.type.Timecode;
@@ -359,6 +361,12 @@ public class MkvTagSelector implements ISelector {
 			break;
 		case PrevSize:
 			mkvTag = new PrevSize(size);
+			break;
+		case TagTrackUID:
+			mkvTag = new TagTrackUID(size);
+			break;
+		case CodecName:
+			mkvTag = new CodecName(size);
 			break;
 		default:
 			throw new Exception("未実装のTypeデータが応答されました。" + Type.getType(tag.getEbmlValue()));
