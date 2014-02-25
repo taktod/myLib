@@ -22,6 +22,7 @@ import com.ttProject.unit.extra.bit.Bit8;
  */
 public abstract class MkvUnsignedIntTag extends MkvTag {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MkvUnsignedIntTag.class);
 	private BitN value = null;
 	/**
@@ -54,10 +55,6 @@ public abstract class MkvUnsignedIntTag extends MkvTag {
 			throw new Exception("値が決定していないので、動作できません。");
 		}
 		// まずTagIdとsizeを書き込む必要あり。
-		logger.info("updateするよん？");
-		logger.info(getTagId());
-		logger.info(getTagSize());
-		logger.info(value);
 		BitConnector connector = new BitConnector();
 		super.setData(connector.connect(getTagId(), getTagSize(), value));
 	}
@@ -93,7 +90,6 @@ public abstract class MkvUnsignedIntTag extends MkvTag {
 			value = new Bit32((int)data);
 			getTagSize().set(4);
 		}
-		logger.info("updateフラグつけとくよ？");
 		super.update();
 	}
 	/**

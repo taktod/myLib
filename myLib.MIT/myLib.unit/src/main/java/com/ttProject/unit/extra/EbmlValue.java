@@ -20,6 +20,7 @@ import com.ttProject.unit.extra.bit.Bit8;
 
 public class EbmlValue extends Bit {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(EbmlValue.class);
 	private byte zeroCount = 0;
 	private Bit numBit  = null;
@@ -35,7 +36,6 @@ public class EbmlValue extends Bit {
 	}
 	@Override
 	public int getBitCount() {
-		logger.info("ebmlのbitCount参照");
 		return numBit.getBitCount() + dataBit.getBitCount();
 	}
 	@Override

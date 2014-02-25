@@ -18,9 +18,9 @@ public class ReferenceBlock extends MkvSignedIntTag {
 		super(Type.ReferenceBlock, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public ReferenceBlock() {
+		this(new EbmlValue());
 	}
 }

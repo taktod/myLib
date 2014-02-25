@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.container.mkv.type.EBMLVersion;
+import com.ttProject.container.mkv.type.ReferenceBlock;
 import com.ttProject.util.HexUtil;
 
 /**
@@ -17,10 +18,16 @@ public class MkvDataTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void unsignedIntTag() throws Exception {
 		EBMLVersion version = new EBMLVersion();
 		version.setValue(1);
 		logger.info(HexUtil.toHex(version.getData()));
+	}
+	@Test
+	public void signedIntTag() throws Exception {
+		ReferenceBlock referenceBlock = new ReferenceBlock();
+		referenceBlock.setValue(5);
+		logger.info(HexUtil.toHex(referenceBlock.getData()));
 	}
 }
