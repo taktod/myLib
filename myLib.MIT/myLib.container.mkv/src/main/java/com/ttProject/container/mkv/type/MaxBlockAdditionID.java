@@ -17,9 +17,9 @@ public class MaxBlockAdditionID extends MkvUnsignedIntTag {
 		super(Type.MaxBlockAdditionID, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public MaxBlockAdditionID() {
+		this(new EbmlValue());
 	}
 }

@@ -17,9 +17,9 @@ public class DisplayWidth extends MkvUnsignedIntTag {
 		super(Type.DisplayWidth, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public DisplayWidth() {
+		this(new EbmlValue());
 	}
 }

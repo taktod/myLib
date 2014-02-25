@@ -17,9 +17,9 @@ public class CueClusterPosition extends MkvUnsignedIntTag {
 		super(Type.CueClusterPosition, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public CueClusterPosition() {
+		this(new EbmlValue());
 	}
 }

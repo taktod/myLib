@@ -17,9 +17,9 @@ public class FlagLacing extends MkvUnsignedIntTag {
 		super(Type.FlagLacing, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public FlagLacing() {
+		this(new EbmlValue());
 	}
 }

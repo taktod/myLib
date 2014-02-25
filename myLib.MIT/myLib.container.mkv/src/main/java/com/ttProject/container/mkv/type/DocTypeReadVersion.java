@@ -17,9 +17,9 @@ public class DocTypeReadVersion extends MkvUnsignedIntTag {
 		super(Type.DocTypeReadVersion, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public DocTypeReadVersion() {
+		this(new EbmlValue());
 	}
 }

@@ -19,9 +19,9 @@ public class MinCache extends MkvUnsignedIntTag {
 		super(Type.MinCache, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public MinCache() {
+		this(new EbmlValue());
 	}
 }

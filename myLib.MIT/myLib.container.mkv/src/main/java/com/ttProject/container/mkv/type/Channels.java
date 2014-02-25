@@ -17,9 +17,9 @@ public class Channels extends MkvUnsignedIntTag {
 		super(Type.Channels, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public Channels() {
+		this(new EbmlValue());
 	}
 }

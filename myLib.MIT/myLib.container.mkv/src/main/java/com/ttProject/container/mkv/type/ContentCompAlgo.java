@@ -17,10 +17,10 @@ public class ContentCompAlgo extends MkvUnsignedIntTag {
 		super(Type.ContentCompAlgo, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public ContentCompAlgo() {
+		this(new EbmlValue());
 	}
 	/**
 	 * 動作タイプを設定

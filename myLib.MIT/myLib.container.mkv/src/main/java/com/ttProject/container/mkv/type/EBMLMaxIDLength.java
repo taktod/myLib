@@ -17,9 +17,9 @@ public class EBMLMaxIDLength extends MkvUnsignedIntTag {
 		super(Type.EBMLMaxIDLength, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public EBMLMaxIDLength() {
+		this(new EbmlValue());
 	}
 }

@@ -17,9 +17,9 @@ public class CueTrack extends MkvUnsignedIntTag {
 		super(Type.CueTrack, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public CueTrack() {
+		this(new EbmlValue());
 	}
 }

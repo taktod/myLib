@@ -17,9 +17,9 @@ public class DisplayHeight extends MkvUnsignedIntTag {
 		super(Type.DisplayHeight, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public DisplayHeight() {
+		this(new EbmlValue());
 	}
 }

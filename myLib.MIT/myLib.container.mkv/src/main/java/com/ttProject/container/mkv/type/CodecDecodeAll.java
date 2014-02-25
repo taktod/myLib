@@ -17,9 +17,9 @@ public class CodecDecodeAll extends MkvUnsignedIntTag {
 		super(Type.CodecDecodeAll, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public CodecDecodeAll() {
+		this(new EbmlValue());
 	}
 }

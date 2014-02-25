@@ -17,9 +17,9 @@ public class PixelWidth extends MkvUnsignedIntTag {
 		super(Type.PixelWidth, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public PixelWidth() {
+		this(new EbmlValue());
 	}
 }

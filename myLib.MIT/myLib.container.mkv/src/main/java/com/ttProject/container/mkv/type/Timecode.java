@@ -17,9 +17,9 @@ public class Timecode extends MkvUnsignedIntTag {
 		super(Type.Timecode, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public Timecode() {
+		this(new EbmlValue());
 	}
 }

@@ -17,9 +17,9 @@ public class BitDepth extends MkvUnsignedIntTag {
 		super(Type.BitDepth, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public BitDepth() {
+		this(new EbmlValue());
 	}
 }

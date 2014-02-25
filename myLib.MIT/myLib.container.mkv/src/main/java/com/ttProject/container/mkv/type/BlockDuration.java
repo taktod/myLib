@@ -17,9 +17,9 @@ public class BlockDuration extends MkvUnsignedIntTag {
 		super(Type.BlockDuration, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public BlockDuration() {
+		this(new EbmlValue());
 	}
 }

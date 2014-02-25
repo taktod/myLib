@@ -17,9 +17,9 @@ public class TrackNumber extends MkvUnsignedIntTag {
 		super(Type.TrackNumber, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public TrackNumber() {
+		this(new EbmlValue());
 	}
 }

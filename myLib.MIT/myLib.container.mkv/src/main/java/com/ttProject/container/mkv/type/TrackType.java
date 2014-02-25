@@ -17,10 +17,10 @@ public class TrackType extends MkvUnsignedIntTag {
 		super(Type.TrackType, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public TrackType() {
+		this(new EbmlValue());
 	}
 	public Media getType() throws Exception {
 		return Media.getType((int)super.getValue());

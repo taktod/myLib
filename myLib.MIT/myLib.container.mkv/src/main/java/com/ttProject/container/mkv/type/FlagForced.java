@@ -17,9 +17,9 @@ public class FlagForced extends MkvUnsignedIntTag {
 		super(Type.FlagForced, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public FlagForced() {
+		this(new EbmlValue());
 	}
 }

@@ -17,9 +17,9 @@ public class FlagInterlaced extends MkvUnsignedIntTag {
 		super(Type.FlagInterlaced, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public FlagInterlaced() {
+		this(new EbmlValue());
 	}
 }

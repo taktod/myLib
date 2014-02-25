@@ -17,9 +17,9 @@ public class PrevSize extends MkvUnsignedIntTag {
 		super(Type.PrevSize, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public PrevSize() {
+		this(new EbmlValue());
 	}
 }

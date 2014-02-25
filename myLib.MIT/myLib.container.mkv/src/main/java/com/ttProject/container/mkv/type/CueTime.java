@@ -17,9 +17,9 @@ public class CueTime extends MkvUnsignedIntTag {
 		super(Type.CueTime, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public CueTime() {
+		this(new EbmlValue());
 	}
 }

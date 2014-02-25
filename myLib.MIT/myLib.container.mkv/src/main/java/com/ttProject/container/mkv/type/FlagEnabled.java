@@ -17,9 +17,9 @@ public class FlagEnabled extends MkvUnsignedIntTag {
 		super(Type.FlagEnabled, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public FlagEnabled() {
+		this(new EbmlValue());
 	}
 }

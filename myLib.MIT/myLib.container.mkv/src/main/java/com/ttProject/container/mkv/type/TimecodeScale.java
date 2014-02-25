@@ -19,16 +19,16 @@ public class TimecodeScale extends MkvUnsignedIntTag {
 		super(Type.TimecodeScale, size);
 	}
 	/**
+	 * コンストラクタ
+	 */
+	public TimecodeScale() {
+		this(new EbmlValue());
+	}
+	/**
 	 * timebaseとして利用する値を応答します。
 	 * @return
 	 */
 	public long getTimebaseValue() {
 		return 1000000000L / getValue();
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void requestUpdate() throws Exception {
 	}
 }

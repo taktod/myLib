@@ -16,7 +16,10 @@ public class EBMLVersion extends MkvUnsignedIntTag {
 	public EBMLVersion(EbmlValue size) {
 		super(Type.EBMLVersion, size);
 	}
+	/**
+	 * コンストラクタ
+	 */
 	public EBMLVersion() {
-		super(Type.EBMLVersion, new EbmlValue());
+		this(new EbmlValue());
 	}
 }

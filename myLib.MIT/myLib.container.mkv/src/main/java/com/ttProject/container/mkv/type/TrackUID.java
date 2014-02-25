@@ -17,9 +17,9 @@ public class TrackUID extends MkvUnsignedIntTag {
 		super(Type.TrackUID, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public TrackUID() {
+		this(new EbmlValue());
 	}
 }

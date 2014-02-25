@@ -17,9 +17,9 @@ public class DefaultDuration extends MkvUnsignedIntTag {
 		super(Type.DefaultDuration, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public DefaultDuration() {
+		this(new EbmlValue());
 	}
 }

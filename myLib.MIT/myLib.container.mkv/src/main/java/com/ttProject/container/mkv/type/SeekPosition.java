@@ -17,9 +17,9 @@ public class SeekPosition extends MkvUnsignedIntTag {
 		super(Type.SeekPosition, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public SeekPosition() {
+		this(new EbmlValue());
 	}
 }
