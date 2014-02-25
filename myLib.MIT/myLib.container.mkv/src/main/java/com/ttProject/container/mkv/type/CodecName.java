@@ -17,9 +17,9 @@ public class CodecName extends MkvUtf8Tag {
 		super(Type.CodecName, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public CodecName() {
+		this(new EbmlValue());
 	}
 }

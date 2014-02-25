@@ -17,9 +17,9 @@ public class WritingApp extends MkvUtf8Tag {
 		super(Type.WritingApp, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public WritingApp() {
+		this(new EbmlValue());
 	}
 }

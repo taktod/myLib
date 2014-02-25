@@ -17,9 +17,9 @@ public class Title extends MkvUtf8Tag {
 		super(Type.Title, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public Title() {
+		this(new EbmlValue());
 	}
 }

@@ -3,6 +3,7 @@ package com.ttProject.container.mkv.test;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import com.ttProject.container.mkv.type.CodecName;
 import com.ttProject.container.mkv.type.DocType;
 import com.ttProject.container.mkv.type.EBMLVersion;
 import com.ttProject.container.mkv.type.ReferenceBlock;
@@ -31,10 +32,16 @@ public class MkvDataTest {
 		referenceBlock.setValue(5);
 		logger.info(HexUtil.toHex(referenceBlock.getData()));
 	}
-	@Test
+//	@Test
 	public void stringTag() throws Exception {
 		DocType docType = new DocType();
 		docType.setValue("matroska");
 		logger.info(HexUtil.toHex(docType.getData()));
+	}
+	@Test
+	public void utf8Tag() throws Exception {
+		CodecName codecName = new CodecName();
+		codecName.setValue("あいうえお");
+		logger.info(HexUtil.toHex(codecName.getData()));
 	}
 }

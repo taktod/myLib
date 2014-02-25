@@ -37,7 +37,7 @@ public abstract class MkvStringTag extends MkvTag{
 	}
 	public void setValue(String data) {
 		value = data;
-		getTagSize().set(value.length());
+		getTagSize().set(value.getBytes().length);
 		super.update();
 	}
 	@Override

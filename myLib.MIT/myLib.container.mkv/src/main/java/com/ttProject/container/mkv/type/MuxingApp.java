@@ -17,9 +17,9 @@ public class MuxingApp extends MkvUtf8Tag {
 		super(Type.MuxingApp, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public MuxingApp() {
+		this(new EbmlValue());
 	}
 }

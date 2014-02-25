@@ -17,9 +17,9 @@ public class FlagDefault extends MkvUtf8Tag {
 		super(Type.FlagDefault, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public FlagDefault() {
+		this(new EbmlValue());
 	}
 }

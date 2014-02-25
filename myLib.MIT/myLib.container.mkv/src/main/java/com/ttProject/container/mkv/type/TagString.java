@@ -17,9 +17,9 @@ public class TagString extends MkvUtf8Tag {
 		super(Type.TagString, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public TagString() {
+		this(new EbmlValue());
 	}
 }
