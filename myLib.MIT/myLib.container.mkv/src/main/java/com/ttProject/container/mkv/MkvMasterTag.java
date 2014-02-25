@@ -12,6 +12,10 @@ import com.ttProject.unit.extra.EbmlValue;
 /**
  * 他のTagを内包するTagの動作
  * @author taktod
+ * 
+ * TODO segmentのタグだけ別のものとなります。
+ * 一番上の要素って中身の要素が決定しないとsizeがきまらない。
+ * ebmlTag + sizeを書いて中身は中の要素に書き込みさせるという感じでしょうか・・・
  */
 public abstract class MkvMasterTag extends MkvTag {
 	/** ロガー */

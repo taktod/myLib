@@ -16,10 +16,7 @@ public class EBMLVersion extends MkvUnsignedIntTag {
 	public EBMLVersion(EbmlValue size) {
 		super(Type.EBMLVersion, size);
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public EBMLVersion() {
+		super(Type.EBMLVersion, new EbmlValue());
 	}
 }

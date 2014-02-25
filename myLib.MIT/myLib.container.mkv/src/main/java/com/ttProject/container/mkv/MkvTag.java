@@ -30,6 +30,7 @@ public abstract class MkvTag extends Container {
 		this.id.setEbmlValue(Type.getValue(id));
 		this.size = size;
 		super.setSize((int)(size.getLong() + (this.id.getBitCount() + this.size.getBitCount()) / 8));
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
@@ -37,6 +38,7 @@ public abstract class MkvTag extends Container {
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		setPosition(channel.position() - (id.getBitCount() + size.getBitCount()) / 8);
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
@@ -44,6 +46,7 @@ public abstract class MkvTag extends Container {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		channel.position(getPosition() + getSize());
+		super.update();
 	}
 	/**
 	 * mkv解析用Readerを外部から設定します。
@@ -73,6 +76,12 @@ public abstract class MkvTag extends Container {
 	 */
 	protected int getMkvSize() {
 		return size.get();
+	}
+	protected EbmlValue getTagId() {
+		return id;
+	}
+	protected EbmlValue getTagSize() {
+		return size;
 	}
 	/**
 	 * 内容dump用

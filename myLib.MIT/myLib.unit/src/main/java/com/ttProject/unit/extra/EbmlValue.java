@@ -1,5 +1,7 @@
 package com.ttProject.unit.extra;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit14;
 import com.ttProject.unit.extra.bit.Bit2;
@@ -17,6 +19,8 @@ import com.ttProject.unit.extra.bit.Bit7;
 import com.ttProject.unit.extra.bit.Bit8;
 
 public class EbmlValue extends Bit {
+	/** ロガー */
+	private Logger logger = Logger.getLogger(EbmlValue.class);
 	private byte zeroCount = 0;
 	private Bit numBit  = null;
 	private Bit dataBit = null;
@@ -26,9 +30,12 @@ public class EbmlValue extends Bit {
 	 */
 	public EbmlValue() {
 		super(0);
+		numBit = new Bit1(1);
+		dataBit = new Bit7();
 	}
 	@Override
 	public int getBitCount() {
+		logger.info("ebmlのbitCount参照");
 		return numBit.getBitCount() + dataBit.getBitCount();
 	}
 	@Override
@@ -201,6 +208,7 @@ public class EbmlValue extends Bit {
 	}
 	/**
 	 * データの基本bitを応答する
+	 * TODO ここも関数名変更したい候補
 	 * @return
 	 */
 	public Bit getDataBit() {
@@ -218,7 +226,18 @@ public class EbmlValue extends Bit {
 		}
 		return dataBit;
 	}
-	protected Bit getNumBit() {
+	/**
+	 * こっちも関数名変更したい
+	 * @return
+	 */
+	protected Bit getEbmlDataBit() {
+		return dataBit;
+	}
+	/**
+	 * TODO ここの関数名変更したい
+	 * @return
+	 */
+	protected Bit getEbmlNumBit() {
 		return numBit;
 	}
 	/**

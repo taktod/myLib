@@ -48,7 +48,7 @@ public class BitConnector {
 		size = 0;
 		for(Bit bit : bits) {
 			if(bit != null) {
-				size += bit.bitCount;
+				size += bit.getBitCount();
 			}
 		}
 		buffer = ByteBuffer.allocate((int)(Math.ceil(size / 8.0D)));
@@ -64,8 +64,25 @@ public class BitConnector {
 			}
 			else if(bit instanceof EbmlValue) {
 				EbmlValue ebml = (EbmlValue)bit;
-				appendBit(ebml.getNumBit());
-				appendBit(ebml.getDataBit());
+				appendBit(ebml.getEbmlNumBit());
+				Bit dataBit = ebml.getEbmlDataBit();
+				// TODO BitNの追記動作は別の関数にしたいですね。同じ処理があるし・・・
+				if(dataBit instanceof BitN) {
+					BitN bitN = (BitN)dataBit;
+					if(littleEndianFlg) {
+						for(int i = bitN.bits.size() - 1;i >= 0;i --){
+							appendBit(bitN.bits.get(i));
+						}
+					}
+					else {
+						for(Bit b : bitN.bits) {
+							appendBit(b);
+						}
+					}
+				}
+				else {
+					appendBit(dataBit);
+				}
 			}
 			else if(bit instanceof BitN) {
 				BitN bitN = (BitN)bit;
@@ -102,6 +119,7 @@ public class BitConnector {
 	 * データの書き込み処理
 	 */
 	private void appendBit(Bit b) {
+		// ここにbitNがきてしまうことがあるんですね。
 		if(littleEndianFlg) {
 			data = data | (b.get() << left);
 			left += b.bitCount;
