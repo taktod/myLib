@@ -17,9 +17,9 @@ public class DocType extends MkvStringTag {
 		super(Type.DocType, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public DocType() {
+		this(new EbmlValue());
 	}
 }
