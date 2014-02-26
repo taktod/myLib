@@ -16,6 +16,7 @@ import com.ttProject.unit.extra.bit.Bit64;
  */
 public abstract class MkvFloatTag extends MkvTag {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MkvFloatTag.class);
 	private BitN value;
 	/**
@@ -63,13 +64,11 @@ public abstract class MkvFloatTag extends MkvTag {
 		}
 	}
 	public void setValue(float data) {
-		logger.info("floatがよばれた");
 		value = new Bit32(Float.floatToIntBits(data));
 		getTagSize().set(4);
 		super.update();
 	}
 	public void setValue(double data) {
-		logger.info("doubleがよばれた");
 		value = new Bit64();
 		value.setLong(Double.doubleToLongBits(data));
 		getTagSize().set(8);

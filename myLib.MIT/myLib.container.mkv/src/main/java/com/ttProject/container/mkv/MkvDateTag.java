@@ -3,6 +3,7 @@ package com.ttProject.container.mkv;
 import java.util.Date;
 
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.EbmlValue;
 import com.ttProject.unit.extra.bit.Bit64;
@@ -37,10 +38,24 @@ public abstract class MkvDateTag extends MkvTag {
 		BitLoader loader = new BitLoader(channel);
 		loader.load(value);
 		super.load(channel);
+		super.update();
+	}
+	@Override
+	protected void requestUpdate() throws Exception {
+		if(value == null) {
+			throw new Exception("値が決定していないので、動作できません。");
+		}
+		BitConnector connector = new BitConnector();
+		super.setData(connector.connect(getTagId(), getTagSize(), value));
 	}
 	public Date getValue() {
 		return new Date(946684800000L + value.getLong() / 1000000);
-//		return value.getLong();
+	}
+	public void setValue(Date date) {
+		value = new Bit64();
+		value.setLong(date.getTime() * 1000000L - 946684800000L);
+		getTagSize().set(8);
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}

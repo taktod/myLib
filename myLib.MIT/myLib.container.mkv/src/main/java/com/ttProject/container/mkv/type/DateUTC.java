@@ -18,9 +18,9 @@ public class DateUTC extends MkvDateTag {
 		super(Type.DateUTC, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public DateUTC() {
+		this(new EbmlValue());
 	}
 }

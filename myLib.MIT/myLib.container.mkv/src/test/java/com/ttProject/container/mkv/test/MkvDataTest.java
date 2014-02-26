@@ -1,9 +1,12 @@
 package com.ttProject.container.mkv.test;
 
+import java.util.Date;
+
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.container.mkv.type.CodecName;
+import com.ttProject.container.mkv.type.DateUTC;
 import com.ttProject.container.mkv.type.DocType;
 import com.ttProject.container.mkv.type.Duration;
 import com.ttProject.container.mkv.type.EBMLVersion;
@@ -45,12 +48,18 @@ public class MkvDataTest {
 		codecName.setValue("あいうえお");
 		logger.info(HexUtil.toHex(codecName.getData()));
 	}
-	@Test
+//	@Test
 	public void floatTag() throws Exception {
 		Duration duration = new Duration();
 		duration.setValue(120f);
 		logger.info(HexUtil.toHex(duration.getData()));
 		duration.setValue(120D);
 		logger.info(HexUtil.toHex(duration.getData()));
+	}
+	@Test
+	public void dateTag() throws Exception {
+		DateUTC dateUtc = new DateUTC();
+		dateUtc.setValue(new Date());
+		logger.info(HexUtil.toHex(dateUtc.getData()));
 	}
 }
