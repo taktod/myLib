@@ -31,8 +31,11 @@ public abstract class ExpGolomb extends Bit {
 	private boolean find1Flg = false;
 	/** 保持bitデータ */
 	protected final List<Bit> bits = new ArrayList<Bit>();
-	{
-		// 初期化として0を表現しておきます。
+	/**
+	 * コンストラクタ
+	 */
+	public ExpGolomb() {
+		super(0);
 		bitCount = 1;
 		bits.add(new Bit1(1));
 	}
@@ -88,12 +91,6 @@ public abstract class ExpGolomb extends Bit {
 		default:
 			break;
 		}
-	}
-	/**
-	 * コンストラクタ
-	 */
-	public ExpGolomb() {
-		super(0);
 	}
 	/**
 	 * bitを登録していく。

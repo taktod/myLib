@@ -48,6 +48,7 @@ public class BufferUtil {
 		if(ch.size() - ch.position() < length) {
 			throw new Exception("読み込みチャンネルより大きなデータを取得しようとしました。");
 		}
+//		System.out.println(length);
 		ByteBuffer buffer = ByteBuffer.allocate(length);
 		int count = 0;
 		while(true) {

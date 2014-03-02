@@ -6,7 +6,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 /**
  * executorserviceを使うかループthreadを使うかまよっているので、ちょっとテストしてみる。
@@ -18,7 +17,7 @@ public class ThreadTest {
 	/**
 	 * テスト
 	 */
-	@Test
+//	@Test
 	public void test() {
 		ExecutorService exec = Executors.newFixedThreadPool(3);
 		final ExecutorService single = Executors.newSingleThreadExecutor();
