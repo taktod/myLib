@@ -12,6 +12,11 @@ import com.ttProject.unit.extra.bit.Bit32;
  * @author taktod
  * 
  * stsc stco等の順番に読み込む系のデータはすぐに必要ないので、partialContentで読み込み続きを実施できるようにでもしようかな・・・
+ * mp4Atomは、mkvとちがって、sizeとtagNameの部分も含むサイズがsizeにはいっています。
+ * mp4では、versionとflagsは、minimumLoadで読み込みさせておいて、
+ * その他のデータはloadで読み込むことにしておこうとおもいます。
+ * 
+ * どうせ、readerの方しかつかわないしね・・・
  */
 public abstract class Mp4Atom extends Container {
 	private final Bit32 size;

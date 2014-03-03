@@ -1,5 +1,7 @@
 package com.ttProject.container.mp4;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.container.IContainer;
 import com.ttProject.container.Reader;
 import com.ttProject.nio.channels.IReadChannel;
@@ -9,6 +11,8 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class Mp4AtomReader extends Reader {
+	/** ロガー */
+	private Logger logger = Logger.getLogger(Mp4AtomReader.class);
 	/**
 	 * コンストラクタ
 	 */
@@ -22,6 +26,7 @@ public class Mp4AtomReader extends Reader {
 			container.setMp4AtomReader(this);
 			container.load(channel);
 		}
+		logger.info(container);
 		return container;
 	}
 }

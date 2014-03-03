@@ -15,6 +15,7 @@ import com.ttProject.util.IntUtil;
 /**
  * hdlrの定義
  * @author taktod
+ * こっちはminimumの時点でvideoかどうかわかっておきたい
  */
 public class Hdlr extends Mp4Atom {
 	/** ロガー */

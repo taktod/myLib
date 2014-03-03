@@ -12,6 +12,7 @@ import com.ttProject.unit.extra.bit.Bit8;
 /**
  * elstの定義
  * @author taktod
+ * これは必須ではないみたいなので、スルーしておきます。
  */
 @SuppressWarnings("unused")
 public class Elst extends Mp4Atom {

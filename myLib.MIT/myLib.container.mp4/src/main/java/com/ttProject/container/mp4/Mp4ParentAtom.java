@@ -12,6 +12,7 @@ import com.ttProject.unit.extra.bit.Bit32;
  */
 public abstract class Mp4ParentAtom extends Mp4Atom {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Mp4ParentAtom.class);
 	/**
 	 * コンストラクタ
@@ -30,7 +31,7 @@ public abstract class Mp4ParentAtom extends Mp4Atom {
 		IContainer container = null;
 		while(targetSize > 0 && (container = getMp4AtomReader().read(channel)) != null) {
 			targetSize -= container.getSize();
-			logger.info(container);
+//			logger.info(container);
 		}
 		super.load(channel);
 	}

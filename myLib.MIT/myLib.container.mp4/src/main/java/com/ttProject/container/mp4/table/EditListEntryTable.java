@@ -1,5 +1,7 @@
 package com.ttProject.container.mp4.table;
 
+import com.ttProject.unit.extra.Bit;
+import com.ttProject.unit.extra.bit.Bit16;
 import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit64;
 
@@ -9,9 +11,8 @@ import com.ttProject.unit.extra.bit.Bit64;
  */
 @SuppressWarnings("unused")
 public class EditListEntryTable {
-	private Bit32 segmentDuration;
-	private Bit64 segmentDuration1;
-	private Bit32 mediaTime;
-	private Bit64 mediaTime1;
-	private Bit32 mediaRate;
+	private Bit segmentDuration;
+	private Bit mediaTime;
+	private Bit16 mediaRateInteger;
+	private Bit16 mediaRateFraction;
 }
