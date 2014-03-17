@@ -16,6 +16,22 @@ import com.ttProject.util.IntUtil;
  * hdlrの定義
  * @author taktod
  * こっちはminimumの時点でvideoかどうかわかっておきたい
+ * handlerType
+ * vide VideoTrack
+ * soun AudioTrack
+ * data DataTrack
+ * hint HintTrack
+ * odsm ObjectDescriptorStream
+ * crsm ClockReferenceStream
+ * sdsm SceneDescriptionStream
+ * ocsm ObjectContentInfoStream
+ * ipsm IPMP Stream
+ * mjsm MPEG-J Stream
+ * mdir Apple Meta Data iTunes Reader
+ * mp7b MPEG-7 binary XML
+ * mp7t MPEG-7 XML
+ * appl Apple specific
+ * meta Timed Metadata track
  */
 public class Hdlr extends Mp4Atom {
 	/** ロガー */

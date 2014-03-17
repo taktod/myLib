@@ -1,14 +1,31 @@
 package com.ttProject.container.mp4.type;
 
+import java.nio.ByteBuffer;
+
+import org.apache.log4j.Logger;
+
 import com.ttProject.container.mp4.Mp4Atom;
 import com.ttProject.container.mp4.Type;
+import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitLoader;
+import com.ttProject.unit.extra.bit.Bit24;
 import com.ttProject.unit.extra.bit.Bit32;
+import com.ttProject.unit.extra.bit.Bit8;
+import com.ttProject.util.BufferUtil;
 
 /**
  * stssの定義
+ * keyFrameになるデータの位置を保持しているatomになります。
  * @author taktod
  */
 public class Stss extends Mp4Atom {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(Stss.class);
+	private Bit8  version = new Bit8();
+	private Bit24 flags   = new Bit24();
+	private Bit32 count = null;
+	private ByteBuffer buffer = null;
 	/**
 	 * コンストラクタ
 	 * @param size
@@ -22,6 +39,39 @@ public class Stss extends Mp4Atom {
 	 */
 	public Stss() {
 		super(new Bit32(), Type.getTypeBit(Type.Stss));
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void minimumLoad(IReadChannel channel) throws Exception {
+		super.minimumLoad(channel);
+		BitLoader loader = new BitLoader(channel);
+		loader.load(version, flags);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void load(IReadChannel channel) throws Exception {
+		count = new Bit32();
+		BitLoader loader = new BitLoader(channel);
+		loader.load(count);
+		buffer = BufferUtil.safeRead(channel, count.get() * 4);
+		super.load(channel);
+	}
+	/**
+	 * 内部のデータを初めの位置に戻す
+	 */
+	public void reset() {
+		
+	}
+	/**
+	 * 次のキーフレームの番号を応答します。
+	 * @return
+	 */
+	public int nextKeyFrame() {
+		return -1;
 	}
 	/**
 	 * {@inheritDoc}

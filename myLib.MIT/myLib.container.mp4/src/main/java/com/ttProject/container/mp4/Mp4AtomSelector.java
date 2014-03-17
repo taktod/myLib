@@ -12,16 +12,19 @@ import com.ttProject.container.mp4.type.Free;
 import com.ttProject.container.mp4.type.Ftyp;
 import com.ttProject.container.mp4.type.Hdlr;
 import com.ttProject.container.mp4.type.Hmhd;
+import com.ttProject.container.mp4.type.Ilst;
 import com.ttProject.container.mp4.type.Iods;
 import com.ttProject.container.mp4.type.Mdat;
 import com.ttProject.container.mp4.type.Mdhd;
 import com.ttProject.container.mp4.type.Mdia;
+import com.ttProject.container.mp4.type.Meta;
 import com.ttProject.container.mp4.type.Mfhd;
 import com.ttProject.container.mp4.type.Mfra;
 import com.ttProject.container.mp4.type.Mfro;
 import com.ttProject.container.mp4.type.Minf;
 import com.ttProject.container.mp4.type.Moof;
 import com.ttProject.container.mp4.type.Moov;
+import com.ttProject.container.mp4.type.Mvex;
 import com.ttProject.container.mp4.type.Mvhd;
 import com.ttProject.container.mp4.type.Nmhd;
 import com.ttProject.container.mp4.type.Skip;
@@ -33,11 +36,13 @@ import com.ttProject.container.mp4.type.Stsd;
 import com.ttProject.container.mp4.type.Stss;
 import com.ttProject.container.mp4.type.Stsz;
 import com.ttProject.container.mp4.type.Stts;
+import com.ttProject.container.mp4.type.Tfdt;
 import com.ttProject.container.mp4.type.Tfhd;
 import com.ttProject.container.mp4.type.Tfra;
 import com.ttProject.container.mp4.type.Tkhd;
 import com.ttProject.container.mp4.type.Traf;
 import com.ttProject.container.mp4.type.Trak;
+import com.ttProject.container.mp4.type.Trex;
 import com.ttProject.container.mp4.type.Trun;
 import com.ttProject.container.mp4.type.Udta;
 import com.ttProject.container.mp4.type.Vmhd;
@@ -46,6 +51,7 @@ import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit32;
+import com.ttProject.util.IntUtil;
 
 /**
  * mp4のatomを解析していくselector
@@ -55,6 +61,7 @@ import com.ttProject.unit.extra.bit.Bit32;
  */
 public class Mp4AtomSelector implements ISelector {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Mp4AtomSelector.class);
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
@@ -185,9 +192,23 @@ public class Mp4AtomSelector implements ISelector {
 		case Mfro:
 			atom = new Mfro(size, name);
 			break;
+		case Mvex:
+			atom = new Mvex(size, name);
+			break;
+		case Trex:
+			atom = new Trex(size, name);
+			break;
+		case Tfdt:
+			atom = new Tfdt(size, name);
+			break;
+		case Meta:
+			atom = new Meta(size, name);
+			break;
+		case Ilst:
+			atom = new Ilst(size, name);
+			break;
 		default:
-			logger.info("まだ未定義" + Type.getType(name.get()));
-			return null;
+			throw new Exception("未定義:" + Type.getType(name.get()) + " name:" + IntUtil.makeHexString(name.get()));
 		}
 		atom.minimumLoad(channel);
 		return atom;

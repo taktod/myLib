@@ -36,18 +36,23 @@ public enum Type {
 	          Stco,
 	          Co64,
 	          Stss,
+	  Mvex,
+	    Trex,
 	  Udta,
 	Moof,
 	  Mfhd,
 	  Traf,
 	    Tfhd,
+	    Tfdt,
 	    Trun,
 	Mdat,
-	Free,
-	Skip,
 	Mfra,
 	  Tfra,
-	  Mfro;
+	  Mfro,
+	Meta,
+	  Ilst,
+	Free,
+	Skip;
 	/**
 	 * 文字列から動作typeを応答します
 	 * @param tag

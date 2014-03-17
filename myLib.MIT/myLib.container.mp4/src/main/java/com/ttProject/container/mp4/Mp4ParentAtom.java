@@ -31,7 +31,6 @@ public abstract class Mp4ParentAtom extends Mp4Atom {
 		IContainer container = null;
 		while(targetSize > 0 && (container = getMp4AtomReader().read(channel)) != null) {
 			targetSize -= container.getSize();
-//			logger.info(container);
 		}
 		super.load(channel);
 	}
