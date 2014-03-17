@@ -8,7 +8,8 @@ import com.ttProject.nio.channels.IReadChannel;
 /**
  * mp3のファイルユニット
  * @author taktod
- *
+ * TODO これちょっとおかしい。
+ * 普通はunitを読み込んだあとにそこからframeを取り出すが、mp3の場合はframeありきになっている。
  */
 public class Mp3Unit extends Container {
 	/**

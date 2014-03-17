@@ -8,6 +8,8 @@ import com.ttProject.nio.channels.IReadChannel;
 /**
  * adtsのファイルユニット
  * @author taktod
+ * TODO これもmp3と同じくちょっとおかしい。
+ * 普通はunitを読み込んでからaacのフレームを取り出す方がただしいけど逆になっている。
  */
 public class AdtsUnit extends Container {
 	/** 音声Frame(aacのみ) */
