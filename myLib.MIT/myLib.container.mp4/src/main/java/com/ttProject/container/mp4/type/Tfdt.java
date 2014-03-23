@@ -15,6 +15,7 @@ import com.ttProject.unit.extra.bit.Bit8;
 /**
  * tfdtの定義
  * dtsを定義するためのものかな？
+ * 差分のtimestampを記録しているみたい。
  * @see http://www.3gpp.org/ftp/Inbox/LSs_from_external_bodies/ISO_IEC_JTC1_SG29_WG11/29n12310.zip
  * @see 29n12310t2.doc
  * @author taktod
