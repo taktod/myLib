@@ -63,9 +63,6 @@ public class MkvTagReader extends Reader {
 		if(tag instanceof Timecode) {
 			clusterTime = ((Timecode)tag).getValue();
 		}
-		if(tag instanceof SimpleBlock) {
-			// simpleBlockはtrackEntryが必要
-		}
 		return tag;
 	}
 	public TrackEntry getTrackEntry(int trackId) {
