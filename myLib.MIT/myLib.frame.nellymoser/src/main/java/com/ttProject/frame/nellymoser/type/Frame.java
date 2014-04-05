@@ -7,7 +7,7 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.BitN;
-import com.ttProject.unit.extra.bit.Bit64;
+import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit6;
 
@@ -32,8 +32,8 @@ import com.ttProject.unit.extra.bit.Bit6;
 public class Frame extends NellymoserFrame {
 	private Bit6   initTableIndex = null;
 	private Bit5[] deltaTable = null; //new Bit5[22];
-	private BitN   payload1 = null; //new BitN(new Bit64(), new Bit64(), new Bit64(), new Bit6());
-	private BitN   payload2 = null; //new BitN(new Bit64(), new Bit64(), new Bit64(), new Bit6());
+	private BitN   payload1 = null; //new BitN(new Bit32(), new Bit32(), new Bit32(), new Bit32(), new Bit32(), new Bit32(), new Bit6());
+	private BitN   payload2 = null; //new BitN(new Bit32(), new Bit32(), new Bit32(), new Bit32(), new Bit32(), new Bit32(), new Bit6());
 	/**
 	 * {@inheritDoc}
 	 */
@@ -57,8 +57,8 @@ public class Frame extends NellymoserFrame {
 			deltaTable[i] = new Bit5();
 		}
 		loader.load(deltaTable);
-		payload1 = new BitN(new Bit64(), new Bit64(), new Bit64(), new Bit6());
-		payload2 = new BitN(new Bit64(), new Bit64(), new Bit64(), new Bit6());
+		payload1 = new BitN(new Bit32(), new Bit32(), new Bit32(), new Bit32(), new Bit32(), new Bit32(), new Bit6());
+		payload2 = new BitN(new Bit32(), new Bit32(), new Bit32(), new Bit32(), new Bit32(), new Bit32(), new Bit6());
 		loader.load(payload1);
 		loader.load(payload2);
 		super.update();
