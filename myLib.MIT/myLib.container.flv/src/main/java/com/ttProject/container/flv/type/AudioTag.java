@@ -186,7 +186,7 @@ public class AudioTag extends FlvTag {
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
 		if(getSize() == 15) {
-			logger.warn("内部データのないタグができました");
+			logger.warn("empty data is captured.");
 			return;
 		}
 		BitLoader loader = new BitLoader(channel);
