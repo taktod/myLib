@@ -23,6 +23,7 @@ import com.ttProject.util.HexUtil;
 
 /**
  * adpcm_ima_wavのフォーマットがどうなっているかよくわからないので、AudioLineで再生してみたいと思います。
+ * @see http://vavi-sound.googlecode.com/svn/trunk/vavi-sound/src/test/java/vavi/sound/adpcm/dvi/Adpcm.java
  * @see http://wiki.multimedia.cx/index.php?title=IMA_ADPCM
  * 参考にしてみたurl
  * @author taktod
