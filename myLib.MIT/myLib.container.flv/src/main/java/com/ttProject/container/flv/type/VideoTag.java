@@ -405,6 +405,9 @@ public class VideoTag extends FlvTag {
 	public boolean isKeyFrame() {
 		return frameType.get() == 1;
 	}
+	public boolean isDisposableInner() {
+		return frameType.get() == 3;
+	}
 	/**
 	 * h264のmediaSequenceHeaderとして初期化します
 	 * @param frame
