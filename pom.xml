@@ -68,6 +68,7 @@
     <module>myLib.MIT/myLib.frame</module>
     <module>myLib.MIT/myLib.frame.aac</module>
     <module>myLib.MIT/myLib.frame.adpcmswf</module>
+    <module>myLib.MIT/myLib.frame.adpcmimawav</module>
     <module>myLib.MIT/myLib.frame.flv1</module>
     <module>myLib.MIT/myLib.frame.h264</module>
     <module>myLib.MIT/myLib.frame.mp3</module>
