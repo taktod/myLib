@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 
@@ -67,7 +68,7 @@ public class SoundTest {
 	/**
 	 * 次の振幅を計算します。
 	 */
-	private int nextPredictor(int index, int nibble, int predictor, int step) {
+	private int nextPredictor(int index, int nibble, int predictor, int step) throws Exception {
 		boolean sign = (nibble & 0x08) == 0x08;
 		int delta = nibble & 0x07;
 		int diff = step >> 1;
@@ -102,67 +103,79 @@ public class SoundTest {
 		SourceDataLine audioLine = null;
 		int samplingRate = 44100; // 44.1 kHz
 		int bit = 16; // 16bit
-		AudioFormat format = new AudioFormat((float)samplingRate, bit, 2, true, true);
+		AudioFormat format = new AudioFormat((float)samplingRate, bit, 1, true, false);
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
-//		audioLine
+		audioLine = (SourceDataLine)AudioSystem.getLine(info);
+		audioLine.open(format);
+		audioLine.start();
 		IFileReadChannel channel = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("test_mono.wav")
 		);
 		logger.info("テスト");
 		channel.position(0x5c);
-		// データを読み込んでいきます。
-		Bit16 leftPredictor = new Bit16();
-		Bit8  leftIndex = new Bit8();
-		Bit8  reservedLeft = new Bit8();
-		Bit16 rightPredictor = new Bit16();
-		Bit8  rightIndex = new Bit8();
-		Bit8  reservedRight = new Bit8();
 		BitLoader loader = new BitLoader(channel);
-		loader.setLittleEndianFlg(true);
-		loader.load(leftPredictor, leftIndex, reservedLeft,
-					rightPredictor,rightIndex,reservedRight);
-		int lpredictor = leftPredictor.get();
-		int lindex = leftIndex.get();
-		int lstep = imaStepTable[lindex];
-		int rpredictor = rightPredictor.get();
-		int rindex = rightIndex.get();
-		int rstep = imaStepTable[rindex];
-		// ここから先は4byteごとに読み込む必要あり。
-		ByteBuffer buffer = ByteBuffer.allocate(800);
-		buffer.order(ByteOrder.LITTLE_ENDIAN);
-		for(int a = 0;a < 40;a ++) {
-			// とりあえずleft側
-			Bit4[] bit4List = new Bit4[8];
-			for(int i = 0;i < bit4List.length;i ++) {
-				bit4List[i] = new Bit4();
+		// データを読み込んでいきます。
+		for(int b = 0;b < 20;b ++) {
+			Bit16 leftPredictor = new Bit16();
+			Bit8  leftIndex = new Bit8();
+			Bit8  reservedLeft = new Bit8();
+	//		Bit16 rightPredictor = new Bit16();
+	//		Bit8  rightIndex = new Bit8();
+	//		Bit8  reservedRight = new Bit8();
+			logger.info("pos" + Integer.toHexString(channel.position()));
+			loader.setLittleEndianFlg(true);
+			loader.load(leftPredictor, leftIndex, reservedLeft);
+	//					rightPredictor,rightIndex,reservedRight);
+			int lpredictor = (short)leftPredictor.get();
+			int lindex = leftIndex.get();
+			int lstep = imaStepTable[lindex];
+	//		int rpredictor = rightPredictor.get();
+	//		int rindex = rightIndex.get();
+	//		int rstep = imaStepTable[rindex];
+			// ここから先は4byteごとに読み込む必要あり。
+			ByteBuffer buffer = ByteBuffer.allocate(65536);
+			buffer.order(ByteOrder.LITTLE_ENDIAN);
+			buffer.putShort((short)lpredictor);
+			for(int a = 0;a < 255;a ++) {
+				// とりあえずleft側
+				Bit4[] bit4List = new Bit4[8];
+				for(int i = 0;i < bit4List.length;i ++) {
+					bit4List[i] = new Bit4();
+				}
+				loader.load(bit4List);
+				// nextprevを取得してからnextIndexを取得する・・・ってか
+	//			logger.info("left");
+				for(Bit4 nibble : bit4List) {
+					lindex = nextIndex(lindex, nibble.get());
+					lpredictor = nextPredictor(lindex, nibble.get(), lpredictor, lstep);
+					lstep = imaStepTable[lindex];
+//					logger.info(lpredictor);
+					buffer.putShort((short)lpredictor);
+				}
+				// つづいてright側
+	/*			bit4List = new Bit4[8];
+				for(int i = 0;i < bit4List.length;i ++) {
+					bit4List[i] = new Bit4();
+				}
+				loader.load(bit4List);
+				// nextprevを取得してからnextIndexを取得する・・・ってか
+				logger.info("right");
+				for(Bit4 nibble : bit4List) {
+					rindex = nextIndex(rindex, nibble.get());
+					rpredictor = nextPredictor(rindex, nibble.get(), rpredictor, rstep);
+					rstep = imaStepTable[rindex];
+					logger.info(rpredictor);
+				}*/
 			}
-			loader.load(bit4List);
-			// nextprevを取得してからnextIndexを取得する・・・ってか
-//			logger.info("left");
-			for(Bit4 nibble : bit4List) {
-				lindex = nextIndex(lindex, nibble.get());
-				lpredictor = nextPredictor(lindex, nibble.get(), lpredictor, lstep);
-				lstep = imaStepTable[lindex];
-				logger.info(lpredictor);
-				buffer.putShort((short)lpredictor);
-			}
-			// つづいてright側
-/*			bit4List = new Bit4[8];
-			for(int i = 0;i < bit4List.length;i ++) {
-				bit4List[i] = new Bit4();
-			}
-			loader.load(bit4List);
-			// nextprevを取得してからnextIndexを取得する・・・ってか
-			logger.info("right");
-			for(Bit4 nibble : bit4List) {
-				rindex = nextIndex(rindex, nibble.get());
-				rpredictor = nextPredictor(rindex, nibble.get(), rpredictor, rstep);
-				rstep = imaStepTable[rindex];
-				logger.info(rpredictor);
-			}*/
+			buffer.flip();
+			audioLine.write(buffer.array(), 0, buffer.remaining());
+			logger.info(HexUtil.toHex(buffer, 0, 30, true));
 		}
-		buffer.flip();
-		logger.info(HexUtil.toHex(buffer, true));
+		if(audioLine != null) {
+			audioLine.drain();
+			audioLine.close();
+			audioLine = null;
+		}
 	}
 //	@Test
 	public void test2() throws Exception {
