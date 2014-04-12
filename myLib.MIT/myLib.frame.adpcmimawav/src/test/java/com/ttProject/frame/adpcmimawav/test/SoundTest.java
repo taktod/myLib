@@ -170,11 +170,11 @@ public class SoundTest {
 			audioLine.write(buffer.array(), 0, buffer.remaining());
 			logger.info(HexUtil.toHex(buffer, 0, 30, true));
 		}
-		if(audioLine != null) {
+//		if(audioLine != null) {
 			audioLine.drain();
 			audioLine.close();
 			audioLine = null;
-		}
+//		}
 	}
 //	@Test
 	public void test2() throws Exception {
