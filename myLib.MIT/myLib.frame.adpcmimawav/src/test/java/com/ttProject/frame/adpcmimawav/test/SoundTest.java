@@ -19,7 +19,6 @@ import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit16;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
-import com.ttProject.util.BufferUtil;
 import com.ttProject.util.HexUtil;
 
 /**
