@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.junit.Test;
 
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -330,13 +331,13 @@ public class ChcTest {
 	 * 49 798 993 type1 8%
 	 * 51 323 639 type2 5%
 	 */
-//	@Test
+	@Test
 	public void test3() throws Exception {
 		logger.info("チェック開始");
 		IReadChannel channel = FileReadChannel.openFileReadChannel(
-//				Thread.currentThread().getContextClassLoader().getResource("test_mono.wav")
+				Thread.currentThread().getContextClassLoader().getResource("test_mono.wav")
 //				Thread.currentThread().getContextClassLoader().getResource("bm_mono.wav")
-				Thread.currentThread().getContextClassLoader().getResource("rtype_mono.wav")
+//				Thread.currentThread().getContextClassLoader().getResource("rtype_mono.wav")
 		);
 		channel.position(0x5C);
 		long length = 0;
@@ -397,14 +398,21 @@ public class ChcTest {
 			}
 			BitConnector connector = new BitConnector();
 			ByteBuffer buf = connector.connect(bits);
-			buffer.position(0);
-			length += buffer.remaining();
+//			buffer.position(0);
+			if(buf.remaining() > 1020) {
+				length += 1020;
+			}
+			else {
+				length += buf.remaining();
+			}
 			logger.info("length:" + buf.remaining());
 		}
 		logger.info("total:" + length);
 	}
 	private static final Map<Integer, Bit> ttMap = new HashMap<Integer, Bit>();
 	{
+
+		// type1 コンスタントに8%くらい減る
 /*		ttMap.put(0x8, new Bit2(0x3));
 		ttMap.put(0x0, new Bit4(0xB));
 		ttMap.put(0x1, new Bit4(0xA));
@@ -421,7 +429,8 @@ public class ChcTest {
 		ttMap.put(0x7, new Bit6(0x2));
 		ttMap.put(0xE, new Bit6(0x1));
 		ttMap.put(0xF, new Bit6(0x0)); // */
-		ttMap.put(0x0, new Bit3(0x7));
+		// type2 効くときは10%くらいいく
+		/*		ttMap.put(0x0, new Bit3(0x7));
 		ttMap.put(0x1, new Bit3(0x6));
 		ttMap.put(0x8, new Bit3(0x5));
 		ttMap.put(0x9, new Bit3(0x4));
@@ -432,6 +441,23 @@ public class ChcTest {
 		ttMap.put(0xB, new Bit4(0x3));
 		ttMap.put(0xC, new Bit4(0x2));
 		ttMap.put(0x5, new Bit5(0x3));
+		ttMap.put(0xD, new Bit5(0x2));
+		ttMap.put(0x6, new Bit6(0x3));
+		ttMap.put(0x7, new Bit6(0x2));
+		ttMap.put(0xE, new Bit6(0x1));
+		ttMap.put(0xF, new Bit6(0x0)); // */
+		// type3(効くときには効くけど、全体としては、非常に圧縮率がわるくなる)
+/*		ttMap.put(0x8, new Bit1(0x1));
+		ttMap.put(0x0, new Bit4(0x7));
+		ttMap.put(0x2, new Bit4(0x6));
+		ttMap.put(0xA, new Bit4(0x5));
+		ttMap.put(0x1, new Bit5(0x9));
+		ttMap.put(0x3, new Bit5(0x8));
+		ttMap.put(0x4, new Bit5(0x7));
+		ttMap.put(0x5, new Bit5(0x6));
+		ttMap.put(0x9, new Bit5(0x5));
+		ttMap.put(0xB, new Bit5(0x4));
+		ttMap.put(0xC, new Bit5(0x3));
 		ttMap.put(0xD, new Bit5(0x2));
 		ttMap.put(0x6, new Bit6(0x3));
 		ttMap.put(0x7, new Bit6(0x2));
