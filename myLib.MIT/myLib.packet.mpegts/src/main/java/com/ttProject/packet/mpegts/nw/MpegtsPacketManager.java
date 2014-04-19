@@ -59,12 +59,12 @@ public class MpegtsPacketManager extends MediaPacketManager {
 	@SuppressWarnings("unused")
 	private int counter = 0;
 	/** 出力ターゲットファイル */
-	private FileOutputStream fos = null;
+//	private FileOutputStream fos = null;
 	/**
 	 * 全体停止時のため対処
-	 */
+	 * /
 	protected void finalize() throws Throwable {
-		if(fos == null) {
+		if(fos != null) {
 			try {
 				fos.close();
 			}

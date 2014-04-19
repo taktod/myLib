@@ -13,7 +13,6 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.bit.Bit1;
-import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit6;
