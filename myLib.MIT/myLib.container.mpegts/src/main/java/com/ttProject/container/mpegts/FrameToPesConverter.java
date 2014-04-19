@@ -17,6 +17,8 @@ import com.ttProject.frame.h264.SliceFrame;
 
 /**
  * frameデータからPesを作成するコンバーター
+ * 音声のpesは設定したdurationごとにする。
+ * 映像のpesはkeyFrameごとにする。
  * @author taktod
  */
 public class FrameToPesConverter {
@@ -25,7 +27,20 @@ public class FrameToPesConverter {
 	/** いままでの中途処理データ保持 */
 	private final Map<Integer, Pes> pesMap = new ConcurrentHashMap<Integer, Pes>();
 	/** audioデータのpesごとの長さ設定 */
-	private final float audioPesDuration = 0.3f;
+	private final float audioPesDuration;
+	/**
+	 * コンストラクタ
+	 */
+	public FrameToPesConverter() {
+		this(0.3f);
+	}
+	/**
+	 * コンストラクタ
+	 * @param audioDuration
+	 */
+	public FrameToPesConverter(float audioDuration) {
+		audioPesDuration = audioDuration;
+	}
 	/**
 	 * frameからpesを作成して応答します
 	 * @param pid
