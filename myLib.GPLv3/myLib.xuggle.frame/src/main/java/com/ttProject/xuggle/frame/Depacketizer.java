@@ -8,6 +8,8 @@ import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.aac.AacFrameAnalyzer;
+import com.ttProject.frame.extra.AudioMultiFrame;
+import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.h264.NalAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -40,11 +42,26 @@ public class Depacketizer {
 					throw new Exception("処理不能なコーデックでした:" + encoder.getCodecID());
 				}
 				AudioFrame result = null;
-				while((result = (AudioFrame)analyzer.analyze(channel)) != null) {
+				AudioFrame frame = null;
+				while((frame = (AudioFrame)analyzer.analyze(channel)) != null) {
 					// ここでframeにtimestampをつけないとだめっぽい
-					result.setPts(packet.getPts());
-					result.setTimebase(packet.getTimeBase().getDenominator());
-					logger.info("frame: {}, timestamp: {}", result, result.getPts());
+					frame.setPts(packet.getPts());
+					frame.setTimebase(packet.getTimeBase().getDenominator());
+					if(result == null) {
+						result = frame;
+					}
+					else {
+						AudioMultiFrame multiFrame = null;
+						if(result instanceof AudioMultiFrame) {
+							multiFrame = (AudioMultiFrame) result;
+						}
+						else {
+							multiFrame = new AudioMultiFrame();
+							multiFrame.addFrame(result);
+						}
+						multiFrame.addFrame(frame);
+						result = multiFrame;
+					}
 				}
 				return result;
 			}
@@ -61,12 +78,28 @@ public class Depacketizer {
 					throw new Exception("処理不能なコーデックでした:" + encoder.getCodecID());
 				}
 				VideoFrame result = null; // sliceかsliceIDRのみ応答すればよし
-				while((result = (VideoFrame)analyzer.analyze(channel)) != null) {
+				VideoFrame frame = null;
+				while((frame = (VideoFrame)analyzer.analyze(channel)) != null) {
 					// ここでframeにtimestampをつけないとだめっぽい
-					result.setPts(packet.getPts());
-					result.setTimebase(packet.getTimeBase().getDenominator());
-					logger.info("frame: {}, timestamp: {}", result, result.getPts());
+					frame.setPts(packet.getPts());
+					frame.setTimebase(packet.getTimeBase().getDenominator());
+					if(result == null) {
+						result = frame;
+					}
+					else {
+						VideoMultiFrame multiFrame = null;
+						if(result instanceof VideoMultiFrame) {
+							multiFrame = (VideoMultiFrame)result;
+						}
+						else {
+							multiFrame = new VideoMultiFrame();
+							multiFrame.addFrame(result);
+						}
+						multiFrame.addFrame(frame);
+						result = multiFrame;
+					}
 				}
+				return result;
 			}
 		}
 		finally{
