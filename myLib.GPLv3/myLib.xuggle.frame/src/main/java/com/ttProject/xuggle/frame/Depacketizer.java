@@ -23,6 +23,7 @@ import com.xuggle.xuggler.IStreamCoder;
  */
 public class Depacketizer {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = LoggerFactory.getLogger(Depacketizer.class);
 	private IAnalyzer analyzer = null;
 	// どうやってやろう？
@@ -30,7 +31,7 @@ public class Depacketizer {
 		IReadChannel channel = new ByteReadChannel(packet.getData().getByteArray(0, packet.getSize()));
 		try {
 			if(encoder.getCodecType() == Type.CODEC_TYPE_AUDIO) {
-				logger.info("audioframe解析はじめ:" + (packet.getPts() * packet.getTimeBase().getDouble()));
+//				logger.info("audioframe解析はじめ:" + (packet.getPts() * packet.getTimeBase().getDouble()));
 				switch(encoder.getCodecID()) {
 				case CODEC_ID_AAC:
 					if(analyzer == null || !(analyzer instanceof AacFrameAnalyzer)) {
@@ -66,7 +67,7 @@ public class Depacketizer {
 				return result;
 			}
 			else if(encoder.getCodecType() == Type.CODEC_TYPE_VIDEO) {
-				logger.info("videoframe解析はじめ:" + (packet.getPts() * packet.getTimeBase().getDouble()));
+//				logger.info("videoframe解析はじめ:" + (packet.getPts() * packet.getTimeBase().getDouble()));
 				switch(encoder.getCodecID()) {
 				case CODEC_ID_H264:
 					// h264のNal解析を走らせる必要がある。
