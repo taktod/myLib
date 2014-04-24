@@ -8,8 +8,9 @@ import org.slf4j.LoggerFactory;
 
 import com.flazr.rtmp.RtmpHeader;
 import com.flazr.rtmp.RtmpMessage;
-import com.ttProject.media.flv.amf.Amf0Value;
-import com.ttProject.media.flv.amf.Amf3Value;
+import com.flazr.rtmp.message.MetadataAmf0;
+import com.ttProject.container.flv.amf.Amf0Value;
+import com.ttProject.container.flv.amf.Amf3Value;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
@@ -63,7 +64,7 @@ public class MetadataAmf3 implements RtmpMessage {
 			}
 			name = amf0Data;
 			// 11 Objectデータになっているはず
-			if(BufferUtil.safeRead(channel, 1).get() != 0x11) {
+			if(BufferUtil.safeRead(channel, 1).get() != 0x11) { // 0x00になっていて、AMF0の内容を保持している可能性もあるかも・・・
 				throw new Exception("中途のデータはAMF3のObjectデータとして転送されていることを期待しておきます。");
 			}
 			// 内部データを解析しておく。
@@ -111,5 +112,9 @@ public class MetadataAmf3 implements RtmpMessage {
 		data.append(" name:").append(getName());
 		data.append(" data:").append(getData());
 		return data.toString();
+	}
+	public MetadataAmf0 transform() {
+		MetadataAmf0 metadata0 = new MetadataAmf0(name, data);
+		return metadata0;
 	}
 }

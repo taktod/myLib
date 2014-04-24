@@ -13,6 +13,7 @@ import com.flazr.rtmp.RtmpMessage;
 import com.flazr.rtmp.RtmpDecoder.DecoderState;
 import com.flazr.rtmp.message.ChunkSize;
 import com.flazr.rtmp.message.MessageType;
+import com.ttProject.flazr.rtmp.message.CommandAmf3;
 import com.ttProject.flazr.rtmp.message.MetadataAmf3;
 import com.ttProject.util.HexUtil;
 
@@ -68,9 +69,7 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 			// もうchunkがない
 			incompletePayloads[channelId] = null;
 			try {
-				if(header.getMessageType() == MessageType.COMMAND_AMF3
-//				|| header.getMessageType() == MessageType.METADATA_AMF3
-				|| header.getMessageType() == MessageType.SHARED_OBJECT_AMF3) {
+				if(header.getMessageType() == MessageType.SHARED_OBJECT_AMF3) {
 					logger.warn("解釈が設定されていない命令なので、無視しておきます。(このままだとプロセスが落ちます)");
 					logger.info("type:{}, dump:{}", header.getMessageType(), HexUtil.toHex(bytes, true));
 					return null;
@@ -107,11 +106,14 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 	 * @return
 	 */
 	private RtmpMessage MessageTypeDecode(RtmpHeader header, ChannelBuffer payload) {
-		// metadataAmf3みたいな独自実装はMessageType.decodeで解釈できないので、ここで分岐させておく。
-		if(header.getMessageType() == MessageType.METADATA_AMF3) {
-			return new MetadataAmf3(header, payload);
-		}
-		else {
+		switch(header.getMessageType()) {
+		case METADATA_AMF3:
+			MetadataAmf3 metadata3 = new MetadataAmf3(header, payload);
+			return metadata3.transform();
+		case COMMAND_AMF3:
+			CommandAmf3 command3 = new CommandAmf3(header, payload);
+			return command3.transform(); // 強制的にCommandAmf0として動作させます。
+		default:
 			return MessageType.decode(header, payload);
 		}
 	}

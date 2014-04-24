@@ -12,8 +12,11 @@ import com.ttProject.flazr.rtmp.message.MetadataAmf3;
 
 /**
  * metadataAmf3を理解させるために、ClientHandlerの拡張をつくりました。
+ * このクラスはもう必要ないと思われます。
+ * AMF3のクラスが同様の内容を持つAMF0のクラスを応答するようになったため
  * @author taktod
  */
+@Deprecated
 public class ClientHandlerEx extends ClientHandler {
 	/** 動作オプション保持 */
 	private final ClientOptions options;
