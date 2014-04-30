@@ -28,6 +28,7 @@ public class StsdAtomSelector implements ISelector {
 		logger.info(IntUtil.makeHexString(name.get()));
 		String nameString = IntUtil.makeHexString(name.get());
 		Mp4Atom atom = null;
+		// .mp3もつくっておく必要あるかも？
 		if("mp4a".equals(nameString)) {
 			atom = new Mp4a(size, name);
 		}
