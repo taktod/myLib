@@ -32,7 +32,8 @@ public class MkvTest {
 			 * test1 msmpeg4v2
 			 */
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("test.mkv")
+					Thread.currentThread().getContextClassLoader().getResource("test.mjpegadpcmimawav.mkv")
+//					Thread.currentThread().getContextClassLoader().getResource("test.mkv")
 //					Thread.currentThread().getContextClassLoader().getResource("test1.mkv") // msmpeg4v2なのでframeがいまのところない
 //					Thread.currentThread().getContextClassLoader().getResource("test2.mkv")
 //					Thread.currentThread().getContextClassLoader().getResource("test3.mkv")

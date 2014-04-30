@@ -15,9 +15,11 @@ import com.ttProject.frame.VideoSelector;
 import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
 import com.ttProject.frame.aac.AacDsiFrameSelector;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
+import com.ttProject.frame.adpcmimawav.AdpcmImaWavAnalyzer;
 import com.ttProject.frame.h264.ConfigData;
 import com.ttProject.frame.h264.DataNalAnalyzer;
 import com.ttProject.frame.h264.H264FrameSelector;
+import com.ttProject.frame.mjpeg.MjpegFrameAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
 import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
 import com.ttProject.frame.vp8.Vp8FrameAnalyzer;
@@ -141,6 +143,9 @@ public class TrackEntry extends MkvMasterTag {
 			analyzer.analyze(new ByteReadChannel(BufferUtil.safeRead(privateChannel, commentHeaderSize.get())));
 			analyzer.analyze(new ByteReadChannel(BufferUtil.safeRead(privateChannel, privateChannel.size() - privateChannel.position())));
 			break;
+		case A_MS_ACM:
+			analyzer = new AdpcmImaWavAnalyzer();
+			break;
 		case V_MPEG4_ISO_AVC:
 			analyzer = new DataNalAnalyzer();
 			// h264の場合はConfigDataからsps ppsを取り出す必要あり。
@@ -151,6 +156,9 @@ public class TrackEntry extends MkvMasterTag {
 		case V_VP8:
 			logger.info("vp8は動作があやしいです。");
 			analyzer = new Vp8FrameAnalyzer();
+			break;
+		case V_MJPEG:
+			analyzer = new MjpegFrameAnalyzer();
 			break;
 		default:
 			throw new Exception("想定外のcodecでした。");

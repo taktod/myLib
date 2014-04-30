@@ -3,11 +3,13 @@ package com.ttProject.container.mkv;
 public enum CodecType {
 	V_MPEG4_ISO_AVC("V_MPEG4/ISO/AVC"),
 	V_VP8("V_VP8"),
+	V_MJPEG("V_MJPEG"),
 //	V_MS("V_MS/VFW/FOURCC"), // microsoft mpeg4 v2っぽい
 //	V_THEORA("V_THEORA"), // theora
 	A_AAC("A_AAC"),
 	A_MPEG_L3("A_MPEG/L3"),
 	A_VORBIS("A_VORBIS"),
+	A_MS_ACM("A_MS/ACM"),
 //	S_TEXT_UTF8("S_TEXT/UTF8"), // subtitle
 /*	D_WEBVTT_SUBTITLES("D_WEBVTT/SUBTITLES"), // webVtt用
 	D_WEBVTT_CAPTIONS("D_WEBVTT/CAPTIONS"),
@@ -47,6 +49,14 @@ public enum CodecType {
 		}
 		else if(data.startsWith("A_VORBIS")) {
 			return A_VORBIS;
+		}
+		else if(data.startsWith("V_MJPEG")) {
+			return V_MJPEG;
+		}
+		else if(data.startsWith("A_MS")) {
+			if(data.contains("ACM")) {
+				return A_MS_ACM;
+			}
 		}
 /*		else if(data.startsWith("V_MS")) {
 			return V_MS;
