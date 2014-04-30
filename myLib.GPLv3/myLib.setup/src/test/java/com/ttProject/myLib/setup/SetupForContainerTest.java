@@ -187,6 +187,13 @@ public class SetupForContainerTest extends SetupBase {
 			throw new Exception("コンテナが開けませんでした");
 		}
 		processConvert(container, Encoder.h264(container), Encoder.aac(container));
+		logger.info("mkv準備 (mjpeg/adpcm_ima_wav)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.mkv", "test.mjpegadpcmimawav.mkv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした。");
+		}
+		processConvert(container, Encoder.mjpeg(container), Encoder.adpcm_ima_wav(container));
 	}
 	@Test
 	public void mp3() throws Exception {

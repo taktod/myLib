@@ -26,7 +26,7 @@ public class Encoder {
 		return audioEncoder;
 	}
 	/**
-	 * adpcm
+	 * adpcm_swf
 	 * @param container
 	 * @return
 	 */
@@ -36,6 +36,19 @@ public class Encoder {
 		audioEncoder.setSampleRate(44100);
 		audioEncoder.setChannels(2);
 		audioEncoder.setBitRate(96000);
+		return audioEncoder;
+	}
+	/**
+	 * adpcm_ima_wav
+	 * @param container
+	 * @return
+	 */
+	public static IStreamCoder adpcm_ima_wav(IContainer container) {
+		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_ADPCM_IMA_WAV);
+		IStreamCoder audioEncoder = stream.getStreamCoder();
+		audioEncoder.setSampleRate(44100);
+		audioEncoder.setChannels(2);
+//		audioEncoder.setBitRate(96000); // bitrateは設定する意味ないかも
 		return audioEncoder;
 	}
 	/**
@@ -185,6 +198,25 @@ public class Encoder {
 		videoEncoder.setGlobalQuality(10);
 		videoEncoder.setFrameRate(frameRate);
 		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
+		return videoEncoder;
+	}
+	/**
+	 * mjpeg
+	 * @param container
+	 * @return
+	 */
+	public static IStreamCoder mjpeg(IContainer container) {
+		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_MJPEG);
+		IStreamCoder videoEncoder = stream.getStreamCoder();
+		IRational frameRate = IRational.make(15, 1);
+		videoEncoder.setNumPicturesInGroupOfPictures(5); // mjpegにはkeyFrameしかないので、意味ない？
+		videoEncoder.setBitRate(650000);
+		videoEncoder.setBitRateTolerance(9000);
+		videoEncoder.setWidth(320);
+		videoEncoder.setHeight(240);
+		videoEncoder.setGlobalQuality(10);
+		videoEncoder.setFrameRate(frameRate);
+		videoEncoder.setTimeBase(IRational.make(1, 1000));
 		return videoEncoder;
 	}
 }
