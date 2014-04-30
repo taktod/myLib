@@ -14,14 +14,15 @@ public class Frame extends AdpcmImaWavFrame {
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		
+		super.update();
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		buffer = BufferUtil.safeRead(channel, channel.size());
+		super.update();
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
-		
+		setData(buffer);
 	}
 }
