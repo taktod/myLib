@@ -1,6 +1,7 @@
 package com.ttProject.frame.adpcmimawav;
 
 import com.ttProject.frame.AudioSelector;
+import com.ttProject.frame.adpcmimawav.type.Frame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IUnit;
 
@@ -11,6 +12,9 @@ import com.ttProject.unit.IUnit;
 public class AdpcmImaWavSelector extends AudioSelector {
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
-		throw new Exception("データ作成が未実装");
+		Frame frame = new Frame();
+		setup(frame);
+		frame.minimumLoad(channel);
+		return frame;
 	}
 }

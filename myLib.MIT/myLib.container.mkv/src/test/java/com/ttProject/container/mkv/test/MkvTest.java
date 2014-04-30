@@ -9,6 +9,8 @@ import com.ttProject.container.mkv.MkvBlockTag;
 import com.ttProject.container.mkv.MkvTag;
 import com.ttProject.container.mkv.MkvTagReader;
 import com.ttProject.container.mkv.type.BlockGroup;
+import com.ttProject.frame.AudioFrame;
+import com.ttProject.frame.VideoFrame;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
@@ -57,9 +59,17 @@ public class MkvTest {
 					}
 				}
 				if(container instanceof MkvBlockTag) {
-//					MkvBlockTag blockTag = (MkvBlockTag)container;
-//					logger.info(blockTag);
-//					logger.info(blockTag.getFrame());
+					MkvBlockTag blockTag = (MkvBlockTag)container;
+					logger.info(blockTag);
+					logger.info(blockTag.getFrame());
+					if(blockTag.getFrame() instanceof VideoFrame) {
+						VideoFrame vFrame = (VideoFrame)blockTag.getFrame();
+						logger.info(vFrame.getWidth() + "x" + vFrame.getHeight());
+					}
+					else if(blockTag.getFrame() instanceof AudioFrame) {
+						AudioFrame aFrame = (AudioFrame)blockTag.getFrame();
+						logger.info(aFrame.getSampleRate() + ":" + aFrame.getChannel());
+					}
 				}
 				lastPosition = source.position();
 			}
