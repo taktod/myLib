@@ -11,7 +11,6 @@ import java.nio.ByteOrder;
 import org.apache.log4j.Logger;
 
 import com.ttProject.util.HexUtil;
-import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.IAudioResampler;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec;
@@ -99,8 +98,8 @@ public class SetupBase {
 			}
 			// vorbisの場合はここにidentifierFrame commentFrame setupFrameが入るみたい。
 			// setupframeは自力でつくるのがむずかしそうなので拾う必要がある。
-			IBuffer buffer = audioEncoder.getExtraData();
-			logger.info(HexUtil.toHex(buffer.getByteArray(0, buffer.getSize())));
+//			IBuffer buffer = audioEncoder.getExtraData();
+//			logger.info(HexUtil.toHex(buffer.getByteArray(0, buffer.getSize())));
 //			return;
 		}
 		// containerのheaderを書く
@@ -171,9 +170,11 @@ public class SetupBase {
 						samplesConsumed +=  retval;
 						if(packet.isComplete()) {
 							packet.setDts(packet.getPts());
-							logger.info("音声Packet:channel:" + samples.getChannels() + " sampleRate:" + samples.getSampleRate());
-							logger.info(packet.getSize());
-							logger.info(HexUtil.toHex(packet.getByteBuffer()));
+							if(audioCounter > 10001) {
+								logger.info("音声Packet:channel:" + samples.getChannels() + " sampleRate:" + samples.getSampleRate());
+								logger.info(HexUtil.toHex(packet.getByteBuffer()));
+							}
+//							System.out.println(HexUtil.toHex(packet.getByteBuffer()));
 							if(container.writePacket(packet) < 0) {
 								throw new Exception("コンテナ書き込み失敗");
 							}
@@ -219,7 +220,10 @@ public class SetupBase {
 		buffer.order(ByteOrder.LITTLE_ENDIAN); // xuggleで利用するデータはlittleEndianなのでlittleEndianを使うようにする。
 		long startPos = 1000 * audioCounter / 44100 * 1000;
 		for(int i = 0;i < samplesNum / 8;i ++, audioCounter ++) {
-			short data = (short)(Math.sin(rad * audioCounter) * max);
+			short data = 0;
+			if(audioCounter < 10000) { // 10000 / 44100秒後に無音にしてみる。
+				data = (short)(Math.sin(rad * audioCounter) * max);
+			}
 			for(int j = 0;j < channels;j ++) {
 				buffer.putShort(data);
 			}
