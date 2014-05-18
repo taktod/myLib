@@ -162,8 +162,13 @@ public class AudioTag extends FlvTag {
 				}
 				break;
 			default:
-				channel.position(getPosition() + 12);
-				frameBuffer = BufferUtil.safeRead(channel, getSize() - 12 - 4);
+				if(getSize() - 12 - 4 > 0) {
+					channel.position(getPosition() + 12);
+					frameBuffer = BufferUtil.safeRead(channel, getSize() - 12 - 4);
+				}
+				else {
+					channel.position(getPosition() + 11);
+				}
 				break;
 			}
 		}
@@ -521,6 +526,15 @@ public class AudioTag extends FlvTag {
 		setTimebase(1000);
 		setSize(11 + 1 + 1 + frameBuffer.remaining() + 4);
 		super.update();
+	}
+	@Override
+	public void setPts(long pts) {
+		// ptsを設定する前にframeのptsを更新しておく。
+		if(frame != null && frame instanceof AudioFrame) {
+			AudioFrame aFrame = (AudioFrame)frame;
+			aFrame.setPts(pts * aFrame.getTimebase() / 1000);
+		}
+		super.setPts(pts);
 	}
 	/**
 	 * {@inheritDoc}

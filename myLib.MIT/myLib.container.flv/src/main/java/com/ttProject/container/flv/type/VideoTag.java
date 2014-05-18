@@ -427,6 +427,14 @@ public class VideoTag extends FlvTag {
 		setSize(11 + 1 + 4 + frameBuffer.remaining() + 4);
 		super.update();
 	}
+	@Override
+	public void setPts(long pts) {
+		if(frame != null && frame instanceof VideoFrame) {
+			VideoFrame vFrame = (VideoFrame) frame;
+			vFrame.setPts(pts * vFrame.getTimebase() / 1000);
+		}
+		super.setPts(pts);
+	}
 	/**
 	 * {@inheritDoc}
 	 */
