@@ -71,6 +71,7 @@
     <module>myLib.MIT/myLib.frame.adpcmimawav</module>
     <module>myLib.MIT/myLib.frame.flv1</module>
     <module>myLib.MIT/myLib.frame.h264</module>
+    <module>myLib.MIT/myLib.frame.h265</module>
     <module>myLib.MIT/myLib.frame.mp3</module>
     <module>myLib.MIT/myLib.frame.nellymoser</module>
     <module>myLib.MIT/myLib.frame.speex</module>
