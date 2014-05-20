@@ -1,5 +1,48 @@
 package com.ttProject.frame.vp9.type;
 
-public class KeyFrame {
+import java.nio.ByteBuffer;
 
+import com.ttProject.frame.vp9.Vp9Frame;
+import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.bit.Bit1;
+import com.ttProject.unit.extra.bit.Bit2;
+
+public class KeyFrame extends Vp9Frame {
+	/**
+	 * コンストラクタ
+	 * @param frameMarker
+	 * @param profile
+	 * @param reserved
+	 * @param refFlag
+	 * @param keyFrameFlag
+	 * @param invisibleFlag
+	 * @param errorRes
+	 */
+	public KeyFrame(Bit2 frameMarker, Bit1 profile, Bit1 reserved, Bit1 refFlag,
+			Bit1 keyFrameFlag, Bit1 invisibleFlag, Bit1 errorRes) {
+		super(frameMarker, profile, reserved, refFlag, keyFrameFlag, invisibleFlag, errorRes);
+	}
+	@Override
+	public ByteBuffer getPackBuffer() throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void minimumLoad(IReadChannel channel) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void load(IReadChannel channel) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void requestUpdate() throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
 }
