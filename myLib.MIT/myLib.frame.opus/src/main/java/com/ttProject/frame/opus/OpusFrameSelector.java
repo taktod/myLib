@@ -20,6 +20,7 @@ public class OpusFrameSelector extends AudioSelector {
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		OpusFrame frame = null;
+		// ここはきた順番ではなく、先頭がOpusTagsもしくはOpusHeadである場合は・・・で場合分けした方がよさそう。
 		if(headerFrame == null) {
 			frame = new HeaderFrame();
 			headerFrame = (HeaderFrame)frame;
