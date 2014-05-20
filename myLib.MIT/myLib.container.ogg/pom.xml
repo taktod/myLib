@@ -29,6 +29,11 @@
   	  <artifactId>myLib.frame.theora</artifactId>
   	  <version>0.0.2-SNAPSHOT</version>
   	</dependency>
+  	<dependency>
+  		<groupId>com.ttProject</groupId>
+  		<artifactId>myLib.frame.opus</artifactId>
+  		<version>0.0.2-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
   <description>oggコンテナの解析</description>
 </project>

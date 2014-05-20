@@ -86,6 +86,8 @@ public class StartPage extends OggPage {
 					logger.info("theora?");
 					analyzer = new TheoraFrameAnalyzer();
 					break;
+				case 'O':
+					logger.info("opus?");
 				default:
 					throw new Exception("知らないコーデックデータを検知しました。");
 				}
