@@ -23,6 +23,7 @@ import com.ttProject.frame.mjpeg.MjpegFrameAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
 import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
 import com.ttProject.frame.vp8.Vp8FrameAnalyzer;
+import com.ttProject.frame.vp9.Vp9FrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
@@ -159,6 +160,10 @@ public class TrackEntry extends MkvMasterTag {
 			break;
 		case V_MJPEG:
 			analyzer = new MjpegFrameAnalyzer();
+			break;
+		case V_VP9:
+			logger.info("vp9の動作は作成中です。");
+			analyzer = new Vp9FrameAnalyzer();
 			break;
 		default:
 			throw new Exception("想定外のcodecでした。");
