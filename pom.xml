@@ -77,6 +77,8 @@
     <module>myLib.MIT/myLib.frame.speex</module>
     <module>myLib.MIT/myLib.frame.vp6</module>
     <module>myLib.MIT/myLib.frame.vp8</module>
+    <module>myLib.MIT/myLib.frame.vp9</module>
+    <module>myLib.MIT/myLib.frame.opus</module>
     <module>myLib.MIT/myLib.frame.vorbis</module>
     <module>myLib.MIT/myLib.frame.theora</module>
     <module>myLib.MIT/myLib.frame.mjpeg</module>
