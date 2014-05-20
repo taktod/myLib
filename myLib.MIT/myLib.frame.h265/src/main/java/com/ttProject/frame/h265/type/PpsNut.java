@@ -8,13 +8,13 @@ import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit6;
 
-public class PPS_NUT_Frame extends H265Frame {
+public class PpsNut extends H265Frame {
 	/** データ */
 	private ByteBuffer buffer = null;
 	/**
 	 * コンストラクタ
 	 */
-	public PPS_NUT_Frame(Bit1 forbiddenZeroBit,
+	public PpsNut(Bit1 forbiddenZeroBit,
 			Bit6 nalUnitType,
 			Bit6 nuhLayerId,
 			Bit3 nuhTemporalIdPlus1) {

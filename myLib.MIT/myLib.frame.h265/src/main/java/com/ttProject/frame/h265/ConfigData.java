@@ -22,6 +22,7 @@ import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit6;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
+import com.ttProject.util.HexUtil;
 
 /**
  * h265のconfigData
@@ -108,6 +109,7 @@ public class ConfigData {
 				logger.info(nalUnitLength.get());
 				// ここから読み込むべきnalのサイズ
 				ByteBuffer data = BufferUtil.safeRead(channel, nalUnitLength.get());
+				logger.info(HexUtil.toHex(data, true));
 				IReadChannel nalChannel = new ByteReadChannel(data);
 				selector.select(nalChannel);
 			}
