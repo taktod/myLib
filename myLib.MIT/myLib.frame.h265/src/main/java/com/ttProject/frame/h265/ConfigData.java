@@ -65,9 +65,8 @@ public class ConfigData {
 		private Bit16 numNalus;
 		
 			private Bit16 nalUnitLength;
-			private ByteBuffer nalUnit;
 
-	private List<H265Frame> nulList = new ArrayList<H265Frame>();
+	private List<H265Frame> nalList = new ArrayList<H265Frame>();
 	/**
 	 * h265ConfigDataを解析する
 	 * @param channel
@@ -111,7 +110,8 @@ public class ConfigData {
 				ByteBuffer data = BufferUtil.safeRead(channel, nalUnitLength.get());
 				logger.info(HexUtil.toHex(data, true));
 				IReadChannel nalChannel = new ByteReadChannel(data);
-				selector.select(nalChannel);
+				H265Frame nal = (H265Frame)selector.select(nalChannel);
+				nalList.add(nal);
 			}
 		}
 	}

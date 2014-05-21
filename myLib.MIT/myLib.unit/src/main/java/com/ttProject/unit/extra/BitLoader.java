@@ -29,6 +29,11 @@ public class BitLoader {
 	private int left = 0;
 	/** エンディアンコントロール */
 	private boolean littleEndianFlg = false;
+	/** h264やh265のnal用の特殊処理を有効にするかフラグ */
+	private boolean emulationPreventionFlg = false;
+	/** h264やh265用の処理用byteデータ保持 */
+	private byte firstByte = -1;
+	private byte secondByte = -1;
 	/**
 	 * 動作エンディアンをlittleEndianに変更する
 	 * @param flg
@@ -42,6 +47,20 @@ public class BitLoader {
 	 */
 	public boolean isLittleEndian() {
 		return littleEndianFlg;
+	}
+	/**
+	 * h264やh265の読み込み用特殊フラグ変更
+	 * @param flg
+	 */
+	public void setEmulationPreventionFlg(boolean flg) {
+		emulationPreventionFlg = flg;
+	}
+	/**
+	 * h264やh265の解析用フラグがたっているか確認
+	 * @return
+	 */
+	public boolean isEmulationPrevention() {
+		return emulationPreventionFlg;
 	}
 	/**
 	 * コンストラクタ
@@ -75,7 +94,17 @@ public class BitLoader {
 		else {
 			if(littleEndianFlg) {
 				while(left < bit.bitCount) {
-					floatData = (floatData | (BufferUtil.safeRead(channel, 1).get() & 0xFFL) << left);
+					byte currentByte = BufferUtil.safeRead(channel, 1).get();
+					if(emulationPreventionFlg) {
+						if(firstByte == 0 && secondByte == 0 && currentByte == 3) {
+							firstByte = -1;
+							secondByte = -1;
+							continue;
+						}
+						firstByte = secondByte;
+						secondByte = currentByte;
+					}
+					floatData = (floatData | (currentByte & 0xFFL) << left);
 					left += 8;
 				}
 				int bitCount = bit.bitCount;
@@ -108,7 +137,17 @@ public class BitLoader {
 				}
 				else {
 					while(left < bit.bitCount) {
-						floatData = (floatData << 8 | (BufferUtil.safeRead(channel, 1).get() & 0xFFL));
+						byte currentByte = BufferUtil.safeRead(channel, 1).get();
+						if(emulationPreventionFlg) {
+							if(firstByte == 0 && secondByte == 0 && currentByte == 3) {
+								firstByte = -1;
+								secondByte = -1;
+								continue;
+							}
+							firstByte = secondByte;
+							secondByte = currentByte;
+						}
+						floatData = (floatData << 8 | (currentByte & 0xFFL));
 						left += 8;
 					}
 					int bitCount = bit.bitCount;

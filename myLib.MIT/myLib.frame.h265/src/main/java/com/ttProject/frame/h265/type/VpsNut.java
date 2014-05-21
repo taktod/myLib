@@ -22,19 +22,15 @@ public class VpsNut extends H265Frame {
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		// TODO Auto-generated method stub
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// TODO Auto-generated method stub
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
-		// TODO Auto-generated method stub
 	}
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

@@ -41,23 +41,14 @@ public class SpsNut extends H265Frame {
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		// TODO Auto-generated method stub
-		logger.info("最少解析を実施します。");
 		BitLoader loader = new BitLoader(channel);
+		loader.setEmulationPreventionFlg(true);
 		loader.load(spsVideoParameterSetId, spsMaxSubLayersMinus1,
 				spsTemporalIdNestingFlag);
-		logger.info(spsVideoParameterSetId);
-		logger.info(spsMaxSubLayersMinus1);
-		logger.info(spsTemporalIdNestingFlag);
-		logger.info("channelPos:" + channel.position());
-		//96 / 8 = 12;
+		// 96 / 8 = 12;
 		profileTierLevel.minimumLoad(loader, spsMaxSubLayersMinus1.get());
-		logger.info("channelPos:" + channel.position());
 		// ここでspsの続きを読み込みます。
 		loader.load(spsSeqParameterSetId, chromaFormatIdc);
-		logger.info(spsSeqParameterSetId);
-		logger.info(chromaFormatIdc);
-		logger.info(spsSeqParameterSetId.get());
-		logger.info(chromaFormatIdc.get());
 		if(chromaFormatIdc.get() == 3) {
 			// separateColurPlaneFlagを読み込む
 			separateColourPlaneFlag = new Bit1();
@@ -65,11 +56,9 @@ public class SpsNut extends H265Frame {
 		}
 		loader.load(picWidthInLumaSamples, picHeightInLumaSamples,
 				conformanceWindowFlag);
-		logger.info(picWidthInLumaSamples.get());
-		logger.info(picHeightInLumaSamples.get());
-		logger.info(picWidthInLumaSamples);
-		logger.info(picHeightInLumaSamples);
-		logger.info(conformanceWindowFlag);
+		logger.info("width:" + picWidthInLumaSamples.get());
+		logger.info("height:" + picHeightInLumaSamples.get());
+		// 後のデータは適当にやっとく。
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
