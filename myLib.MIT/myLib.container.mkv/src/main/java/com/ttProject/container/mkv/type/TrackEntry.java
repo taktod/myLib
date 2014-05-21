@@ -19,6 +19,8 @@ import com.ttProject.frame.adpcmimawav.AdpcmImaWavAnalyzer;
 import com.ttProject.frame.h264.ConfigData;
 import com.ttProject.frame.h264.DataNalAnalyzer;
 import com.ttProject.frame.h264.H264FrameSelector;
+import com.ttProject.frame.h265.H265DataNalAnalyzer;
+import com.ttProject.frame.h265.H265FrameSelector;
 import com.ttProject.frame.mjpeg.MjpegFrameAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
 import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
@@ -153,6 +155,14 @@ public class TrackEntry extends MkvMasterTag {
 			ConfigData configData = new ConfigData();
 			configData.setSelector((H264FrameSelector)((DataNalAnalyzer)analyzer).getSelector());
 			configData.getNalsFrame(new ByteReadChannel(codecPrivate.getMkvData())); // sps ppsを解析することでH264FrameSelectorにデータがセットされる
+			break;
+		case V_MPEG_ISO_HEVC:
+			logger.info("h265の動作もあやしいけど・・・");
+			analyzer = new H265DataNalAnalyzer();
+			// ここでconfigDataの解析が必要っぽい。
+			com.ttProject.frame.h265.ConfigData h265ConfigData = new com.ttProject.frame.h265.ConfigData();
+			h265ConfigData.setSelector((H265FrameSelector)((H265DataNalAnalyzer)analyzer).getSelector());
+			h265ConfigData.analyze(new ByteReadChannel(codecPrivate.getMkvData()));
 			break;
 		case V_VP8:
 			logger.info("vp8は動作があやしいです。");

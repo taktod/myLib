@@ -73,4 +73,10 @@ public class SpsNut extends H265Frame {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	public int getWidth() {
+		return picWidthInLumaSamples.get();
+	}
+	public int getHeight() {
+		return picHeightInLumaSamples.get();
+	}
 }

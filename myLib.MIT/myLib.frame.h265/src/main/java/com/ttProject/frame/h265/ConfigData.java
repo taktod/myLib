@@ -67,6 +67,9 @@ public class ConfigData {
 			private Bit16 nalUnitLength;
 
 	private List<H265Frame> nalList = new ArrayList<H265Frame>();
+	public void setSelector(H265FrameSelector selector) {
+		this.selector = selector;
+	}
 	/**
 	 * h265ConfigDataを解析する
 	 * @param channel
