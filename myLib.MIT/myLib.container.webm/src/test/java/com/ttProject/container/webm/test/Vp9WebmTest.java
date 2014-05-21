@@ -32,6 +32,7 @@ public class Vp9WebmTest {
 					SimpleBlock simpleBlock = (SimpleBlock) container;
 					logger.info(simpleBlock);
 					logger.info(simpleBlock.getFrame());
+					logger.info("次へ進みます。");
 				}
 			}
 		}

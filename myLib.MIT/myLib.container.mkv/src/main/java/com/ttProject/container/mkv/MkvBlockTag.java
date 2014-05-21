@@ -145,6 +145,7 @@ public abstract class MkvBlockTag extends MkvBinaryTag {
 			ContentEncodings encodings = entry.getEncodings();
 			// TODO この書き方だと、lacing対策していないので、調整する必要あり。
 			if(encodings == null) {
+				logger.info("encodingなしか？");
 				for(Integer size : lacingSizeList) {
 					analyzeFrame(entry, new ByteReadChannel(BufferUtil.safeRead(channel, size)));
 				}

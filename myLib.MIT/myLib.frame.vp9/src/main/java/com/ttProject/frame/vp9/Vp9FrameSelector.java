@@ -21,7 +21,7 @@ public class Vp9FrameSelector extends VideoSelector {
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		logger.info("frameを解析します。");
-		logger.info(HexUtil.toHex(BufferUtil.safeRead(channel, channel.size()), true));
+//		logger.info(HexUtil.toHex(BufferUtil.safeRead(channel, channel.size()), true));
 		Bit2 frameMarker = new Bit2();
 		Bit1 profile = new Bit1();
 		Bit1 reservedBit = new Bit1(); // 0のはず
@@ -37,12 +37,15 @@ public class Vp9FrameSelector extends VideoSelector {
 			throw new Exception("refFlagの読み込みはどうなっているかわかりません");
 		}
 		loader.load(keyFrameFlag, invisibleFlag, errorRes);
+		Vp9Frame frame = null;
 		if(keyFrameFlag.get() == 0) {
 			logger.info("kerFrame");
+			frame = new KeyFrame(frameMarker, profile, reservedBit, refFlag, keyFrameFlag, invisibleFlag, errorRes);
 		}
 		else {
 			logger.info("intraFrame");
 		}
-		return null;
+		frame.minimumLoad(channel);
+		return frame;
 	}
 }
