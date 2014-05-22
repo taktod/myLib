@@ -9,6 +9,7 @@ import com.ttProject.container.ogg.Crc32;
 import com.ttProject.container.ogg.OggPage;
 import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.IFrame;
+import com.ttProject.frame.opus.OpusFrameAnalyzer;
 import com.ttProject.frame.speex.SpeexFrameAnalyzer;
 import com.ttProject.frame.theora.TheoraFrameAnalyzer;
 import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
@@ -88,6 +89,8 @@ public class StartPage extends OggPage {
 					break;
 				case 'O':
 					logger.info("opus?");
+					analyzer = new OpusFrameAnalyzer();
+					break;
 				default:
 					throw new Exception("知らないコーデックデータを検知しました。");
 				}

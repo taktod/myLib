@@ -1,6 +1,9 @@
 package com.ttProject.frame.opus;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.AudioSelector;
+import com.ttProject.frame.opus.type.CommentFrame;
 import com.ttProject.frame.opus.type.Frame;
 import com.ttProject.frame.opus.type.HeaderFrame;
 import com.ttProject.nio.channels.IReadChannel;
@@ -13,6 +16,9 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class OpusFrameSelector extends AudioSelector {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(OpusFrameSelector.class);
 	/** header情報 */
 	private HeaderFrame headerFrame = null;
 	/**
@@ -26,19 +32,27 @@ public class OpusFrameSelector extends AudioSelector {
 		byte firstByte = BufferUtil.safeRead(channel, 1).get();
 		if(firstByte == 'O' && channel.size() > 8) {
 			// のこり7文字も読み込んでOpusHead or OpusTagsであるか確認する。
+			String sigString = new String(BufferUtil.safeRead(channel, 7).array());
+			if(sigString.equals("pusHead")) {
+				// headerFrame
+				frame = new HeaderFrame();
+				headerFrame = (HeaderFrame)frame;
+			}
+			else if(sigString.equals("pusTags")) {
+				// commentFrame
+				frame = new CommentFrame();
+			}
+			else {
+				throw new Exception("不明なフレームでした。:O" + sigString);
+			}
 		}
 		else {
 			// 普通のフレームである
-			frame = new Frame();
+			frame = new Frame(firstByte);
 		}
-/*		if(headerFrame == null) {
-			frame = new HeaderFrame();
-			headerFrame = (HeaderFrame)frame;
-		}
-		else {
-			frame = new Frame();
+		if(!(frame instanceof HeaderFrame)) {
 			frame.setHeaderFrame(headerFrame);
-		}*/
+		}
 		frame.minimumLoad(channel);
 		return frame;
 	}

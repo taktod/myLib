@@ -2,8 +2,11 @@ package com.ttProject.frame.opus.type;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.opus.OpusFrame;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.util.BufferUtil;
 
 /**
  * opusのフレーム
@@ -11,35 +14,54 @@ import com.ttProject.nio.channels.IReadChannel;
  *
  */
 public class Frame extends OpusFrame {
-
-	@Override
-	public ByteBuffer getPackBuffer() throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(Frame.class);
+	/** frameの内部データ */
+	private ByteBuffer frameBuffer = null;
+	private byte firstByte;
+	/**
+	 * コンストラクタ
+	 * @param firstByte
+	 */
+	public Frame(byte firstByte) {
+		this.firstByte = firstByte;
 	}
-
+	/**
+	 * コンストラクタ
+	 */
+	public Frame() {
+	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// TODO Auto-generated method stub
-		
+		super.setSize(channel.size());
+		ByteBuffer buffer = ByteBuffer.allocate(channel.size());
+		buffer.put(firstByte);
+		buffer.put(BufferUtil.safeRead(channel, channel.size() - 1));
+		buffer.flip();
+		super.setData(buffer);
+		super.update();
 	}
-
-	@Override
-	public boolean isComplete() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 	@Override
 	protected void requestUpdate() throws Exception {
-		// TODO Auto-generated method stub
-		
+		if(frameBuffer == null) {
+			throw new Exception("frameBufferがnullでした、先に解析動作を実施してください。");
+		}
+		super.setData(frameBuffer);
 	}
-	
+	@Override
+	public ByteBuffer getPackBuffer() throws Exception {
+//		return getData();
+		throw new Exception("OpusのpackBufferは不明です。");
+	}
+	@Override
+	public boolean isComplete() {
+		return true;
+	}
+
 }

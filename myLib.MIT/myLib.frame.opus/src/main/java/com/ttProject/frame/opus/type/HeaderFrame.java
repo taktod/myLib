@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.frame.opus.OpusFrame;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit16;
 import com.ttProject.unit.extra.bit.Bit32;
@@ -28,7 +29,7 @@ import com.ttProject.util.BufferUtil;
 public class HeaderFrame extends OpusFrame {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(HeaderFrame.class);
-	private String opusString;
+	private String opusString = "OpusHead";
 	private Bit8  version              = new Bit8();
 	private Bit8  channels             = new Bit8();
 	private Bit16 preSkip              = new Bit16();
@@ -36,16 +37,21 @@ public class HeaderFrame extends OpusFrame {
 	private Bit16 outputGain           = new Bit16();
 	private Bit8  channelMappingFamily = new Bit8();
 	// mappingTableもあるかもしれないがほっとく。
+	public HeaderFrame() {
+		super.update();
+	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		opusString = new String(BufferUtil.safeRead(channel, 8).array());
-		logger.info(opusString);
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
 		loader.load(version, channels, preSkip, sampleRate,
 				outputGain, channelMappingFamily);
 		logger.info(channels.get());
 		logger.info(sampleRate.get());
+		if(channel.position() != channel.size()) {
+			throw new Exception("mappingTableがあるデータでした、解析する必要があるので、開発者に問い合わせてください。");
+		}
+		super.update();
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
@@ -54,6 +60,12 @@ public class HeaderFrame extends OpusFrame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		// 全データの結合をつくる必要あり。
+		BitConnector connector = new BitConnector();
+		connector.setLittleEndianFlg(true);
+		ByteBuffer buffer = ByteBuffer.wrap(opusString.getBytes());
+		super.setData(BufferUtil.connect(
+				buffer,
+				connector.connect(version, channels, preSkip, sampleRate, outputGain, channelMappingFamily)));
 	}
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
