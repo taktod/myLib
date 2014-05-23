@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.vp9.type.KeyFrame;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit2;
 
@@ -15,6 +16,7 @@ import com.ttProject.unit.extra.bit.Bit2;
  */
 public abstract class Vp9Frame extends VideoFrame {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Vp9Frame.class);
 	private final Bit2 frameMarker;
 	private final Bit1 profile;
@@ -42,6 +44,9 @@ public abstract class Vp9Frame extends VideoFrame {
 		return keyFrame;
 	}
 	protected ByteBuffer getHeaderBuffer() {
-		return null;
+		BitConnector connector = new BitConnector();
+		return connector.connect(
+				frameMarker, profile, reserved, refFlag, keyFrameFlag, invisibleFlag, errorRes
+		);
 	}
 }

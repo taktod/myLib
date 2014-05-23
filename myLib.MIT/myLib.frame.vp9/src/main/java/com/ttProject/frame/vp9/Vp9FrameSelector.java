@@ -3,6 +3,7 @@ package com.ttProject.frame.vp9;
 import org.apache.log4j.Logger;
 
 import com.ttProject.frame.VideoSelector;
+import com.ttProject.frame.vp9.type.IntraFrame;
 import com.ttProject.frame.vp9.type.KeyFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IUnit;
@@ -10,9 +11,11 @@ import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit3;
-import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtil;
 
+/**
+ * vp9のフレームのSelector
+ * @author taktod
+ */
 public class Vp9FrameSelector extends VideoSelector {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(Vp9FrameSelector.class);
@@ -21,7 +24,6 @@ public class Vp9FrameSelector extends VideoSelector {
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		logger.info("frameを解析します。");
-//		logger.info(HexUtil.toHex(BufferUtil.safeRead(channel, channel.size()), true));
 		Bit2 frameMarker = new Bit2();
 		Bit1 profile = new Bit1();
 		Bit1 reservedBit = new Bit1(); // 0のはず
@@ -34,6 +36,8 @@ public class Vp9FrameSelector extends VideoSelector {
 		BitLoader loader = new BitLoader(channel);
 		loader.load(frameMarker, profile, reservedBit, refFlag);
 		if(refFlag.get() == 1) {
+			ref = new Bit3();
+			loader.load(ref);
 			throw new Exception("refFlagの読み込みはどうなっているかわかりません");
 		}
 		loader.load(keyFrameFlag, invisibleFlag, errorRes);
@@ -41,9 +45,14 @@ public class Vp9FrameSelector extends VideoSelector {
 		if(keyFrameFlag.get() == 0) {
 			logger.info("kerFrame");
 			frame = new KeyFrame(frameMarker, profile, reservedBit, refFlag, keyFrameFlag, invisibleFlag, errorRes);
+			keyFrame = (KeyFrame)frame;
 		}
 		else {
 			logger.info("intraFrame");
+			frame = new IntraFrame(frameMarker, profile, reservedBit, refFlag, keyFrameFlag, invisibleFlag, errorRes);
+		}
+		if((frame instanceof KeyFrame)) {
+			frame.setKeyFrame(keyFrame);
 		}
 		frame.minimumLoad(channel);
 		return frame;
