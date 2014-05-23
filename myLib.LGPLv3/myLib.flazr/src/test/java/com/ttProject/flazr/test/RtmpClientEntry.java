@@ -14,11 +14,11 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.flazr.rtmp.RtmpEncoder;
+import com.flazr.rtmp.client.ClientHandler;
 import com.flazr.rtmp.client.ClientHandshakeHandler;
 import com.flazr.rtmp.client.ClientOptions;
-import com.ttProject.flazr.client.ClientHandlerEx;
 import com.ttProject.flazr.rtmp.RtmpDecoderEx;
+import com.ttProject.flazr.rtmp.RtmpEncoderEx;
 
 public class RtmpClientEntry {
 	private static final Logger logger = LoggerFactory.getLogger(RtmpClientEntry.class);
@@ -53,8 +53,8 @@ public class RtmpClientEntry {
 				ChannelPipeline pipeline = Channels.pipeline();
 				pipeline.addLast("handshaker", new ClientHandshakeHandler(options));
 				pipeline.addLast("decoder", new RtmpDecoderEx());
-				pipeline.addLast("encoder", new RtmpEncoder());
-				pipeline.addLast("handler", new ClientHandlerEx(options));
+				pipeline.addLast("encoder", new RtmpEncoderEx());
+				pipeline.addLast("handler", new ClientHandler(options));
 				return pipeline;
 			}
 		});
