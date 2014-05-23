@@ -21,7 +21,7 @@ import com.ttProject.nio.channels.IReadChannel;
  */
 public class MkvTagReader extends Reader {
 	/** ロガー */
-//	@SuppressWarnings("unused")
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MkvTagReader.class);
 	private Map<Integer, TrackEntry> trackEntryMap = new ConcurrentHashMap<Integer, TrackEntry>();
 	private long defaultTimebase = 1000;
@@ -49,7 +49,7 @@ public class MkvTagReader extends Reader {
 				// clusterとsegmentの読み込みをスキップすることで、simpleBlockのデータを応答するようにしておく
 				tag.load(channel);
 			}
-			logger.info(container);
+//			logger.info(container);
 		}
 		if(tag instanceof TimecodeScale) {
 			defaultTimebase = ((TimecodeScale) tag).getTimebaseValue();
