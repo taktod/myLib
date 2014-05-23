@@ -22,6 +22,7 @@ import com.ttProject.container.mkv.type.ContentEncoding;
 import com.ttProject.container.mkv.type.ContentEncodings;
 import com.ttProject.container.mkv.type.CueClusterPosition;
 import com.ttProject.container.mkv.type.CuePoint;
+import com.ttProject.container.mkv.type.CueRelativePosition;
 import com.ttProject.container.mkv.type.CueTime;
 import com.ttProject.container.mkv.type.CueTrack;
 import com.ttProject.container.mkv.type.CueTrackPositions;
@@ -367,6 +368,9 @@ public class MkvTagSelector implements ISelector {
 			break;
 		case CodecName:
 			mkvTag = new CodecName(size);
+			break;
+		case CueRelativePosition:
+			mkvTag = new CueRelativePosition(size);
 			break;
 		default:
 			throw new Exception("未実装のTypeデータが応答されました。" + Type.getType(tag.getEbmlValue()));

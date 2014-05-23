@@ -86,6 +86,7 @@ public enum Type {
 				CueTrackPositions(0xb7),
 					CueTrack(0xf7),
 					CueClusterPosition(0xf1),
+					CueRelativePosition(0xf0),
 		Tags(0x1254c367),
 			Tag(0x7373),
 				Targets(0x63c0),
