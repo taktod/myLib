@@ -22,7 +22,7 @@ public abstract class Vp8Frame extends VideoFrame {
 	private Logger logger = Logger.getLogger(Vp8Frame.class);
 	private final Bit1  frameType; // 0ならkyeFrame
 	private final Bit3  version;
-	private final Bit1  showFrame;
+	private final Bit1  showFrame; // ここでinvisible判定できるかも？
 	private final Bit19 firstPartSize;
 	/** 参照用のキーフレーム */
 	private KeyFrame keyFrame = null;

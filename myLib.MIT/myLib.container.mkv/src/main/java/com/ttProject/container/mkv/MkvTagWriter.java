@@ -213,6 +213,6 @@ public class MkvTagWriter implements IWriter {
 	}
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
-		
+		// vp8やvp9の場合はinvisible判定をとっておかないとこまったことになるかもしれない。(BlockTagに設定項目があるため。)
 	}
 }
