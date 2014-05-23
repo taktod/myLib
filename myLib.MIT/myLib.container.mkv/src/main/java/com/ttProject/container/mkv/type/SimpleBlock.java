@@ -63,6 +63,12 @@ public class SimpleBlock extends MkvBlockTag {
 	protected Lacing getLacingType() throws Exception {
 		return Lacing.getType(lacing.get());
 	}
+	public boolean isKeyFrame() {
+		return keyFrameFlag.get() == 1;
+	}
+	public boolean isInvisibleFrame() {
+		return invisibleFrameFlag.get() == 1;
+	}
 	/**
 	 * {@inheritDoc}
 	 */
