@@ -95,6 +95,7 @@
     <module>myLib.GPLv3/myLib.xuggle.frame</module>
     <module>myLib.GPLv3/myLib.xuggle.test</module>
     <module>myLib.MIT/myLib.pool.redis</module>
+    <module>myLib.MIT/myLib.license</module>
   </modules>
   <scm>
     <url>scm:git:git@github.com:taktod/myLib.git</url>
