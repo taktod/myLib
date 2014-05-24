@@ -28,7 +28,7 @@ public class H265MkvTest {
 		int lastPosition = 0;
 		try {
 			source = FileReadChannel.openFileReadChannel(
-					"http://trailers.divx.com/hevc/TearsOfSteelFull12min_1080p_24fps_27qp_1474kbps_GPSNR_42.29_HM11.mkv"
+					""
 			);
 			IReader reader = new MkvTagReader();
 			IContainer container = null;
