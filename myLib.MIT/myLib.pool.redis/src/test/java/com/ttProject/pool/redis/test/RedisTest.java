@@ -1,7 +1,6 @@
 package com.ttProject.pool.redis.test;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -18,27 +17,33 @@ public class RedisTest {
 	 * Poolテスト
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void poolTest() throws Exception {
 		logger.info("jedisPoolテスト");
 		JedisPoolConfig config = new JedisPoolConfig();
 		config.setMaxTotal(12);
 		JedisPool pool = new JedisPool(config, "localhost", 6379);
 		Jedis jedis = pool.getResource();
-		jedis.set("test", "hoge");
-		logger.info("result:" + jedis.get("test"));
+//		jedis.set("test", "hoge");
+		jedis.rpush("test", "1");
+		jedis.rpush("test", "2");
+		jedis.rpush("test", "3");
+		jedis.rpush("test", "4");
+		jedis.rpush("test", "5");
+		jedis.rpush("test", "6");
+		logger.info("result:" + jedis.lrange("test", 0, -1));
 	}
 	/**
 	 * 単体テスト
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void singleTest() throws Exception {
 		logger.info("jedisテスト");
 		Jedis jedis = null;
 		try {
 			jedis = new Jedis("localhost", 6379);
-			logger.info("result:" + jedis.get("test"));
+//			logger.info("result:" + jedis.get("test"));
 		}
 		finally {
 			if(jedis != null) {
