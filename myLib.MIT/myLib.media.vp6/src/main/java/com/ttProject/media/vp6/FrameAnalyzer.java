@@ -1,3 +1,9 @@
+/*
+ * myLib - https://github.com/taktod/myLib
+ * Copyright (c) 2014 ttProject. All rights reserved.
+ * 
+ * Licensed under The MIT license.
+ */
 package com.ttProject.media.vp6;
 
 import com.ttProject.media.extra.Bit1;

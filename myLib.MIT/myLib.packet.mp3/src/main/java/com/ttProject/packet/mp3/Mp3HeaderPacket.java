@@ -1,3 +1,9 @@
+/*
+ * myLib - https://github.com/taktod/myLib
+ * Copyright (c) 2014 ttProject. All rights reserved.
+ * 
+ * Licensed under The MIT license.
+ */
 package com.ttProject.packet.mp3;
 
 public class Mp3HeaderPacket extends Mp3Packet {

@@ -28,7 +28,7 @@ public class WriteTest {
 	public void javaDoc() {
 		logger.info("処理テスト開始");
 		// まずファイルをサーチする必要あり。
-		File dir = new File("../myLib.channels");
+		File dir = new File("..");
 		searchDir(dir);
 		logger.info("処理テストおわり");
 	}

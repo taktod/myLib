@@ -1,3 +1,9 @@
+/*
+ * myLib - https://github.com/taktod/myLib
+ * Copyright (c) 2014 ttProject. All rights reserved.
+ * 
+ * Licensed under The MIT license.
+ */
 package com.ttProject.convert.ffmpeg.test;
 
 import java.net.InetSocketAddress;

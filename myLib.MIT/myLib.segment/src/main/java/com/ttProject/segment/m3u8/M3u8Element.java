@@ -1,3 +1,9 @@
+/*
+ * myLib - https://github.com/taktod/myLib
+ * Copyright (c) 2014 ttProject. All rights reserved.
+ * 
+ * Licensed under The MIT license.
+ */
 package com.ttProject.segment.m3u8;
 
 import com.ttProject.segment.Element;
