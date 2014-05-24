@@ -1,3 +1,9 @@
+/*
+ * myLib - https://github.com/taktod/myLib
+ * Copyright (c) 2014 ttProject. All rights reserved.
+ * 
+ * Licensed under GNU GENERAL PUBLIC LICENSE Version 3.
+ */
 package com.ttProject.xuggle.frame.test;
 
 import java.awt.Color;
@@ -172,7 +178,7 @@ public class SetupBase {
 							packet.setDts(packet.getPts());
 							if(audioCounter > 10001) {
 								logger.info("音声Packet:channel:" + samples.getChannels() + " sampleRate:" + samples.getSampleRate());
-								logger.info(HexUtil.toHex(packet.getByteBuffer()));
+								logger.info(HexUtil.toHex(packet.getByteBuffer(), 0, packet.getSize(), false));
 							}
 //							System.out.println(HexUtil.toHex(packet.getByteBuffer()));
 							if(container.writePacket(packet) < 0) {

@@ -1,3 +1,9 @@
+/*
+ * myLib - https://github.com/taktod/myLib
+ * Copyright (c) 2014 ttProject. All rights reserved.
+ * 
+ * Licensed under GNU GENERAL PUBLIC LICENSE Version 3.
+ */
 package com.ttProject.xuggle.test;
 
 import org.apache.log4j.Logger;

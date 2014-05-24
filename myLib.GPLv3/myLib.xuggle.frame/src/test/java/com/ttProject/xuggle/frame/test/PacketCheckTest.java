@@ -1,9 +1,16 @@
+/*
+ * myLib - https://github.com/taktod/myLib
+ * Copyright (c) 2014 ttProject. All rights reserved.
+ * 
+ * Licensed under GNU GENERAL PUBLIC LICENSE Version 3.
+ */
 package com.ttProject.xuggle.frame.test;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.xuggle.xuggler.IContainer;
+import com.xuggle.xuggler.IStreamCoder;
 
 /**
  * やりとりすべきpacketデータについて調べるためのテスト
@@ -28,6 +35,9 @@ public class PacketCheckTest extends SetupBase {
 		if(container.open("test.flv", IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("ファイルが開けませんでした。");
 		}
-		processConvert(container, null, Encoder.mp3(container));
+		IStreamCoder coder = Encoder.speex(container);
+		coder.setSampleRate(16000);
+		coder.setChannels(1);
+		processConvert(container, null, coder);
 	}
 }
