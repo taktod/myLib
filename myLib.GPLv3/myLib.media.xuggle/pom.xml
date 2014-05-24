@@ -9,4 +9,11 @@
   <artifactId>myLib.media.xuggle</artifactId>
   <name>myLib.media.xuggle</name>
   <description>xuggleのpacketをmediaオブジェクトとして扱うプロジェクト</description>
+  <licenses>
+    <license>
+      <name>GNU GENERAL PUBLIC LICENSE</name>
+      <url>https://www.gnu.org/licenses/gpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 </project>

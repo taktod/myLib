@@ -27,4 +27,11 @@
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
+  <licenses>
+    <license>
+      <name>GNU GENERAL PUBLIC LICENSE</name>
+      <url>https://www.gnu.org/licenses/gpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 </project>

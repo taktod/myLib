@@ -29,4 +29,11 @@
 
 myLib.media.flvのTag &lt;-&gt; flvAtom変換や
 wowzaでのamf3命令が混入するバグにも対応できるようになっています。</description>
+  <licenses>
+    <license>
+      <name>GNU LESSER GENERAL PUBLIC LICENSE</name>
+      <url>https://www.gnu.org/licenses/lgpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 </project>

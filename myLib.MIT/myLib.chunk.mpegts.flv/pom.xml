@@ -9,16 +9,23 @@
   <artifactId>myLib.chunk.mpegts.flv</artifactId>
   <name>myLib.chunk.mpegts.flv</name>
   <description>flvのデータをベースにmpegtsのhlsを作成する動作</description>
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
   <dependencies>
-  	<dependency>
-  		<groupId>com.ttProject</groupId>
-  		<artifactId>myLib.chunk.mpegts</artifactId>
-  		<version>0.0.2-SNAPSHOT</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>com.ttProject</groupId>
-  		<artifactId>myLib.media.flv</artifactId>
-  		<version>0.0.2-SNAPSHOT</version>
-  	</dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.chunk.mpegts</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.media.flv</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 </project>

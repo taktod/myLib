@@ -10,6 +10,13 @@
   <name>myLib.chunk.mp3</name>
   <description>mp3のchunkをつくるためのプログラム
 iPhoneのhlsで利用できます。</description>
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
   <dependencies>
     <dependency>
       <groupId>com.ttProject</groupId>

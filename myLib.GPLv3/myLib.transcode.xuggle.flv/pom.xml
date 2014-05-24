@@ -31,4 +31,11 @@
   </dependencies>
   <name>myLib.transcode.xuggle.flv</name>
   <description>xuggleの変換結果をflvとして受け取らせるためのプロジェクト</description>
+  <licenses>
+    <license>
+      <name>GNU GENERAL PUBLIC LICENSE</name>
+      <url>https://www.gnu.org/licenses/gpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 </project>

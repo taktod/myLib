@@ -23,6 +23,13 @@ sizeはUnitのヘッダ部等も含めた全体の量とします。flvとかで
 flvの場合　flvTagはUnitです。中身のH264FrameやAacFrameはIVideoDataやIAudioDataを継承している必要があります。
 こんな感じ。
 </description>
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
   <dependencies>
     <dependency>
       <groupId>com.ttProject</groupId>

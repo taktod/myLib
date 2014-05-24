@@ -8,11 +8,18 @@
   </parent>
   <artifactId>myLib.frame.mp3</artifactId>
   <name>myLib.frame.mp3</name>
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
   <dependencies>
-  	<dependency>
-  		<groupId>com.ttProject</groupId>
-  		<artifactId>myLib.frame</artifactId>
-  		<version>0.0.2-SNAPSHOT</version>
-  	</dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.frame</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 </project>

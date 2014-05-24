@@ -9,6 +9,13 @@
   <artifactId>myLib.transcode.xuggle.mp3</artifactId>
   <name>myLib.transcode.xuggle.mp3</name>
   <description>xuggleの変換結果をmp3として受け取るプロジェクト</description>
+  <licenses>
+    <license>
+      <name>GNU GENERAL PUBLIC LICENSE</name>
+      <url>https://www.gnu.org/licenses/gpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
   <dependencies>
     <dependency>
       <groupId>com.ttProject</groupId>

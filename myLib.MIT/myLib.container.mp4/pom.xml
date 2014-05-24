@@ -8,26 +8,33 @@
   </parent>
   <artifactId>myLib.container.mp4</artifactId>
   <name>myLib.container.mp4</name>
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
   <dependencies>
-  	<dependency>
-  		<groupId>com.ttProject</groupId>
-  		<artifactId>myLib.container</artifactId>
-  		<version>0.0.2-SNAPSHOT</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>com.ttProject</groupId>
-  		<artifactId>myLib.frame.aac</artifactId>
-  		<version>0.0.2-SNAPSHOT</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>com.ttProject</groupId>
-  		<artifactId>myLib.frame.h264</artifactId>
-  		<version>0.0.2-SNAPSHOT</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>com.ttProject</groupId>
-  		<artifactId>myLib.frame.mp3</artifactId>
-  		<version>0.0.2-SNAPSHOT</version>
-  	</dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.container</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.frame.aac</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.frame.h264</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.frame.mp3</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 </project>

@@ -9,4 +9,11 @@
   <artifactId>myLib.log4j</artifactId>
   <name>myLib.log4j</name>
   <description>log4jのNDCで一意の値をすべてのthreadの動作でいれたかったのだがいい方法が思いつかなかったのでヘルパーをつくってみた。</description>
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 </project>

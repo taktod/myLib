@@ -13,6 +13,13 @@ myLib.convert.ffmpegと同じく、java -(socket)&gt; java -(pipe)&gt; ffmpeg -(
 という方法でpipeline経由で動作させることにします。
 よって、macやlinuxでは動作するけど、windowsだと多分動作しません。
 また、別の変換プログラムでも一応できるはずですが、vlcの場合は、出力データがちょっと微妙なので、使えるか使えないかわかりません。</description>
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
   <dependencies>
     <dependency>
       <groupId>com.ttProject</groupId>

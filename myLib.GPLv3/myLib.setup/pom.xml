@@ -16,6 +16,13 @@
   <name>myLib.setup</name>
   <description>初期化用のプロジェクト
 簡単にxuggleでベースとなるテスト用メディアデータを作成する動作をつくっておきたい。</description>
+  <licenses>
+    <license>
+      <name>GNU GENERAL PUBLIC LICENSE</name>
+      <url>https://www.gnu.org/licenses/gpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
   <dependencies>
     <dependency>
       <groupId>xuggle</groupId>

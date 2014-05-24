@@ -64,4 +64,11 @@
  <description>xuggleの変換を実行する動作のベースの部分。
 myLib.chunk.mpegtsみたいに母艦の動作(packet -&gt; convert -&gt; packet)の部分だけ実装して
 各mediaからのpacket生成はinterface化&amp;module化してしまえばいいかな・・・</description>
+  <licenses>
+    <license>
+      <name>GNU GENERAL PUBLIC LICENSE</name>
+      <url>https://www.gnu.org/licenses/gpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 </project>

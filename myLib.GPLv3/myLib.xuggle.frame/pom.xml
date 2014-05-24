@@ -77,4 +77,11 @@
  </dependencies>
  <name>myLib.xuggle.frame</name>
  <description>xuggleの変換動作のテスト用</description>
+  <licenses>
+    <license>
+      <name>GNU GENERAL PUBLIC LICENSE</name>
+      <url>https://www.gnu.org/licenses/gpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 </project>

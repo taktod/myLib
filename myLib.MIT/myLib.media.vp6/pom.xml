@@ -10,6 +10,13 @@
   <name>myLib.media.vp6</name>
   <description>vp6のフォーマット解析
 とりあえず縦横サイズを取り出したい。</description>
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
   <dependencies>
     <dependency>
       <groupId>com.ttProject</groupId>

@@ -15,6 +15,12 @@
     </dependency>
   </dependencies>
   <name>myLib.transcode</name>
-  <description>メディアデータの変換絡みのプロジェクトのベース部分
-</description>
+  <description>メディアデータの変換絡みのプロジェクトのベース部分</description>
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
 </project>
