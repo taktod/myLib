@@ -21,12 +21,14 @@ public class ClientOptionsEx extends ClientOptions {
 		// 普通に解析しておく
 		boolean result = super.parseCli(args);
 		// objectEncodingの値だけ、数値である必要があるので(特にwowza)値を確認して数値化しておく。
-		Object encoding = getParams().get("objectEncoding");
-		if("3".equals(encoding)) {
-			putParam("objectEncoding", 3);
-		}
-		else {
-			putParam("objectEncoding", 0);
+		if(getParams() != null) {
+			Object encoding = getParams().get("objectEncoding");
+			if("3".equals(encoding)) {
+				putParam("objectEncoding", 3.0);
+			}
+			else {
+				putParam("objectEncoding", 0.0);
+			}
 		}
 		return result;
 	};
