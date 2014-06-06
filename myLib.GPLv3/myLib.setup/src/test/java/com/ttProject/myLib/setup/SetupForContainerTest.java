@@ -280,6 +280,16 @@ public class SetupForContainerTest extends SetupBase {
 		processConvert(container, Encoder.vp8(container), Encoder.vorbis(container));
 	}
 	@Test
+	public void wav() throws Exception {
+		logger.info("wav準備 (adpcm_ima_wav)");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.wav", "test.adpcm_ima_wav.wav"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		processConvert(container, null, Encoder.adpcm_ima_wav(container));
+	}
+	@Test
 	public void test() throws Exception {
 		logger.info("test aac(adts)準備");
 		init();
