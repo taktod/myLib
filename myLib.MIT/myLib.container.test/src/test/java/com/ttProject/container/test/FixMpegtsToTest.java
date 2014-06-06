@@ -120,7 +120,8 @@ public class FixMpegtsToTest {
 				try {
 					writer.prepareTailer();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				writer = null;
 			}
 			// close sources
@@ -128,14 +129,16 @@ public class FixMpegtsToTest {
 				try {
 					h264Source.close();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				h264Source = null;
 			}
 			if(aacSource != null) {
 				try {
 					aacSource.close();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				aacSource = null;
 			}
 		}

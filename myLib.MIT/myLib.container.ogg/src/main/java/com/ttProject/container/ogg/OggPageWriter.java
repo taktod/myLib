@@ -118,7 +118,8 @@ public class OggPageWriter implements IWriter {
 			try {
 				outputStream.close();
 			}
-			catch(Exception e) {}
+			catch(Exception e) {
+			}
 			outputStream = null;
 		}
 	}

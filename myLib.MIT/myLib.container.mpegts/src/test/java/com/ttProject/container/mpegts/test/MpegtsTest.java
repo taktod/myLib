@@ -81,7 +81,8 @@ public class MpegtsTest {
 				try {
 					source.close();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				source = null;
 			}
 		}

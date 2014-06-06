@@ -122,7 +122,8 @@ public class MpegtsToTest {
 				try {
 					source.close();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				source = null;
 			}
 		}

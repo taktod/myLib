@@ -48,7 +48,8 @@ public class OggTest {
 				try {
 					source.close();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				source = null;
 			}
 		}
@@ -78,7 +79,8 @@ public class OggTest {
 				try {
 					source.close();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				source = null;
 			}
 		}

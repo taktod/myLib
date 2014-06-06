@@ -47,7 +47,8 @@ public class OpusOggTest {
 				try {
 					source.close();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				source = null;
 			}
 		}

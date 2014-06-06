@@ -122,14 +122,16 @@ public class MpegtsTestMulti {
 				try {
 					writer1.prepareTailer();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				writer1 = null;
 			}
 			if(writer2 != null) {
 				try {
 					writer2.prepareTailer();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				writer2 = null;
 			}
 			if(writer3 != null) {

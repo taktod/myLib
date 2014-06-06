@@ -60,7 +60,8 @@ public class Mp3UnitWriter implements IWriter {
 			try {
 				outputStream.close();
 			}
-			catch(Exception e) {}
+			catch(Exception e) {
+			}
 			outputStream = null;
 		}
 	}

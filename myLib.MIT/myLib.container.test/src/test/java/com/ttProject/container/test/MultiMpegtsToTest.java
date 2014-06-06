@@ -95,35 +95,40 @@ public class MultiMpegtsToTest {
 				try {
 					writer1.prepareTailer();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				writer1 = null;
 			}
 			if(writer2 != null) {
 				try {
 					writer2.prepareTailer();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				writer2 = null;
 			}
 			if(writer3 != null) {
 				try {
 					writer3.prepareTailer();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				writer3 = null;
 			}
 			if(writer4 != null) {
 				try {
 					writer4.prepareTailer();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				writer4 = null;
 			}
 			if(source != null) {
 				try {
 					source.close();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				source = null;
 			}
 		}
