@@ -2,7 +2,7 @@
  * myLib - https://github.com/taktod/myLib
  * Copyright (c) 2014 ttProject. All rights reserved.
  * 
- * Licensed under The MIT license.
+ * Licensed under GNU GENERAL PUBLIC LICENSE Version 3.
  */
 package com.ttProject.license;
 
@@ -12,7 +12,6 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 /**
  * ライセンス記述を記載するプログラム
@@ -24,11 +23,11 @@ public class WriteTest {
 	/**
 	 * javaファイルの先頭にライセンス記述を書き込むプログラム
 	 */
-	@Test
+//	@Test
 	public void javaDoc() {
 		logger.info("処理テスト開始");
 		// まずファイルをサーチする必要あり。
-		File dir = new File("..");
+		File dir = new File("../../myLib.GPLv3");
 		searchDir(dir);
 		logger.info("処理テストおわり");
 	}
@@ -47,7 +46,7 @@ public class WriteTest {
 		}
 		else {
 			logger.info(f);
-			writeLicense(f);
+//			writeLicense(f);
 		}
 	}
 	private void writeLicense(File f) {
@@ -56,7 +55,7 @@ public class WriteTest {
 " * myLib - https://github.com/taktod/myLib\n" + 
 " * Copyright (c) 2014 ttProject. All rights reserved.\n" + 
 " * \n" + 
-" * Licensed under The MIT license.\n" + 
+" * Licensed under GNU GENERAL PUBLIC LICENSE Version 3.\n" + 
 " */\n";
 		FileOutputStream fos = null;
 		BufferedReader br = null;
