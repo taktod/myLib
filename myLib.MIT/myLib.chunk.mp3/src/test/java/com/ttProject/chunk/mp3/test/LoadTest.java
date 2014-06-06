@@ -66,14 +66,16 @@ public class LoadTest {
 				try {
 					source.close();
 				}
-				catch(Exception e) {}
+				catch(Exception e) {
+				}
 				source = null;
 			}
 			if(fos != null) {
 				try {
 					fos.close();
 				}
-				catch(Exception e) {} 
+				catch(Exception e) {
+				}
 				fos = null;
 			}
 		}
