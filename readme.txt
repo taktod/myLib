@@ -99,3 +99,16 @@ maven2でも動作しますが、remoteリポジトリの設定が合いませ�
  3:mediaデータのUnit、IVideoData、IAudioDataにtimestamp、duration値をうまくいれたいけど、overflowが怖い。
  4:transcode.xuggleのデコードとエンコードを分離したいけど、やったらややこしくなりそう・・・
  5:1,2がクリアできるときになったら、version 0.0.2Releaseにして、0.0.3にしようかな。
+
+
+テスト動作が遅いプロジェクトメモ
+myLib.setup(11秒) これは変換元のデータをつくっているから仕方ない
+myLib.xuggle(2秒)
+myLib.xuggle.flv(15秒)
+myLib.container.mkv(6秒)
+myLib.container.mpegts(14秒)
+myLib.container.webm(11秒)
+myLib.container.test(52秒)
+myLib.xuggle.test(4秒)
+
+こんなところ。
