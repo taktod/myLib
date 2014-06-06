@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -336,7 +335,7 @@ public class ChcTest {
 	 * 49 798 993 type1 8%
 	 * 51 323 639 type2 5%
 	 */
-	@Test
+//	@Test
 	public void test3() throws Exception {
 		logger.info("チェック開始");
 		IReadChannel channel = FileReadChannel.openFileReadChannel(

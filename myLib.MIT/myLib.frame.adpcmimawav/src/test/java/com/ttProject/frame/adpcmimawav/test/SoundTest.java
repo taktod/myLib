@@ -15,7 +15,6 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.FileReadChannel;
@@ -103,7 +102,7 @@ public class SoundTest {
 			return predictor;
 		}
 	}
-	@Test
+//	@Test // これを実装しようとしたら、wavコンテナ側でやるべき(frame抜き出しができるのが、あっちなので)
 	public void test() throws Exception {
 		SourceDataLine audioLine = null;
 		int samplingRate = 44100; // 44.1 kHz
