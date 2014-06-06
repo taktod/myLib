@@ -73,7 +73,8 @@ public class MkvContainerTest {
 				try {
 					source.close();
 				}
-				catch(Exception e){}
+				catch(Exception e) {
+				}
 				source = null;
 			}
 		}

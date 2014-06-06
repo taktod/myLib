@@ -58,7 +58,8 @@ public class Mp3ContainerTest {
 				try {
 					source.close();
 				}
-				catch(Exception e){}
+				catch(Exception e) {
+				}
 				source = null;
 			}
 		}

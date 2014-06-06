@@ -76,7 +76,8 @@ public class OggContainerTest {
 				try {
 					source.close();
 				}
-				catch(Exception e){}
+				catch(Exception e) {
+				}
 				source = null;
 			}
 		}
