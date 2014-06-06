@@ -94,7 +94,8 @@ public class AudioData extends MediaData {
 						try {
 							bufferChannel.close();
 						}
-						catch(Exception e) {}
+						catch(Exception e) {
+						}
 						bufferChannel = null;
 					}
 				}
