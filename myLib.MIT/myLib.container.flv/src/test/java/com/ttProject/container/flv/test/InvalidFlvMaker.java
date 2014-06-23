@@ -4,7 +4,6 @@ import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.flv.FlvHeaderTag;
@@ -24,14 +23,17 @@ public class InvalidFlvMaker {
 	 * 音声の変なファイル作成
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void audio() throws Exception {
 		logger.info("InvalidFlvをつくります。");
 		IFileReadChannel source = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.flv");
 		FlvTagReader reader = new FlvTagReader();
-		FileChannel audioOutput0 = new FileOutputStream("audioOutput0.flv").getChannel(); // 通常
-		FileChannel audioOutput1 = new FileOutputStream("audioOutput1.flv").getChannel(); // 開始位置がずれてる(20秒)
-		FileChannel audioOutput2 = new FileOutputStream("audioOutput2.flv").getChannel(); // 20秒目から40秒目までデータがぬけてる
+		FileOutputStream audioOutputStream0 = new FileOutputStream("audioOutput0.flv");
+		FileChannel audioOutput0 = audioOutputStream0.getChannel(); // 通常
+		FileOutputStream audioOutputStream1 = new FileOutputStream("audioOutput1.flv");
+		FileChannel audioOutput1 = audioOutputStream1.getChannel(); // 開始位置がずれてる(20秒)
+		FileOutputStream audioOutputStream2 = new FileOutputStream("audioOutput2.flv");
+		FileChannel audioOutput2 = audioOutputStream2.getChannel(); // 20秒目から40秒目までデータがぬけてる
 		FlvHeaderTag headerTag = new FlvHeaderTag();
 		headerTag.setAudioFlag(true);
 		headerTag.setVideoFlag(false);
@@ -53,8 +55,8 @@ public class InvalidFlvMaker {
 		}
 		logger.info("処理おわり");
 		source.close();
-		audioOutput0.close();
-		audioOutput1.close();
-		audioOutput2.close();
+		audioOutputStream0.close();
+		audioOutputStream1.close();
+		audioOutputStream2.close();
 	}
 }
