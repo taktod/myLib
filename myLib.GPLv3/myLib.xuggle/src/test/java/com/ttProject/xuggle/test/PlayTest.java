@@ -125,19 +125,13 @@ public class PlayTest {
 			}
 		}
 		// あとしまつ。
-		if(audioLine != null) {
-			audioLine.drain();
-			audioLine.close();
-			audioLine = null;
-		}
-		if(audioCoder != null) {
-			audioCoder.close();
-			audioCoder = null;
-		}
-		if(container != null) {
-			container.close();
-			container = null;
-		}
+		audioLine.drain();
+		audioLine.close();
+		audioLine = null;
+		audioCoder.close();
+		audioCoder = null;
+		container.close();
+		container = null;
 	}
 	/**
 	 * 再生テスト
@@ -255,14 +249,10 @@ public class PlayTest {
 				}
 			}
 		}
-		if(videoCoder != null) {
-			videoCoder.close();
-			videoCoder = null;
-		}
-		if(container != null) {
-			container.close();
-			container = null;
-		}
+		videoCoder.close();
+		videoCoder = null;
+		container.close();
+		container = null;
 		while(running) {
 			Thread.sleep(100);
 		}
@@ -412,23 +402,15 @@ public class PlayTest {
 				}
 			}
 		}
-		if(videoCoder != null) {
-			videoCoder.close();
-			videoCoder = null;
-		}
-		if(audioLine != null) {
-			audioLine.drain();
-			audioLine.close();
-			audioLine = null;
-		}
-		if(audioCoder != null) {
-			audioCoder.close();
-			audioCoder = null;
-		}
-		if(container != null) {
-			container.close();
-			container = null;
-		}
+		videoCoder.close();
+		videoCoder = null;
+		audioLine.drain();
+		audioLine.close();
+		audioLine = null;
+		audioCoder.close();
+		audioCoder = null;
+		container.close();
+		container = null;
 		while(running) {
 			Thread.sleep(100);
 		}		
@@ -538,14 +520,10 @@ public class PlayTest {
 				}
 			}
 		}
-		if(videoCoder != null) {
-			videoCoder.close();
-			videoCoder = null;
-		}
-		if(container != null) {
-			container.close();
-			container = null;
-		}
+		videoCoder.close();
+		videoCoder = null;
+		container.close();
+		container = null;
 		while(running) {
 			Thread.sleep(100);
 		}

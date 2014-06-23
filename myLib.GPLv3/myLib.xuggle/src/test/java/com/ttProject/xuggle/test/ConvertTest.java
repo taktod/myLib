@@ -443,14 +443,10 @@ public class ConvertTest {
 				buffer.order(ByteOrder.LITTLE_ENDIAN);
 			}
 		}
-		if(coder != null) {
-			coder.close();
-			coder = null;
-		}
-		if(outputMp3 != null) {
-			outputMp3.close();
-			outputMp3 = null;
-		}
+		coder.close();
+		coder = null;
+		outputMp3.close();
+		outputMp3 = null;
 //		buffer.flip();
 //		IAudioSamples samples = IAudioSamples.make(IBuffer.make(null, buffer.array(), 0, buffer.remaining()), 2, Format.FMT_S16);
 //		samples.setComplete(true, numSamples, sampleRate, channels, format, pts)

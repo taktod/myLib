@@ -22,7 +22,6 @@ import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.media.aac.DecoderSpecificInfo;
 import com.ttProject.media.aac.frame.Aac;
@@ -157,6 +156,9 @@ public class MakePacketFromMyLibMediaFlvTest {
 								break;
 							}
 						}
+						if(h264Frame == null) {
+							throw new RuntimeException("");
+						}
 						logger.info("keyframe");
 						packet.setKeyPacket(true);
 						// keyFrameの場合はspsとppsも追加する必要あり。
@@ -239,10 +241,8 @@ public class MakePacketFromMyLibMediaFlvTest {
 				}
 			}
 		}
-		if(coder != null) {
-			coder.close();
-			coder = null;
-		}
+		coder.close();
+		coder = null;
 	}
 	/**
 	 * こっちでは音声の動作テストをやってみる。
@@ -341,19 +341,13 @@ public class MakePacketFromMyLibMediaFlvTest {
 				}
 			}
 		}
-		if(audioLine != null) {
-			audioLine.drain();
-			audioLine.close();
-			audioLine = null;
-		}
-		if(coder != null) {
-			coder.close();
-			coder = null;
-		}
-		if(outputTest != null) {
-			outputTest.close();
-			outputTest = null;
-		}
+		audioLine.drain();
+		audioLine.close();
+		audioLine = null;
+		coder.close();
+		coder = null;
+		outputTest.close();
+		outputTest = null;
 	}
 //	@Test
 	public void playTest3() throws Exception {
@@ -436,15 +430,11 @@ public class MakePacketFromMyLibMediaFlvTest {
 				}
 			}
 		}
-		if(audioLine != null) {
-			audioLine.drain();
-			audioLine.close();
-			audioLine = null;
-		}
-		if(coder != null) {
-			coder.close();
-			coder = null;
-		}
+		audioLine.drain();
+		audioLine.close();
+		audioLine = null;
+		coder.close();
+		coder = null;
 	}
 //	@Test
 	public void test() {
@@ -567,19 +557,13 @@ public class MakePacketFromMyLibMediaFlvTest {
 				}
 			}
 		}
-		if(audioLine != null) {
-			audioLine.drain();
-			audioLine.close();
-			audioLine = null;
-		}
-		if(coder != null) {
-			coder.close();
-			coder = null;
-		}
-		if(outputTest != null) {
-			outputTest.close();
-			outputTest = null;
-		}
+		audioLine.drain();
+		audioLine.close();
+		audioLine = null;
+		coder.close();
+		coder = null;
+		outputTest.close();
+		outputTest = null;
 	}
 	private boolean running = true;
 //	@Test
@@ -760,55 +744,51 @@ com.xuggle.xuggler.IPacket@1355257904[complete:true;dts:192;pts:192;size:2605;ke
 		IPacket packet = IPacket.make();
 		Tag tag = null;
 		while((tag = analyzer.analyze(fc)) != null) {
-				if(tag instanceof AudioTag) {
-					AudioTag aTag = (AudioTag)tag;
-					if(aTag.isMediaSequenceHeader()) {
-						dsi = new DecoderSpecificInfo();
-						dsi.analyze(new ByteReadChannel(aTag.getRawData()));
-						continue;
-					}
-					if(dsi == null) {
-						throw new RuntimeException("decoderSpecificInfoが決定していません。");
-					}
-					ByteBuffer rawData = aTag.getRawData();
-					int size = rawData.remaining();
-					Aac aac = new Aac(size, dsi);
-					aac.setData(rawData);
-					ByteBuffer buffer = aac.getBuffer();
+			if(tag instanceof AudioTag) {
+				AudioTag aTag = (AudioTag)tag;
+				if(aTag.isMediaSequenceHeader()) {
+					dsi = new DecoderSpecificInfo();
+					dsi.analyze(new ByteReadChannel(aTag.getRawData()));
+					continue;
+				}
+				if(dsi == null) {
+					throw new RuntimeException("decoderSpecificInfoが決定していません。");
+				}
+				ByteBuffer rawData = aTag.getRawData();
+				int size = rawData.remaining();
+				Aac aac = new Aac(size, dsi);
+				aac.setData(rawData);
+				ByteBuffer buffer = aac.getBuffer();
 //					outputTest.write(buffer.duplicate());
-					size = buffer.remaining();
-					IBuffer bufData = IBuffer.make(null, buffer.array(), 0, size);
-					packet.setData(bufData);
-					packet.setComplete(true, size);
-					logger.info(packet);
-					IAudioSamples samples = IAudioSamples.make(1024, coder.getChannels());
-					int offset = 0;
-					while(offset < packet.getSize()) {
-						logger.info("decodeのトライします。");
-						int bytesDecoded = coder.decodeAudio(samples, packet, offset);
-						if(bytesDecoded < 0) {
-							throw new Exception("デコード中にエラーが発生");
-						}
-						offset += bytesDecoded;
-						if(samples.isComplete()) {
-							logger.info(samples);
-							// 再生にまわす。
-							logger.info("completeできた。");
-							byte[] rawBytes = samples.getData().getByteArray(0, samples.getSize());
-							audioLine.write(rawBytes, 0, samples.getSize());
-						}
+				size = buffer.remaining();
+				IBuffer bufData = IBuffer.make(null, buffer.array(), 0, size);
+				packet.setData(bufData);
+				packet.setComplete(true, size);
+				logger.info(packet);
+				IAudioSamples samples = IAudioSamples.make(1024, coder.getChannels());
+				int offset = 0;
+				while(offset < packet.getSize()) {
+					logger.info("decodeのトライします。");
+					int bytesDecoded = coder.decodeAudio(samples, packet, offset);
+					if(bytesDecoded < 0) {
+						throw new Exception("デコード中にエラーが発生");
+					}
+					offset += bytesDecoded;
+					if(samples.isComplete()) {
+						logger.info(samples);
+						// 再生にまわす。
+						logger.info("completeできた。");
+						byte[] rawBytes = samples.getData().getByteArray(0, samples.getSize());
+						audioLine.write(rawBytes, 0, samples.getSize());
 					}
 				}
 			}
-		if(audioLine != null) {
-			audioLine.drain();
-			audioLine.close();
-			audioLine = null;
 		}
-		if(coder != null) {
-			coder.close();
-			coder = null;
-		}
+		audioLine.drain();
+		audioLine.close();
+		audioLine = null;
+		coder.close();
+		coder = null;
 /*		if(outputTest != null) {
 			outputTest.close();
 			outputTest = null;

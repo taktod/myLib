@@ -49,11 +49,9 @@ public class BeepTest {
 		audioLine.open(format);
 		audioLine.start();
 		audioLine.write(buffer.array(), 0, buffer.remaining());
-		if(audioLine != null) {
-			audioLine.drain();
-			audioLine.close();
-			audioLine = null;
-		}
+		audioLine.drain();
+		audioLine.close();
+		audioLine = null;
 //		Clip clip = AudioSystem.getClip();
 //		clip.open(format, buffer.array(), 0, buffer.remaining());
 		
