@@ -20,7 +20,6 @@ import com.ttProject.frame.opus.type.Frame;
 import com.ttProject.frame.opus.type.HeaderFrame;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.util.HexUtil;
 
 /**
  * ogg(opus)のデコード処理をjavaで書いてみたい。
@@ -35,9 +34,13 @@ public class FileDecodeTest {
 	 * 動作テスト
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void test() throws Exception {
-		IReadChannel source = FileReadChannel.openFileReadChannel("http://49.212.39.17/gc_25-1_no_3.ogg");
+//		IReadChannel source = FileReadChannel.openFileReadChannel("http://49.212.39.17/gc_25-1_no_3.ogg");
+		IReadChannel source = FileReadChannel.openFileReadChannel(
+//				Thread.currentThread().getContextClassLoader().getResource("mario.opus.mono.ogg")
+				Thread.currentThread().getContextClassLoader().getResource("mario.opus.ogg")
+		);
 		Reader reader = new OggPageReader();
 		IContainer container = null;
 		while((container = reader.read(source)) != null) {
@@ -67,9 +70,11 @@ public class FileDecodeTest {
 			// 実際のデータがあるフレーム
 			// こいつをなんとかしておく。
 			Frame frame = (Frame)opusFrame;
-			logger.info(HexUtil.toHex(frame.getData())); // フレームデータがきちんと取得できたみたいです。
+			logger.info(frame.getMUFrameList()); // muFrameを取りだしてデコードしておきたいと思います。
+//			logger.info(HexUtil.toHex(frame.getData())); // フレームデータがきちんと取得できたみたいです。
 			// さて解析するか・・・
-			Thread.sleep(1000);
+			// データがとれたので、なんとかしよう。
+			Thread.sleep(100);
 		}
 	}
 }
