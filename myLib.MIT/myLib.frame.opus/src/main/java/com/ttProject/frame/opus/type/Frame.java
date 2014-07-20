@@ -17,7 +17,7 @@ import com.ttProject.util.BufferUtil;
 /**
  * opusのフレーム
  * @author taktod
- *
+ * とりあえずサンプルの無音(48000Hz)がFC FF FEになったどういうことかな？
  */
 public class Frame extends OpusFrame {
 	/** ロガー */

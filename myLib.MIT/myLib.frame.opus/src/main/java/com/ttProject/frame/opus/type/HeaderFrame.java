@@ -31,17 +31,21 @@ import com.ttProject.util.BufferUtil;
  * 1byte channelMappingFamily
  * nbyte mappingTable
  * @author taktod
+ * @see http://tools.ietf.org/pdf/draft-ietf-codec-oggopus-03.pdf
+ * 
+ * とりあえずmappingなしでも成立するっぽいので、このまま攻めて見ようと思う。
  */
 public class HeaderFrame extends OpusFrame {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(HeaderFrame.class);
 	private String opusString = "OpusHead";
-	private Bit8  version              = new Bit8();
+	private Bit8  version              = new Bit8(); // 1固定らしい
 	private Bit8  channels             = new Bit8();
-	private Bit16 preSkip              = new Bit16();
-	private Bit32 sampleRate           = new Bit32();
-	private Bit16 outputGain           = new Bit16();
+	private Bit16 preSkip              = new Bit16(); // デコードするときの遅延フレーム数か？サンプルだったら312になった
+	private Bit32 sampleRate           = new Bit32(); // どうやら入力サンプルレートで出力時のではないっぽい。(どういうことだ？)出力時のサンプルレートはデコードの仕方でいろいろにできるっぽい。(8,12,16,24,48kHzが動作可能なものっぽい)
+	private Bit16 outputGain           = new Bit16(); // 出力振幅の設定か？(10^(outputGain / 20.0*256)になるのか？)
 	private Bit8  channelMappingFamily = new Bit8();
+	// Optional Channel Mapping Table
 	// mappingTableもあるかもしれないがほっとく。
 	public HeaderFrame() {
 		super.update();
