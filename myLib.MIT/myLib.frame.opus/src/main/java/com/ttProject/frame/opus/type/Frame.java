@@ -25,7 +25,7 @@ public class Frame extends OpusFrame {
 	private Logger logger = Logger.getLogger(Frame.class);
 	/** frameの内部データ */
 	private ByteBuffer frameBuffer = null;
-	private byte firstByte;
+	private byte firstByte; // firstByteを取っている理由は、frameの切り分けで参照してしまうため。
 	/**
 	 * コンストラクタ
 	 * @param firstByte
@@ -50,7 +50,7 @@ public class Frame extends OpusFrame {
 		buffer.put(firstByte);
 		buffer.put(BufferUtil.safeRead(channel, channel.size() - 1));
 		buffer.flip();
-		super.setData(buffer);
+		frameBuffer = buffer;
 		super.update();
 	}
 	@Override
