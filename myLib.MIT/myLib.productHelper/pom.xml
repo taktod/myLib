@@ -32,6 +32,7 @@
             <phase>package</phase>
             <configuration>
               <outputDirectory>${project.basedir}/lib</outputDirectory>
+              <includeScope>compile</includeScope>
             </configuration>
             <goals>
               <goal>copy-dependencies</goal>
