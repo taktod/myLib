@@ -7,6 +7,7 @@
 package com.ttProject.frame.opus.type;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -18,6 +19,7 @@ import com.ttProject.unit.extra.bit.Bit16;
 import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
+import com.ttProject.util.HexUtil;
 
 /**
  * opusのheaderFrame
@@ -39,19 +41,38 @@ public class HeaderFrame extends OpusFrame {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(HeaderFrame.class);
 	private String opusString = "OpusHead";
-	private Bit8  version              = new Bit8(); // 1固定らしい
+	private Bit8  version              = new Bit8();  // 1固定らしい
 	private Bit8  channels             = new Bit8();
 	private Bit16 preSkip              = new Bit16(); // デコードするときの遅延フレーム数か？サンプルだったら312になった
 	private Bit32 sampleRate           = new Bit32(); // どうやら入力サンプルレートで出力時のではないっぽい。(どういうことだ？)出力時のサンプルレートはデコードの仕方でいろいろにできるっぽい。(8,12,16,24,48kHzが動作可能なものっぽい)
 	private Bit16 outputGain           = new Bit16(); // 出力振幅の設定か？(10^(outputGain / 20.0*256)になるのか？)
 	private Bit8  channelMappingFamily = new Bit8();
+
+	// 以下のデータはoptionalChannelMappingTableからくるけど、channelMappingFamilyが0でもデータをいれておいた方がよさそう(デフォルトってやつ)
+	private int nbStreams;
+	private int nbCoupled;
+	private List<Integer> streamMap;
 	// Optional Channel Mapping Table
+/*
+	channelMappingFamilyが0でない場合の動作
+	Bit8 nbStreamの数
+	Bit8 nbCoupled nbStreamより小さな値であるべき、nbCoupled + nbStreamsを足して255を超えたらストリームおおすぎ
+	
+
+	channels > 2の場合はエラー
+	streams = 1
+	nbCoupled = チャンネル数 > 1ならかどうかで判断
+	stream_map[0] = 0
+	stream_map[1] = 1
+	*/
 	// mappingTableもあるかもしれないがほっとく。
 	public HeaderFrame() {
 		super.update();
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
+		super.setReadPosition(channel.position());
+		super.setSize(channel.size());
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
 		loader.load(version, channels, preSkip, sampleRate,

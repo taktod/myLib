@@ -49,6 +49,8 @@ public class CommentFrame extends OpusFrame {
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
+		super.setReadPosition(channel.position());
+		super.setSize(channel.size());
 		super.update();
 	}
 	@Override
