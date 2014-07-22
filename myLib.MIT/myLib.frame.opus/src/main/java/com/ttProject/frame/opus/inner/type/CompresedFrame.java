@@ -24,6 +24,7 @@ import com.ttProject.util.HexUtil;
  */
 public class CompresedFrame {
 	/** 動作ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(CompresedFrame.class);
 	/** 保持データ */
 	private final ByteBuffer buffer;
