@@ -26,6 +26,7 @@ import com.ttProject.util.BufferUtil;
 /**
  * ハフマン符号化について調べてみる。
  * adpcmのnibbleって0〜fまでしかありえないので、なんとかなるんちゃうん？
+ * Canonical Huffman Codes
  * @author taktod
  */
 public class ChcTest {
