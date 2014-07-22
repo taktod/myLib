@@ -10,7 +10,6 @@ import java.io.FileOutputStream;
 
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-import org.junit.Test;
 
 import com.ttProject.chunk.IMediaChunk;
 import com.ttProject.chunk.IMediaChunkManager;
@@ -32,9 +31,9 @@ public class LoadTest {
 	/**
 	 * 通常の動作解析
 	 */
-	@Test
+//	@Test
 	public void analyzeNormalData() {
-		logger.info("通常のmp3のchunk作成テスト");
+		logger.info("通常のaacのchunk作成テスト");
 		IReadChannel source = null;
 		FileOutputStream fos = null;
 		try {
