@@ -17,8 +17,8 @@ import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
 import com.ttProject.container.ogg.type.Page;
 import com.ttProject.container.ogg.type.StartPage;
+import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
-import com.ttProject.frame.speex.SpeexFrame;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
@@ -68,27 +68,27 @@ public class OggPageWriter implements IWriter {
 	 */
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
-		// 利用不能なフレームは除外しておく
-		if(!(frame instanceof SpeexFrame)) {
+		// audioFrameの場合
+		if(frame instanceof IAudioFrame) {
+			IAudioFrame aFrame = (IAudioFrame)frame;
+			addedSampleNum += aFrame.getSampleNum();
+			logger.info("フレーム追加:" + frame);
+			OggPage targetPage = null;
+			if(pageMap.get(trackId) == null) {
+				targetPage = new StartPage(new Bit8(), new Bit1(), new Bit1(1), new Bit1(), new Bit5());
+				targetPage.setStreamSerialNumber(trackId);
+				pageMap.put(trackId, targetPage);
+			}
+			else {
+				targetPage = pageMap.get(trackId);
+			}
+			logger.info("targetPage:" + targetPage);
+			// pageにデータを設定します。
+			targetPage.getFrameList().add(frame); // frameListを追加したら、内部でsizeを更新する必要あり
+			if(targetPage.getFrameList().size() >= 255) {
+				completePage(trackId);
+			}
 			return;
-		}
-		SpeexFrame sFrame = (SpeexFrame)frame;
-		addedSampleNum += sFrame.getSampleNum();
-		logger.info("フレーム追加:" + frame);
-		OggPage targetPage = null;
-		if(pageMap.get(trackId) == null) {
-			targetPage = new StartPage(new Bit8(), new Bit1(), new Bit1(1), new Bit1(), new Bit5());
-			targetPage.setStreamSerialNumber(trackId);
-			pageMap.put(trackId, targetPage);
-		}
-		else {
-			targetPage = pageMap.get(trackId);
-		}
-		logger.info("targetPage:" + targetPage);
-		// pageにデータを設定します。
-		targetPage.getFrameList().add(frame);
-		if(targetPage.getFrameList().size() >= 255) {
-			completePage(trackId);
 		}
 	}
 	/**
@@ -129,7 +129,7 @@ public class OggPageWriter implements IWriter {
 	public void completePage(int trackId) throws Exception {
 		logger.info("強制pageComplete");
 		OggPage page = pageMap.get(trackId);
-		logger.info(page);
+		logger.info(page.getClass());
 		// このタイミングでgranulePositionを書き込まないとだめ
 		// frameの合計位置を計算して加えないとだめ
 		page.setAbsoluteGranulePosition(addedSampleNum);
