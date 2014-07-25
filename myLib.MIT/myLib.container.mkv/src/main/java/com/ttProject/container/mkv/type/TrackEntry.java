@@ -21,7 +21,7 @@ import com.ttProject.frame.VideoSelector;
 import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
 import com.ttProject.frame.aac.AacDsiFrameSelector;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
-import com.ttProject.frame.adpcmimawav.AdpcmImaWavAnalyzer;
+import com.ttProject.frame.adpcmimawav.AdpcmImaWavFrameAnalyzer;
 import com.ttProject.frame.h264.ConfigData;
 import com.ttProject.frame.h264.DataNalAnalyzer;
 import com.ttProject.frame.h264.H264FrameSelector;
@@ -153,7 +153,7 @@ public class TrackEntry extends MkvMasterTag {
 			analyzer.analyze(new ByteReadChannel(BufferUtil.safeRead(privateChannel, privateChannel.size() - privateChannel.position())));
 			break;
 		case A_MS_ACM:
-			analyzer = new AdpcmImaWavAnalyzer();
+			analyzer = new AdpcmImaWavFrameAnalyzer();
 			break;
 		case V_MPEG4_ISO_AVC:
 			analyzer = new DataNalAnalyzer();
