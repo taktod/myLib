@@ -366,7 +366,6 @@ public class VideoTag extends FlvTag {
 	 * @param frame
 	 */
 	public void addFrame(IVideoFrame tmpFrame) throws Exception {
-		logger.info("フレームの追加が呼ばれました。");
 		if(tmpFrame == null) {
 			// 追加データがないなら、処理しない
 			return;

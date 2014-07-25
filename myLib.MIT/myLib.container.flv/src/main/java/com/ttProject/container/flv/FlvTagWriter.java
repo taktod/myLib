@@ -74,7 +74,6 @@ public class FlvTagWriter implements IWriter {
 			}
 			return;
 		}
-		logger.info("フレームを受け取りました:" + frame);
 		// TODO h264の場合は複数のフレームで1つになることがあるらしい。
 		List<FlvTag> tagList = frameConverter.getTags(frame);
 		if(tagList != null) {
