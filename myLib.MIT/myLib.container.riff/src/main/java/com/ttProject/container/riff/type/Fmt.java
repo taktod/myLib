@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.riff.CodecType;
 import com.ttProject.container.riff.RiffUnit;
 import com.ttProject.frame.IAnalyzer;
-import com.ttProject.frame.adpcmimawav.AdpcmImaWavAnalyzer;
+import com.ttProject.frame.adpcmimawav.AdpcmImaWavFrameAnalyzer;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit16;
@@ -71,7 +71,7 @@ public class Fmt extends RiffUnit {
 		}
 		switch(getCodecType()) {
 		case IMA_ADPCM:
-			frameAnalyzer = new AdpcmImaWavAnalyzer();
+			frameAnalyzer = new AdpcmImaWavFrameAnalyzer();
 			break;
 		default:
 			throw new RuntimeException("不明なコーデックでした。");

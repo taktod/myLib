@@ -444,7 +444,6 @@ public class AudioTag extends FlvTag {
 	 * @param frame
 	 */
 	public void addFrame(IAudioFrame tmpFrame) throws Exception {
-		logger.info("フレームの設定が呼び出されました。");
 		if(tmpFrame == null) {
 			// 追加データがないなら、放置
 			return;
