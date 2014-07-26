@@ -1,3 +1,9 @@
+/*
+ * myLib - https://github.com/taktod/myLib
+ * Copyright (c) 2014 ttProject. All rights reserved.
+ * 
+ * Licensed under The MIT license.
+ */
 package com.ttProject.frame.adpcmimawav.test.rangecoder;
 
 import java.nio.ByteBuffer;
@@ -70,7 +76,7 @@ public class RangeCoderTest {
 		int i = 0;
 		while((i = coder.decodeData()) != -1) {
 			logger.info(Integer.toHexString(i));
-			Thread.sleep(100);
+//			Thread.sleep(100);
 		}
 	}
 	/**

@@ -12,6 +12,8 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.riff.CodecType;
 import com.ttProject.container.riff.RiffUnit;
+import com.ttProject.frame.AudioAnalyzer;
+import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.adpcmimawav.AdpcmImaWavFrameAnalyzer;
 import com.ttProject.nio.channels.IReadChannel;
@@ -72,6 +74,12 @@ public class Fmt extends RiffUnit {
 		switch(getCodecType()) {
 		case IMA_ADPCM:
 			frameAnalyzer = new AdpcmImaWavFrameAnalyzer();
+			AudioSelector selector = ((AudioAnalyzer)frameAnalyzer).getSelector();
+			// bit数は参考値とおもってOKだと思う。
+//			selector.setBit(bitNum.get()); // 4bitになる(adpcmの１サンプルあたりの設定が4bitなため モノラルでも同じ)
+			selector.setBit(16);
+			selector.setChannel(channels.get());
+			selector.setSampleRate(sampleRate.get());
 			break;
 		default:
 			throw new RuntimeException("不明なコーデックでした。");
