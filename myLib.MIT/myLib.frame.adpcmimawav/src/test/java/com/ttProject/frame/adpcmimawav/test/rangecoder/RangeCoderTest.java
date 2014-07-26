@@ -14,15 +14,9 @@ import com.ttProject.util.HexUtil;
 public class RangeCoderTest {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(RangeCoderTest.class);
-	/**
-	 * エンコード動作
-	 * @throws Exception
-	 */
-	@Test
-	public void encodeTest() throws Exception {
-		logger.info("Encode処理開始");
-		RangeCoder coder = new RangeCoder();
-/*		Integer[][] table = {
+	private RangeCoder coder = new RangeCoder();
+	{
+		Integer[][] table = {
 			{0x0,4},
 			{0x1,4},
 			{0x2,4},
@@ -39,15 +33,23 @@ public class RangeCoderTest {
 			{0xD,1},
 			{0xE,1},
 			{0xF,1}
-		};*/
-		Integer[][] table = {
+		};
+/*		Integer[][] table = {
 				{0xA, 4},
 				{0xB, 2},
 				{0xC, 1},
 				{0xD, 1}
-		};
+		};*/
 		coder.setupTable(table);
-		ByteBuffer data = HexUtil.makeBuffer("dcbbaaaa");
+	}
+	/**
+	 * エンコード動作
+	 * @throws Exception
+	 */
+	@Test
+	public void encodeTest() throws Exception {
+		logger.info("Encode処理開始");
+		ByteBuffer data = HexUtil.makeBuffer("12345678");
 		while(data.remaining() > 0) {
 			byte b = data.get();
 			coder.encodeData((b & 0xF0) >> 4);
@@ -62,15 +64,7 @@ public class RangeCoderTest {
 	@Test
 	public void decodeTest() throws Exception {
 		logger.info("Decode処理開始");
-		ByteBuffer buffer = HexUtil.makeBuffer("FA800000");
-		RangeCoder coder = new RangeCoder();
-		Integer[][] table = {
-				{0xA, 4},
-				{0xB, 2},
-				{0xC, 1},
-				{0xD, 1}
-		};
-		coder.setupTable(table);
+		ByteBuffer buffer = HexUtil.makeBuffer("219C25598AA1");
 		coder.setDecodeTarget(buffer);
 		int i = 0;
 		while((i = coder.decodeData()) != -1) {
