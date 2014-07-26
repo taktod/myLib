@@ -24,6 +24,8 @@ import com.ttProject.util.BufferUtil;
 public class Data extends RiffUnit {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(Data.class);
+	// 経過時間はこっちで調整する必要あり。
+	private long passedTic = 0;
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
