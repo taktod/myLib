@@ -49,7 +49,7 @@ public class RangeCoderTest {
 	@Test
 	public void encodeTest() throws Exception {
 		logger.info("Encode処理開始");
-		ByteBuffer data = HexUtil.makeBuffer("123456781111222211112222333311112222");
+		ByteBuffer data = HexUtil.makeBuffer("12345678");
 		while(data.remaining() > 0) {
 			byte b = data.get();
 			coder.encodeData((b & 0xF0) >> 4);
@@ -65,7 +65,7 @@ public class RangeCoderTest {
 	public void decodeTest() throws Exception {
 		logger.info("Decode処理開始");
 //		ByteBuffer buffer = HexUtil.makeBuffer("219D25598AA1");
-		ByteBuffer buffer = HexUtil.makeBuffer("219D255A24DEB87D4A0B7DC5CEA18C7D8800");
+		ByteBuffer buffer = HexUtil.makeBuffer("219D25598AA1");
 		coder.setDecodeTarget(buffer);
 		int i = 0;
 		while((i = coder.decodeData()) != -1) {
