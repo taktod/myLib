@@ -29,8 +29,8 @@ public class RangeCoder {
 	private int range; // range
 	private int weight; // 振り分け値の合計
 	
-	private int tmp; // 最上位の桁の値
-	private int count; // 0xFFになっている桁数
+	private int carryBuffer; // 最上位の桁の値
+	private int carryCount; // 0xFFになっている桁数
 	
 	private final int rangeMax;
 	private final int rangeBorder;
@@ -46,8 +46,8 @@ public class RangeCoder {
 		this.rangeBorder = rangeBorder;
 		low = 0;
 		range = this.rangeMax;
-		tmp = -1;
-		count = 0;
+		carryBuffer = -1;
+		carryCount = 0;
 	}
 	public RangeCoder() {
 		this(0x01000000, 0x010000);
@@ -85,25 +85,54 @@ public class RangeCoder {
 		range = range * weightList.get(inverseMap.get(d)) / weight;
 		// 桁上がりがあるか確認する。
 		logger.info(Integer.toHexString(low) + " " + Integer.toHexString(range));
+		if(low >= rangeMax) {
+			carryBuffer ++;
+			if(carryCount != 0) {
+				// carryCount = 2のとき
+				// 16 FF FFが
+				// 17 00 00になります。
+				// この場合このタイミングで17 00は書き込んでOK
+				target.add((byte)carryBuffer);
+				for(int i = 0;i < carryCount - 1; i ++) {
+					target.add((byte)0x00);
+				}
+				carryCount = 0;
+				carryBuffer = 0x00;
+			}
+ 			low = low & 0x00FFFFFF;
+			logger.info("桁上がり検出");
+		}
 		if(range < rangeBorder) {
-			if(low >= rangeMax) {
-				tmp ++;
-	 			low = low & 0x00FFFFFF;
-				logger.info("桁上がり検出");
-			}
+			// 繰り上がり用のbufferが0xffの場合は繰り上げを実施せずに、countを増やしておく。
 			range *= 0x0100; // 8bitシフト
-			if(tmp != -1) {
-				target.add((byte)tmp);
+			int carryBufferTmp = (low & 0xFF0000) >> 16;
+			if(carryBufferTmp == 0xFF) {
+				// 追加データが0xFFの場合はcountにいれておきます。
+				carryCount ++;
 			}
-			tmp = (low & 0xFF0000) >> 16;
+			else {
+				if(carryBuffer != -1) {
+					target.add((byte)carryBuffer);
+				}
+				if(carryCount != 0) {
+					// carryCountが0でない場合
+					// 16 FF FF 15
+					target.add((byte)carryBuffer);
+					for(int i = 0;i < carryCount;i ++) {
+						target.add((byte)0xFF);
+					}
+					carryCount = 0;
+				}
+				carryBuffer = carryBufferTmp;
+			}
 			low = (low & 0x00FFFF) * 0x0100;
 		}
 	}
 	// エンコード結果
 	public ByteBuffer getEncodeResult() {
 		// のこっているlowをそのまま追加する。
-		if(tmp != -1) {
-			target.add((byte)tmp);
+		if(carryBuffer != -1) {
+			target.add((byte)carryBuffer);
 		}
 		target.add((byte)((low & 0xFF0000) >> 16));
 		target.add((byte)((low & 0x00FF00) >> 8));
