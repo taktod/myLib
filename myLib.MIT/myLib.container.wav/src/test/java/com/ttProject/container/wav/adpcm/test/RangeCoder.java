@@ -90,7 +90,7 @@ public class RangeCoder {
 		low += range * minBorderList.get(inverseMap.get(d)) / weight;
 		range = range * weightList.get(inverseMap.get(d)) / weight;
 		// 桁上がりがあるか確認する。
-		logger.info(Integer.toHexString(low) + " " + Integer.toHexString(range));
+//		logger.info(Integer.toHexString(low) + " " + Integer.toHexString(range));
 		if(low >= rangeMax) {
 			carryBuffer ++;
 			if(carryCount != 0) {
@@ -106,7 +106,7 @@ public class RangeCoder {
 				carryBuffer = 0x00;
 			}
  			low = low & 0x00FFFFFF;
-			logger.info("桁上がり検出");
+//			logger.info("桁上がり検出");
 		}
 		if(range < rangeBorder) {
 			// 繰り上がり用のbufferが0xffの場合は繰り上げを実施せずに、countを増やしておく。

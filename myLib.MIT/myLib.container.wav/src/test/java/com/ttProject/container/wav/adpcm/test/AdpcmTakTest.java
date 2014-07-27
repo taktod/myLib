@@ -28,6 +28,43 @@ import com.ttProject.nio.channels.IFileReadChannel;
 public class AdpcmTakTest {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(AdpcmTakTest.class);
+	private 			Integer[] order = {
+			0x0,
+			0x8,
+			0x9,
+			0x1,
+			0x2,
+			0xA,
+			0xB,
+			0x3,
+			0x4,
+			0x5,
+			0xC,
+			0xD,
+			0x6,
+			0x7,
+			0xE,
+			0xF
+	};
+	private Integer[][] table = {
+			{0x0, 6},
+			{0x8, 6},
+			{0x9, 3},
+			{0x1, 3},
+			{0x2, 3},
+			{0xA, 3},
+			{0xB, 3},
+			{0x3, 2},
+			{0x4, 2},
+			{0x5, 2},
+			{0xC, 2},
+			{0xD, 2},
+			{0x6, 1},
+			{0x7, 1},
+			{0xE, 1},
+			{0xF, 1}
+	};
+
 	/**
 	 * 読み込みテスト
 	 */
@@ -41,24 +78,6 @@ public class AdpcmTakTest {
 			IReader reader = new RiffUnitReader();
 			IContainer container = null;
 			RangeCoder coder = new RangeCoder();
-			Integer[][] table = {
-					{0x0, 4},
-					{0x8, 4},
-					{0x9, 4},
-					{0x1, 3},
-					{0x2, 3},
-					{0xA, 3},
-					{0xB, 3},
-					{0x3, 2},
-					{0x4, 2},
-					{0x5, 2},
-					{0xC, 2},
-					{0xD, 2},
-					{0x6, 1},
-					{0x7, 1},
-					{0xE, 1},
-					{0xF, 1}
-			};
 			coder.setupTable(table);
 			while((container = reader.read(source)) != null) {
 				logger.info(container);
@@ -86,7 +105,7 @@ public class AdpcmTakTest {
 										if(rank[first] < rank[i]) {
 											first = i;
 										}
-										logger.info(i + ":" + rank[i]);
+//										logger.info(i + ":" + rank[i]);
 									}
 									for(int i = 0;i < rank.length;i ++) {
 										if(i == first) {
@@ -97,7 +116,28 @@ public class AdpcmTakTest {
 										}
 									}
 									// このタイミングでcoderのtableを更新する必要がある。
-									logger.info("first:" + first + " second:" + second);
+									table[0][0] = first;
+									table[1][0] = second;
+									int j = 2;
+									for(int i = 0;i < 16;i ++) {
+										if(order[i] == first || order[i] == second) {
+											continue;
+										}
+										table[j ++][0] = order[i];
+									}
+									RangeCoder coder = new RangeCoder();
+									coder.setupTable(table);
+									// データをいれてセットアップする。
+									targetBuffer.position(0); // もとに戻す
+									while(targetBuffer.remaining() > 0) {
+										byte b = targetBuffer.get();
+										coder.encodeData((b >>> 4) & 0x0F);
+										coder.encodeData(b & 0x0F);
+									}
+									ByteBuffer result = coder.getEncodeResult();
+									logger.info("org:" + orgBuffer.remaining() +
+											" codered:" + result.remaining() +
+											" rate:" + (int)(result.remaining() * 100 / orgBuffer.remaining()));
 								}
 								catch(Exception e) {
 									e.printStackTrace();
