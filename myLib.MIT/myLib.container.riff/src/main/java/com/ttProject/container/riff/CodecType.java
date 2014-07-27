@@ -19,7 +19,8 @@ public enum CodecType {
 	A_LAW(0x0006),
 	U_LAW(0x0007),
 	OKI_ADPCM(0x0010),
-	IMA_ADPCM(0x0011); // 今回の肝
+	IMA_ADPCM(0x0011), // 今回の肝
+	MP3(0x0055);
 	private final int value;
 	private CodecType(int value) {
 		this.value = value;
