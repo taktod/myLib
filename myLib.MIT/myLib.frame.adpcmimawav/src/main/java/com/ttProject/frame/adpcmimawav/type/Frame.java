@@ -28,6 +28,7 @@ import com.ttProject.util.BufferUtil;
  */
 public class Frame extends AdpcmImaWavFrame {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Frame.class);
 	/** 内包バッファ */
 	private ByteBuffer buffer = null;

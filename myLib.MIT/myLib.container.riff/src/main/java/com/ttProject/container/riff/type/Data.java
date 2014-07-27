@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.riff.IFrameEventListener;
 import com.ttProject.container.riff.RiffUnit;
+import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.IFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
@@ -25,6 +26,7 @@ public class Data extends RiffUnit {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(Data.class);
 	// 経過時間はこっちで調整する必要あり。
+	/** 音声用の経過時刻保持 */
 	private long passedTic = 0;
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
@@ -40,6 +42,11 @@ public class Data extends RiffUnit {
 			ByteReadChannel frameChannel = new ByteReadChannel(BufferUtil.safeRead(channel, fmt.getBlockSize()));
 			IAnalyzer analyzer = getFmt().getFrameAnalyzer();
 			IFrame frame = analyzer.analyze(frameChannel);
+			if(frame instanceof AudioFrame) {
+				AudioFrame aFrame = (AudioFrame) frame;
+				passedTic += aFrame.getSampleNum();
+				aFrame.setPts(passedTic);
+			}
 			if(listener != null) {
 				listener.onNewFrame(frame);
 			}
