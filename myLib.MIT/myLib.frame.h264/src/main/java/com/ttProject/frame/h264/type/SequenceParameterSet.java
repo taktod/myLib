@@ -228,6 +228,8 @@ public class SequenceParameterSet extends H264Frame {
 		if(buffer == null) {
 			throw new Exception("本体データが未設定です。");
 		}
+		// TODO この部分のこの方法は修正しないとだめ、自力でコネクトしてやるのではなく、大元のデータを保持しておいて、それを応答するようにする。
+		// でないと、00 00 03の扱いを自力で作る必要がでてくるので、非常にややこしいことになる。
 		BitConnector connector = new BitConnector();
 		// コネクトしていく。
 		connector.feed(profileIdc, constraintSet0Flag, constraintSet1Flag,
