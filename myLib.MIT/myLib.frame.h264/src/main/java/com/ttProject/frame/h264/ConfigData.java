@@ -146,6 +146,7 @@ public class ConfigData {
 			if(!(sps instanceof SequenceParameterSet)) {
 				throw new Exception("spsがくるべきところでspsが取得できませんでした。");
 			}
+			sps.load(byteChannel);
 			spsList.add((SequenceParameterSet)sps);
 		}
 		// 続いてppsの数を取得
@@ -158,10 +159,12 @@ public class ConfigData {
 			if(!(pps instanceof PictureParameterSet)) {
 				throw new Exception("ppsがくるべきところでppsが取得できませんでした。");
 			}
+			pps.load(byteChannel);
 			ppsList.add((PictureParameterSet)pps);
 		}
 		switch(profile.get()) {
 		case 100:
+			break;
 		case 110:
 		case 122:
 		case 144:
