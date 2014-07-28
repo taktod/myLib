@@ -24,12 +24,6 @@ public class NalAnalyzer extends H264FrameAnalyzer {
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(NalAnalyzer.class);
 	/**
-	 * コンストラクタ
-	 */
-	public NalAnalyzer() {
-		super(new H264FrameSelector());
-	}
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override

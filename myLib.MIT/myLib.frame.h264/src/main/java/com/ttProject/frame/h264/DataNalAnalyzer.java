@@ -24,12 +24,6 @@ public class DataNalAnalyzer extends H264FrameAnalyzer {
 	/** configDataが決定しないと、nalSizeの取得方法が決定しないみたいです。 */
 	private ConfigData configData = null;
 	/**
-	 * コンストラクタ
-	 */
-	public DataNalAnalyzer() {
-		super(new H264FrameSelector());
-	}
-	/**
 	 * configDataをセットしておきます
 	 * @param configData
 	 */

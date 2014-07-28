@@ -11,7 +11,6 @@ import java.nio.ByteBuffer;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.NullFrame;
 import com.ttProject.frame.VideoAnalyzer;
-import com.ttProject.frame.VideoSelector;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -27,8 +26,8 @@ public abstract class H264FrameAnalyzer extends VideoAnalyzer {
 	 * コンストラクタ
 	 * @param selector
 	 */
-	public H264FrameAnalyzer(VideoSelector selector) {
-		super(selector);
+	public H264FrameAnalyzer() {
+		super(new H264FrameSelector());
 	}
 	/**
 	 * frameの内容をセットアップする
@@ -62,7 +61,7 @@ public abstract class H264FrameAnalyzer extends VideoAnalyzer {
 	 */
 	@Override
 	public IFrame getRemainFrame() throws Exception {
-		H264Frame frame = h264Frame;
+		IFrame frame = h264Frame;
 		h264Frame = null;
 		return frame;
 	}
