@@ -31,6 +31,28 @@ import com.ttProject.util.BufferUtil;
  *                                                                                                       [   ] ppsLength
  *                                                                                                             [         ] ppsData
  * もしくはnalデータからconfigDataを作り出す動作
+ * 参照元のデータが古かった模様です。
+ * @see http://blog.arcen.org/201109/article_1.html
+ * こっちを参考にして組み直しておこう。
+ * 01 4D 40 1E FF E1 00 19 67 4D 40 1E 92 42 01 40 5F F2 E0 22 00 00 03 00 C8 00 00 2E D5 1E 2C 5C 90 01 00 04 68 EE 32 C8
+ * [] avcC version1(互換性がくずれたら新しい番号が振られるらしい、いまのところ1以外みたことない)
+ *    [      ] profile compatibility levelの３点セット
+ *             [] legthSizeMinusOneWithReserved 0x3F | (nalLength - 1); (nalLengthは1,2,4のどれかっぽい)
+ *                                      ここ・・・0xFCの間違いじゃないかな (注)
+ *                [] numOfSequenceParameterSetsWithReserved 0xE0 | 数になる(この場合１つ)
+ *                   [   ] spsの長さ
+ *                         [] spsの本体
+ *                   numOfSequenceParameterSetsWithReserved | 0x1Fの数分、spsが繰り返されます。(よってspsが複数ある場合を想定していないので、現状のmyLib.frame.h264は複数ある場合はつかえないですね。)
+ * 01 4D 40 1E FF E1 00 19 67 4D 40 1E 92 42 01 40 5F F2 E0 22 00 00 03 00 C8 00 00 2E D5 1E 2C 5C 90 01 00 04 68 EE 32 C8
+ *                                                                                                    [] numOfPictureParameterSets ppsの数
+ *                                                                                                       [   ] ppsのサイズ
+ *                                                                                                             [         ] ppsデータ
+ *                                                                                                       spsと同じくppsの数分だけ繰り返されることになります。
+ *                                                                                                                         profileの値が100 110 122 144の場合はさらにspse(sequenceParameterSetExtがあります。)
+ * 注:lengthSizeMinusOneの部分は、flvやmp4のnalSize定義の部分に影響しているものと思われます。
+ * 09 00 03 05 00 00 00 00 00 00 00 17 01 00 00 00 00 00 02 fc 65 88 80 80  0f ff 
+ *                                                 [         ]この部分0x000002fcがNalのサイズになっていますが、
+ *                                                 これはNalLengthMinusOneが3になっているので4byteになっているだけみたいです。
  * @author taktod
  */
 public class ConfigData {
