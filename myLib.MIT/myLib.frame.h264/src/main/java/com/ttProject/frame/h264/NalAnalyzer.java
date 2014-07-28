@@ -11,9 +11,6 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
 import com.ttProject.frame.IFrame;
-import com.ttProject.frame.NullFrame;
-import com.ttProject.frame.VideoAnalyzer;
-import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
@@ -22,17 +19,10 @@ import com.ttProject.util.BufferUtil;
  * 実体の読み込みまで実施します。
  * @author taktod
  */
-public class NalAnalyzer extends VideoAnalyzer {
+public class NalAnalyzer extends H264FrameAnalyzer {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(NalAnalyzer.class);
-	/** 現在処理フレーム */
-	/*
-	 * このフレームデータのクラスがかわる
-	 * SliceFrameの場合firstMbInSliceが0になる
-	 * を満たすとあたらしいフレームに切り替わったとして前のフレームを応答しなければいけない。
-	 */
-	private H264Frame h264Frame = null;
 	/**
 	 * コンストラクタ
 	 */
@@ -117,32 +107,6 @@ public class NalAnalyzer extends VideoAnalyzer {
 		return setupFrame(buffer);
 	}
 	/**
-	 * frameを読み込む(loadまで実行して実体作成までやる)
-	 * @param buffer
-	 * @return
-	 * @throws Exception
-	 */
-	private IFrame setupFrame(ByteBuffer buffer) throws Exception {
-		IReadChannel channel = new ByteReadChannel(buffer);
-		H264Frame frame = (H264Frame)getSelector().select(channel);
-		frame.load(channel);
-		if(h264Frame == null || h264Frame.getClass() != frame.getClass() || (frame instanceof SliceFrame && ((SliceFrame)frame).getFirstMbInSlice() == 0)) {
-			// 1つ前のデータを応答しますので、保持しておく
-			IFrame oldFrame = h264Frame;
-			if(oldFrame == null) { // 初データで内容なしの場合、NullFrameを応答しておく
-				oldFrame = NullFrame.getInstance();
-			}
-			h264Frame = frame;
-			h264Frame.addFrame(frame);
-			return oldFrame;
-		}
-		else {
-			// 中途データの場合はNullFrameを応答しておく。
-			h264Frame.addFrame(frame);
-			return NullFrame.getInstance();
-		}
-	}
-	/**
 	 * 最終読み込み途上データを設定
 	 * @param buffer
 	 * @param lastData
@@ -166,11 +130,5 @@ public class NalAnalyzer extends VideoAnalyzer {
 				buffer.putShort(lastData);
 			}
 		}
-	}
-	@Override
-	public IFrame getRemainFrame() throws Exception {
-		H264Frame frame = h264Frame;
-		h264Frame = null;
-		return frame;
 	}
 }
