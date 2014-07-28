@@ -18,7 +18,7 @@ import com.ttProject.container.mpegts.type.Pmt;
 import com.ttProject.container.mpegts.type.Sdt;
 import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.aac.AacFrameAnalyzer;
-import com.ttProject.frame.h264.H264FrameAnalyzer;
+import com.ttProject.frame.h264.NalAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
@@ -111,7 +111,7 @@ public class MpegtsPacketSelector implements ISelector {
 					analyzerMap.put((int)elementaryField.getPid(), new Mp3FrameAnalyzer());
 					break;
 				case VIDEO_H264:
-					analyzerMap.put((int)elementaryField.getPid(), new H264FrameAnalyzer());
+					analyzerMap.put((int)elementaryField.getPid(), new NalAnalyzer());
 					break;
 				default:
 					break;
