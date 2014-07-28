@@ -145,13 +145,11 @@ public abstract class MkvBlockTag extends MkvBinaryTag {
 			default:
 				throw new Exception("不明な型です。");
 			}
-			logger.info(lacingSizeList);
 			// frameデータを調整したい。
 			TrackEntry entry = getMkvTagReader().getTrackEntry(trackId.get());
 			ContentEncodings encodings = entry.getEncodings();
 			// TODO この書き方だと、lacing対策していないので、調整する必要あり。
 			if(encodings == null) {
-				logger.info("encodingなしか？");
 				for(Integer size : lacingSizeList) {
 					analyzeFrame(entry, new ByteReadChannel(BufferUtil.safeRead(channel, size)));
 				}
