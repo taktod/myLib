@@ -77,6 +77,13 @@ public class ConfigData {
 		this.selector = selector;
 	}
 	/**
+	 * DataNalとして保存しているものの、Nalサイズ指定部のbyte数を参照します。
+	 * @return
+	 */
+	public int getNalSizeBytes() {
+		return lengthSizeMinusOne.get() + 1;
+	}
+	/**
 	 * h265ConfigDataを解析する
 	 * @param channel
 	 * @throws Exception

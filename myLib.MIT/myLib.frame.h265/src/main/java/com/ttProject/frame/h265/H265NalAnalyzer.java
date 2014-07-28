@@ -12,6 +12,6 @@ package com.ttProject.frame.h265;
  * @author taktod
  *
  */
-public class H265NalAnalyzer {
+public class H265NalAnalyzer extends H265FrameAnalyzer {
 
 }
