@@ -7,7 +7,6 @@
 package com.ttProject.container.mkv.test;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
@@ -28,7 +27,7 @@ public class H265MkvTest {
 	/**
 	 * analyzerの動作テスト
 	 */
-	@Test
+//	@Test
 	public void analyzerTest() {
 		IFileReadChannel source = null;
 		int lastPosition = 0;
