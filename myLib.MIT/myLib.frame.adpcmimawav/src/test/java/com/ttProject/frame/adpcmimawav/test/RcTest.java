@@ -9,7 +9,6 @@ package com.ttProject.frame.adpcmimawav.test;
 import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -22,7 +21,7 @@ import com.ttProject.util.BufferUtil;
 public class RcTest {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(RcTest.class);
-	@Test
+//	@Test
 	public void test() throws Exception {
 		logger.info("テスト開始");
 		IReadChannel channel = FileReadChannel.openFileReadChannel(

@@ -9,7 +9,6 @@ package com.ttProject.frame.adpcmimawav.test.rangecoder;
 import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.util.HexUtil;
 
@@ -52,7 +51,7 @@ public class RangeCoderTest {
 	 * エンコード動作
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void encodeTest() throws Exception {
 		logger.info("Encode処理開始");
 		ByteBuffer data = HexUtil.makeBuffer("12345678");
@@ -67,7 +66,7 @@ public class RangeCoderTest {
 	 * デコード動作
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void decodeTest() throws Exception {
 		logger.info("Decode処理開始");
 //		ByteBuffer buffer = HexUtil.makeBuffer("219D25598AA1");
@@ -83,7 +82,7 @@ public class RangeCoderTest {
 	 * 桁上がりテスト
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void carryUpTest() throws Exception {
 		
 	}
