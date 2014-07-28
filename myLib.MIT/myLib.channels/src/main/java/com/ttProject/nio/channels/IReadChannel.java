@@ -20,6 +20,7 @@ public interface IReadChannel extends ReadableByteChannel {
 	 * 開いているか確認
 	 * @return true:アクセス可能 false:アクセス不能
 	 */
+	@Override
 	public boolean isOpen();
 	/**
 	 * ファイルサイズ取得
@@ -46,10 +47,12 @@ public interface IReadChannel extends ReadableByteChannel {
 	 * @return 読み込めたサイズ
 	 * @throws IOException
 	 */
+	@Override
 	public int read(ByteBuffer dst) throws IOException;
 	/**
 	 * 閉じる処理
 	 * @throws IOException
 	 */
+	@Override
 	public void close() throws IOException;
 }
