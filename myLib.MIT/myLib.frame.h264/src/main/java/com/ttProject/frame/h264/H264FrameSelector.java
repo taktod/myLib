@@ -30,6 +30,7 @@ public class H264FrameSelector extends VideoSelector {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(H264FrameSelector.class);
+	// こちらのspsやppsは複数保持可能にならないと正しい動作にはならないっぽい。
 	/** 解析sps */
 	private SequenceParameterSet sps = null;
 	/** 解析pps */
@@ -70,6 +71,7 @@ public class H264FrameSelector extends VideoSelector {
 			throw new Exception("想定外のフレームを検知しました。");
 		}
 		setup(frame);
+		// TODO この部分でどのspsやppsが対応しているのか、きちんと把握しておかないとこまったことになる。
 		if(!(frame instanceof SequenceParameterSet)) {
 			frame.setSps(sps);
 			if(!(frame instanceof PictureParameterSet)) {
