@@ -30,7 +30,7 @@ public class Mp4Test {
 		IFileReadChannel source = null;
 		try {
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("test.mp4")
+					Thread.currentThread().getContextClassLoader().getResource("test.h264aac.mp4")
 			);
 			IReader reader = new Mp4AtomReader();
 			IContainer container = null;
