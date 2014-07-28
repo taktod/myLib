@@ -9,8 +9,6 @@ package com.ttProject.frame.h264;
 import org.apache.log4j.Logger;
 
 import com.ttProject.frame.IFrame;
-import com.ttProject.frame.NullFrame;
-import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
@@ -43,10 +41,10 @@ public class DataNalAnalyzer extends H264FrameAnalyzer {
 	 */
 	@Override
 	public IFrame analyze(IReadChannel channel) throws Exception {
-		if(channel.size() < 4) {
+		if(channel.size() < configData.getNalSizeBytes()) {
 			throw new Exception("読み込みバッファ量がおかしいです。");
 		}
-		int size = BufferUtil.safeRead(channel, 4).getInt(); // TODO この部分が4Byteであるというのは、ConfigDataの値に依存するみたいです。
+		int size = BufferUtil.safeRead(channel, configData.getNalSizeBytes()).getInt();
 		if(size <= 0) {
 			throw new Exception("データ指定がおかしいです。");
 		}

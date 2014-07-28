@@ -156,11 +156,13 @@ public class TrackEntry extends MkvMasterTag {
 			analyzer = new AdpcmImaWavFrameAnalyzer();
 			break;
 		case V_MPEG4_ISO_AVC:
-			analyzer = new DataNalAnalyzer();
+			DataNalAnalyzer dataNalAnalyzer = new DataNalAnalyzer();
 			// h264の場合はConfigDataからsps ppsを取り出す必要あり。
 			ConfigData configData = new ConfigData();
-			configData.setSelector((H264FrameSelector)((DataNalAnalyzer)analyzer).getSelector());
-			configData.getNalsFrame(new ByteReadChannel(codecPrivate.getMkvData())); // sps ppsを解析することでH264FrameSelectorにデータがセットされる
+			configData.setSelector((H264FrameSelector)dataNalAnalyzer.getSelector());
+			configData.analyzeData(new ByteReadChannel(codecPrivate.getMkvData()));
+			dataNalAnalyzer.setConfigData(configData);
+			analyzer = dataNalAnalyzer;
 			break;
 		case V_MPEG_ISO_HEVC:
 			logger.info("h265の動作もあやしいけど・・・");

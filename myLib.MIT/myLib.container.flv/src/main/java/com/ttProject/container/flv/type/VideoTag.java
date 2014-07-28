@@ -98,10 +98,14 @@ public class VideoTag extends FlvTag {
 					if(frameAnalyzer == null || !(frameAnalyzer instanceof DataNalAnalyzer)) {
 						throw new Exception("h264解析用のNalAnalyzerが設定されていません。");
 					}
+					DataNalAnalyzer dataNalAnalyzer = (DataNalAnalyzer)frameAnalyzer;
 					// mshの場合はconfigDataを構築しておく。
 					ConfigData configData = new ConfigData();
 					configData.setSelector((H264FrameSelector)frameAnalyzer.getSelector());
-					frame = configData.getNalsFrame(new ByteReadChannel(frameBuffer));
+					configData.analyzeData(new ByteReadChannel(frameBuffer));
+					// TODO frameがnullになってもいいのだろうか・・・→よさそう。
+//					frame = configData.getNalsFrame(new ByteReadChannel(frameBuffer));
+					dataNalAnalyzer.setConfigData(configData);
 				}
 				break;
 			case ON2VP6:
