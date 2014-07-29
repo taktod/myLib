@@ -23,6 +23,9 @@ public class NellymoserFrameSelector extends AudioSelector {
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		// frameをいくつ保持しているか確認する。
+		if(channel.size() == channel.position()) {
+			return null; // データがもうない。
+		}
 		if(channel.size() % 64 != 0) {
 			throw new Exception("保持チャンネル数がおかしいです。");
 		}
