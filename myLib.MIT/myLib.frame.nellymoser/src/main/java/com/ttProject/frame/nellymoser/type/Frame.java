@@ -8,6 +8,8 @@ package com.ttProject.frame.nellymoser.type;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.nellymoser.NellymoserFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitConnector;
@@ -36,6 +38,9 @@ import com.ttProject.unit.extra.bit.Bit6;
  * @author taktod
  */
 public class Frame extends NellymoserFrame {
+	/** 動作ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(Frame.class);
 	private Bit6   initTableIndex = null;
 	private Bit5[] deltaTable = null; //new Bit5[22];
 	private BitN   payload1 = null; //new BitN(new Bit32(), new Bit32(), new Bit32(), new Bit32(), new Bit32(), new Bit32(), new Bit6());

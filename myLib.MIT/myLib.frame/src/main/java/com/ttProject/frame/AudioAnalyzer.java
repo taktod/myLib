@@ -6,6 +6,8 @@
  */
 package com.ttProject.frame;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
@@ -13,6 +15,9 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
 */
 public abstract class AudioAnalyzer implements IAnalyzer {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(AudioAnalyzer.class);
 	/** audioデータ選択オブジェクト */
 	private final AudioSelector selector;
 	/**
