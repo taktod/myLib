@@ -411,10 +411,12 @@ public class AudioTag extends FlvTag {
 		selector.setChannel(getChannels());
 //		selector.setSampleNum(getSampleNum()); // sampleNumは無限ループになるのでやらない
 		selector.setSampleRate(getSampleRate());
+		long pts = getPts();
 		do {
 			AudioFrame audioFrame = (AudioFrame)frameAnalyzer.analyze(channel);
-			audioFrame.setPts(getPts());
+			audioFrame.setPts(pts);
 			audioFrame.setTimebase(getTimebase());
+			pts += audioFrame.getSampleNum() * getTimebase() / audioFrame.getSampleRate();
 			if(frame != null) {
 				if(!(frame instanceof AudioMultiFrame)) {
 					AudioMultiFrame multiFrame = new AudioMultiFrame();
