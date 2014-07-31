@@ -25,7 +25,7 @@ public class FlvTest {
 	/**
 	 * analyzerの動作テスト
 	 */
-//	@Test
+	@Test
 	public void analyzerTest() {
 		IFileReadChannel source = null;
 		try {
@@ -106,7 +106,7 @@ public class FlvTest {
 			)
 		);
 	}
-	@Test
+//	@Test
 	public void h264speexTest() throws Exception {
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(
