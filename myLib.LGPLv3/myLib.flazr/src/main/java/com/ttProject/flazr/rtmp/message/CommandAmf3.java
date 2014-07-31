@@ -22,7 +22,6 @@ import com.ttProject.container.flv.amf.Amf0Value;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtil;
 
 /**
  * AMF3のコマンド動作
@@ -54,7 +53,6 @@ public class CommandAmf3 implements RtmpMessage {
 		int length = in.readableBytes();
 		byte[] bytes = new byte[length];
 		in.readBytes(bytes);
-		logger.info(HexUtil.toHex(bytes, true));
 		try {
 			IReadChannel channel = new ByteReadChannel(bytes);
 			// まず1byte目を確認する。
@@ -62,16 +60,12 @@ public class CommandAmf3 implements RtmpMessage {
 			case 0x00:
 				// 1byte目が0x00ならAMF0として処理する。
 				name = (String)Amf0Value.getValueObject(channel);
-				logger.info("name:{}", name);
 				transactionId = ((Double)Amf0Value.getValueObject(channel)).intValue();
-				logger.info("tId:{}", transactionId);
 				object = Amf0Value.getValueObject(channel);
 				List<Object> list = new ArrayList<Object>();
-				logger.info("obj:{}", object);
 				while(channel.size() > channel.position()) {
 					list.add(Amf0Value.getValueObject(channel));
 				}
-				logger.info("args:{}", list);
 				args = list.toArray();
 				break;
 			case 0x11:
