@@ -8,10 +8,8 @@ package com.ttProject.convert.ffmpeg.test;
 
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.convert.IConvertListener;
 import com.ttProject.convert.ffmpeg.FfmpegConvertManager;
@@ -23,7 +21,6 @@ import com.ttProject.nio.channels.IReadChannel;
  * 動作テスト用
  * @author taktod
  */
-@SuppressWarnings("unused")
 public class ConvertTest {
 	private Logger logger = Logger.getLogger(ConvertTest.class);
 //	@Test
@@ -51,7 +48,7 @@ public class ConvertTest {
 			}
 		});
 		// 処理させる動作コマンド
-		handler.setCommand("~/bin/bin/avconv -i - -acodec copy -vcodec copy -f flv -");
+		handler.setCommand("/usr/local/bin/avconv -i - -acodec copy -vcodec copy -f flv -");
 		// 処理開始
 		manager.start();
 		ByteBuffer buf;
@@ -62,6 +59,7 @@ public class ConvertTest {
 			buf.flip();
 			if(buf.remaining() != 0) {
 				// データがある場合は変換プログラムにデータを送る
+				logger.info("流し込む");
 				manager.applyData(buf);
 			}
 			// 読み込み元ファイルを読み切ったらおわり。
