@@ -27,6 +27,7 @@
     <module>myLib.LGPLv3/myLib.flazr</module>
     <module>myLib.MIT/myLib.convert</module>
     <module>myLib.MIT/myLib.convert.ffmpeg</module>
+    <module>myLib.MIT/myLib.convert.ffmpeg2</module>
     <module>myLib.GPLv3/myLib.convert.xuggle</module>
     <module>myLib.MIT/myLib.jmx</module>
     <module>myLib.MIT/myLib.log4j</module>

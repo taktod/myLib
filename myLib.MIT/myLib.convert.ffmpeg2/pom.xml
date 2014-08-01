@@ -1,0 +1,42 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.ttProject</groupId>
+    <artifactId>myLib</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+    <relativePath>../../</relativePath>
+  </parent>
+  <repositories>
+    <repository>
+      <id>jboss-public-repository</id>
+      <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+    </repository>
+  </repositories>
+  <artifactId>myLib.convert.ffmpeg2</artifactId>
+  <dependencies>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.convert</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.netty</groupId>
+      <artifactId>netty</artifactId>
+      <version>3.2.9.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.channels</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+  <name>myLib.convert.ffmpeg2</name>
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <description>現状のmyLib.convert.ffmpegの場合はffmpegの標準出力のデータをbyteBufferのシーケンス列にわけて処理していますが、これをやる意味がなさそうなので、作り直しておきたいと思います。</description>
+</project>
