@@ -8,10 +8,14 @@ package com.ttProject.convert.ffmpeg.test;
 
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
+import org.junit.Test;
 
-import com.ttProject.convert.IConvertListener;
+import com.ttProject.container.IContainer;
+import com.ttProject.container.flv.FlvTagReader;
 import com.ttProject.convert.ffmpeg.FfmpegConvertManager;
 import com.ttProject.convert.ffmpeg.ProcessHandler;
 import com.ttProject.nio.channels.FileReadChannel;
@@ -23,7 +27,7 @@ import com.ttProject.nio.channels.IReadChannel;
  */
 public class ConvertTest {
 	private Logger logger = Logger.getLogger(ConvertTest.class);
-//	@Test
+	@Test
 	public void test() throws Exception {
 		// データ元
 		IReadChannel fc1 = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.mp4");
@@ -33,8 +37,9 @@ public class ConvertTest {
 		FfmpegConvertManager manager = new FfmpegConvertManager();
 		// 変換動作プロセス取得
 		ProcessHandler handler = manager.getProcessHandler("test");
+		// processHandlerを複数つくって、複数取り出す形にしておけばよい
 		// 変換出力データの処理
-		handler.addListener(new IConvertListener() {
+/*		handler.addListener(new IConvertListener() {
 			@Override
 			public void receiveData(ByteBuffer buffer) {
 				try {
@@ -46,11 +51,31 @@ public class ConvertTest {
 					e.printStackTrace();
 				}
 			}
-		});
+		});*/
 		// 処理させる動作コマンド
 		handler.setCommand("/usr/local/bin/avconv -i - -acodec copy -vcodec copy -f flv -");
 		// 処理開始
 		manager.start();
+		// スタート後にIReadChannelを取得することができるが、別threadとして動作させないとだめ
+		ExecutorService executorService = Executors.newCachedThreadPool();
+		final IReadChannel resultChannel = handler.getReadChannel();
+		executorService.execute(new Runnable() {
+			@Override
+			public void run() {
+				// ここで処理を実行します。
+				try {
+					FlvTagReader reader = new FlvTagReader();
+					IContainer container = null;
+					while((container = reader.read(resultChannel)) != null) {
+						logger.info(container);
+					}
+				}
+				catch(Exception e) {
+					logger.error("例外が発生しておわってしまいました。", e);
+				}
+				logger.info("変換の出力の取得処理がおわりました。");
+			}
+		});
 		ByteBuffer buf;
 		while(true) {
 			// ソースファイルからデータ読み込み

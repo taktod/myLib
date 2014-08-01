@@ -6,6 +6,7 @@
  */
 package com.ttProject.convert.ffmpeg;
 
+//import java.nio.channels.Channels;
 import java.nio.channels.Channels;
 import java.util.HashSet;
 import java.util.Map;
@@ -15,7 +16,8 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import com.ttProject.convert.IConvertListener;
-import com.ttProject.convert.ffmpeg.worker.DataReceiveWorker;
+import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.nio.channels.ReadableByteReadChannel;
 
 /**
  * ffmpegConvertManagerで利用する内部プロセスのハンドルクラス
@@ -38,8 +40,6 @@ public class ProcessHandler {
 	private final Set<IConvertListener> listeners = new HashSet<IConvertListener>();
 	/** 動作プロセス */
 	private Process process = null;
-	/** データ受信処理 */
-	private DataReceiveWorker worker = null;
 	/**
 	 * コンストラクタ
 	 * @param port
@@ -72,14 +72,14 @@ public class ProcessHandler {
 	/**
 	 * データ受け取り時の処理listenerの追加
 	 * @param listener
-	 */
+	 * /
 	public void addListener(IConvertListener listener) {
 		listeners.add(listener);
 	}
 	/**
 	 * データ受け取り時の処理listenerの除去
 	 * @param listener
-	 */
+	 * /
 	public void removeListener(IConvertListener listener) {
 		listeners.remove(listener);
 	}
@@ -120,11 +120,18 @@ public class ProcessHandler {
 		// プロセスを開始する
 		process = processBuilder.start();
 		// 応答読み取りスレッド
-		worker = new DataReceiveWorker(Channels.newChannel(process.getInputStream()), listeners);
-		thread = new Thread(worker);
+//		worker = new DataReceiveWorker(Channels.newChannel(process.getInputStream()), listeners);
+//		thread = new Thread(worker);
 //		thread.setDaemon(true);
-		thread.setName("ffmpegDataReceiveThread");
-		thread.start();
+//		thread.setName("ffmpegDataReceiveThread");
+//		thread.start();
+	}
+	/**
+	 * 読み込みチャンネルを作成して応答するようにしておく。
+	 * @return
+	 */
+	public IReadChannel getReadChannel() {
+		return new ReadableByteReadChannel(Channels.newChannel(process.getInputStream()));
 	}
 	/**
 	 * 閉じる処理
@@ -133,9 +140,9 @@ public class ProcessHandler {
 		// 管理リスナーを解放しておく。
 		listeners.clear();
 		// 内部threadの処理を抜けさせる
-		if(worker != null) {
-			worker.stop();
-		}
+//		if(worker != null) {
+//			worker.stop();
+//		}
 		// Threadの解放
 		if(thread != null) {
 			thread.interrupt();
