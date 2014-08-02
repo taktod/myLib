@@ -116,6 +116,7 @@ public class FfmpegConvertManager implements IConvertManager {
 	}
 	/**
 	 * {@inheritDoc}
+	 * TODO IReadChannelを渡したらあるだけずっと流し込みまくる形に方がいいかもしれない。まぁ、あとで検討しよう。
 	 */
 	@Override
 	public void applyData(ByteBuffer buffer) {

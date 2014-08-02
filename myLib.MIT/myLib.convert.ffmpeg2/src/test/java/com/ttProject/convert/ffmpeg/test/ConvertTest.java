@@ -8,6 +8,8 @@ package com.ttProject.convert.ffmpeg.test;
 
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -53,7 +55,10 @@ public class ConvertTest {
 			}
 		});*/
 		// 処理させる動作コマンド
-		handler.setCommand("/usr/local/bin/avconv -i - -acodec copy -vcodec copy -f flv -");
+		handler.setCommand("/usr/local/bin/avconv -i - -acodec libmp3lame -vcodec flv1 -f flv -");
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("DYLD_LIBRARY_PATH", "/usr/local/lib");
+		handler.setEnvExtra(map);
 		// 処理開始
 		manager.start();
 		// スタート後にIReadChannelを取得することができるが、別threadとして動作させないとだめ
