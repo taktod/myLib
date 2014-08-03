@@ -15,14 +15,9 @@
   <artifactId>myLib.convertprocess</artifactId>
   <dependencies>
     <dependency>
-      <groupId>com.ttProject</groupId>
-      <artifactId>myLib.convert</artifactId>
-      <version>0.0.2-SNAPSHOT</version>
-    </dependency>
-    <dependency>
       <groupId>org.jboss.netty</groupId>
       <artifactId>netty</artifactId>
-      <version>3.2.9.Final</version>
+      <version>3.1.5.GA</version>
     </dependency>
     <dependency>
       <groupId>com.ttProject</groupId>

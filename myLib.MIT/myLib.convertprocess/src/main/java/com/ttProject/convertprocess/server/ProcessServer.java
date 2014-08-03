@@ -15,7 +15,6 @@ import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -23,6 +22,7 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
@@ -61,13 +61,18 @@ public class ProcessServer {
 	 * データを送る
 	 * @param buffer
 	 */
-	public void sendData(ChannelBuffer buffer) {
+	public void sendData(ByteBuffer buffer) {
+		// 先頭にsize情報をつけておかないとclient側でどこまでが一まとまりかがわからなくなります。
+		// データのサイズを先行して設定しないとだめです。
 		synchronized(channels) {
 			for(Channel channel : channels) {
 				channel.write(buffer);
 			}
 		}
 	}
+	/**
+	 * サーバーを閉じます
+	 */
 	public void closeServer() {
 		synchronized(channels) {
 			for(Channel channel : channels) {
@@ -85,6 +90,14 @@ public class ProcessServer {
 	 */
 	private class ProcessServerHandler extends SimpleChannelUpstreamHandler {
 		/**
+		 * 例外取得時
+		 */
+		@Override
+		public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
+				throws Exception {
+//			super.exceptionCaught(ctx, e);
+		}
+		/**
 		 * 接続したときの動作
 		 * channelオブジェクトを保持しておく
 		 * @param ctx
@@ -94,6 +107,23 @@ public class ProcessServer {
 		@Override
 		public void channelConnected(ChannelHandlerContext ctx,
 				ChannelStateEvent e) throws Exception {
+			channels.add(e.getChannel());
+		}
+		/**
+		 * 終了時
+		 */
+		@Override
+		public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
+				throws Exception {
+			channels.remove(e.getChannel());
+		}
+		/**
+		 * 切断時
+		 */
+		@Override
+		public void channelDisconnected(ChannelHandlerContext ctx,
+				ChannelStateEvent e) throws Exception {
+			channels.remove(e.getChannel());
 		}
 		/**
 		 * メッセージ取得動作

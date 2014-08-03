@@ -14,8 +14,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
 
-import com.ttProject.convertprocess.server.DataSendWorker;
 import com.ttProject.convertprocess.server.ProcessServer;
+import com.ttProject.frame.IFrame;
 
 /**
  * プロセスにデータを送り出すマネージャー
@@ -33,10 +33,6 @@ public class ProcessManager {
 	private int portNumber;
 	/** 動作サーバー */
 	private ProcessServer server;
-	/** データ転送用thread(executorにしたい) */
-	private Thread thread = null;
-	/** データ送信処理 */
-	private DataSendWorker worker = null;
 	/**
 	 * 静的初期化
 	 */
@@ -62,6 +58,36 @@ public class ProcessManager {
 		if(portNumber > 65535) {
 			logger.fatal("ローカルサーバー用のprocessServerのポート番号が決定できませんでした。");
 			throw new RuntimeException("ローカルサーバー用の動作ポート番号が決まらない");
+		}
+		server = processServer;
+		this.portNumber = portNumber;
+	}
+	/**
+	 * 動作プロセスを取得する
+	 * @param name
+	 * @return
+	 */
+	public ProcessHandler getProcessHandler(String name) {
+		ProcessHandler handler = handlers.get(name);
+		if(handler == null) {
+			handler = new ProcessHandler(portNumber);
+			handlers.put(name, handler);
+		}
+		return handler;
+	}
+	/**
+	 * フレームを子プロセスに送信する
+	 * @param frame
+	 */
+	public void pushFrame(IFrame frame) {
+		
+	}
+	public void close() {
+		for(String key : handlers.keySet()) {
+			handlers.get(key).close();
+		}
+		if(server != null) {
+			server.closeServer();
 		}
 	}
 }

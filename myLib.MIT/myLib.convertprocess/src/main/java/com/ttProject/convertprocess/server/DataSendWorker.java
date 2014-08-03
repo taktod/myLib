@@ -8,6 +8,8 @@ package com.ttProject.convertprocess.server;
 
 /**
  * データを送信するworker
+ * これ必要ないかも・・・
+ * nettyの送信lineに割って入るならthreadコントロールいるけど、そうでなければ必要ないと思う。
  * @author taktod
  */
 public class DataSendWorker {
