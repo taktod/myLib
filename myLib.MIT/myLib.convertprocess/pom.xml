@@ -26,11 +26,6 @@
     </dependency>
     <dependency>
       <groupId>com.ttProject</groupId>
-      <artifactId>myLib.frame</artifactId>
-      <version>0.0.2-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>com.ttProject</groupId>
       <artifactId>myLib.frame.aac</artifactId>
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
@@ -107,6 +102,16 @@
     <dependency>
       <groupId>com.ttProject</groupId>
       <artifactId>myLib.frame.vp9</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.container.flv</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.container.mkv</artifactId>
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
