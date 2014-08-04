@@ -29,6 +29,8 @@ public class ProcessHandler {
 	private Map<String, String> envExtra = null;
 	/** 動作プロセス */
 	private Process process = null;
+	// 子プロセスを指定して動作させるプログラムが必要っぽい。
+	private String targetClass = "com.ttProject.convertprocess.server.ProcessEntry";
 	/**
 	 * コンストラクタ
 	 * @param port
@@ -42,6 +44,13 @@ public class ProcessHandler {
 	 */
 	public void setCommand(String command) {
 		this.processCommand = command;
+	}
+	/**
+	 * 起動する子プロセスのクラス名
+	 * @param className
+	 */
+	public void setTargetClass(String className) {
+		this.targetClass = className;
 	}
 	/**
 	 * 追加環境変数を設定
@@ -69,7 +78,7 @@ public class ProcessHandler {
 		StringBuilder command = new StringBuilder();
 		command.append("java -Dfile.encoding=UTF-8 -cp").append(" ");
 		command.append(System.getProperty("java.class.path")).append(" "); // これがめちゃくちゃ長くなる
-		command.append("com.ttProject.convertprocess.server.ProcessEntry").append(" ");
+		command.append(targetClass).append(" ");
 		command.append(port).append(" ");
 		command.append(" > output.log 2>&1");
 //		command.append(" | ");
