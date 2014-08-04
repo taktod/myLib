@@ -80,7 +80,7 @@ public class ProcessHandler {
 		command.append(System.getProperty("java.class.path")).append(" "); // これがめちゃくちゃ長くなる
 		command.append(targetClass).append(" ");
 		command.append(port).append(" ");
-		command.append(" > output.log 2>&1");
+		command.append(" 2>/dev/null");
 //		command.append(" | ");
 //		command.append(processCommand);
 		logger.info("コマンド:" + command.toString());

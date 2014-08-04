@@ -38,6 +38,10 @@ public class ConvertTest {
 			ProcessManager manager = new ProcessManager();
 			ProcessHandler handler = manager.getProcessHandler("test");
 			handler.setCommand("/usr/local/bin/avconv -i - -acodec copy -vcodec copy -f flv -");
+			handler.setTargetClass("com.ttProject.convertprocess.process.FlvOutputEntry");
+			ProcessHandler audioHandler = manager.getProcessHandler("audioOnly");
+			audioHandler.setCommand("");
+			handler.setTargetClass("com.ttProject.convertprocess.process.FlvAudioOutputEntry");
 			manager.start();
 			while((container = reader.read(source)) != null) {
 				logger.info(container);

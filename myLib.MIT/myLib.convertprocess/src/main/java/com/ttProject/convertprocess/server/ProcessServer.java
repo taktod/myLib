@@ -116,9 +116,9 @@ public class ProcessServer {
 		@Override
 		public void channelConnected(ChannelHandlerContext ctx,
 				ChannelStateEvent e) throws Exception {
-			logger.info("接続した");
-			channels.add(e.getChannel());
-			logger.info(e.getChannel());
+			synchronized (channels) {
+				channels.add(e.getChannel());
+			}
 		}
 		/**
 		 * 終了時
@@ -126,8 +126,9 @@ public class ProcessServer {
 		@Override
 		public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
 				throws Exception {
-			channels.remove(e.getChannel());
-			logger.info("閉じた");
+			synchronized (channels) {
+				channels.remove(e.getChannel());
+			}
 		}
 		/**
 		 * 切断時
@@ -135,8 +136,9 @@ public class ProcessServer {
 		@Override
 		public void channelDisconnected(ChannelHandlerContext ctx,
 				ChannelStateEvent e) throws Exception {
-			logger.info("切断した");
-			channels.remove(e.getChannel());
+			synchronized (channels) {
+				channels.remove(e.getChannel());
+			}
 		}
 	}
 }
