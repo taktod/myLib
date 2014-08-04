@@ -36,7 +36,8 @@ import com.ttProject.util.BufferUtil;
  */
 public class ProcessServer {
 	/** ロガー */
-	private static final Logger logger = Logger.getLogger(ProcessServer.class);
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(ProcessServer.class);
 	/** つながっているクライアントのchannelデータ */
 	private final Set<Channel> channels = new HashSet<Channel>();
 	/** 動作サーバーチャンネル */

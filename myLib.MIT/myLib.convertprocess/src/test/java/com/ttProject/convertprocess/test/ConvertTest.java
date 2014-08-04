@@ -34,14 +34,15 @@ public class ConvertTest {
 			// Flvなので、FlvReaderで読み取る
 			IReader reader = new FlvTagReader();
 			IContainer container = null;
-			// 変換に必要なもの。
 			ProcessManager manager = new ProcessManager();
+			// プロセス1
 			ProcessHandler handler = manager.getProcessHandler("test");
 			handler.setCommand("/usr/local/bin/avconv -i - -acodec copy -vcodec copy -f flv -");
 			handler.setTargetClass("com.ttProject.convertprocess.process.FlvOutputEntry");
+			// プロセス2
 			ProcessHandler audioHandler = manager.getProcessHandler("audioOnly");
-			audioHandler.setCommand("");
-			handler.setTargetClass("com.ttProject.convertprocess.process.FlvAudioOutputEntry");
+			audioHandler.setCommand("/usr/local/bin/avconv -i - -acodec copy -vcodec copy -f flv -");
+			audioHandler.setTargetClass("com.ttProject.convertprocess.process.FlvAudioOutputEntry");
 			manager.start();
 			while((container = reader.read(source)) != null) {
 				logger.info(container);

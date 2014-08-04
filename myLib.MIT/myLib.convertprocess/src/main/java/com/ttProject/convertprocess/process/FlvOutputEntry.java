@@ -73,6 +73,7 @@ public class FlvOutputEntry implements IShareFrameListener {
 			});
 		}
 		catch(Exception e) {
+			e.printStackTrace();
 			writer = null;
 		}
 	}
@@ -89,12 +90,12 @@ public class FlvOutputEntry implements IShareFrameListener {
 	 */
 	@Override
 	public void pushFrame(IFrame frame, int id) {
-		logger.info("ふふ:" + frame.toString());
 		if(writer != null) {
 			try {
 				writer.addFrame(id, frame);
 			}
 			catch(Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}

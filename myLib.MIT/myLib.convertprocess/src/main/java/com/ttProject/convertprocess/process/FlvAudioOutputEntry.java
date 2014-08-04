@@ -22,7 +22,7 @@ import com.ttProject.frame.IFrame;
 public class FlvAudioOutputEntry implements IShareFrameListener {
 	/** ロガー */
 	@SuppressWarnings("unused")
-	private Logger logger = Logger.getLogger(FlvOutputEntry.class);
+	private Logger logger = Logger.getLogger(FlvAudioOutputEntry.class);
 	/** 動作クライアント */
 	private ProcessClient client = null;
 	/** flvの出力モジュール */
