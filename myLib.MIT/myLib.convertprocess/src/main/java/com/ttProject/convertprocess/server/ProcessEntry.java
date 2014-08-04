@@ -7,25 +7,16 @@
 package com.ttProject.convertprocess.server;
 
 import java.net.InetSocketAddress;
-import java.nio.ByteBuffer;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineCoverage;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-
-import com.ttProject.convertprocess.frame.ShareFrameData;
-import com.ttProject.util.BufferUtil;
 
 /**
  * データを受信して、標準出力として、プロセスにデータを渡すprocessのエントリーポイント
@@ -50,7 +41,6 @@ public class ProcessEntry {
 			System.exit(-1);
 			return;
 		}
-		logger.info("とりあえず出力");
 		// ポート番号を指定して、アクセスしなければいけない。
 		int port = 0;
 		try {
@@ -63,7 +53,6 @@ public class ProcessEntry {
 		}
 		ProcessEntry entry = new ProcessEntry(port);
 		entry.start();
-		logger.info("処理おわり。");
 	}
 	/**
 	 * コンストラクタ
@@ -71,9 +60,9 @@ public class ProcessEntry {
 	 */
 	public ProcessEntry(int port) {
 		this.port = port;
-//		ExecutorService executor = ;
+		ExecutorService executor = Executors.newCachedThreadPool();
 		bootstrap = new ClientBootstrap(
-				new NioClientSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
+				new NioClientSocketChannelFactory(executor, executor));
 		bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
 			@Override
 			public ChannelPipeline getPipeline() throws Exception {
@@ -89,73 +78,11 @@ public class ProcessEntry {
 	 * クライアントアクセス開始
 	 */
 	public void start() {
-		logger.info("ここからコネクトを開始すればよい");
 		ChannelFuture future = bootstrap.connect(new InetSocketAddress("localhost", port));
 		future.awaitUninterruptibly();
-		logger.info("接続できた？");
 		if(future.isSuccess()) {
-			logger.info("接続成功した");
 			future.getChannel().getCloseFuture().awaitUninterruptibly();
 		}
-		logger.info("終わりまできた。");
 		bootstrap.releaseExternalResources();
-	}
-	/**
-	 * データを受け取ったときの動作
-	 * @author taktod
-	 */
-	@ChannelPipelineCoverage("one")
-	private class ProcessClientHandler extends SimpleChannelUpstreamHandler {
-		private int size = -1;
-		private ByteBuffer buffer = null;
-		@Override
-		public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
-				throws Exception {
-			logger.error("error", e.getCause());
-		}
-		@Override
-		public synchronized void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
-				throws Exception {
-			// メッセージをうけとったときに処理やっとく。
-			buffer = BufferUtil.connect(buffer, ((ChannelBuffer)e.getMessage()).toByteBuffer());
-			while(buffer.remaining() > 0) {
-				if(size == -1) {
-					// はじめのデータサイズがはいっている。
-					if(buffer.remaining() < 4) {
-						return; // データが足りてない
-					}
-					size = buffer.getInt();
-				}
-				if(buffer.remaining() < size) {
-					return; // データが足りてないその２
-				}
-				if(size < 0) {
-					// データがおかしい。
-					return;
-				}
-				ByteBuffer data = ByteBuffer.allocate(size);
-				byte[] tmp = new byte[size];
-				buffer.get(tmp);
-				data.put(tmp);
-				data.flip();
-				// このdataからShareFrameDataを復元したいところ。
-				try {
-					getFrame(data);
-				}
-				catch(Exception ex) {
-					logger.error("フレームの複製時に例外が発生しました。", ex);
-				}
-				// 次のデータ待ち
-				size = -1;
-			}
-		}
-		/**
-		 * フレームに戻す
-		 * @param data
-		 */
-		private void getFrame(ByteBuffer data) throws Exception {
-			ShareFrameData shareFrameData = new ShareFrameData(data);
-			logger.info(shareFrameData.getCodecType());
-		}
 	}
 }

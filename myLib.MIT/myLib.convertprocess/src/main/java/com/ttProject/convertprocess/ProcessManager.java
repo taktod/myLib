@@ -121,10 +121,8 @@ public class ProcessManager {
 			// frameがnullの場合はほっとく。
 			return;
 		}
-		logger.info("ここでデータをshareFrameDataに変更してから、相手に送りつける必要あり。");
 		// codecCheckerを利用して、どのcodecTypeであるか調べる
 		CodecType codecType = codecChecker.checkCodecType(frame);
-		logger.info(codecType.getValue());
 		// shareFrameDataを作り出しておく
 		ShareFrameData shareFrameData = new ShareFrameData(codecType, frame, id);
 		// 送るデータをセットしておく。

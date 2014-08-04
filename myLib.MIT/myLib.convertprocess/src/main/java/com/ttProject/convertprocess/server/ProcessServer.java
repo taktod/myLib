@@ -20,6 +20,7 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelPipelineCoverage;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
@@ -68,11 +69,11 @@ public class ProcessServer {
 		ByteBuffer size = ByteBuffer.allocate(4);
 		size.putInt(buffer.remaining());
 		size.flip();
+		// この部分でchannelBufferにしておかないと、ByteBufferのままだと、通信されないことがわかった
 		ChannelBuffer sendBuffer = ChannelBuffers.copiedBuffer(BufferUtil.connect(size, buffer));
 		// データのサイズを先行して設定しないとだめです。
 		synchronized(channels) {
 			for(Channel channel : channels) {
-				logger.info("おくるよ？" + channel.toString());
 				channel.write(sendBuffer);
 			}
 		}
@@ -95,6 +96,7 @@ public class ProcessServer {
 	 * 処理クラス
 	 * @author taktod
 	 */
+	@ChannelPipelineCoverage("one")
 	private class ProcessServerHandler extends SimpleChannelUpstreamHandler {
 		/**
 		 * 例外取得時
