@@ -56,9 +56,9 @@ public class ConvertTest {
 		});*/
 		// 処理させる動作コマンド
 		handler.setCommand("/usr/local/bin/avconv -i - -acodec libmp3lame -vcodec flv1 -f flv -");
-		Map<String, String> map = new HashMap<String, String>();
-		map.put("DYLD_LIBRARY_PATH", "/usr/local/lib");
-		handler.setEnvExtra(map);
+//		Map<String, String> map = new HashMap<String, String>();
+//		map.put("DYLD_LIBRARY_PATH", "/usr/local/lib");
+//		handler.setEnvExtra(map);
 		// 処理開始
 		manager.start();
 		// スタート後にIReadChannelを取得することができるが、別threadとして動作させないとだめ
