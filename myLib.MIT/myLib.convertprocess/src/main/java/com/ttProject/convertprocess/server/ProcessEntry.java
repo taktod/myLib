@@ -6,17 +6,7 @@
  */
 package com.ttProject.convertprocess.server;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import org.apache.log4j.Logger;
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
 import com.ttProject.convertprocess.frame.IShareFrameListener;
 import com.ttProject.frame.IFrame;
@@ -26,11 +16,10 @@ import com.ttProject.frame.IFrame;
  * 実際はflv用、mkv用等・・・いろいろと派生をつくることになる予定
  * @author taktod
  */
-public class ProcessEntry {
+public class ProcessEntry implements IShareFrameListener {
 	/** 動作ロガー */
 	private static Logger logger = Logger.getLogger(ProcessEntry.class);
-	private ClientBootstrap bootstrap;
-	private int port;
+	private ProcessClient client = null;
 	/**
 	 * メインエントリー
 	 * @param args
@@ -54,43 +43,27 @@ public class ProcessEntry {
 			System.exit(-1);
 			return;
 		}
-		ProcessEntry entry = new ProcessEntry(port);
-		entry.start();
+		ProcessEntry entry = new ProcessEntry();
+		entry.start(port);
 	}
 	/**
 	 * コンストラクタ
-	 * @param port
 	 */
-	public ProcessEntry(int port) {
-		this.port = port;
-		ExecutorService executor = Executors.newCachedThreadPool();
-		bootstrap = new ClientBootstrap(
-				new NioClientSocketChannelFactory(executor, executor));
-		bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-			@Override
-			public ChannelPipeline getPipeline() throws Exception {
-				ChannelPipeline pipeline = Channels.pipeline();
-				pipeline.addLast("handler", new ProcessClientHandler(new IShareFrameListener() {
-					@Override
-					public void pushFrame(IFrame frame, int id) {
-						// データをpushしたときの動作
-					}
-				}));
-				return pipeline;
-			}
-		});
-		bootstrap.setOption("tcpNoDelay", true);
-		bootstrap.setOption("keepAlive", true);
+	public ProcessEntry() {
+		client = new ProcessClient(this);
+	}
+	/**
+	 * フレームを取得したときの動作
+	 */
+	@Override
+	public void pushFrame(IFrame frame, int id) {
+		logger.info(id + " " + frame.toString());
 	}
 	/**
 	 * クライアントアクセス開始
 	 */
-	public void start() {
-		ChannelFuture future = bootstrap.connect(new InetSocketAddress("localhost", port));
-		future.awaitUninterruptibly();
-		if(future.isSuccess()) {
-			future.getChannel().getCloseFuture().awaitUninterruptibly();
-		}
-		bootstrap.releaseExternalResources();
+	public void start(int port) {
+		// 接続を開始する。
+		client.connect("localhost", port);
 	}
 }

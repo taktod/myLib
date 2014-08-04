@@ -141,7 +141,6 @@ public class ProcessClientHandler extends SimpleChannelUpstreamHandler {
 			VideoFrame vFrame = (VideoFrame)frame;
 			vFrame.setDts(shareFrameData.getDts());
 		}
-		logger.info(frame);
 		// ここでみつかったデータをlistenerに渡しておく
 		listener.pushFrame(frame, shareFrameData.getTrackId());
 	}
