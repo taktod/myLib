@@ -69,12 +69,12 @@ public class ProcessHandler {
 		StringBuilder command = new StringBuilder();
 		command.append("java -Dfile.encoding=UTF-8 -cp").append(" ");
 		command.append(System.getProperty("java.class.path")).append(" "); // これがめちゃくちゃ長くなる
-		command.append("com.ttProject.convert.ffmpeg.process.ProcessEntry").append(" ");
+		command.append("com.ttProject.convertprocess.server.ProcessEntry").append(" ");
 		command.append(port).append(" ");
-		command.append("2>/dev/null");
-		command.append(" | ");
-		command.append(processCommand);
-		logger.info("コマンド:" + processCommand);
+		command.append(" > output.log 2>&1");
+//		command.append(" | ");
+//		command.append(processCommand);
+		logger.info("コマンド:" + command.toString());
 		ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", "-c", command.toString());
 		// 環境変数の変更が必要な場合はここでいじっておきます。
 		if(envExtra != null) {
@@ -92,7 +92,7 @@ public class ProcessHandler {
 		}
 		// プロセスを開始する
 		process = processBuilder.start();
-
+		// ここですでにプロセスを起動している。
 	}
 	/**
 	 * 閉じる処理

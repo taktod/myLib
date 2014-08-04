@@ -171,6 +171,10 @@ public class ShareFrameData {
 	public void setFrameData(ByteBuffer buffer) {
 		frameData = buffer;
 	}
+	/**
+	 * 共有するのに利用するデータを応答する。
+	 * @return
+	 */
 	public ByteBuffer getShareData() {
 		BitConnector connector = new BitConnector();
 		return BufferUtil.connect(

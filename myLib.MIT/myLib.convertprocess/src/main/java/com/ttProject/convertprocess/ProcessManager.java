@@ -8,14 +8,21 @@ package com.ttProject.convertprocess;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.convertprocess.frame.CodecChecker;
+import com.ttProject.convertprocess.frame.CodecType;
+import com.ttProject.convertprocess.frame.ShareFrameData;
 import com.ttProject.convertprocess.server.ProcessServer;
+import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
+import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.extra.AudioMultiFrame;
+import com.ttProject.frame.extra.VideoMultiFrame;
 
 /**
  * プロセスにデータを送り出すマネージャー
@@ -33,6 +40,8 @@ public class ProcessManager {
 	private int portNumber;
 	/** 動作サーバー */
 	private ProcessServer server;
+	/** コーデックを判定するchecker */
+	private CodecChecker codecChecker = new CodecChecker();
 	/**
 	 * 静的初期化
 	 */
@@ -50,6 +59,7 @@ public class ProcessManager {
 		for(;portNumber < 65535;portNumber += 1000) {
 			try {
 				processServer = new ProcessServer(portNumber);
+				break;
 			}
 			catch(Exception e) {
 				;
@@ -76,15 +86,70 @@ public class ProcessManager {
 		return handler;
 	}
 	/**
+	 * 動作を開始する
+	 */
+	public void start() {
+		for(ProcessHandler handler : handlers.values()) {
+			try {
+				handler.executeProcess();
+			}
+			catch(Exception e) {
+				logger.error("プロセス起動で問題発生", e);
+			}
+		}
+	}
+	/**
 	 * フレームを子プロセスに送信する
 	 * @param frame
 	 */
-	public void pushFrame(IFrame frame) {
-		
+	public void pushFrame(IFrame frame, int id) throws Exception {
+		if(frame instanceof AudioMultiFrame) {
+			AudioMultiFrame multiFrame = (AudioMultiFrame)frame;
+			for(IAudioFrame audioFrame : multiFrame.getFrameList()) {
+				pushFrame(audioFrame, id);
+			}
+			return;
+		}
+		else if(frame instanceof VideoMultiFrame) {
+			VideoMultiFrame multiFrame = (VideoMultiFrame)frame;
+			for(IVideoFrame videoFrame : multiFrame.getFrameList()) {
+				pushFrame(videoFrame, id);
+			}
+			return;
+		}
+		if(frame == null) {
+			// frameがnullの場合はほっとく。
+			return;
+		}
+		logger.info("ここでデータをshareFrameDataに変更してから、相手に送りつける必要あり。");
+		// codecCheckerを利用して、どのcodecTypeであるか調べる
+		CodecType codecType = codecChecker.checkCodecType(frame);
+		logger.info(codecType.getValue());
+		// shareFrameDataを作り出しておく
+		ShareFrameData shareFrameData = new ShareFrameData(codecType, frame, id);
+		// 送るデータをセットしておく。
+		ByteBuffer buffer = null;
+		switch(codecType) {
+		case H264:
+			buffer = frame.getPackBuffer();
+			break;
+		default:
+			buffer = frame.getData();
+			break;
+		}
+		if(buffer == null) {
+			return;
+		}
+		shareFrameData.setFrameData(buffer);
+		// 相手に送付する。
+		server.sendData(shareFrameData.getShareData());
 	}
+	/**
+	 * 終了処理
+	 */
 	public void close() {
-		for(String key : handlers.keySet()) {
-			handlers.get(key).close();
+		for(ProcessHandler handler : handlers.values()) {
+			handler.close();
 		}
 		if(server != null) {
 			server.closeServer();

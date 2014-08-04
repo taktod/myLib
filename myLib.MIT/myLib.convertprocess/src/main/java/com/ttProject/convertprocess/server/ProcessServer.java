@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -23,9 +24,10 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+
+import com.ttProject.util.BufferUtil;
 
 /**
  * 標準入力としてデータをffmpeg等の外部プロセスに渡すために利用するサーバー動作
@@ -63,10 +65,15 @@ public class ProcessServer {
 	 */
 	public void sendData(ByteBuffer buffer) {
 		// 先頭にsize情報をつけておかないとclient側でどこまでが一まとまりかがわからなくなります。
+		ByteBuffer size = ByteBuffer.allocate(4);
+		size.putInt(buffer.remaining());
+		size.flip();
+		ChannelBuffer sendBuffer = ChannelBuffers.copiedBuffer(BufferUtil.connect(size, buffer));
 		// データのサイズを先行して設定しないとだめです。
 		synchronized(channels) {
 			for(Channel channel : channels) {
-				channel.write(buffer);
+				logger.info("おくるよ？" + channel.toString());
+				channel.write(sendBuffer);
 			}
 		}
 	}
@@ -107,7 +114,9 @@ public class ProcessServer {
 		@Override
 		public void channelConnected(ChannelHandlerContext ctx,
 				ChannelStateEvent e) throws Exception {
+			logger.info("接続した");
 			channels.add(e.getChannel());
+			logger.info(e.getChannel());
 		}
 		/**
 		 * 終了時
@@ -116,6 +125,7 @@ public class ProcessServer {
 		public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
 				throws Exception {
 			channels.remove(e.getChannel());
+			logger.info("閉じた");
 		}
 		/**
 		 * 切断時
@@ -123,40 +133,8 @@ public class ProcessServer {
 		@Override
 		public void channelDisconnected(ChannelHandlerContext ctx,
 				ChannelStateEvent e) throws Exception {
+			logger.info("切断した");
 			channels.remove(e.getChannel());
-		}
-		/**
-		 * メッセージ取得動作
-		 * @param ctx
-		 * @param e
-		 * @throws Exception
-		 */
-		@Override
-		public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
-				throws Exception {
-			Object message = e.getMessage();
-			// プロセス側でframeからメディアデータに復元するので、誰からの接続であろうと動作可能であるはず。
-/*			if(message instanceof ChannelBuffer) {
-				ByteBuffer buffer = ((ChannelBuffer) message).toByteBuffer();
-				byte[] data = new byte[buffer.remaining()];
-				buffer.get(data);
-				if(!keySet.remove(new String(data).intern())) {
-					// キーの設定のないアクセスだったのでおかしな接続であると判定します。
-					logger.info("キーが合わない接続がきたので、拒否しておきます。");
-//					channels.remove(e.getChannel());
-					e.getChannel().write(ChannelBuffers.copiedBuffer("refused".getBytes()));
-					return;
-				}
-				synchronized(channels) {
-					channels.add(e.getChannel());
-				}
-				if(keySet.size() == 0) {
-					logger.info("子プロセスから全接続をうけとったので、処理開始");
-					synchronized(keySet) {
-						keySet.notifyAll(); // 通知を実行する
-					}
-				}
-			}*/
 		}
 	}
 }
