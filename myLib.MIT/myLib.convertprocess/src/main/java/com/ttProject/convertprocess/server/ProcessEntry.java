@@ -1,6 +1,5 @@
 /*
- * myLib - https:
- * //github.com/taktod/myLib
+ * myLib - https://github.com/taktod/myLib
  * Copyright (c) 2014 ttProject. All rights reserved.
  * 
  * Licensed under The MIT license.
@@ -118,9 +117,6 @@ public class ProcessEntry {
 		public synchronized void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 				throws Exception {
 			// メッセージをうけとったときに処理やっとく。
-			if(buffer != null) {
-				logger.info("メッセージうけとった。:" + buffer.remaining());
-			}
 			buffer = BufferUtil.connect(buffer, ((ChannelBuffer)e.getMessage()).toByteBuffer());
 			while(buffer.remaining() > 0) {
 				if(size == -1) {
@@ -129,7 +125,6 @@ public class ProcessEntry {
 						return; // データが足りてない
 					}
 					size = buffer.getInt();
-					logger.info("次のサイズ:" + size);
 				}
 				if(buffer.remaining() < size) {
 					return; // データが足りてないその２
@@ -151,7 +146,6 @@ public class ProcessEntry {
 					logger.error("フレームの複製時に例外が発生しました。", ex);
 				}
 				// 次のデータ待ち
-				logger.info("1フレーム処理おわり");
 				size = -1;
 			}
 		}
