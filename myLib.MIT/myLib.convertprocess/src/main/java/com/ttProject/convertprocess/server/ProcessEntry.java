@@ -18,6 +18,9 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 
+import com.ttProject.convertprocess.frame.IShareFrameListener;
+import com.ttProject.frame.IFrame;
+
 /**
  * データを受信して、標準出力として、プロセスにデータを渡すprocessのエントリーポイント
  * 実際はflv用、mkv用等・・・いろいろと派生をつくることになる予定
@@ -67,7 +70,12 @@ public class ProcessEntry {
 			@Override
 			public ChannelPipeline getPipeline() throws Exception {
 				ChannelPipeline pipeline = Channels.pipeline();
-				pipeline.addLast("handler", new ProcessClientHandler());
+				pipeline.addLast("handler", new ProcessClientHandler(new IShareFrameListener() {
+					@Override
+					public void pushFrame(IFrame frame, int id) {
+						// データをpushしたときの動作
+					}
+				}));
 				return pipeline;
 			}
 		});

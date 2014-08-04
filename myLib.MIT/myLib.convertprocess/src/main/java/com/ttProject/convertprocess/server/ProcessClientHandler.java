@@ -7,6 +7,8 @@
 package com.ttProject.convertprocess.server;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
@@ -15,7 +17,18 @@ import org.jboss.netty.channel.ChannelPipelineCoverage;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
+import com.ttProject.convertprocess.frame.AnalyzerChecker;
+import com.ttProject.convertprocess.frame.IShareFrameListener;
 import com.ttProject.convertprocess.frame.ShareFrameData;
+import com.ttProject.frame.AudioAnalyzer;
+import com.ttProject.frame.Frame;
+import com.ttProject.frame.IAnalyzer;
+import com.ttProject.frame.IFrame;
+import com.ttProject.frame.NullFrame;
+import com.ttProject.frame.VideoAnalyzer;
+import com.ttProject.frame.VideoFrame;
+import com.ttProject.nio.channels.ByteReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
@@ -30,6 +43,19 @@ public class ProcessClientHandler extends SimpleChannelUpstreamHandler {
 	private int size = -1;
 	/** やり取り中のデータbuffer */
 	private ByteBuffer buffer = null;
+	/** analyzerのmap */
+	private Map<Integer, IAnalyzer> analyzerMap = new HashMap<Integer, IAnalyzer>();
+	/** analyzerの確認をするモジュール */
+	private AnalyzerChecker analyzerChecker = new AnalyzerChecker();
+	/** フレームを取得したときのlistener */
+	private final IShareFrameListener listener;
+	/**
+	 * コンストラクタ
+	 * @param listener
+	 */
+	public ProcessClientHandler(IShareFrameListener listener) {
+		this.listener = listener;
+	}
 	/**
 	 * メッセージをうけとった場合の処理
 	 */
@@ -71,6 +97,52 @@ public class ProcessClientHandler extends SimpleChannelUpstreamHandler {
 	 */
 	private void processFrame(ByteBuffer data) throws Exception {
 		ShareFrameData shareFrameData = new ShareFrameData(data);
-		logger.info(shareFrameData.getCodecType());
+		IAnalyzer analyzer = analyzerMap.get(shareFrameData.getTrackId());
+		if(analyzer == null) {
+			analyzer = analyzerChecker.checkAnalyzer(shareFrameData.getCodecType());
+			if(analyzer instanceof AudioAnalyzer) {
+				shareFrameData.setupFrameSelector(((AudioAnalyzer) analyzer).getSelector());
+			}
+			else if(analyzer instanceof VideoAnalyzer){
+				shareFrameData.setupFrameSelector(((VideoAnalyzer) analyzer).getSelector());
+			}
+			else {
+				throw new Exception("Analyzerが不明でした。");
+			}
+			analyzerMap.put(shareFrameData.getTrackId(), analyzer);
+		}
+		// この部分でframeの値をとれるだけとらないとだめ。
+		IFrame frame = null;
+		IReadChannel channel = new ByteReadChannel(shareFrameData.getFrameData());
+		while((frame = analyzer.analyze(channel)) != null) {
+			completeFrame(frame, shareFrameData);
+		}
+		frame = analyzer.getRemainFrame();
+		if(frame != null && !(frame instanceof NullFrame)) {
+			completeFrame(frame, shareFrameData);
+		}
+	}
+	/**
+	 * 出来上がったデータを整形する
+	 * @param frame
+	 * @param shareFrameData
+	 * @throws Exception
+	 */
+	private void completeFrame(IFrame frame, ShareFrameData shareFrameData) throws Exception {
+		Frame f = (Frame)frame;
+		f.setTimebase(shareFrameData.getTimebase());
+		f.setPts(shareFrameData.getPts());
+		if(frame instanceof NullFrame) {
+			// nullFrameになっている場合は、処理する必要なし
+			return;
+		}
+		if(frame instanceof VideoFrame) {
+			// 動画の場合はdtsをいれておく。
+			VideoFrame vFrame = (VideoFrame)frame;
+			vFrame.setDts(shareFrameData.getDts());
+		}
+		logger.info(frame);
+		// ここでみつかったデータをlistenerに渡しておく
+		listener.pushFrame(frame, shareFrameData.getTrackId());
 	}
 }

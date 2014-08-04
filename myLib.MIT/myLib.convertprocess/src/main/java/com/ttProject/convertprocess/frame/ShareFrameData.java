@@ -79,10 +79,10 @@ public class ShareFrameData {
 		else {
 			width = new Bit32(data.getInt());
 			height = new Bit32(data.getInt());
-			frameData = ByteBuffer.allocate(data.remaining());
-			frameData.put(data);
-			frameData.flip();
 		}
+		frameData = ByteBuffer.allocate(data.remaining());
+		frameData.put(data);
+		frameData.flip();
 	}
 	public ShareFrameData(CodecType type, IFrame frame, int trackId) throws Exception {
 		codecType.set(type.getValue());
