@@ -6,6 +6,9 @@
  */
 package com.ttProject.convertprocess.test;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
@@ -14,6 +17,8 @@ import com.ttProject.container.IReader;
 import com.ttProject.container.flv.FlvTagReader;
 import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.VideoTag;
+import com.ttProject.container.mkv.MkvBlockTag;
+import com.ttProject.container.mkv.MkvTagReader;
 import com.ttProject.convertprocess.ProcessHandler;
 import com.ttProject.convertprocess.ProcessManager;
 import com.ttProject.nio.channels.FileReadChannel;
@@ -35,17 +40,64 @@ public class ConvertTest {
 			IReader reader = new FlvTagReader();
 			IContainer container = null;
 			ProcessManager manager = new ProcessManager();
-			// プロセス1
-			ProcessHandler handler = manager.getProcessHandler("test");
-			handler.setCommand("/usr/local/bin/avconv -y -copyts -i - -acodec copy -vcodec copy -f matroska ffout1.mkv");
-			handler.setTargetClass("com.ttProject.convertprocess.process.FlvOutputEntry");
-			// プロセス2
-			ProcessHandler audioHandler = manager.getProcessHandler("audioOnly");
-			audioHandler.setCommand("/usr/local/bin/avconv -y -copyts -i - -acodec copy -vn -f matroska ffout2.mkv");
+			// ベースとなるプロセス
+//			ProcessHandler handler = manager.getProcessHandler("test");
+//			handler.setCommand("/usr/local/bin/avconv -y -copyts -i - -acodec copy -vcodec copy -f matroska ffout1.mkv");
+//			handler.setTargetClass("com.ttProject.convertprocess.process.FlvOutputEntry");
+
+			// 映像のみ
+			final ProcessHandler videoHandler = manager.getProcessHandler("videoOnly");
+			videoHandler.setCommand("/usr/local/bin/avconv -y -copyts -i - -an -vcodec mjpeg -s 160x120 -g 10 -q 20 -f matroska - 2>ffmpeg1.log");
+			videoHandler.setTargetClass("com.ttProject.convertprocess.process.FlvVideoOutputEntry");
+
+			// 音声のみ
+			final ProcessHandler audioHandler = manager.getProcessHandler("audioOnly");
+			audioHandler.setCommand("/usr/local/bin/avconv -y -copyts -i - -acodec adpcm_ima_wav -ar 22050 -ac 1 -vn -f matroska - 2>ffmpeg2.log");
 			audioHandler.setTargetClass("com.ttProject.convertprocess.process.FlvAudioOutputEntry");
+
 			manager.start();
+			ExecutorService executor = Executors.newFixedThreadPool(2);
+			executor.execute(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						IReadChannel channel = videoHandler.getReadChannel();
+						IReader reader = new MkvTagReader();
+						IContainer container = null;
+						while((container = reader.read(channel)) != null) {
+							if(container instanceof MkvBlockTag) {
+								MkvBlockTag blockTag = (MkvBlockTag)container;
+								logger.info(blockTag.getFrame());
+							}
+						}
+					}
+					catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});// */
+			executor.execute(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						IReadChannel channel = audioHandler.getReadChannel();
+						IReader reader = new MkvTagReader();
+						IContainer container = null;
+						while((container = reader.read(channel)) != null) {
+							if(container instanceof MkvBlockTag) {
+								MkvBlockTag blockTag = (MkvBlockTag)container;
+								logger.info(blockTag.getFrame().getPts());
+							}
+						}
+					}
+					catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});// */
+			// 開始後にデータを取り出すthreadをつくっておく。
 			while((container = reader.read(source)) != null) {
-				logger.info(container);
+//				logger.info(container);
 				if(container instanceof VideoTag) {
 					manager.pushFrame(((VideoTag) container).getFrame(), 0x09);
 				}
