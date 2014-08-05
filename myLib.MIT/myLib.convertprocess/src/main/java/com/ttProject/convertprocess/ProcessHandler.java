@@ -81,8 +81,8 @@ public class ProcessHandler {
 		command.append(targetClass).append(" ");
 		command.append(port).append(" ");
 		command.append(" 2>/dev/null");
-//		command.append(" | ");
-//		command.append(processCommand);
+		command.append(" | ");
+		command.append(processCommand);
 		logger.info("コマンド:" + command.toString());
 		ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", "-c", command.toString());
 		// 環境変数の変更が必要な場合はここでいじっておきます。

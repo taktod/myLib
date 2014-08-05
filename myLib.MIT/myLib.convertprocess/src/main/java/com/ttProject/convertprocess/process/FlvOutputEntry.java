@@ -6,6 +6,9 @@
  */
 package com.ttProject.convertprocess.process;
 
+import java.nio.channels.Channels;
+
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.flv.FlvHeaderTag;
@@ -20,6 +23,7 @@ import com.ttProject.frame.IFrame;
  */
 public class FlvOutputEntry implements IShareFrameListener {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(FlvOutputEntry.class);
 	/** 動作クライアント */
 	private ProcessClient client = null;
@@ -30,6 +34,7 @@ public class FlvOutputEntry implements IShareFrameListener {
 	 * @param args
 	 */
 	public static void main(String args[]) {
+		Logger.getRootLogger().setLevel(Level.OFF);
 		if(args == null || args.length != 1) {
 			System.err.println("引数の数がおかしいです。");
 			System.exit(-1);
@@ -54,7 +59,7 @@ public class FlvOutputEntry implements IShareFrameListener {
 		client = new ProcessClient(this);
 		// 通常のflvの出力としてデータを出したい。
 		try {
-			writer = new FlvTagWriter("output1.flv");
+			writer = new FlvTagWriter(Channels.newChannel(System.out));
 			FlvHeaderTag headerTag = new FlvHeaderTag();
 			headerTag.setAudioFlag(true);
 			headerTag.setVideoFlag(true);

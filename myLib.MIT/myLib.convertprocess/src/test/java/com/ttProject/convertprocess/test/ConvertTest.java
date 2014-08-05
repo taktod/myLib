@@ -37,11 +37,11 @@ public class ConvertTest {
 			ProcessManager manager = new ProcessManager();
 			// プロセス1
 			ProcessHandler handler = manager.getProcessHandler("test");
-			handler.setCommand("/usr/local/bin/avconv -i - -acodec copy -vcodec copy -f flv -");
+			handler.setCommand("/usr/local/bin/avconv -y -copyts -i - -acodec copy -vcodec copy -f matroska ffout1.mkv");
 			handler.setTargetClass("com.ttProject.convertprocess.process.FlvOutputEntry");
 			// プロセス2
 			ProcessHandler audioHandler = manager.getProcessHandler("audioOnly");
-			audioHandler.setCommand("/usr/local/bin/avconv -i - -acodec copy -vcodec copy -f flv -");
+			audioHandler.setCommand("/usr/local/bin/avconv -y -copyts -i - -acodec copy -vn -f matroska ffout2.mkv");
 			audioHandler.setTargetClass("com.ttProject.convertprocess.process.FlvAudioOutputEntry");
 			manager.start();
 			while((container = reader.read(source)) != null) {
