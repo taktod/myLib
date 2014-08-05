@@ -97,7 +97,6 @@ public class ConvertTest {
 			});// */
 			// 開始後にデータを取り出すthreadをつくっておく。
 			while((container = reader.read(source)) != null) {
-//				logger.info(container);
 				if(container instanceof VideoTag) {
 					manager.pushFrame(((VideoTag) container).getFrame(), 0x09);
 				}

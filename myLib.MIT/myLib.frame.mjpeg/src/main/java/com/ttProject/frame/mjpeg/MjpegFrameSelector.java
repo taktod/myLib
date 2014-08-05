@@ -19,10 +19,10 @@ import com.ttProject.unit.IUnit;
  */
 public class MjpegFrameSelector extends VideoSelector {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MjpegFrameSelector.class);
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
-		logger.info("size:" + channel.size());
 		// とりあえずこのデータをそのままframeに保持させれば、frame用のbyteデータはできあがることになる。
 		Frame frame = new Frame();
 		setup(frame);
