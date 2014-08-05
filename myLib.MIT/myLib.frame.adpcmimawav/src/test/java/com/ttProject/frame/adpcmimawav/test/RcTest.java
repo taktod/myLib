@@ -35,6 +35,7 @@ public class RcTest {
 			ByteBuffer buffer = BufferUtil.safeRead(channel, 0x400);
 			buffer.position(4);
 			while(buffer.remaining() > 0) {
+				@SuppressWarnings("unused")
 				byte data = buffer.get();
 				length ++;
 			}
