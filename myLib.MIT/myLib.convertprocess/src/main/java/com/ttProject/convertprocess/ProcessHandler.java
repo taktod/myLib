@@ -53,6 +53,13 @@ public class ProcessHandler {
 		this.targetClass = className;
 	}
 	/**
+	 * 移動する子プロセスのクラス設定
+	 * @param cls
+	 */
+	public void setTargetClass(Class<?> cls) {
+		this.targetClass = cls.getName();
+	}
+	/**
 	 * 追加環境変数を設定
 	 * @param envExtra
 	 */
