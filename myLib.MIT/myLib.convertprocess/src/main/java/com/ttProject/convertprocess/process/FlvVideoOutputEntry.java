@@ -15,8 +15,8 @@ import com.ttProject.container.flv.FlvHeaderTag;
 import com.ttProject.container.flv.FlvTagWriter;
 import com.ttProject.convertprocess.frame.IShareFrameListener;
 import com.ttProject.convertprocess.server.ProcessClient;
-import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
+import com.ttProject.frame.IVideoFrame;
 
 /**
  * flvの映像の部分のみ取り出したデータとして、ffmpegにデータを渡すentry
@@ -50,7 +50,7 @@ public class FlvVideoOutputEntry implements IShareFrameListener {
 			System.exit(-1);
 			return;
 		}
-		FlvAudioOutputEntry entry = new FlvAudioOutputEntry();
+		FlvVideoOutputEntry entry = new FlvVideoOutputEntry();
 		entry.start(port);
 	}
 	/**
@@ -95,7 +95,7 @@ public class FlvVideoOutputEntry implements IShareFrameListener {
 	 */
 	@Override
 	public void pushFrame(IFrame frame, int id) {
-		if(writer != null && frame instanceof IAudioFrame) {
+		if(writer != null && frame instanceof IVideoFrame) {
 			try {
 				writer.addFrame(id, frame);
 			}
