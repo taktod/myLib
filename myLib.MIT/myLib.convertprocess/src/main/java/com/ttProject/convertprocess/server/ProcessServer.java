@@ -36,7 +36,6 @@ import com.ttProject.util.BufferUtil;
  */
 public class ProcessServer {
 	/** ロガー */
-	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(ProcessServer.class);
 	/** つながっているクライアントのchannelデータ */
 	private final Set<Channel> channels = new HashSet<Channel>();
@@ -117,6 +116,7 @@ public class ProcessServer {
 		@Override
 		public void channelConnected(ChannelHandlerContext ctx,
 				ChannelStateEvent e) throws Exception {
+			logger.info("接続してきた。");
 			synchronized (channels) {
 				channels.add(e.getChannel());
 			}
@@ -127,6 +127,7 @@ public class ProcessServer {
 		@Override
 		public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
 				throws Exception {
+			logger.info("閉じました");
 			synchronized (channels) {
 				channels.remove(e.getChannel());
 			}
@@ -137,6 +138,7 @@ public class ProcessServer {
 		@Override
 		public void channelDisconnected(ChannelHandlerContext ctx,
 				ChannelStateEvent e) throws Exception {
+			logger.info("切断しました。");
 			synchronized (channels) {
 				channels.remove(e.getChannel());
 			}
