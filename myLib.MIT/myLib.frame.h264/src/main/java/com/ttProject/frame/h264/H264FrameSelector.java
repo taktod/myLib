@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.frame.VideoSelector;
 import com.ttProject.frame.h264.type.AccessUnitDelimiter;
+import com.ttProject.frame.h264.type.FilterData;
 import com.ttProject.frame.h264.type.PictureParameterSet;
 import com.ttProject.frame.h264.type.SequenceParameterSet;
 import com.ttProject.frame.h264.type.Slice;
@@ -67,8 +68,11 @@ public class H264FrameSelector extends VideoSelector {
 		case SupplementalEnhancementInformation:
 			frame = new SupplementalEnhancementInformation(forbiddenZeroBit, nalRefIdc, type);
 			break;
+		case FilterData:
+			frame = new FilterData(forbiddenZeroBit, nalRefIdc, type);
+			break;
 		default:
-			throw new Exception("想定外のフレームを検知しました。");
+			throw new Exception("想定外のフレームを検知しました。:" + type.get() + " / " + Type.getType(type.get()));
 		}
 		setup(frame);
 		// TODO この部分でどのspsやppsが対応しているのか、きちんと把握しておかないとこまったことになる。
