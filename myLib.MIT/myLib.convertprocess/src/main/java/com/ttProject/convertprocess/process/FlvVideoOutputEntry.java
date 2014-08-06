@@ -62,8 +62,8 @@ public class FlvVideoOutputEntry implements IShareFrameListener {
 		try {
 			writer = new FlvTagWriter(Channels.newChannel(System.out));
 			FlvHeaderTag headerTag = new FlvHeaderTag();
-			headerTag.setAudioFlag(true);
-			headerTag.setVideoFlag(false);
+			headerTag.setAudioFlag(false);
+			headerTag.setVideoFlag(true);
 			writer.addContainer(headerTag);
 			Runtime.getRuntime().addShutdownHook(new Thread(){
 				@Override
@@ -96,6 +96,7 @@ public class FlvVideoOutputEntry implements IShareFrameListener {
 	@Override
 	public void pushFrame(IFrame frame, int id) {
 		if(writer != null && frame instanceof IVideoFrame) {
+			System.err.println(frame);
 			try {
 				writer.addFrame(id, frame);
 			}
