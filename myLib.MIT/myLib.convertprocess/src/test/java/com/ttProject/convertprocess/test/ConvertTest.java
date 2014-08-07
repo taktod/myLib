@@ -6,6 +6,8 @@
  */
 package com.ttProject.convertprocess.test;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -44,16 +46,20 @@ public class ConvertTest {
 //			ProcessHandler handler = manager.getProcessHandler("test");
 //			handler.setCommand("/usr/local/bin/avconv -y -copyts -i - -acodec copy -vcodec copy -f matroska ffout1.mkv");
 //			handler.setTargetClass("com.ttProject.convertprocess.process.FlvOutputEntry");
+			Map<String, String> env = new HashMap<String, String>();
+			env.put("LD_LIBRARY_PATH", "/usr/local/lib");
 
 			// 映像のみ
 			final ProcessHandler videoHandler = manager.getProcessHandler("videoOnly");
-			videoHandler.setCommand("/usr/local/bin/avconv -y -copyts -i - -an -vcodec mjpeg -s 160x120 -g 10 -q 20 -f matroska - 2>ffmpeg1.log");
+			videoHandler.setCommand("/usr/local/bin/avconv -y -copyts -i - -an -vcodec mjpeg -s 160x120 -g 10 -q 20 -f matroska -");
 			videoHandler.setTargetClass("com.ttProject.convertprocess.process.FlvVideoOutputEntry");
+			videoHandler.setEnvExtra(env);
 
 			// 音声のみ
 			final ProcessHandler audioHandler = manager.getProcessHandler("audioOnly");
-			audioHandler.setCommand("/usr/local/bin/avconv -y -copyts -i - -acodec adpcm_ima_wav -ar 22050 -ac 1 -vn -f matroska - 2>ffmpeg2.log");
+			audioHandler.setCommand("/usr/local/bin/avconv -y -copyts -i - -acodec adpcm_ima_wav -ar 22050 -ac 1 -vn -f matroska -");
 			audioHandler.setTargetClass("com.ttProject.convertprocess.process.FlvAudioOutputEntry");
+			audioHandler.setEnvExtra(env);
 
 			manager.start();
 			ExecutorService executor = Executors.newFixedThreadPool(2);
