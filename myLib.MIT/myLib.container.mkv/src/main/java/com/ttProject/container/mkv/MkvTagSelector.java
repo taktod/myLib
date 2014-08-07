@@ -36,6 +36,7 @@ import com.ttProject.container.mkv.type.Cues;
 import com.ttProject.container.mkv.type.DateUTC;
 import com.ttProject.container.mkv.type.DefaultDuration;
 import com.ttProject.container.mkv.type.DisplayHeight;
+import com.ttProject.container.mkv.type.DisplayUnit;
 import com.ttProject.container.mkv.type.DisplayWidth;
 import com.ttProject.container.mkv.type.DocType;
 import com.ttProject.container.mkv.type.DocTypeReadVersion;
@@ -377,6 +378,9 @@ public class MkvTagSelector implements ISelector {
 			break;
 		case CueRelativePosition:
 			mkvTag = new CueRelativePosition(size);
+			break;
+		case DisplayUnit:
+			mkvTag = new DisplayUnit(size);
 			break;
 		default:
 			throw new Exception("未実装のTypeデータが応答されました。" + Type.getType(tag.getEbmlValue()));
