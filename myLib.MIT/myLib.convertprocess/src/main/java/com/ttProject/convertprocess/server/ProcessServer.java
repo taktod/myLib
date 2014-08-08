@@ -10,6 +10,7 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
@@ -25,6 +26,7 @@ import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 
@@ -48,8 +50,9 @@ public class ProcessServer {
 	 * @param port
 	 */
 	public ProcessServer(int port) {
+		ExecutorService executor = Executors.newCachedThreadPool();
 		bootstrap = new ServerBootstrap(
-				new NioServerSocketChannelFactory(Executors.newCachedThreadPool(), Executors.newCachedThreadPool()));
+				new NioServerSocketChannelFactory(executor, executor));
 		bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
 			@Override
 			public ChannelPipeline getPipeline() throws Exception {
@@ -69,12 +72,11 @@ public class ProcessServer {
 		ByteBuffer size = ByteBuffer.allocate(4);
 		size.putInt(buffer.remaining());
 		size.flip();
-		// この部分でchannelBufferにしておかないと、ByteBufferのままだと、通信されないことがわかった
 		ChannelBuffer sendBuffer = ChannelBuffers.copiedBuffer(BufferUtil.connect(size, buffer));
 		// データのサイズを先行して設定しないとだめです。
 		synchronized(channels) {
 			for(Channel channel : channels) {
-				channel.write(sendBuffer);
+				channel.write(sendBuffer); // futureをつかって待ってもだめっぽいね、別threadで転送を実行しておこうと思う。
 			}
 		}
 	}
@@ -121,6 +123,13 @@ public class ProcessServer {
 				channels.add(e.getChannel());
 			}
 		}
+/*		@Override
+		public void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
+				throws Exception {
+			synchronized (channels) {
+				channels.add(e.getChannel());
+			}
+		}*/
 		/**
 		 * 終了時
 		 */

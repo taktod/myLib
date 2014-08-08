@@ -77,6 +77,7 @@ public class ProcessHandler {
 	 * プロセスを実行
 	 * @throws Exception
 	 */
+	private static int count = 0;
 	protected void executeProcess() throws Exception {
 		if(processCommand == null) {
 			logger.error("process用のコマンドが設定されていません。");
@@ -87,7 +88,7 @@ public class ProcessHandler {
 		command.append(System.getProperty("java.class.path")).append(" "); // これがめちゃくちゃ長くなる
 		command.append(targetClass).append(" ");
 		command.append(port).append(" ");
-		command.append(" 2>/dev/null");
+		command.append(" 2>jerr" + (count ++) + ".log");
 		command.append(" | ");
 		command.append(processCommand);
 		logger.info("コマンド:" + command.toString());

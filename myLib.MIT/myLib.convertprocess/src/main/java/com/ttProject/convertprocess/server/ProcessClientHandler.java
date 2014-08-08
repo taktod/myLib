@@ -12,8 +12,11 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelPipelineCoverage;
+import org.jboss.netty.channel.ChannelStateEvent;
+import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 
@@ -56,13 +59,28 @@ public class ProcessClientHandler extends SimpleChannelUpstreamHandler {
 	public ProcessClientHandler(IShareFrameListener listener) {
 		this.listener = listener;
 	}
+	@Override
+	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e)
+			throws Exception {
+		ChannelBuffer buf = ChannelBuffers.buffer("hello".length());
+		buf.writeBytes("hello".getBytes());
+		e.getChannel().write(buf);
+	}
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
+			throws Exception {
+		e.getCause().printStackTrace();
+	}
 	/**
 	 * メッセージをうけとった場合の処理
 	 */
 	@Override
 	public synchronized void messageReceived(ChannelHandlerContext ctx, MessageEvent e)
 			throws Exception {
-		buffer = BufferUtil.connect(buffer, ((ChannelBuffer)e.getMessage()).toByteBuffer());
+//		System.err.println("データをうけとりました。");
+		ByteBuffer cbuf = ((ChannelBuffer)e.getMessage()).toByteBuffer();
+//		System.err.println("確認:" + cbuf.limit() + " " + cbuf.capacity() + " " + cbuf.remaining());
+		buffer = BufferUtil.connect(buffer, cbuf);
 		while(buffer.remaining() > 0) {
 			if(size == -1) {
 				if(buffer.remaining() < 4) { // サイズデータを参照するのに必要なデータがない
@@ -85,10 +103,12 @@ public class ProcessClientHandler extends SimpleChannelUpstreamHandler {
 				processFrame(data);
 			}
 			catch(Exception ex) {
-				logger.error("フレーム複製時に例外が発生しました。", ex);
+				ex.printStackTrace();
+//				logger.error("フレーム複製時に例外が発生しました。", ex);
 			}
 			size = -1;
 		}
+//		System.err.println("messageReceivedおわり");
 	}
 	/**
 	 * フレームの処理を進める
@@ -111,6 +131,7 @@ public class ProcessClientHandler extends SimpleChannelUpstreamHandler {
 			}
 			analyzerMap.put(shareFrameData.getTrackId(), analyzer);
 		}
+//		System.err.println("shareFrameData取得完了:" + shareFrameData.getFrameData().remaining());
 		// この部分でframeの値をとれるだけとらないとだめ。
 		IFrame frame = null;
 		IReadChannel channel = new ByteReadChannel(shareFrameData.getFrameData());
@@ -121,6 +142,7 @@ public class ProcessClientHandler extends SimpleChannelUpstreamHandler {
 		if(frame != null && !(frame instanceof NullFrame)) {
 			completeFrame(frame, shareFrameData);
 		}
+//		System.err.println("フレーム処理完了");
 	}
 	/**
 	 * 出来上がったデータを整形する
@@ -141,6 +163,7 @@ public class ProcessClientHandler extends SimpleChannelUpstreamHandler {
 			VideoFrame vFrame = (VideoFrame)frame;
 			vFrame.setDts(shareFrameData.getDts());
 		}
+		
 		// ここでみつかったデータをlistenerに渡しておく
 		listener.pushFrame(frame, shareFrameData.getTrackId());
 	}

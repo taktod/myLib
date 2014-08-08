@@ -6,7 +6,10 @@
  */
 package com.ttProject.convertprocess.process;
 
+import java.io.File;
 import java.nio.channels.Channels;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -30,6 +33,9 @@ public class FlvAudioOutputEntry implements IShareFrameListener {
 	private ProcessClient client = null;
 	/** flvの出力モジュール */
 	private FlvTagWriter writer = null;
+	private FlvTagWriter writer2 = null;
+	/** 標準出力がnettyから紐づいたthreadで実施するとフリーズする問題があったので、調整した */
+	private ExecutorService exec = Executors.newCachedThreadPool();
 	/**
 	 * エントリーポイント
 	 * @param args
@@ -61,16 +67,21 @@ public class FlvAudioOutputEntry implements IShareFrameListener {
 		// 通常のflvの出力としてデータを出したい。
 		try {
 			writer = new FlvTagWriter(Channels.newChannel(System.out));
+			new File("audioOnly.flv").delete();
+			writer2 = new FlvTagWriter("audioOnly.flv");
 			FlvHeaderTag headerTag = new FlvHeaderTag();
 			headerTag.setAudioFlag(true);
 			headerTag.setVideoFlag(false);
 			writer.addContainer(headerTag);
+			writer2.addContainer(headerTag);
 			Runtime.getRuntime().addShutdownHook(new Thread(){
 				@Override
 				public void run() {
 					try {
+						exec.shutdownNow();
 						if(writer != null) {
 							writer.prepareTailer();
+							writer2.prepareTailer();
 						}
 					}
 					catch(Exception e) {
@@ -89,18 +100,26 @@ public class FlvAudioOutputEntry implements IShareFrameListener {
 	public void start(int port) {
 		// 動作開始
 		client.connect("localhost", port);
+		client.waitForClose();
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void pushFrame(IFrame frame, int id) {
+	public void pushFrame(final IFrame frame, final int id) {
 		if(writer != null && frame instanceof IAudioFrame) {
-			try {
-				writer.addFrame(id, frame);
-			}
-			catch(Exception e) {
-			}
+			exec.execute(new Runnable() {
+				@Override
+				public void run() {
+					try {
+						writer.addFrame(id, frame);
+						writer2.addFrame(id, frame);
+					}
+					catch(Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
 		}
 	}
 }

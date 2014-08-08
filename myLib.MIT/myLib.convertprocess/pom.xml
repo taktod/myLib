@@ -123,5 +123,8 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  <description>フレームの変換を外部プロセスに任せるプログラム</description>
+  <description>フレームの変換を外部プロセスに任せるプログラム
+
+いろいろと手を尽くして見ましたが、どうしても、flv1のデータを標準出力に出すところがうまくいきませんでした。
+やってみたところ、namedpipeをつかって、転送すれば簡単に実装できるので、そっちをつかって、動作できるように調整したいと思います。</description>
 </project>

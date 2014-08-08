@@ -6,7 +6,11 @@
  */
 package com.ttProject.convertprocess.process;
 
+import java.io.File;
 import java.nio.channels.Channels;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -30,6 +34,10 @@ public class FlvVideoOutputEntry implements IShareFrameListener {
 	private ProcessClient client = null;
 	/** flvの出力モジュール */
 	private FlvTagWriter writer = null;
+	private FlvTagWriter writer2 = null;
+	/** 標準出力がnettyから紐づいたthreadで出力するようにしておくと、フリーズする問題があったので、executorで吐かせます */
+	private ExecutorService exec = Executors.newCachedThreadPool();
+	private LinkedBlockingQueue<IFrame> frameQueue = new LinkedBlockingQueue<IFrame>();
 	/**
 	 * エントリーポイント
 	 * @param args
@@ -61,16 +69,21 @@ public class FlvVideoOutputEntry implements IShareFrameListener {
 		// 通常のflvの出力としてデータを出したい。
 		try {
 			writer = new FlvTagWriter(Channels.newChannel(System.out));
+//			new File("videoOnly.flv").delete();
+			writer2 = new FlvTagWriter("videoOnly.flv");
 			FlvHeaderTag headerTag = new FlvHeaderTag();
 			headerTag.setAudioFlag(false);
 			headerTag.setVideoFlag(true);
 			writer.addContainer(headerTag);
+			writer2.addContainer(headerTag);
 			Runtime.getRuntime().addShutdownHook(new Thread(){
 				@Override
 				public void run() {
 					try {
+						exec.shutdownNow();
 						if(writer != null) {
 							writer.prepareTailer();
+							writer2.prepareTailer();
 						}
 					}
 					catch(Exception e) {
@@ -87,21 +100,43 @@ public class FlvVideoOutputEntry implements IShareFrameListener {
 	 * @param port
 	 */
 	public void start(int port) {
+		// この方法だと、フレームの書き込みタイミングでデータが前後する可能性があるっぽいです。
+		exec.execute(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					while(true) {
+						IFrame frame = frameQueue.take();
+//						writer.addFrame(9, frame);
+						writer2.addFrame(9, frame);
+					}
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 		// 動作開始
 		client.connect("localhost", port);
+		client.waitForClose(); // 終わるまで待機しておく
 	}
+	private boolean start = false;
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void pushFrame(IFrame frame, int id) {
+	public void pushFrame(final IFrame frame, final int id) {
 		if(writer != null && frame instanceof IVideoFrame) {
-			System.err.println(frame);
-			try {
-				writer.addFrame(id, frame);
+			if(!start) {
+				IVideoFrame vFrame = (IVideoFrame)frame;
+				if(vFrame.isKeyFrame()) {
+					start = true;
+				}
+				else {
+					return;
+				}
 			}
-			catch(Exception e) {
-			}
+			frameQueue.add(frame);
 		}
 	}
 }
