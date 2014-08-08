@@ -35,7 +35,16 @@ public class PipeManager {
 	 * コンストラクタ
 	 */
 	public PipeManager() {
-		
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+			@Override
+			public void run() {
+				// shutdown時の処理
+				// 動作させたプロセスはすべて殺しておく
+				for(PipeHandler handler : handlers.values()) {
+					handler.close();
+				}
+			}
+		});
 	}
 	/**
 	 * pipeHandlerを参照する

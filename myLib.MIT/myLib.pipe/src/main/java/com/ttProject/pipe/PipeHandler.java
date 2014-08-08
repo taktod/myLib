@@ -133,6 +133,9 @@ public class PipeHandler {
 	 * 終了処理
 	 */
 	public void close() {
-		
+		// プロセスを殺しておく。
+		if(process != null) {
+			process.destroy();
+		}
 	}
 }
