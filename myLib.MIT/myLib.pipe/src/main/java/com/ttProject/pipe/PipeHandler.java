@@ -26,8 +26,8 @@ public class PipeHandler {
 	private Logger logger = Logger.getLogger(PipeHandler.class);
 	/** namedpipeで利用する名前 */
 	private final String name;
-	/** tmpディレクトリを決定するときに利用するpid */
-	private final String pid;
+	/** pipeの位置 */
+	private final String namedPipe;
 	/** 動作コマンド */
 	private String processCommand;
 	/** 追加の環境変数 */
@@ -39,7 +39,7 @@ public class PipeHandler {
 	 */
 	public PipeHandler(String name, String pid) {
 		this.name = name;
-		this.pid = pid;
+		this.namedPipe = System.getProperty("java.io.tmpdir") + "myLib.pipe/" + name + "_" + pid;
 	}
 	/**
 	 * 実行コマンド ${pipe}の部分にtargetが入ります。
@@ -60,7 +60,7 @@ public class PipeHandler {
 	 * @return
 	 */
 	public File getPipeTarget() {
-		return new File(name);
+		return new File(namedPipe);
 	}
 	/**
 	 * pipeの名称を参照する
@@ -80,7 +80,7 @@ public class PipeHandler {
 		setupPipe();
 		
 		StringBuilder command = new StringBuilder();
-		command.append(processCommand.replaceAll("\\$\\{pipe\\}", name));
+		command.append(processCommand.replaceAll("\\$\\{pipe\\}", namedPipe));
 		ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", "-c", command.toString());
 		if(envExtra != null) {
 			Map<String, String> env = processBuilder.environment();
@@ -101,9 +101,11 @@ public class PipeHandler {
 	 * pipeを作成する。
 	 */
 	private void setupPipe() throws Exception {
-		new File(name).delete();
+		File f = new File(namedPipe);
+		f.getParentFile().mkdirs();
+		f.delete();
 		StringBuilder command = new StringBuilder();
-		command.append("mkfifo " + name);
+		command.append("mkfifo " + namedPipe);
 		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", command.toString());
 		Process p = builder.start();
 		p.waitFor();
@@ -137,5 +139,7 @@ public class PipeHandler {
 		if(process != null) {
 			process.destroy();
 		}
+		// pipeを消しておく。
+		new File(namedPipe).delete();
 	}
 }

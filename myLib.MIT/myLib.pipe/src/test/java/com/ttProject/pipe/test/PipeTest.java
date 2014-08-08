@@ -9,7 +9,6 @@ package com.ttProject.pipe.test;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -33,10 +32,6 @@ public class PipeTest {
 	@Test
 	public void test() throws Exception {
 		logger.info("動作テスト");
-		Properties prop = System.getProperties();
-		for(Object key : prop.keySet()) {
-			logger.info(key + "  " + prop.getProperty((String)key));
-		}
 		// とりあえず、managerをつくる。
 		PipeManager manager = new PipeManager();
 		final PipeHandler handler = manager.getPipeHandler("tail");
@@ -66,5 +61,7 @@ public class PipeTest {
 		writer.flush();
 		writer.close();
 		Thread.sleep(1000);
+		logger.info("おしまい");
+		ex.shutdownNow();
 	}
 }
