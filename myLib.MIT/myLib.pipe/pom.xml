@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.ttProject</groupId>
+    <artifactId>myLib</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+    <relativePath>../../</relativePath>
+  </parent>
+  <artifactId>myLib.pipe</artifactId>
+  <licenses>
+    <license>
+      <name>The MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <name>myLib.pipe</name>
+  <description>namedPipelineで接続して、他のプロセスを動作させて、出力を受け取るプログラム
+
+ffmpegやavconvの変換を実施するのに利用します。
+
+なお、macでうまく動作しない疑惑があります。linux(ubuntu)では問題ないみたいです。</description>
+  <dependencies>
+  	<dependency>
+  		<groupId>com.ttProject</groupId>
+  		<artifactId>myLib.channels</artifactId>
+  		<version>0.0.2-SNAPSHOT</version>
+  	</dependency>
+  </dependencies>
+</project>
