@@ -36,7 +36,7 @@ public class PipeTest {
 		PipeManager manager = new PipeManager();
 		final PipeHandler handler = manager.getPipeHandler("tail");
 		handler.setCommand("tail -f ${pipe}");
-		manager.start(); // 動作開始
+		handler.executeProcess();
 		ExecutorService ex = Executors.newCachedThreadPool();
 		ex.execute(new Runnable() {
 			@Override

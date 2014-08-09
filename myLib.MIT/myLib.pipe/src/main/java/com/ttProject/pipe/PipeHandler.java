@@ -71,8 +71,10 @@ public class PipeHandler {
 	}
 	/**
 	 * 実行動作
+	 * このexecuteProecssは直接呼ぶことにします。
+	 * これによってプロセスは別々のタイミングで好きなように呼び出すことができる形になります。(一部のpipeが死んでもそこだけ修理できるはず)
 	 */
-	protected void executeProcess() throws Exception {
+	public void executeProcess() throws Exception {
 		if(processCommand == null) {
 			logger.error("process動作用のコマンドが存在していないのに、動作させようとしました。");
 			throw new Exception("process用のコマンドが設定されていません。");

@@ -59,17 +59,4 @@ public class PipeManager {
 		}
 		return handler;
 	}
-	/**
-	 * 動作開始
-	 */
-	public synchronized void start() {
-		for(PipeHandler handler : handlers.values()) {
-			try {
-				handler.executeProcess();
-			}
-			catch(Exception e) {
-				logger.error("プロセスの機動失敗しました。", e);
-			}
-		}
-	}
 }
