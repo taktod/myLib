@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IVideoFrame;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.nio.channels.IReadChannel;
@@ -92,5 +93,15 @@ public class VideoMultiFrame extends VideoFrame {
 	 */
 	public List<IVideoFrame> getFrameList() {
 		return new ArrayList<IVideoFrame>(frameList);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		if(frameList.size() != 0) {
+			return frameList.get(0).getCodecType();
+		}
+		return CodecType.NONE;
 	}
 }

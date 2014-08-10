@@ -29,4 +29,9 @@ public interface IFrame extends IUnit {
 	 * (映像の場合は算出方法はないので、fpsから割り出す。)
 	 */
 	public float getDuration();
+	/**
+	 * コーデック値を応答する
+	 * @return
+	 */
+	public CodecType getCodecType();
 }

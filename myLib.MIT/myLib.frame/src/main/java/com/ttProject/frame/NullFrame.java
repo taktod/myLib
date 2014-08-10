@@ -63,4 +63,11 @@ public class NullFrame extends Frame {
 	protected void requestUpdate() throws Exception {
 		throw new RuntimeException("NullFrameのデータ更新が要求されました。");
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.NONE;
+	}
 }

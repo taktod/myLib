@@ -13,6 +13,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.ttProject.frame.AudioFrame;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -84,5 +85,15 @@ public class AudioMultiFrame extends AudioFrame {
 	 */
 	public List<IAudioFrame> getFrameList() {
 		return new ArrayList<IAudioFrame>(frameList);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		if(frameList.size() != 0) {
+			return frameList.get(0).getCodecType();
+		}
+		return CodecType.NONE;
 	}
 }
