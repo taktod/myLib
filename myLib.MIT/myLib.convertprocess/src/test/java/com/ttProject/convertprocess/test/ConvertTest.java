@@ -12,7 +12,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
@@ -33,7 +32,7 @@ import com.ttProject.nio.channels.IReadChannel;
 public class ConvertTest {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(ConvertTest.class);
-	@Test
+//	@Test
 	public void test() {
 		IReadChannel source = null;
 		try {
