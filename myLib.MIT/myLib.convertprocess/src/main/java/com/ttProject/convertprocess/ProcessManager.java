@@ -14,10 +14,9 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.ttProject.convertprocess.frame.CodecChecker;
-import com.ttProject.convertprocess.frame.CodecType;
 import com.ttProject.convertprocess.frame.ShareFrameData;
 import com.ttProject.convertprocess.server.ProcessServer;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
@@ -40,8 +39,6 @@ public class ProcessManager {
 	private int portNumber;
 	/** 動作サーバー */
 	private ProcessServer server;
-	/** コーデックを判定するchecker */
-	private CodecChecker codecChecker = new CodecChecker();
 	/**
 	 * 静的初期化
 	 */
@@ -122,7 +119,7 @@ public class ProcessManager {
 			return;
 		}
 		// codecCheckerを利用して、どのcodecTypeであるか調べる
-		CodecType codecType = codecChecker.checkCodecType(frame);
+		CodecType codecType = frame.getCodecType();
 		// shareFrameDataを作り出しておく
 		ShareFrameData shareFrameData = new ShareFrameData(codecType, frame, id);
 		// 送るデータをセットしておく。

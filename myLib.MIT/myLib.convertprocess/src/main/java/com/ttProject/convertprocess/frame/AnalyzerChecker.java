@@ -6,6 +6,7 @@
  */
 package com.ttProject.convertprocess.frame;
 
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.aac.AacFrameAnalyzer;
 import com.ttProject.frame.adpcmimawav.AdpcmImaWavFrameAnalyzer;

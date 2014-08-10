@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
 import com.ttProject.frame.AudioSelector;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
@@ -85,7 +86,7 @@ public class ShareFrameData {
 		frameData.flip();
 	}
 	public ShareFrameData(CodecType type, IFrame frame, int trackId) throws Exception {
-		codecType.set(type.getValue());
+		codecType.set(type.getId());
 		this.type = type;
 		pts.setLong(frame.getPts());
 		if(frame instanceof IVideoFrame) {
