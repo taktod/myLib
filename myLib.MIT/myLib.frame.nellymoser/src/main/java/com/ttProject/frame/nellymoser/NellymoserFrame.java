@@ -7,6 +7,7 @@
 package com.ttProject.frame.nellymoser;
 
 import com.ttProject.frame.AudioFrame;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.nellymoser.type.Frame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -56,5 +57,12 @@ public abstract class NellymoserFrame extends AudioFrame {
 		frame.setSampleRate(sampleRate);
 		frame.setBit(16);
 		return frame;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.NELLYMOSER;
 	}
 }

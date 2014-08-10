@@ -9,6 +9,7 @@ package com.ttProject.frame.h265;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.h265.type.PpsNut;
 import com.ttProject.frame.h265.type.SpsNut;
@@ -81,5 +82,12 @@ public abstract class H265Frame extends VideoFrame {
 			return false;
 		}
 		return true;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.H265;
 	}
 }

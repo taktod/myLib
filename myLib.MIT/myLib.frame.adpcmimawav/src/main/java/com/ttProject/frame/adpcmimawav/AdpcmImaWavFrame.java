@@ -7,6 +7,14 @@
 package com.ttProject.frame.adpcmimawav;
 
 import com.ttProject.frame.AudioFrame;
+import com.ttProject.frame.CodecType;
 
 public abstract class AdpcmImaWavFrame extends AudioFrame {
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.ADPCM_IMA_WAV;
+	}
 }

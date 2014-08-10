@@ -6,6 +6,7 @@
  */
 package com.ttProject.frame.mjpeg;
 
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoFrame;
 
 /**
@@ -14,4 +15,11 @@ import com.ttProject.frame.VideoFrame;
  * @author taktod
  */
 public abstract class MjpegFrame extends VideoFrame {
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.MJPEG;
+	}
 }

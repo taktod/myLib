@@ -7,6 +7,7 @@
 package com.ttProject.frame.speex;
 
 import com.ttProject.frame.AudioFrame;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.speex.type.Frame;
 import com.ttProject.frame.speex.type.HeaderFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
@@ -68,5 +69,12 @@ public abstract class SpeexFrame extends AudioFrame {
 		frame.setBit(16);
 		frame.setSampleRate(sampleRate);
 		return frame;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.SPEEX;
 	}
 }

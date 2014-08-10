@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.h264.type.PictureParameterSet;
 import com.ttProject.frame.h264.type.SequenceParameterSet;
@@ -102,5 +103,12 @@ public abstract class H264Frame extends VideoFrame {
 			return false;
 		}
 		return true;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.H264;
 	}
 }

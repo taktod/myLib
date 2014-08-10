@@ -8,6 +8,7 @@ package com.ttProject.frame.flv1;
 
 import java.nio.ByteBuffer;
 
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit;
@@ -135,5 +136,12 @@ public abstract class Flv1Frame extends VideoFrame {
 	public ByteBuffer getPackBuffer() throws Exception {
 		// flv1はgetDataの値と同じでOK
 		return getData();
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.FLV1;
 	}
 }

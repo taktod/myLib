@@ -7,6 +7,7 @@
 package com.ttProject.frame.mp3;
 
 import com.ttProject.frame.AudioFrame;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.mp3.type.Frame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -63,5 +64,12 @@ public abstract class Mp3Frame extends AudioFrame {
 		frame.minimumLoad(channel);
 		frame.load(channel);
 		return frame;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.MP3;
 	}
 }

@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.vp9.type.KeyFrame;
 import com.ttProject.unit.extra.BitConnector;
@@ -54,5 +55,12 @@ public abstract class Vp9Frame extends VideoFrame {
 		return connector.connect(
 				frameMarker, profile, reserved, refFlag, keyFrameFlag, invisibleFlag, errorRes
 		);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.VP9;
 	}
 }

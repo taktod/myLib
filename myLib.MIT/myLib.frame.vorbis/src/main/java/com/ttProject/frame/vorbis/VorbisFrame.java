@@ -9,6 +9,7 @@ package com.ttProject.frame.vorbis;
 import java.nio.ByteBuffer;
 
 import com.ttProject.frame.AudioFrame;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.vorbis.type.IdentificationHeaderFrame;
 
 /**
@@ -53,5 +54,12 @@ public abstract class VorbisFrame extends AudioFrame {
 			return null;
 		}
 		return identificationHeaderFrame.getPackBuffer();
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.VORBIS;
 	}
 }

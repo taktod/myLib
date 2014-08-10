@@ -8,6 +8,7 @@ package com.ttProject.frame.vp6;
 
 import java.nio.ByteBuffer;
 
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.vp6.type.IntraFrame;
 import com.ttProject.unit.extra.BitConnector;
@@ -75,5 +76,12 @@ public abstract class Vp6Frame extends VideoFrame {
 	protected ByteBuffer getHeaderBuffer() {
 		BitConnector connector = new BitConnector();
 		return connector.connect(frameMode, qp, marker);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.VP6;
 	}
 }

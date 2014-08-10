@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.vp8.type.KeyFrame;
 import com.ttProject.unit.extra.BitConnector;
@@ -65,5 +66,12 @@ public abstract class Vp8Frame extends VideoFrame {
 		BitConnector connector = new BitConnector();
 		connector.setLittleEndianFlg(true);
 		return connector.connect(frameType, version, showFrame, firstPartSize);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.VP8;
 	}
 }

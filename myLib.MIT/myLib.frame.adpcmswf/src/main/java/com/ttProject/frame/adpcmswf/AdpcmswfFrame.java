@@ -7,6 +7,7 @@
 package com.ttProject.frame.adpcmswf;
 
 import com.ttProject.frame.AudioFrame;
+import com.ttProject.frame.CodecType;
 
 /**
  * adpcmswfの動作ですが、適当なデータがなかったので、いろんなフォーマットをつくってテストしてみました。
@@ -76,4 +77,11 @@ import com.ttProject.frame.AudioFrame;
  * @author taktod
  */
 public abstract class AdpcmswfFrame extends AudioFrame {
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.ADPCM_SWF;
+	}
 }

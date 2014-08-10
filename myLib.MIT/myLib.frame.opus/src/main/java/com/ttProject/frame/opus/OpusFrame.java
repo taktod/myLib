@@ -7,6 +7,7 @@
 package com.ttProject.frame.opus;
 
 import com.ttProject.frame.AudioFrame;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.opus.type.HeaderFrame;
 
 /**
@@ -22,4 +23,11 @@ public abstract class OpusFrame extends AudioFrame {
 		return headerFrame;
 	}
 	public abstract boolean isComplete();
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.OPUS;
+	}
 }

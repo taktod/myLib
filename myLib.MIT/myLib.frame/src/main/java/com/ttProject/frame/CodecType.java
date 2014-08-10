@@ -80,7 +80,6 @@ public enum CodecType {
 	 * @return
 	 * @throws Exception
 	 */
-	@SuppressWarnings("static-access")
 	public static CodecType getCodecType(IFrame frame) throws Exception {
 		return frame.getCodecType();
 	}
