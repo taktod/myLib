@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
  */
 public class PipeManager {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(PipeManager.class);
 	/** 動作対象プロセス */
 	private final Map<String, PipeHandler> handlers = new HashMap<String, PipeHandler>();
