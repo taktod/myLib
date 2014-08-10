@@ -39,7 +39,11 @@ public class PipeHandler {
 	 */
 	public PipeHandler(String name, String pid) {
 		this.name = name;
-		this.namedPipe = System.getProperty("java.io.tmpdir") + "myLib.pipe/" + name + "_" + pid;
+		String tmpDir = System.getProperty("java.io.tmpdir");
+		if(!tmpDir.endsWith("/")) {
+			tmpDir += "/";
+		}
+		this.namedPipe = tmpDir + "myLib.pipe/" + name + "_" + pid;
 	}
 	/**
 	 * 実行コマンド ${pipe}の部分にtargetが入ります。
