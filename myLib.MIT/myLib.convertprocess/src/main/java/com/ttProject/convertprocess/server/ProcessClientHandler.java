@@ -41,6 +41,7 @@ import com.ttProject.util.BufferUtil;
 @ChannelPipelineCoverage("one")
 public class ProcessClientHandler extends SimpleChannelUpstreamHandler {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(ProcessClientHandler.class);
 	/** データサイズ */
 	private int size = -1;

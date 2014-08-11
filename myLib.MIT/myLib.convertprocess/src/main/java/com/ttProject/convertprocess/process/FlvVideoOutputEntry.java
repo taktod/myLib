@@ -6,7 +6,6 @@
  */
 package com.ttProject.convertprocess.process;
 
-import java.io.File;
 import java.nio.channels.Channels;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

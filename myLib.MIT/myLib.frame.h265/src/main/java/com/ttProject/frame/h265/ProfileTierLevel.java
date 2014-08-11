@@ -8,7 +8,6 @@ package com.ttProject.frame.h265;
 
 import org.apache.log4j.Logger;
 
-import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit2;
