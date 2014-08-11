@@ -7,6 +7,7 @@
 package com.ttProject.frame.mp3;
 
 import com.ttProject.frame.AudioAnalyzer;
+import com.ttProject.frame.CodecType;
 
 /**
  * mp3のframeを解析する動作
@@ -18,5 +19,12 @@ public class Mp3FrameAnalyzer extends AudioAnalyzer {
 	 */
 	public Mp3FrameAnalyzer() {
 		super(new Mp3FrameSelector());
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.MP3;
 	}
 }

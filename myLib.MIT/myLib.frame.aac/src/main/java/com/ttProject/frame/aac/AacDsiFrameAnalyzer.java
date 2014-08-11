@@ -7,6 +7,7 @@
 package com.ttProject.frame.aac;
 
 import com.ttProject.frame.AudioAnalyzer;
+import com.ttProject.frame.CodecType;
 
 /**
  * dsiベースのaacのframeを解析する動作
@@ -19,5 +20,12 @@ public class AacDsiFrameAnalyzer extends AudioAnalyzer {
 	 */
 	public AacDsiFrameAnalyzer() {
 		super(new AacDsiFrameSelector());
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.AAC;
 	}
 }

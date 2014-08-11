@@ -7,9 +7,17 @@
 package com.ttProject.frame.vorbis;
 
 import com.ttProject.frame.AudioAnalyzer;
+import com.ttProject.frame.CodecType;
 
 public class VorbisFrameAnalyzer extends AudioAnalyzer {
 	public VorbisFrameAnalyzer() {
 		super(new VorbisFrameSelector());
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.VORBIS;
 	}
 }

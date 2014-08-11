@@ -29,4 +29,9 @@ public interface IAnalyzer {
 	 * @throws Exception
 	 */
 	public IFrame getRemainFrame() throws Exception;
+	/**
+	 * 動作コーデックtypeを応答する
+	 * @return
+	 */
+	public CodecType getCodecType();
 }

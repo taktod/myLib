@@ -7,9 +7,17 @@
 package com.ttProject.frame.adpcmimawav;
 
 import com.ttProject.frame.AudioAnalyzer;
+import com.ttProject.frame.CodecType;
 
 public class AdpcmImaWavFrameAnalyzer extends AudioAnalyzer  {
 	public AdpcmImaWavFrameAnalyzer() {
 		super(new AdpcmImaWavSelector());
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.ADPCM_IMA_WAV;
 	}
 }

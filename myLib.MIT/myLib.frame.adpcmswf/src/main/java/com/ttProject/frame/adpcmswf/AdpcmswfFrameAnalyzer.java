@@ -7,6 +7,7 @@
 package com.ttProject.frame.adpcmswf;
 
 import com.ttProject.frame.AudioAnalyzer;
+import com.ttProject.frame.CodecType;
 
 /**
  * adpcmswfのframeを解析する動作
@@ -18,5 +19,12 @@ public class AdpcmswfFrameAnalyzer extends AudioAnalyzer {
 	 */
 	public AdpcmswfFrameAnalyzer() {
 		super(new AdpcmswfFrameSelector());
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.ADPCM_SWF;
 	}
 }

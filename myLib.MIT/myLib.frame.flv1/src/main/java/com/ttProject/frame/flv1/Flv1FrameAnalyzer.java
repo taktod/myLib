@@ -6,6 +6,7 @@
  */
 package com.ttProject.frame.flv1;
 
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoAnalyzer;
 
 /**
@@ -18,5 +19,12 @@ public class Flv1FrameAnalyzer extends VideoAnalyzer {
 	 */
 	public Flv1FrameAnalyzer() {
 		super(new Flv1FrameSelector());
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.FLV1;
 	}
 }

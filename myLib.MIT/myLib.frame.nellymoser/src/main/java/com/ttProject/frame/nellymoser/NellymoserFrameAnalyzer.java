@@ -7,6 +7,7 @@
 package com.ttProject.frame.nellymoser;
 
 import com.ttProject.frame.AudioAnalyzer;
+import com.ttProject.frame.CodecType;
 
 /**
  * nellymoserFrameの解析を実行するプログラム
@@ -18,5 +19,12 @@ public class NellymoserFrameAnalyzer extends AudioAnalyzer {
 	 */
 	public NellymoserFrameAnalyzer() {
 		super(new NellymoserFrameSelector());
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.NELLYMOSER;
 	}
 }

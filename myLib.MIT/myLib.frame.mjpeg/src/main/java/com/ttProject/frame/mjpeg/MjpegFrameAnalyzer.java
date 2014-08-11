@@ -6,6 +6,7 @@
  */
 package com.ttProject.frame.mjpeg;
 
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoAnalyzer;
 
 /**
@@ -18,5 +19,12 @@ public class MjpegFrameAnalyzer extends VideoAnalyzer {
 	 */
 	public MjpegFrameAnalyzer() {
 		super(new MjpegFrameSelector());
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.MJPEG;
 	}
 }

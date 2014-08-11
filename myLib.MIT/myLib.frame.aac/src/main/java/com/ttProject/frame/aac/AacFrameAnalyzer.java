@@ -7,6 +7,7 @@
 package com.ttProject.frame.aac;
 
 import com.ttProject.frame.AudioAnalyzer;
+import com.ttProject.frame.CodecType;
 
 /**
  * adts形式のaacFrame解析動作
@@ -15,5 +16,12 @@ import com.ttProject.frame.AudioAnalyzer;
 public class AacFrameAnalyzer extends AudioAnalyzer {
 	public AacFrameAnalyzer() {
 		super(new AacFrameSelector());
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.AAC;
 	}
 }

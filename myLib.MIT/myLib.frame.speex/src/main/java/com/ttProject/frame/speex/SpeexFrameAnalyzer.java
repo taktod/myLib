@@ -7,6 +7,7 @@
 package com.ttProject.frame.speex;
 
 import com.ttProject.frame.AudioAnalyzer;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -43,5 +44,12 @@ public class SpeexFrameAnalyzer extends AudioAnalyzer {
 			tmpFrame = null;
 		}
 		return frame;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.SPEEX;
 	}
 }

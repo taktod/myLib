@@ -8,6 +8,7 @@ package com.ttProject.frame.h264;
 
 import java.nio.ByteBuffer;
 
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.NullFrame;
 import com.ttProject.frame.VideoAnalyzer;
@@ -64,5 +65,12 @@ public abstract class H264FrameAnalyzer extends VideoAnalyzer {
 		IFrame frame = h264Frame;
 		h264Frame = null;
 		return frame;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public CodecType getCodecType() {
+		return CodecType.H264;
 	}
 }
