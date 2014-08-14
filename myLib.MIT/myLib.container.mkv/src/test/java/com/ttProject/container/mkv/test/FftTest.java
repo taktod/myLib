@@ -1,17 +1,27 @@
 package com.ttProject.container.mkv.test;
 
 import java.nio.ByteBuffer;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.ttProject.container.IContainer;
+import com.ttProject.container.mkv.CodecType;
 import com.ttProject.container.mkv.MkvBlockTag;
+import com.ttProject.container.mkv.MkvTag;
 import com.ttProject.container.mkv.MkvTagReader;
+import com.ttProject.container.mkv.type.TrackEntry;
+import com.ttProject.container.mkv.type.Tracks;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.adpcmimawav.AdpcmImaWavFrame;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitLoader;
+import com.ttProject.unit.extra.bit.Bit16;
+import com.ttProject.unit.extra.bit.Bit4;
+import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.HexUtil;
 
 /**
@@ -26,6 +36,7 @@ public class FftTest {
 	 */
 	@Test
 	public void test() {
+		AdpcmDecoder decoder = null;
 		logger.info("テスト開始");
 		// とりあえず適当なデータを調整することにします。
 		// データは２の累乗でないとだめっぽいです。
@@ -37,16 +48,30 @@ public class FftTest {
 			MkvTagReader reader = new MkvTagReader();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
+				if(container instanceof Tracks) {
+					for(MkvTag tag : ((Tracks) container).getChildList()) {
+						if(tag instanceof TrackEntry) {
+							TrackEntry entry = (TrackEntry) tag;
+							if(entry.getCodecType() == CodecType.A_MS_ACM) {
+								// adpcm_ima_wavである
+								decoder = new AdpcmDecoder((int)entry.getSampleRate(), entry.getChannels());
+							}
+						}
+					}
+				}
 				if(container instanceof MkvBlockTag) {
 					MkvBlockTag blockTag = (MkvBlockTag) container;
 //					logger.info(blockTag);
 					IFrame frame = blockTag.getFrame();
 					if(frame instanceof AdpcmImaWavFrame) {
 						AdpcmImaWavFrame aFrame = (AdpcmImaWavFrame)frame;
-						logger.info(aFrame.getBit());
 						// データを参照します。
 						ByteBuffer buffer = frame.getData();
 						logger.info(HexUtil.toHex(buffer));
+						List<Integer> data = decoder.getDecodedData(buffer);
+/*						for(int dat : data) {
+							logger.info(dat);
+						}*/
 						// はじめの4byteを落としてから元のデータにデコードするプログラムを書いておく。
 						break;
 					}
@@ -64,6 +89,23 @@ public class FftTest {
 	public static class AdpcmDecoder {
 		/** ロガー */
 		private Logger logger = Logger.getLogger(AdpcmDecoder.class);
+		/** チャンネル数 */
+		private final int channels;
+		/** サンプルレート */
+		private final int sampleRate;
+		/**
+		 * コンストラクタ
+		 * @param sampleRate
+		 * @param channels
+		 */
+		public AdpcmDecoder(int sampleRate, int channels) {
+			this.sampleRate = sampleRate;
+			this.channels = channels;
+			if(channels != 1 && channels != 2) {
+				throw new RuntimeException("モノラルとステレオ以外は処理しません");
+			}
+			logger.info(sampleRate + " / " + channels);
+		}
 		private int imaIndexTable[] = {
 			-1, -1, -1, -1, 2, 4, 6, 8,
 			-1, -1, -1, -1, 2, 4, 6, 8
@@ -134,7 +176,60 @@ public class FftTest {
 		 * デコード後のデータを取得する
 		 * @return
 		 */
-		public int[] getDecodedData() {
+		public List<Integer> getDecodedData(ByteBuffer data) throws Exception {
+			IReadChannel readChannel = new ByteReadChannel(data);
+			// 始めの16bitが初期のpredictor
+			// 次の8bitがleftIndex
+			Bit16 leftPredictor = new Bit16();
+			int lpredictor = leftPredictor.get();
+			Bit8  leftIndex     = new Bit8();
+			int lindex = leftIndex.get();
+			Bit8  leftReserved  = new Bit8();
+			int lstep = imaStepTable[lindex];
+			Bit16 rightPredictor = null;
+			int rpredictor = 0;
+			Bit8  rightIndex     = null;
+			int rindex = 0;
+			Bit8  rightReserved  = null;
+			int rstep = 0;
+			BitLoader loader = new BitLoader(readChannel);
+			loader.load(leftPredictor, leftIndex, leftReserved);
+			if(channels == 2) {
+				rightPredictor = new Bit16();
+				rightIndex     = new Bit8();
+				rightReserved  = new Bit8();
+				loader.load(rightPredictor, rightIndex, rightReserved);
+				rpredictor = rightPredictor.get();
+				rindex = rightIndex.get();
+				rstep = imaStepTable[rindex];
+			}
+			do {
+				// 8つ4bitが続く
+				// left側
+				Bit4[] bit4List = new Bit4[8];
+				for(int i = 0;i < bit4List.length;i ++) {
+					bit4List[i] = new Bit4();
+				}
+				loader.load(bit4List);
+				for(Bit4 nibble : bit4List) {
+					lindex = nextIndex(lindex, nibble.get());
+					lpredictor = nextPredictor(lindex, nibble.get(), lpredictor, lstep);
+					lstep = imaStepTable[lindex];
+				}
+				if(channels == 2) {
+					// right側
+					for(int i = 0;i < bit4List.length;i ++) {
+						bit4List[i] = new Bit4();
+					}
+					loader.load(bit4List);
+					for(Bit4 nibble : bit4List) {
+						rindex = nextIndex(rindex, nibble.get());
+						rpredictor = nextPredictor(rindex, nibble.get(), rpredictor, rstep);
+						rstep = imaStepTable[rindex];
+						logger.info(rpredictor);
+					}
+				}
+			} while(readChannel.position() < readChannel.size());
 			return null;
 		}
 	}
