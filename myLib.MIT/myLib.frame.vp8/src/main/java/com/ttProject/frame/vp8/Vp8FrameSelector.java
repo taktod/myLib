@@ -28,6 +28,9 @@ public class Vp8FrameSelector extends VideoSelector {
 	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
+		if(channel.position() == channel.size()) {
+			return null;
+		}
 		logger.info("frameを解析します。");
 		// 先頭の3byteからframeType version showFrame, firstPartSizeを取り出す
 		BitLoader loader = new BitLoader(channel);

@@ -32,6 +32,9 @@ public class OpusFrameSelector extends AudioSelector {
 	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
+		if(channel.position() == channel.size()) {
+			return null;
+		}
 		OpusFrame frame = null;
 		// ここはきた順番ではなく、先頭がOpusTagsもしくはOpusHeadである場合は・・・で場合分けした方がよさそう。
 		// 1文字目をみて、OだったらOpusである可能性があるとする(いきなり８文字だと、それ以下のデータ量であることがあるっぽい。)

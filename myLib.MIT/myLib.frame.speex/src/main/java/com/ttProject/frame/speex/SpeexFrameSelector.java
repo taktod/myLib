@@ -42,6 +42,9 @@ public class SpeexFrameSelector extends AudioSelector {
 	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
+		if(channel.position() == channel.size()) {
+			return null;
+		}
 		SpeexFrame frame = null;
 		if(headerFrame == null) {
 			// headerFrameであるとして処理する。

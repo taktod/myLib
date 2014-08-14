@@ -18,6 +18,9 @@ import com.ttProject.unit.IUnit;
 public class AdpcmImaWavSelector extends AudioSelector {
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
+		if(channel.position() == channel.size()) {
+			return null;
+		}
 		Frame frame = new Frame();
 		setup(frame);
 		frame.minimumLoad(channel);

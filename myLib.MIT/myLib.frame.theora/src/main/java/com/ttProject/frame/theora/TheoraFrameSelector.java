@@ -14,6 +14,9 @@ public class TheoraFrameSelector extends AudioSelector {
 
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
+		if(channel.position() == channel.size()) {
+			return null;
+		}
 		return null;
 	}
 

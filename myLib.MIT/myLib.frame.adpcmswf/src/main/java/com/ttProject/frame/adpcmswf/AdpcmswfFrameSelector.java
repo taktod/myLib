@@ -21,6 +21,9 @@ public class AdpcmswfFrameSelector extends AudioSelector {
 	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
+		if(channel.position() == channel.size()) {
+			return null;
+		}
 		AdpcmswfFrame frame = new Frame();
 		setup(frame);
 		frame.minimumLoad(channel);

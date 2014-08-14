@@ -29,6 +29,9 @@ public class Vp9FrameSelector extends VideoSelector {
 	private KeyFrame keyFrame = null;
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
+		if(channel.position() == channel.size()) {
+			return null;
+		}
 		logger.info("frameを解析します。");
 		Bit2 frameMarker = new Bit2();
 		Bit1 profile = new Bit1();

@@ -41,6 +41,9 @@ public class H264FrameSelector extends VideoSelector {
 	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
+		if(channel.position() == channel.size()) {
+			return null;
+		}
 		BitLoader loader = new BitLoader(channel);
 		Bit1 forbiddenZeroBit = new Bit1();
 		Bit2 nalRefIdc = new Bit2();

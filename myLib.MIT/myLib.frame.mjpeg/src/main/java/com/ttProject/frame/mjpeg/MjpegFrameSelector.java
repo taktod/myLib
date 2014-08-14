@@ -23,6 +23,9 @@ public class MjpegFrameSelector extends VideoSelector {
 	private Logger logger = Logger.getLogger(MjpegFrameSelector.class);
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
+		if(channel.size() == channel.position()) {
+			return null;
+		}
 		// とりあえずこのデータをそのままframeに保持させれば、frame用のbyteデータはできあがることになる。
 		Frame frame = new Frame();
 		setup(frame);

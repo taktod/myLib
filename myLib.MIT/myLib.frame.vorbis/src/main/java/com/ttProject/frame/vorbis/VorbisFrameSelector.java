@@ -30,6 +30,9 @@ public class VorbisFrameSelector extends AudioSelector {
 	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
+		if(channel.position() == channel.size()) {
+			return null;
+		}
 		VorbisFrame frame = null;
 		if(identificationHeaderFrame == null) {
 			identificationHeaderFrame = new IdentificationHeaderFrame();

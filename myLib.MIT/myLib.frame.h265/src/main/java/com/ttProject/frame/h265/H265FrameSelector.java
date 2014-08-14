@@ -31,6 +31,9 @@ public class H265FrameSelector extends VideoSelector {
 	private PpsNut pps = null;
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
+		if(channel.position() == channel.size()) {
+			return null;
+		}
 		BitLoader loader = new BitLoader(channel);
 		loader.setEmulationPreventionFlg(true);
 		Bit1 forbiddenZeroBit = new Bit1();
