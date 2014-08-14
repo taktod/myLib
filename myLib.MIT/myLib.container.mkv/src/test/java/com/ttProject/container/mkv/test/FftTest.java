@@ -238,6 +238,36 @@ public class FftTest {
 	 * @author taktod
 	 */
 	public static class Fft {
-		
+		public static void fft(double[] real, double[] imaginary) {
+			int n = real.length;
+			double theta = -2*Math.PI / n;
+			_fft(n, theta, real, imaginary);
+		}
+		private static void _fft(int n, double theta, double[] real, double[] imaginary) {
+			if(n <= 1) {
+				return;
+			}
+			int nh = n / 2;
+			double[] ro = new double[nh], io = new double[nh],
+					re = new double[nh], ie = new double[nh];
+			for(int m = 0;m < nh;m ++) {
+				re[m] = real[m] + real[nh + m];
+				ie[m] = imaginary[m] + imaginary[nh + m];
+				double Rm = real[m] - real[nh + m];
+				double Im =  imaginary[m] - imaginary[nh+m];
+				double cos = Math.cos(m*theta);
+				double sin = Math.sin(m*theta);
+				ro[m] = Rm*cos-Im*sin;
+				io[m] = Rm*sin+Im*cos;
+			}
+			_fft(nh, 2*theta, re, ie);
+			_fft(nh, 2*theta, ro, io);
+			for(int j = 0;j < nh;j ++) {
+				real[2 * j] = re[j];
+				imaginary[2 * j] = ie[j];
+				real[2 * j + 1] = ro[j];
+				imaginary[2 * j + 1] = io[j];
+			}
+		}
 	}
 }
