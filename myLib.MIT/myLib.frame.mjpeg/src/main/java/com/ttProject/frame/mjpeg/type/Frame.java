@@ -8,11 +8,20 @@ package com.ttProject.frame.mjpeg.type;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.mjpeg.MjpegFrame;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
+/**
+ * mjpegの内部フレーム
+ * @author taktod
+ */
 public class Frame extends MjpegFrame {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(Frame.class);
 	private ByteBuffer buffer = null;
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
