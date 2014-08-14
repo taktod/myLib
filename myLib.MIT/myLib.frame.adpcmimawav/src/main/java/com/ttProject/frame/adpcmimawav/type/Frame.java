@@ -60,6 +60,8 @@ public class Frame extends AdpcmImaWavFrame {
 		default:
 			throw new RuntimeException("ステレオモノラル以外の音声データは不明です。");
 		}
+		super.setBit(16); // 16ビットを強制的にいれておきます。
+		// adpcmのbitは4になってしまうため(ずれ分の指定量が4bitで済んでいるので4bit扱いになる。これはmkvでもwavでも同じ)
 		super.update();
 	}
 	@Override

@@ -76,8 +76,8 @@ public class Fmt extends RiffUnit {
 			frameAnalyzer = new AdpcmImaWavFrameAnalyzer();
 			AudioSelector selector = ((AudioAnalyzer)frameAnalyzer).getSelector();
 			// bit数は参考値とおもってOKだと思う。
-//			selector.setBit(bitNum.get()); // 4bitになる(adpcmの１サンプルあたりの設定が4bitなため モノラルでも同じ)
-			selector.setBit(16);
+			selector.setBit(bitNum.get()); // 4bitになる(adpcmの１サンプルあたりの設定が4bitなため モノラルでも同じ)
+//			selector.setBit(16);
 			selector.setChannel(channels.get());
 			selector.setSampleRate(sampleRate.get());
 			break;
