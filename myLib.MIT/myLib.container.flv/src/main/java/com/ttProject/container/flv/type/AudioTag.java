@@ -89,6 +89,8 @@ public class AudioTag extends FlvTag {
 				return 16000;
 			case NELLY_8:
 			case MP3_8:
+			case G711_A:
+			case G711_U:
 				return 8000;
 			default:
 				switch(sampleRate.get()) {

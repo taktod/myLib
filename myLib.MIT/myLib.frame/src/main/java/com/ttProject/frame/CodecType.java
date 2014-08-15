@@ -17,6 +17,8 @@ public enum CodecType {
 	ADPCM_SWF(2,     Type.AUDIO),
 	MP3(6,           Type.AUDIO),
 	NELLYMOSER(7,    Type.AUDIO),
+	PCM_ALAW(16,     Type.AUDIO),
+	PCM_MULAW(17,    Type.AUDIO),
 	SPEEX(8,         Type.AUDIO),
 	VORBIS(10,       Type.AUDIO),
 	OPUS(15,         Type.AUDIO),

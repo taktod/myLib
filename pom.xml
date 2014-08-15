@@ -76,6 +76,8 @@
     <module>myLib.MIT/myLib.frame.h265</module>
     <module>myLib.MIT/myLib.frame.mp3</module>
     <module>myLib.MIT/myLib.frame.nellymoser</module>
+    <module>myLib.MIT/myLib.frame.pcmalaw</module>
+    <module>myLib.MIT/myLib.frame.pcmmulaw</module>
     <module>myLib.MIT/myLib.frame.speex</module>
     <module>myLib.MIT/myLib.frame.vp6</module>
     <module>myLib.MIT/myLib.frame.vp8</module>
