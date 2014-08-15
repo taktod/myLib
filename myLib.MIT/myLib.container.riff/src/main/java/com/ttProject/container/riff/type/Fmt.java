@@ -16,6 +16,8 @@ import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.adpcmimawav.AdpcmImaWavFrameAnalyzer;
+import com.ttProject.frame.pcmalaw.PcmalawFrameAnalyzer;
+import com.ttProject.frame.pcmmulaw.PcmmulawFrameAnalyzer;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit16;
@@ -74,15 +76,21 @@ public class Fmt extends RiffUnit {
 		switch(getCodecType()) {
 		case IMA_ADPCM:
 			frameAnalyzer = new AdpcmImaWavFrameAnalyzer();
-			AudioSelector selector = ((AudioAnalyzer)frameAnalyzer).getSelector();
-			// bit数は参考値とおもってOKだと思う。
-			selector.setBit(bitNum.get()); // 4bitになる(adpcmの１サンプルあたりの設定が4bitなため モノラルでも同じ)
-//			selector.setBit(16);
-			selector.setChannel(channels.get());
-			selector.setSampleRate(sampleRate.get());
+			break;
+		case A_LAW:
+			frameAnalyzer = new PcmalawFrameAnalyzer();
+			break;
+		case U_LAW:
+			frameAnalyzer = new PcmmulawFrameAnalyzer();
 			break;
 		default:
 			throw new RuntimeException("不明なコーデックでした。");
+		}
+		if(frameAnalyzer instanceof AudioAnalyzer) {
+			AudioSelector selector = ((AudioAnalyzer)frameAnalyzer).getSelector();
+			selector.setBit(bitNum.get()); // 4bitになる(adpcmの１サンプルあたりの設定が4bitなため モノラルでも同じ)
+			selector.setChannel(channels.get());
+			selector.setSampleRate(sampleRate.get());
 		}
 		return frameAnalyzer;
 	}

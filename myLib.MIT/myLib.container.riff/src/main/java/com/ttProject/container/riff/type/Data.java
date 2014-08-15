@@ -39,7 +39,21 @@ public class Data extends RiffUnit {
 		logger.info("frameを解析しようと思います。");
 		Fmt fmt = getFmt();
 		while(channel.position() < channel.size()) {
-			ByteReadChannel frameChannel = new ByteReadChannel(BufferUtil.safeRead(channel, fmt.getBlockSize()));
+			// ここのfmt.getBlockSizeの値がpcm_alawとpcm_mulawの場合に１になって、いやな感じのデータになってしまう。
+			int blockSize = 0;
+			switch(fmt.getCodecType()) {
+			case A_LAW:
+			case U_LAW:
+				blockSize = 0x0100;
+				if(channel.size() - channel.position() < 0x0100) {
+					blockSize = channel.size() - channel.position();
+				}
+				break;
+			default:
+				blockSize = fmt.getBlockSize();
+				break;
+			}
+			ByteReadChannel frameChannel = new ByteReadChannel(BufferUtil.safeRead(channel, blockSize));
 			IAnalyzer analyzer = getFmt().getFrameAnalyzer();
 			IFrame frame = analyzer.analyze(frameChannel);
 			if(frame instanceof AudioFrame) {

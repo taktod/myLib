@@ -16,8 +16,14 @@ import com.ttProject.util.BufferUtil;
 
 /**
  * pcm_alawのframe
- * 160 : 0.02秒 160byteになるっぽい
+ * 160 : 0.02秒 160byteになるっぽい flvの場合
+ * 576 : 0.072秒 xuggleのpacketの場合
+ * 1 : 1/8000秒 riffの基本unitによると・・・
  * 8000 : 1秒
+ * いろいろとやってみた結果
+ * pcm_alawに関してflvにいれる場合のデータ量については、特に規程なさそうです。
+ * xuggleに流し込む場合も特に規程なければいいけど・・・
+ * あとwavファイルの場合の最小ユニット量が1byteになっていて、そのまま扱うと粒度が小さすぎて無駄なので、なんとかしておきたいところ
  * @author taktod
  */
 public class Frame extends PcmalawFrame {
