@@ -302,6 +302,20 @@ public class SetupForContainerTest extends SetupBase {
 			throw new Exception("コンテナが開けませんでした");
 		}
 		processConvert(container, null, Encoder.adpcm_ima_wav(container));
+		logger.info("wav準備 (pcm_alaw)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.wav", "test.pcm_alaw.wav"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		processConvert(container, null, Encoder.pcm_alaw(container));
+		logger.info("wav準備 (pcm_mulaw)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.wav", "test.pcm_mulaw.wav"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		processConvert(container, null, Encoder.pcm_mulaw(container));
 	}
 	@Test
 	public void test() throws Exception {

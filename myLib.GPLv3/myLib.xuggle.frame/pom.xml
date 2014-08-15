@@ -51,6 +51,16 @@
   </dependency>
   <dependency>
     <groupId>com.ttProject</groupId>
+    <artifactId>myLib.frame.pcmalaw</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+  </dependency>
+  <dependency>
+    <groupId>com.ttProject</groupId>
+    <artifactId>myLib.frame.pcmmulaw</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+  </dependency>
+  <dependency>
+    <groupId>com.ttProject</groupId>
     <artifactId>myLib.frame.speex</artifactId>
     <version>0.0.2-SNAPSHOT</version>
   </dependency>
