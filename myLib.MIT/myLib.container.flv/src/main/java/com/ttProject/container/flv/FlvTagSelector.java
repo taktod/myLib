@@ -19,6 +19,8 @@ import com.ttProject.frame.flv1.Flv1FrameAnalyzer;
 import com.ttProject.frame.h264.DataNalAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
 import com.ttProject.frame.nellymoser.NellymoserFrameAnalyzer;
+import com.ttProject.frame.pcmalaw.PcmalawFrameAnalyzer;
+import com.ttProject.frame.pcmmulaw.PcmmulawFrameAnalyzer;
 import com.ttProject.frame.speex.SpeexFrameAnalyzer;
 import com.ttProject.frame.speex.SpeexFrameSelector;
 import com.ttProject.frame.speex.type.CommentFrame;
@@ -137,8 +139,14 @@ public class FlvTagSelector implements ISelector {
 					}
 					break;
 				case G711_A:
+					if(audioFrameAnalyzer == null || !(audioFrameAnalyzer instanceof PcmalawFrameAnalyzer)) {
+						audioFrameAnalyzer = new PcmalawFrameAnalyzer();
+					}
 					break;
 				case G711_U:
+					if(audioFrameAnalyzer == null || !(audioFrameAnalyzer instanceof PcmmulawFrameAnalyzer)) {
+						audioFrameAnalyzer = new PcmmulawFrameAnalyzer();
+					}
 					break;
 				case RESERVED:
 					break;
