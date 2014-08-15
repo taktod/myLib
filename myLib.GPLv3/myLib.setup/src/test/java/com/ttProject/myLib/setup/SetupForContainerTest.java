@@ -115,6 +115,20 @@ public class SetupForContainerTest extends SetupBase {
 		coder.setSampleRate(16000);
 		coder.setChannels(1);
 		processConvert(container, Encoder.h264(container), coder);
+/*		logger.info("flv準備 (flv1 / pcm_alaw)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.flv1pcm_alaw.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		processConvert(container, Encoder.flv1(container), Encoder.pcm_alaw(container));
+		logger.info("flv準備 (flv1 / pcm_mulaw)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.flv", "test.flv1pcm_mulaw.flv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		processConvert(container, Encoder.flv1(container), Encoder.pcm_mulaw(container));*/
 		
 		logger.info("flv準備 (adpcm44_2)");
 		init();

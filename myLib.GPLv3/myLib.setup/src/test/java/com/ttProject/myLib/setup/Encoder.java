@@ -110,6 +110,32 @@ public class Encoder {
 		return audioEncoder;
 	}
 	/**
+	 * pcm_alaw
+	 * @param container
+	 * @return
+	 */
+	public static IStreamCoder pcm_alaw(IContainer container) {
+		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_PCM_ALAW);
+		IStreamCoder audioEncoder = stream.getStreamCoder();
+		audioEncoder.setSampleRate(8000);
+		audioEncoder.setChannels(1);
+		audioEncoder.setBitRate(64000);
+		return audioEncoder;
+	}
+	/**
+	 * pcm_mulaw
+	 * @param container
+	 * @return
+	 */
+	public static IStreamCoder pcm_mulaw(IContainer container) {
+		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_PCM_MULAW);
+		IStreamCoder audioEncoder = stream.getStreamCoder();
+		audioEncoder.setSampleRate(8000);
+		audioEncoder.setChannels(1);
+		audioEncoder.setBitRate(64000);
+		return audioEncoder;
+	}
+	/**
 	 * h264
 	 * @param container
 	 * @return
