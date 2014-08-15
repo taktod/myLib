@@ -31,8 +31,10 @@ public class Frame extends PcmmulawFrame {
 	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
+		super.setSize(channel.size());
 		super.setSampleRate(8000);
-		super.setSampleNum(160);
+		super.setSampleNum(getSize()); // これは固定ではないサイズから求めるべき
+		super.setChannel(1);
 		super.update();
 	}
 	/**
@@ -40,7 +42,6 @@ public class Frame extends PcmmulawFrame {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		super.setSize(channel.size());
 		// そのままデータを保持しておいておわり。
 		frameBuffer = BufferUtil.safeRead(channel, channel.size());
 		super.update();
