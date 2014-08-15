@@ -22,11 +22,7 @@ import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
 import com.ttProject.frame.aac.AacDsiFrameSelector;
 import com.ttProject.frame.aac.AacFrame;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
-import com.ttProject.frame.adpcmswf.AdpcmswfFrame;
 import com.ttProject.frame.extra.AudioMultiFrame;
-import com.ttProject.frame.mp3.Mp3Frame;
-import com.ttProject.frame.nellymoser.NellymoserFrame;
-import com.ttProject.frame.speex.SpeexFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitConnector;
@@ -231,13 +227,13 @@ public class AudioTag extends FlvTag {
 			bitCount     = null;
 			channels     = null;
 			int sizeEx = 0;
-			// コーデック判定
-			if(codecCheckFrame instanceof AacFrame) {
+			switch(codecCheckFrame.getCodecType()) {
+			case AAC:
 				codecId.set(CodecType.getAudioCodecNum(CodecType.AAC));
 				sequenceHeaderFlag = new Bit8(1);
 				sizeEx = 1;
-			}
-			else if(codecCheckFrame instanceof Mp3Frame) {
+				break;
+			case MP3:
 				if(frame.getSampleRate() == 8000) {
 					// mp3 8はデータが手元にないので、どうなるかわからない。
 					// とりあえず0xD2にでもしておくか・・・
@@ -247,8 +243,8 @@ public class AudioTag extends FlvTag {
 				else {
 					codecId.set(CodecType.getAudioCodecNum(CodecType.MP3));
 				}
-			}
-			else if(codecCheckFrame instanceof NellymoserFrame) {
+				break;
+			case NELLYMOSER:
 				if(frame.getSampleRate() == 16000) {
 					// nelly16 0x42
 					codecId.set(CodecType.getAudioCodecNum(CodecType.NELLY_16));
@@ -262,8 +258,8 @@ public class AudioTag extends FlvTag {
 				else {
 					codecId.set(CodecType.getAudioCodecNum(CodecType.NELLY));
 				}
-			}
-			else if(codecCheckFrame instanceof SpeexFrame) {
+				break;
+			case SPEEX:
 				// 0xB6みたい。
 				codecId.set(CodecType.getAudioCodecNum(CodecType.SPEEX));
 				if(frame.getSampleRate() != 16000) {
@@ -273,11 +269,19 @@ public class AudioTag extends FlvTag {
 					throw new Exception("speexはmonoralのみサポートします。");
 				}
 				sampleRate = new Bit2(1);
-			}
-			else if(codecCheckFrame instanceof AdpcmswfFrame) {
+				break;
+			case ADPCM_SWF:
 				codecId.set(CodecType.getAudioCodecNum(CodecType.ADPCM));
-			}
-			else {
+				break;
+			case PCM_ALAW:
+				codecId.set(CodecType.getAudioCodecNum(CodecType.G711_A));
+				sampleRate = new Bit2(0);
+				break;
+			case PCM_MULAW:
+				codecId.set(CodecType.getAudioCodecNum(CodecType.G711_U));
+				sampleRate = new Bit2(0);
+				break;
+			default:
 				throw new Exception("未対応なaudioFrameでした:" + frame);
 			}
 			// チャンネル対応
