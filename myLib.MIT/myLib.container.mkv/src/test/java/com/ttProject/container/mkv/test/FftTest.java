@@ -31,10 +31,24 @@ import com.ttProject.util.HexUtil;
 public class FftTest {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(FftTest.class);
+	@Test
+	public void test2() {
+		logger.info("easy test");
+		Fft fft = new Fft();
+		double[] real = {6,-2,-2,-1.9999999999999998};
+		double[] imagine = {0,2,0,-2};
+		fft.fft(real, imagine);
+		for(double d : real) {
+			logger.info(d);
+		}
+		for(double i : imagine) {
+			logger.info(i);
+		}
+	}
 	/**
 	 * テスト
 	 */
-	@Test
+//	@Test
 	public void test() {
 		AdpcmDecoder decoder = null;
 		logger.info("テスト開始");
