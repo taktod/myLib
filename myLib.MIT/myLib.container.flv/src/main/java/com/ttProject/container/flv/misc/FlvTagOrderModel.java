@@ -33,99 +33,95 @@ import com.ttProject.container.flv.type.VideoTag;
  */
 public class FlvTagOrderModel {
 	/** ロガー */
-	private final Logger logger = Logger.getLogger(FlvTagOrderModel.class);
-	/** 遅延の許容量設定(ミリ秒単位) */
-	private final long delayTime = 1000L;
-	private final List<AudioTag> audioTags = new ArrayList<AudioTag>();
-	private final List<VideoTag> videoTags = new ArrayList<VideoTag>();
-	private long passedPts = -1; // うけとり済みptsの一番あたらしいもの
-	private final TagComparator tagSort = new TagComparator();
-	private long nextAudioPts = -1; // audioPtsとして連続していると判定する範囲値(この値以内のptsは即確定できる)
-	private long processedPts = -1; // すでに変換にまわしたpts値これ以前のpts値のデータをうけとってももう利用できない
-	
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(FlvTagOrderModel.class);
+	/** ソート用比較オブジェクト */
+	private static final FlvTagComparator comparator = new FlvTagComparator();
+	private List<FlvTag> videoTags = new ArrayList<FlvTag>();
+	private List<FlvTag> audioTags = new ArrayList<FlvTag>();
+	/** 処理済みvideoTagのpts値 */
+	private long passedVideoPts = -1;
+	/** 処理済みaudioTagのpts値 */
+	private long passedAudioPts = -1;
+	/**
+	 * 内部のデータをリセットする
+	 * 主にunpublishしたときの処理
+	 */
 	public void reset() {
-		audioTags.clear();
 		videoTags.clear();
+		audioTags.clear();
+		passedVideoPts = -1;
+		passedAudioPts = -1;
 	}
-	public void addTag(FlvTag tag) throws Exception {
+	/**
+	 * tagを追加する
+	 */
+	public void addTag(FlvTag tag) {
 		if(tag instanceof AggregateTag) {
 			AggregateTag aTag = (AggregateTag) tag;
-			for(FlvTag ftag : aTag.getList()) {
-				addTag(ftag);
+			for(FlvTag fTag : aTag.getList()) {
+				addTag(fTag);
 			}
 			return;
 		}
-		if(processedPts > tag.getPts()) {
-			// すでに処理確定済みのptsのデータをうけとりました。
-			// 利用できません。
-			return;
+		if(tag instanceof VideoTag) {
+			if(tag.getPts() < passedVideoPts) {
+				// 処理済みのtimestamp以前のデータなら捨てておく
+				return;
+			}
+			videoTags.add(tag);
 		}
-		if(passedPts < tag.getPts()) {
-			passedPts = tag.getPts();
-		}
-		if(tag instanceof AudioTag) {
-			logger.info("audio:" + tag);
-			audioTags.add((AudioTag)tag);
-			Collections.sort(audioTags, tagSort);
-		}
-		else if(tag instanceof VideoTag) {
-			logger.info("video:" + tag);
-			videoTags.add((VideoTag)tag);
-			Collections.sort(videoTags, tagSort);
+		else if(tag instanceof AudioTag){
+			if(tag.getPts() < passedAudioPts) {
+				// 処理済みのtimestamp以前のデータなら捨てておく
+				return;
+			}
+			audioTags.add(tag);
 		}
 	}
-	public List<FlvTag> getCompleteTag() throws Exception {
+	/**
+	 * 音声のソート済みデータを取得する
+	 */
+	public List<FlvTag> getAudioCompleteTag() {
+		Collections.sort(audioTags, comparator);
 		List<FlvTag> result = new ArrayList<FlvTag>();
-		VideoTag videoTag = null;
-		AudioTag audioTag = null;
-		while(true) {
-			// 映像の確定データについて調べる
-			videoTag = getComfirmedVideoTag();
-			// 音声の確定データについて調べる
-			audioTag = getComfirmedAudioTag();
-			
-			if(videoTag.getPts() > audioTag.getPts()) {
-				
+		while(audioTags.size() > 1) {
+			FlvTag tag = audioTags.remove(0);
+			if(tag.getPts() < passedAudioPts) {
+				continue;
 			}
-			// audioとvideoのデータから一番若いデータをベースに処理をすすめる必要あり。
-			break;
+			passedAudioPts = tag.getPts();
+			if(passedVideoPts < passedAudioPts - 1000) {
+				passedVideoPts = passedAudioPts - 1000;
+			}
+			result.add(tag);
 		}
 		return result;
 	}
 	/**
-	 * 確定済みのvideoTagで一番若いものを応答する
-	 * @return
+	 * 映像のソート済みデータを取得する
 	 */
-	private VideoTag getComfirmedVideoTag() throws Exception {
-		if(videoTags.size() > 2) {
-			// タグのデータが0か1の場合は確定タグがない
-			return videoTags.get(0); // 先頭のデータが確定データで一番わかいデータになる。
-		}
-		else {
-			return null;
-		}
-	}
-	private AudioTag getComfirmedAudioTag() throws Exception {
-		AudioTag result = null;
-		if(nextAudioPts == -1) {
-			// audioPtsが決定していない場合は先頭のデータが確実に必要な応答データになるので、それを応答する。
-			result = audioTags.get(0);
-		}
-		else { // nextAudioPtsが-1でない場合は通常の動作
-			// pts値が規程範囲内でない場合は・・・どうしようかね？
-			AudioTag target = audioTags.get(0);
-			if(nextAudioPts > target.getPts()) { // 範囲内の場合は確定させる
-				result = target;
+	public List<FlvTag> getVideoCompleteTag() {
+		Collections.sort(videoTags, comparator);
+		List<FlvTag> result = new ArrayList<FlvTag>();
+		while(videoTags.size() > 1) {
+			FlvTag tag = videoTags.remove(0);
+			if(tag.getPts() < passedVideoPts) {
+				continue;
 			}
-			else {
-				// 範囲外の場合は確定させることができない。
-				logger.error("致命的なことがなんかおこった。");
+			passedVideoPts = tag.getPts();
+			if(passedAudioPts < passedVideoPts - 1000) {
+				passedAudioPts = passedVideoPts - 1000;
 			}
+			result.add(tag);
 		}
-		nextAudioPts = result.getPts() + (2000L * result.getSampleNum() / result.getSampleRate());
 		return result;
 	}
-	private class TagComparator implements Comparator<FlvTag> {
+	/**
+	 * tagの比較クラス
+	 * @author taktod
+	 */
+	public static class FlvTagComparator implements Comparator<FlvTag> {
 		@Override
 		public int compare(FlvTag tag1, FlvTag tag2) {
 			return (int)(tag1.getPts() - tag2.getPts());
