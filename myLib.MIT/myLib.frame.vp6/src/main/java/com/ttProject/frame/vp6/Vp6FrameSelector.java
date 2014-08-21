@@ -6,6 +6,8 @@
  */
 package com.ttProject.frame.vp6;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.VideoSelector;
 import com.ttProject.frame.vp6.type.InterFrame;
 import com.ttProject.frame.vp6.type.IntraFrame;
@@ -20,6 +22,8 @@ import com.ttProject.unit.extra.bit.Bit6;
  * @author taktod
  */
 public class Vp6FrameSelector extends VideoSelector {
+	/** ロガー */
+	private Logger logger = Logger.getLogger(Vp6FrameSelector.class);
 	/** 前回解析したkeyFrame情報は保持しておいて、interFrameに紐づける必要あり。 */
 	private IntraFrame keyFrame = null;
 	/**
@@ -48,6 +52,10 @@ public class Vp6FrameSelector extends VideoSelector {
 			break;
 		default:
 			throw new Exception("解析不能なデータです。");
+		}
+		if(keyFrame == null) {
+			logger.info("キーフレームが決定していません");
+			return null;
 		}
 		setup(frame);
 		if(!(frame instanceof IntraFrame)) {

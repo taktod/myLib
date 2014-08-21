@@ -54,7 +54,6 @@ public class IntraFrame extends Vp6Frame {
 			loader.load(offset);
 		}
 		loader.load(dimY, dimX, renderY, renderX);
-		System.out.println(dimX.get() + "x" + dimY.get());
 		super.setWidth(dimX.get() * 16);
 		super.setHeight(dimY.get() * 16);
 		super.setReadPosition(channel.position());
