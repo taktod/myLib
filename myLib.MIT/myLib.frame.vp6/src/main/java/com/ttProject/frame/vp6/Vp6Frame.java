@@ -8,6 +8,8 @@ package com.ttProject.frame.vp6;
 
 import java.nio.ByteBuffer;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.vp6.type.IntraFrame;
@@ -30,6 +32,9 @@ import com.ttProject.unit.extra.bit.Bit6;
  * @author taktod
  */
 public abstract class Vp6Frame extends VideoFrame {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(Vp6Frame.class);
 	private final Bit1 frameMode;
 	private final Bit6 qp;
 	private final Bit1 marker;
