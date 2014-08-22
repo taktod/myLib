@@ -117,6 +117,7 @@ public class AdpcmPlayTest1D {
 		);
 		IContainer container = null;
 		MkvTagReader reader = new MkvTagReader();
+		short second = 0;
 		while((container = reader.read(source)) != null) {
 			if(container instanceof MkvBlockTag) {
 				MkvBlockTag blockTag = (MkvBlockTag)container;
@@ -156,10 +157,9 @@ public class AdpcmPlayTest1D {
 					ByteBuffer completeBuffer = ByteBuffer.allocate(buffer.remaining() * 8);
 					completeBuffer.order(ByteOrder.LITTLE_ENDIAN);
 					while(buffer.remaining() > 0) {
-						short second = 0;
 						short first = buffer.getShort();
-						int c0;
-						c0 = (first - second) / 8;
+						double c0;
+						c0 = (first - second) / 8D;
 						completeBuffer.putShort((short)(second + (0) * (c0)));
 						completeBuffer.putShort((short)(second + (1) * (c0)));
 						completeBuffer.putShort((short)(second + (2) * (c0)));
@@ -168,14 +168,6 @@ public class AdpcmPlayTest1D {
 						completeBuffer.putShort((short)(second + (5) * (c0)));
 						completeBuffer.putShort((short)(second + (6) * (c0)));
 						completeBuffer.putShort((short)(second + (7) * (c0)));
-/*						completeBuffer.putShort((short)((first * 8) / 8));
-						completeBuffer.putShort((short)((first * 7 + second * 1) / 8));
-						completeBuffer.putShort((short)((first * 6 + second * 2) / 8));
-						completeBuffer.putShort((short)((first * 5 + second * 3) / 8));
-						completeBuffer.putShort((short)((first * 4 + second * 4) / 8));
-						completeBuffer.putShort((short)((first * 3 + second * 5) / 8));
-						completeBuffer.putShort((short)((first * 2 + second * 6) / 8));
-						completeBuffer.putShort((short)((first * 1 + second * 7) / 8));*/
 						second = first;
 					}
 					completeBuffer.flip();

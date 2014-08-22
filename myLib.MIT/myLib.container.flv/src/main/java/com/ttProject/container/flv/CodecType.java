@@ -81,7 +81,7 @@ public enum CodecType {
 
 		case 0: // 不明
 		default:
-			throw new RuntimeException("判定不能なコーデック");
+			throw new RuntimeException("判定不能なコーデック:" + codecId);
 		}
 	}
 	/**

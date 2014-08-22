@@ -117,6 +117,8 @@ public class AdpcmPlayTest2D {
 		);
 		IContainer container = null;
 		MkvTagReader reader = new MkvTagReader();
+		short third = 0;
+		short second = 0;
 		while((container = reader.read(source)) != null) {
 			if(container instanceof MkvBlockTag) {
 				MkvBlockTag blockTag = (MkvBlockTag)container;
@@ -156,14 +158,11 @@ public class AdpcmPlayTest2D {
 					ByteBuffer completeBuffer = ByteBuffer.allocate(buffer.remaining() * 8);
 					completeBuffer.order(ByteOrder.LITTLE_ENDIAN);
 					while(buffer.remaining() > 0) {
-						short third = 0;
-						short second = 0;
 						short first = buffer.getShort();
-						int c0, c1, d0;
-						c0 = (second - third) / 8;
-						c1 = (first - second) / 8;
-						d0 = (c1 - c0) / 16;
-//						y = y0 + (x - x0)(c0 + d0(x - x1));
+						double c0, c1, d0;
+						c0 = (second - third) / 8D;
+						c1 = (first - second) / 8D;
+						d0 = (c1 - c0) / 16D;
 						completeBuffer.putShort((short)(third + (0) * (c0 + (0 - 8) * d0)));
 						completeBuffer.putShort((short)(third + (1) * (c0 + (1 - 8) * d0)));
 						completeBuffer.putShort((short)(third + (2) * (c0 + (2 - 8) * d0)));

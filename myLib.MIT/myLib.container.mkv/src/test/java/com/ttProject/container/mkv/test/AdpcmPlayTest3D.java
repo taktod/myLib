@@ -28,6 +28,8 @@ import com.ttProject.unit.extra.bit.Bit8;
 /**
  * adpcm_ima_wavのデータを再生する動作テスト(コンテナはmkvとする)
  * @author taktod
+ * TODO そこそこまともな変換になったはなったみたいです。
+ * adpcmのframe間の補完を実施していないので、再生するとぷちぷちいうのがたまに傷なところ。
  */
 public class AdpcmPlayTest3D {
 	/** ロガー */
@@ -117,6 +119,9 @@ public class AdpcmPlayTest3D {
 		);
 		IContainer container = null;
 		MkvTagReader reader = new MkvTagReader();
+		short fourth = 0;
+		short third = 0;
+		short second = 0;
 		while((container = reader.read(source)) != null) {
 			if(container instanceof MkvBlockTag) {
 				MkvBlockTag blockTag = (MkvBlockTag)container;
@@ -156,26 +161,22 @@ public class AdpcmPlayTest3D {
 					ByteBuffer completeBuffer = ByteBuffer.allocate(buffer.remaining() * 8);
 					completeBuffer.order(ByteOrder.LITTLE_ENDIAN);
 					while(buffer.remaining() > 0) {
-						short fourth = 0;
-						short third = 0;
-						short second = 0;
 						short first = buffer.getShort();
-						int c0, c1, c2, d0, d1, e0;
-						c0 = (third - fourth) / 8;
-						c1 = (second - third) / 8;
-						c2 = (first - second) / 8;
-						d0 = (c1 - c0) / 16;
-						d1 = (c2 - c1) / 16;
-						e0 = (d1 - d0) / 24;
-//						y = y0 + (x - x0)(c0 + d0(x - x1));
-						completeBuffer.putShort((short)(third + (8)  * (c0 + (8  - 8) * (d0 + e0 * (8  - 16)))));
-						completeBuffer.putShort((short)(third + (9)  * (c0 + (9  - 8) * (d0 + e0 * (9  - 16)))));
-						completeBuffer.putShort((short)(third + (10) * (c0 + (10 - 8) * (d0 + e0 * (10 - 16)))));
-						completeBuffer.putShort((short)(third + (11) * (c0 + (11 - 8) * (d0 + e0 * (11 - 16)))));
-						completeBuffer.putShort((short)(third + (12) * (c0 + (12 - 8) * (d0 + e0 * (12 - 16)))));
-						completeBuffer.putShort((short)(third + (13) * (c0 + (13 - 8) * (d0 + e0 * (13 - 16)))));
-						completeBuffer.putShort((short)(third + (14) * (c0 + (14 - 8) * (d0 + e0 * (14 - 16)))));
-						completeBuffer.putShort((short)(third + (15) * (c0 + (15 - 8) * (d0 + e0 * (15 - 16)))));
+						double c0, c1, c2, d0, d1, e0;
+						c0 = (third - fourth) / 8D;
+						c1 = (second - third) / 8D;
+						c2 = (first - second) / 8D;
+						d0 = (c1 - c0) / 16D;
+						d1 = (c2 - c1) / 16D;
+						e0 = (d1 - d0) / 24D;
+						completeBuffer.putShort((short)(third + (0) * (c0 + (0 - 8) * (d0 + e0 * (0 - 16)))));
+						completeBuffer.putShort((short)(third + (1) * (c0 + (1 - 8) * (d0 + e0 * (1 - 16)))));
+						completeBuffer.putShort((short)(third + (2) * (c0 + (2 - 8) * (d0 + e0 * (2 - 16)))));
+						completeBuffer.putShort((short)(third + (3) * (c0 + (3 - 8) * (d0 + e0 * (3 - 16)))));
+						completeBuffer.putShort((short)(third + (4) * (c0 + (4 - 8) * (d0 + e0 * (4 - 16)))));
+						completeBuffer.putShort((short)(third + (5) * (c0 + (5 - 8) * (d0 + e0 * (5 - 16)))));
+						completeBuffer.putShort((short)(third + (6) * (c0 + (6 - 8) * (d0 + e0 * (6 - 16)))));
+						completeBuffer.putShort((short)(third + (7) * (c0 + (7 - 8) * (d0 + e0 * (7 - 16)))));
 						fourth = third;
 						third = second;
 						second = first;
