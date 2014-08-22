@@ -102,6 +102,10 @@ public class Packetizer {
 			}
 			break;
 		case ADPCM_IMA_WAV:
+			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_ADPCM_IMA_WAV) {
+				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_ADPCM_IMA_WAV);
+			}
+			break;
 		case ADPCM_SWF:
 			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_ADPCM_SWF) {
 				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_ADPCM_SWF);
@@ -118,7 +122,15 @@ public class Packetizer {
 			}
 			break;
 		case PCM_ALAW:
+			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_PCM_ALAW) {
+				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_PCM_ALAW);
+			}
+			break;
 		case PCM_MULAW:
+			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_PCM_MULAW) {
+				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_PCM_MULAW);
+			}
+			break;
 		case SPEEX:
 			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_SPEEX) {
 				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_SPEEX);
@@ -152,11 +164,18 @@ public class Packetizer {
 				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
 			}
 			break;
-		case H265:
 		case MJPEG:
-		case NONE:
-		case OPUS:
+			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_MJPEG) {
+				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_MJPEG);
+				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
+			}
+			break;
 		case THEORA:
+			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_THEORA) {
+				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_THEORA);
+				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
+			}
+			break;
 		case VP6:
 			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_VP6F) {
 				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_VP6F);
@@ -169,9 +188,12 @@ public class Packetizer {
 				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
 			}
 			break;
+		case H265:
+		case NONE:
+		case OPUS:
 		case VP9:
 		default:
-			break;
+			throw new RuntimeException("xuggle doesn't support these codec:" + frame.getCodecType());
 		}
 		return decoder;
 	}
