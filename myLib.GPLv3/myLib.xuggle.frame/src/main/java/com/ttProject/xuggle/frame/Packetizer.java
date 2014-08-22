@@ -13,21 +13,12 @@ import org.apache.log4j.Logger;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
-import com.ttProject.frame.aac.AacFrame;
-import com.ttProject.frame.adpcmswf.AdpcmswfFrame;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
-import com.ttProject.frame.flv1.Flv1Frame;
-import com.ttProject.frame.h264.H264Frame;
-import com.ttProject.frame.mp3.Mp3Frame;
-import com.ttProject.frame.nellymoser.NellymoserFrame;
-import com.ttProject.frame.speex.SpeexFrame;
 import com.ttProject.frame.vorbis.VorbisFrame;
 import com.ttProject.frame.vorbis.type.CommentHeaderFrame;
 import com.ttProject.frame.vorbis.type.IdentificationHeaderFrame;
 import com.ttProject.frame.vorbis.type.SetupHeaderFrame;
-import com.ttProject.frame.vp6.Vp6Frame;
-import com.ttProject.frame.vp8.Vp8Frame;
 import com.xuggle.ferry.IBuffer;
 import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IPacket;
@@ -104,61 +95,37 @@ public class Packetizer {
 	 * @return
 	 */
 	public IStreamCoder getDecoder(IFrame frame, IStreamCoder decoder) throws Exception {
-		if(frame instanceof Flv1Frame) {
-			if(decoder == null // デコーダーが未設定の場合はつくる必要あり
-					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_FLV1) { // コーデックがflv1でない場合も作り直し
-				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_FLV1);
-				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
-			}
-		}
-		if(frame instanceof Vp6Frame) {
-			if(decoder == null // デコーダーが未設定の場合はつくる必要あり
-					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_VP6F) { // コーデックがvp6(flv)でない場合も作り直し
-				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_VP6F);
-				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
-			}
-		}
-		if(frame instanceof H264Frame) {
-			if(decoder == null // デコーダーが未設定の場合はつくる必要あり
-					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_H264) { // コーデックがh264でない場合も作り直し
-				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_H264);
-				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
-			}
-		}
-		if(frame instanceof Mp3Frame) {
-			if(decoder == null // デコーダーが未設定の場合はつくる必要あり
-					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_MP3) { // コーデックがflv1でない場合も作り直し
-				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_MP3);
-			}
-		}
-		if(frame instanceof AacFrame) {
-			if(decoder == null // デコーダーが未設定の場合は生成する必要あり
-					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_AAC) {
+		switch(frame.getCodecType()) {
+		case AAC:
+			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_AAC) {
 				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_AAC);
 			}
-		}
-		if(frame instanceof NellymoserFrame) {
-			if(decoder == null // デコーダーが未設定の場合は生成する必要あり
-					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_NELLYMOSER) {
-				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_NELLYMOSER);
-			}
-		}
-		if(frame instanceof AdpcmswfFrame) {
-			if(decoder == null // デコーダーが未設定の場合は生成する必要あり
-					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_ADPCM_SWF) {
+			break;
+		case ADPCM_IMA_WAV:
+		case ADPCM_SWF:
+			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_ADPCM_SWF) {
 				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_ADPCM_SWF);
 			}
-		}
-		if(frame instanceof SpeexFrame) {
-			// speexはprivateDataがあるみたいだが、sampleRate、timebase、Channelsを設定しているので、そちらで決定できるので問題ないみたい。
-			if(decoder == null // デコーダーが未設定の場合は生成する必要あり
-					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_SPEEX) {
+			break;
+		case MP3:
+			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_MP3) {
+				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_MP3);
+			}
+			break;
+		case NELLYMOSER:
+			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_NELLYMOSER) {
+				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_NELLYMOSER);
+			}
+			break;
+		case PCM_ALAW:
+		case PCM_MULAW:
+		case SPEEX:
+			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_SPEEX) {
 				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_SPEEX);
 			}
-		}
-		if(frame instanceof VorbisFrame) {
-			if(decoder == null
-					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_VORBIS) {
+			break;
+		case VORBIS:
+			if(decoder == null|| decoder.getCodecID() != ICodec.ID.CODEC_ID_VORBIS) {
 				if(frame instanceof IdentificationHeaderFrame || frame instanceof CommentHeaderFrame || frame instanceof SetupHeaderFrame) {
 					// 初期化中のデータの場合は処理できない。
 					return null;
@@ -171,13 +138,40 @@ public class Packetizer {
 				IBuffer extraData = IBuffer.make(decoder, buffer.array(), 0, size);
 				decoder.setExtraData(extraData, 0, size, true);
 			}
-		}
-		if(frame instanceof Vp8Frame) {
-			if(decoder == null
-					|| decoder.getCodecID() != ICodec.ID.CODEC_ID_VP8) {
+			break;
+
+		case FLV1:
+			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_FLV1) {
+				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_FLV1);
+				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
+			}
+			break;
+		case H264:
+			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_H264) {
+				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_H264);
+				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
+			}
+			break;
+		case H265:
+		case MJPEG:
+		case NONE:
+		case OPUS:
+		case THEORA:
+		case VP6:
+			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_VP6F) {
+				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_VP6F);
+				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
+			}
+			break;
+		case VP8:
+			if(decoder == null|| decoder.getCodecID() != ICodec.ID.CODEC_ID_VP8) {
 				decoder = IStreamCoder.make(Direction.DECODING, ICodec.ID.CODEC_ID_VP8);
 				decoder.setTimeBase(IRational.make(1, (int)frame.getTimebase()));
 			}
+			break;
+		case VP9:
+		default:
+			break;
 		}
 		return decoder;
 	}
