@@ -69,6 +69,12 @@ public class MessageManager {
 		}
 		return null;
 	}
+	/**
+	 * aggregateMessageをFlvTag化します。
+	 * @param message
+	 * @return
+	 * @throws Exception
+	 */
 	private AggregateTag convertToAggregateTag(RtmpMessage message) throws Exception {
 		final RtmpHeader header = message.getHeader();
 		int difference = -1;
