@@ -1,3 +1,9 @@
+/*
+ * myLib - https://github.com/taktod/myLib
+ * Copyright (c) 2014 ttProject. All rights reserved.
+ * 
+ * Licensed under The MIT license.
+ */
 package com.ttProject.frameutil;
 
 import com.ttProject.frame.CodecType;
@@ -28,7 +34,7 @@ public class AnalyzerChecker {
 	/**
 	 * 解析用のanalyzerがどれであるか、調べる
 	 */
-	public IAnalyzer checkAnalyzer(CodecType codecType) {
+	public IAnalyzer checkAnalyzer(CodecType codecType) throws Exception {
 		switch(codecType) {
 		case AAC:
 			return new AacFrameAnalyzer();
@@ -67,7 +73,7 @@ public class AnalyzerChecker {
 		case VP9:
 			return new Vp9FrameAnalyzer();
 		default:
-			throw new RuntimeException("未定義のcodecTypeです");
+			throw new Exception("未定義のcodecTypeです");
 		}
 	}
 }
