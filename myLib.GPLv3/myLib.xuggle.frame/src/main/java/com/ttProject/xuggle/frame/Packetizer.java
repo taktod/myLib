@@ -59,6 +59,13 @@ public class Packetizer {
 		}
 		return null;
 	}
+	/**
+	 * 映像パケットを作成する
+	 * @param frame
+	 * @param packet
+	 * @return
+	 * @throws Exception
+	 */
 	private IPacket getVideoPacket(IVideoFrame frame, IPacket packet) throws Exception {
 		ByteBuffer buffer = frame.getPackBuffer();
 		if(buffer == null) {
@@ -75,6 +82,13 @@ public class Packetizer {
 		packet.setKeyPacket(frame.isKeyFrame());
 		return packet;
 	}
+	/**
+	 * 音声パケットを作成する
+	 * @param frame
+	 * @param packet
+	 * @return
+	 * @throws Exception
+	 */
 	private IPacket getAudioPacket(IAudioFrame frame, IPacket packet) throws Exception {
 		ByteBuffer buffer = frame.getPackBuffer();
 		if(buffer == null) {
