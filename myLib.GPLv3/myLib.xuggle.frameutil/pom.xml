@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.ttProject</groupId>
+    <artifactId>myLib</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+    <relativePath>../../</relativePath>
+  </parent>
+  <artifactId>myLib.xuggle.frameutil</artifactId>
+  <repositories>
+    <repository>
+      <id>xuggle repo</id>
+      <url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
+    </repository>
+  </repositories>
+ <dependencies>
+  <dependency>
+   <groupId>xuggle</groupId>
+   <artifactId>xuggle-xuggler</artifactId>
+   <version>5.4</version>
+  </dependency>
+  <dependency>
+  	<groupId>com.ttProject</groupId>
+  	<artifactId>myLib.frameutil</artifactId>
+  	<version>0.0.2-SNAPSHOT</version>
+  </dependency>
+ </dependencies>
+ <name>myLib.xuggle.frameutil</name>
+ <description>xuggleの変換動作のテスト用</description>
+  <licenses>
+    <license>
+      <name>GNU GENERAL PUBLIC LICENSE</name>
+      <url>https://www.gnu.org/licenses/gpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+</project>
