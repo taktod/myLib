@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.CodecType;
+import com.ttProject.frame.Frame;
 import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
@@ -79,10 +80,14 @@ public class Depacketizer {
 		IFrame frame = null;
 		IReadChannel channel = new ByteReadChannel(packet.getData().getByteArray(0, packet.getSize()));
 		while((frame = analyzer.analyze(channel)) != null) {
+			Frame f = (Frame) frame;
+			f.setPts(packet.getPts());
 			result.addFrame((IVideoFrame)frame);
 		}
 		frame = analyzer.getRemainFrame();
 		if(frame != null) {
+			Frame f = (Frame) frame;
+			f.setPts(packet.getPts());
 			result.addFrame((IVideoFrame)frame);
 		}
 		switch(result.getFrameList().size()) {
@@ -122,10 +127,14 @@ public class Depacketizer {
 		IFrame frame = null;
 		IReadChannel channel = new ByteReadChannel(packet.getData().getByteArray(0, packet.getSize()));
 		while((frame = analyzer.analyze(channel)) != null) {
+			Frame f = (Frame) frame;
+			f.setPts(packet.getPts());
 			result.addFrame((IAudioFrame)frame);
 		}
 		frame = analyzer.getRemainFrame();
 		if(frame != null) {
+			Frame f = (Frame) frame;
+			f.setPts(packet.getPts());
 			result.addFrame((IAudioFrame)frame);
 		}
 		switch(result.getFrameList().size()) {
