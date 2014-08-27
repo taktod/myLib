@@ -102,6 +102,9 @@ public class FileReadChannel implements IFileReadChannel {
 	 * {@inheritDoc}
 	 */
 	public int size() throws IOException {
+		if(stream.getChannel().size() > Integer.MAX_VALUE) {
+			return Integer.MAX_VALUE;
+		}
 		return (int)stream.getChannel().size();
 	}
 	/**

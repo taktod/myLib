@@ -55,7 +55,16 @@ public class URLFileReadChannel implements IFileReadChannel {
 	public URLFileReadChannel(String urlString, int position) throws IOException {
 		url = new URL(urlString);
 		openConnection(position);
-		size = conn.getContentLength();
+		// conn.getHeaderField("Content-Length")で取得すると正しい値がStringで取得できるらしい。
+		int size = conn.getContentLength();
+		if(size < 0) {
+			// データがオーバーフローしている可能性があるので、調整しておく。
+			long lsize = Long.parseLong(conn.getHeaderField("Content-Length"));
+			if(lsize > Integer.MAX_VALUE) {
+				size = Integer.MAX_VALUE;
+			}
+		}
+		this.size = size;
 	}
 	/**
 	 * コネクションを開く処理
