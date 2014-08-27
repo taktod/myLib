@@ -104,7 +104,7 @@ public class AdpcmPlayTest0D {
 			return predictor;
 		}
 	}
-	@Test
+//	@Test
 	public void test() throws Exception {
 		SourceDataLine audioLine = null;
 		int samplingRate = 44100; // 44.1 kHz
