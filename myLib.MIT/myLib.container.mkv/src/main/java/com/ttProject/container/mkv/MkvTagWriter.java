@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
+import com.ttProject.container.mkv.type.EBML;
 import com.ttProject.frame.IFrame;
 
 /**
@@ -227,6 +228,8 @@ public class MkvTagWriter implements IWriter {
 	@Override
 	public void prepareHeader() throws Exception {
 		// header情報はデータがこないとなんともいえないので、放置しておくことにするか？
+		EBML ebml = new EBML();
+		// そもそもまだMkvMasterTagで要素を追加できるようになっていないみたいですね。
 		// EBML
 		// Segment
 		//  SeekHead
