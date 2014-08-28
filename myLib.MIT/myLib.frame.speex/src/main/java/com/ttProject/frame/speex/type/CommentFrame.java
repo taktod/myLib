@@ -79,7 +79,6 @@ public class CommentFrame extends SpeexFrame {
 			if(venderName == null) {
 				return;
 			}
-			logger.info("venderName:" + venderName);
 		}
 		if(elementSize == null) {
 			// 問題はこのあと。
@@ -97,8 +96,6 @@ public class CommentFrame extends SpeexFrame {
 			}
 			elementList.add(element);
 		}
-		logger.info(venderName);
-		logger.info(elementList);
 		super.update();
 	}
 	/**
