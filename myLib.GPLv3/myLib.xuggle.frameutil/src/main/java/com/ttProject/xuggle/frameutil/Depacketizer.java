@@ -23,10 +23,10 @@ import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.speex.SpeexFrameSelector;
 import com.ttProject.frame.speex.type.CommentFrame;
 import com.ttProject.frame.speex.type.HeaderFrame;
+import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
 import com.ttProject.frameutil.AnalyzerChecker;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.util.HexUtil;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStreamCoder;
 
@@ -126,8 +126,7 @@ public class Depacketizer {
 			switch(type) {
 			case VORBIS:
 				{
-					IReadChannel privateData = new ByteReadChannel(encoder.getExtraData().getByteBuffer(0, encoder.getExtraDataSize()));
-					logger.info(HexUtil.toHex(encoder.getExtraData().getByteBuffer(0, encoder.getExtraDataSize())));
+					((VorbisFrameAnalyzer)analyzer).setPrivateData(new ByteReadChannel(encoder.getExtraData().getByteBuffer(0, encoder.getExtraDataSize())));
 				}
 				break;
 			case SPEEX:

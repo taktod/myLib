@@ -33,11 +33,7 @@ import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
 import com.ttProject.frame.vp8.Vp8FrameAnalyzer;
 import com.ttProject.frame.vp9.Vp9FrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
-import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.EbmlValue;
-import com.ttProject.unit.extra.bit.Bit8;
-import com.ttProject.util.BufferUtil;
 
 /**
  * TrackEntryタグ
@@ -139,7 +135,8 @@ public class TrackEntry extends MkvMasterTag {
 			// 残りは３つ目の要素
 			// となります。
 			// なおxuggleで変換する場合はIStreamCoderにこのcodecPrivateと同じものを渡す必要があるみたいです。
-			IReadChannel privateChannel = new ByteReadChannel(codecPrivate.getMkvData());
+			((VorbisFrameAnalyzer)analyzer).setPrivateData(new ByteReadChannel(codecPrivate.getMkvData()));
+/*			IReadChannel privateChannel = new ByteReadChannel(codecPrivate.getMkvData());
 			BitLoader loader = new BitLoader(privateChannel);
 			Bit8 count = new Bit8();
 			Bit8 identificationHeaderSize = new Bit8();
@@ -150,7 +147,7 @@ public class TrackEntry extends MkvMasterTag {
 			}
 			analyzer.analyze(new ByteReadChannel(BufferUtil.safeRead(privateChannel, identificationHeaderSize.get())));
 			analyzer.analyze(new ByteReadChannel(BufferUtil.safeRead(privateChannel, commentHeaderSize.get())));
-			analyzer.analyze(new ByteReadChannel(BufferUtil.safeRead(privateChannel, privateChannel.size() - privateChannel.position())));
+			analyzer.analyze(new ByteReadChannel(BufferUtil.safeRead(privateChannel, privateChannel.size() - privateChannel.position())));*/
 			break;
 		case A_MS_ACM:
 			analyzer = new AdpcmImaWavFrameAnalyzer();
