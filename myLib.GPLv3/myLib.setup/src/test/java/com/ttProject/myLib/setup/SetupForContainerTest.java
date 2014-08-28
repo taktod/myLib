@@ -281,7 +281,7 @@ public class SetupForContainerTest extends SetupBase {
 		if(container.open(getTargetFile("myLib.MIT/myLib.container.ogg", "test.theoravorbis.ogg"), IContainer.Type.WRITE, null) < 0) {
 			throw new Exception("コンテナが開けませんでした");
 		}
-		processConvert(container, Encoder.theora(container), Encoder.speex(container));
+		processConvert(container, Encoder.theora(container), Encoder.vorbis(container));
 	}
 	@Test
 	public void webm() throws Exception {
