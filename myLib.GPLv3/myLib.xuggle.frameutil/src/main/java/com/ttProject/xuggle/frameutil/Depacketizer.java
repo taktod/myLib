@@ -20,9 +20,13 @@ import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.frame.VideoSelector;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
+import com.ttProject.frame.speex.SpeexFrameSelector;
+import com.ttProject.frame.speex.type.CommentFrame;
+import com.ttProject.frame.speex.type.HeaderFrame;
 import com.ttProject.frameutil.AnalyzerChecker;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.util.HexUtil;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStreamCoder;
 
@@ -118,9 +122,32 @@ public class Depacketizer {
 			selector.setChannel(encoder.getChannels());
 			selector.setSampleRate(encoder.getSampleRate());
 			// vorbisの場合は、privateDataを通しておく必要があると思う
-			if(type == CodecType.VORBIS) {
-				// vorbisの場合は、codecPrivateがあるので、それを通しておく必要あり
-				// encoder.getExtraData(); // これがprivateData
+			IFrame extraFrame = null;
+			switch(type) {
+			case VORBIS:
+				{
+					IReadChannel privateData = new ByteReadChannel(encoder.getExtraData().getByteBuffer(0, encoder.getExtraDataSize()));
+					logger.info(HexUtil.toHex(encoder.getExtraData().getByteBuffer(0, encoder.getExtraDataSize())));
+				}
+				break;
+			case SPEEX:
+				{
+					IReadChannel privateData = new ByteReadChannel(encoder.getExtraData().getByteBuffer(0, encoder.getExtraDataSize()));
+					// どうやらheaderの部分の量のみっぽいです。commentはないのか？
+					CommentFrame commentFrame = new CommentFrame();
+					while((extraFrame = analyzer.analyze(privateData)) != null) {
+						if(extraFrame instanceof HeaderFrame) {
+							commentFrame.setHeaderFrame((HeaderFrame)extraFrame);
+						}
+					}
+					commentFrame.setVenderName("ttProject");
+					commentFrame.addElement("Depacketizer");
+					SpeexFrameSelector sselector = (SpeexFrameSelector)selector;
+					sselector.setCommentFrame(commentFrame);
+				}
+				break;
+			default:
+				break;
 			}
 		}
 		AudioMultiFrame result = new AudioMultiFrame();
