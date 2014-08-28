@@ -127,27 +127,7 @@ public class TrackEntry extends MkvMasterTag {
 		case A_VORBIS:
 			logger.info("vorbisは動作がだめだと思います。");
 			analyzer = new VorbisFrameAnalyzer();
-			// ここでcodecPrivateのデータを先行して解析する必要あり。
-			// 02 1E 56
-			// サイズ指定要素２つ
-			// １つ目は0x1E
-			// ２つ目は0x56
-			// 残りは３つ目の要素
-			// となります。
-			// なおxuggleで変換する場合はIStreamCoderにこのcodecPrivateと同じものを渡す必要があるみたいです。
 			((VorbisFrameAnalyzer)analyzer).setPrivateData(new ByteReadChannel(codecPrivate.getMkvData()));
-/*			IReadChannel privateChannel = new ByteReadChannel(codecPrivate.getMkvData());
-			BitLoader loader = new BitLoader(privateChannel);
-			Bit8 count = new Bit8();
-			Bit8 identificationHeaderSize = new Bit8();
-			Bit8 commentHeaderSize = new Bit8();
-			loader.load(count, identificationHeaderSize, commentHeaderSize);
-			if(count.get() != 2) {
-				throw new Exception("count数がvorbisに合致していません。");
-			}
-			analyzer.analyze(new ByteReadChannel(BufferUtil.safeRead(privateChannel, identificationHeaderSize.get())));
-			analyzer.analyze(new ByteReadChannel(BufferUtil.safeRead(privateChannel, commentHeaderSize.get())));
-			analyzer.analyze(new ByteReadChannel(BufferUtil.safeRead(privateChannel, privateChannel.size() - privateChannel.position())));*/
 			break;
 		case A_MS_ACM:
 			analyzer = new AdpcmImaWavFrameAnalyzer();

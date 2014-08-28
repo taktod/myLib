@@ -30,6 +30,14 @@ public class VorbisFrameAnalyzer extends AudioAnalyzer {
 	 * @param channel
 	 */
 	public void setPrivateData(IReadChannel channel) throws Exception {
+		// ここでcodecPrivateのデータを先行して解析する必要あり。
+		// 02 1E 56
+		// サイズ指定要素２つ
+		// １つ目は0x1E
+		// ２つ目は0x56
+		// 残りは３つ目の要素
+		// となります。
+		// なおxuggleで変換する場合はIStreamCoderにこのcodecPrivateと同じものを渡す必要があるみたいです。
 		BitLoader loader = new BitLoader(channel);
 		Bit8 count = new Bit8();
 		Bit8 identificationHeaderSize = new Bit8();
