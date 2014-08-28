@@ -65,7 +65,7 @@ public class MpegtsPacketWriter implements IWriter {
 		this.outputChannel = outputStream.getChannel();
 	}
 	public MpegtsPacketWriter(FileOutputStream fileOutputStream) {
-		this.outputChannel = fileOutputStream.getChannel();
+		this(fileOutputStream.getChannel());
 	}
 	public MpegtsPacketWriter(WritableByteChannel outputChannel) {
 		this.outputChannel = outputChannel;
