@@ -34,10 +34,10 @@ public class SilentFrameTest {
 	@Test
 	public void test() throws Exception {
 		logger.info("動作テスト開始");
-		IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_VORBIS);
-		encoder.setSampleRate(44100);
-		encoder.setBitRate(96000);
-		encoder.setChannels(2);
+		IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_PCM_MULAW);
+		encoder.setSampleRate(22050);
+		encoder.setBitRate(48000);
+		encoder.setChannels(1);
 		ICodec codec = encoder.getCodec();
 		Depacketizer depacketizer = new Depacketizer();
 		IAudioSamples.Format findFormat = null;
