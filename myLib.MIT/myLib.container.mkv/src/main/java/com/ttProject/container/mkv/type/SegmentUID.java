@@ -23,10 +23,9 @@ public class SegmentUID extends MkvBinaryTag {
 		super(Type.SegmentUID, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
-		
+	public SegmentUID() {
+		this(new EbmlValue());
 	}
 }

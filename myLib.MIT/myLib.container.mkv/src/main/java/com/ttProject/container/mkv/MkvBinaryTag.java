@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.EbmlValue;
 import com.ttProject.util.BufferUtil;
 
@@ -53,6 +54,29 @@ public abstract class MkvBinaryTag extends MkvTag {
 	 */
 	public ByteBuffer getMkvData() {
 		return buffer.duplicate();
+	}
+	/**
+	 * データ登録
+	 * @param data
+	 */
+	public void setValue(ByteBuffer data) {
+		buffer = data.duplicate();
+		getTagSize().set(buffer.remaining());
+		super.update();
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void requestUpdate() throws Exception {
+		if(buffer == null) {
+			throw new Exception("値がありません。");
+		}
+		BitConnector connector = new BitConnector();
+		super.setData(BufferUtil.connect(
+				connector.connect(getTagId(), getTagSize()),
+				buffer
+		));
 	}
 	/**
 	 * {@inheritDoc}

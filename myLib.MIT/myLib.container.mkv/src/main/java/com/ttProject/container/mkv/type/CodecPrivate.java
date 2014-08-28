@@ -23,10 +23,9 @@ public class CodecPrivate extends MkvBinaryTag {
 		super(Type.CodecPrivate, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
-		
+	public CodecPrivate() {
+		this(new EbmlValue());
 	}
 }

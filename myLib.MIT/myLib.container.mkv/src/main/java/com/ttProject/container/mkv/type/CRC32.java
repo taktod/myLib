@@ -23,10 +23,9 @@ public class CRC32 extends MkvBinaryTag {
 		super(Type.CRC32, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
-		
+	public CRC32() {
+		this(new EbmlValue());
 	}
 }

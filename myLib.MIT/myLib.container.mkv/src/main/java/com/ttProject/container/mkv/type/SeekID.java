@@ -27,11 +27,10 @@ public class SeekID extends MkvBinaryTag {
 		super(Type.SeekID, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
-		
+	public SeekID() {
+		this(new EbmlValue());
 	}
 	/**
 	 * seek先のIdを参照したい。

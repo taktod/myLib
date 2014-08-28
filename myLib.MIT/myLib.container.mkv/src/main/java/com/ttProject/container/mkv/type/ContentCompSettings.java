@@ -23,10 +23,9 @@ public class ContentCompSettings extends MkvBinaryTag {
 		super(Type.ContentCompSettings, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
-		
+	public ContentCompSettings() {
+		this(new EbmlValue());
 	}
 }
