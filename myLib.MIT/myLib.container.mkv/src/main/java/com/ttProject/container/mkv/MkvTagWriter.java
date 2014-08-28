@@ -6,6 +6,11 @@
  */
 package com.ttProject.container.mkv;
 
+import java.io.FileOutputStream;
+import java.nio.channels.WritableByteChannel;
+
+import org.apache.log4j.Logger;
+
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
 import com.ttProject.frame.IFrame;
@@ -15,6 +20,10 @@ import com.ttProject.frame.IFrame;
  * @author taktod
  */
 public class MkvTagWriter implements IWriter {
+	/** ロガー */
+	private Logger logger = Logger.getLogger(MkvTagWriter.class);
+	private final WritableByteChannel outputChannel;
+	private FileOutputStream outputStream = null;
 	// 最少の場合はMuxer名だけ追加入力してもらって、あとは自動入力でなんとかした方がよさそう。
 	// frameを入力する前に送ったmkvTagがある場合は、そっちを使うようにする。(なるべく)
 	// 実際の書き込みはframeうけとってから実行みたいな感じがいいとおもう。
@@ -205,13 +214,36 @@ public class MkvTagWriter implements IWriter {
 06:25:14,190 [main] INFO [MkvTagReader] -    CueTrack size:1 uint:1
 06:25:14,190 [main] INFO [MkvTagReader] -    CueClusterPosition size:2 uint:19042
 	 */
+	public MkvTagWriter(String fileName) throws Exception {
+		outputStream = new FileOutputStream(fileName);
+		this.outputChannel = outputStream.getChannel();
+	}
+	public MkvTagWriter(FileOutputStream fileOutputStream) {
+		this(fileOutputStream.getChannel());
+	}
+	public MkvTagWriter(WritableByteChannel outputChannel) {
+		this.outputChannel = outputChannel;
+	}
 	@Override
 	public void prepareHeader() throws Exception {
 		// header情報はデータがこないとなんともいえないので、放置しておくことにするか？
+		// EBML
+		// Segment
+		//  SeekHead
+		//  Info
+		//  Tracks
+		// あたりは記入できるか？
 	}
 	@Override
 	public void prepareTailer() throws Exception {
-		
+		if(outputStream != null) {
+			try {
+				outputStream.close();
+			}
+			catch(Exception e) {
+			}
+			outputStream = null;
+		}
 	}
 	@Override
 	public void addContainer(IContainer container) throws Exception {
