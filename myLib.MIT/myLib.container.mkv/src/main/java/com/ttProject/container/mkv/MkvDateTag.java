@@ -59,7 +59,7 @@ public abstract class MkvDateTag extends MkvTag {
 	}
 	public void setValue(Date date) {
 		value = new Bit64();
-		value.setLong(date.getTime() * 1000000L - 946684800000L);
+		value.setLong((date.getTime() - 946684800000L) * 1000000L);
 		getTagSize().set(8);
 		super.update();
 	}
