@@ -34,8 +34,8 @@ public class SilentFrameTest {
 	@Test
 	public void test() throws Exception {
 		logger.info("動作テスト開始");
-		IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_PCM_MULAW);
-		encoder.setSampleRate(22050);
+		IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_VORBIS);
+		encoder.setSampleRate(32000);
 		encoder.setBitRate(48000);
 		encoder.setChannels(1);
 		ICodec codec = encoder.getCodec();
