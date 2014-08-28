@@ -6,6 +6,8 @@
  */
 package com.ttProject.frame.speex;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IFrame;
@@ -16,6 +18,9 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class SpeexFrameAnalyzer extends AudioAnalyzer {
+	/** ロガー */
+	@SuppressWarnings("unused")
+	private Logger logger = Logger.getLogger(SpeexFrameAnalyzer.class);
 	private SpeexFrame tmpFrame = null;
 	/**
 	 * コンストラクタ
@@ -35,6 +40,10 @@ public class SpeexFrameAnalyzer extends AudioAnalyzer {
 		}
 		else {
 			frame = (SpeexFrame)super.analyze(channel);
+		}
+		if(frame == null) {
+			tmpFrame = null;
+			return null;
 		}
 		// データを評価する
 		if(!frame.isComplete()) {
