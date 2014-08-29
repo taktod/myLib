@@ -44,11 +44,12 @@ import com.ttProject.unit.extra.EbmlValue;
 public class TrackEntry extends MkvMasterTag {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(TrackEntry.class);
-	private long  timebase;
-	private int   lacingFlag = 0;
-	private Media type = null;
+	private long  timebase; // timebaseは他から設定されるもの
+	private int   lacingFlag = 0; // 子要素由来
+	private Media type = null; // 子要素由来
 
-	private CodecID codecId = null;
+	private CodecID codecId = null; // 子要素由来
+	// 以下は孫要素由来
 	private PixelWidth  pixelWidth  = null;
 	private PixelHeight pixelHeight = null;
 	private Channels          channels          = null;
@@ -56,7 +57,7 @@ public class TrackEntry extends MkvMasterTag {
 	private BitDepth          bitDepth          = null; // このデータはnullなことがあるみたいです。(aacで実際そうなってた。)
 	
 	// 圧縮や暗号化がある場合のデータ指定
-	private ContentEncodings encodings = null;
+	private ContentEncodings encodings = null; // 子要素由来
 	/** frame解析用のオブジェクト */
 	private IAnalyzer analyzer = null;
 	/**
