@@ -54,27 +54,27 @@ public class MkvTest {
 			IReader reader = new MkvTagReader();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
-				logger.info(container);
+//				logger.info(container);
 				if(container instanceof BlockGroup) {
 					for(MkvTag tag : ((BlockGroup)container).getChildList()) {
 						if(tag instanceof MkvBlockTag) {
 							MkvBlockTag blockTag = (MkvBlockTag)tag;
 //							logger.info(blockTag);
-							logger.info(blockTag.getFrame());
+//							logger.info(blockTag.getFrame());
 						}
 					}
 				}
 				if(container instanceof MkvBlockTag) {
 					MkvBlockTag blockTag = (MkvBlockTag)container;
-					logger.info(blockTag);
-					logger.info(blockTag.getFrame());
+//					logger.info(blockTag);
+//					logger.info(blockTag.getFrame());
 					if(blockTag.getFrame() instanceof VideoFrame) {
 						VideoFrame vFrame = (VideoFrame)blockTag.getFrame();
-						logger.info(vFrame.getWidth() + "x" + vFrame.getHeight());
+//						logger.info(vFrame.getWidth() + "x" + vFrame.getHeight());
 					}
 					else if(blockTag.getFrame() instanceof AudioFrame) {
 						AudioFrame aFrame = (AudioFrame)blockTag.getFrame();
-						logger.info(aFrame.getSampleRate() + ":" + aFrame.getChannel());
+//						logger.info(aFrame.getSampleRate() + ":" + aFrame.getChannel());
 					}
 				}
 				lastPosition = source.position();

@@ -228,7 +228,6 @@ public class MkvTagWriter implements IWriter {
 	@Override
 	public void prepareHeader() throws Exception {
 		// header情報はデータがこないとなんともいえないので、放置しておくことにするか？
-		EBML ebml = new EBML();
 		// そもそもまだMkvMasterTagで要素を追加できるようになっていないみたいですね。
 		// EBML
 		// Segment
@@ -250,7 +249,16 @@ public class MkvTagWriter implements IWriter {
 	}
 	@Override
 	public void addContainer(IContainer container) throws Exception {
-		// TODO addContainerでTrackEntryの値はあらかじめいれておきたいところ・・・
+		if(container instanceof MkvMasterTag) {
+			MkvMasterTag masterTag = (MkvMasterTag)container;
+			outputChannel.write(masterTag.getData());
+			for(MkvTag tag : masterTag.getChildList()) {
+				addContainer(tag);
+			}
+		}
+		else {
+			outputChannel.write(container.getData());
+		}
 	}
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {

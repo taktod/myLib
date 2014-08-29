@@ -38,7 +38,7 @@ public class WebmTest {
 			while((container = reader.read(source)) != null) {
 				if(container instanceof SimpleBlock) {
 					SimpleBlock simpleBlock = (SimpleBlock)container;
-					logger.info(simpleBlock);
+//					logger.info(simpleBlock);
 				}
 			}
 		}
