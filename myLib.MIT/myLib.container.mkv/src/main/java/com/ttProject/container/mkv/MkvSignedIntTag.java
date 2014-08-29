@@ -21,6 +21,7 @@ import com.ttProject.unit.extra.bit.Bit8;
 
 /**
  * 数値を保持しているtagの動作
+ * TODO signedIntなのに、負の数の扱いがおかしい。(復元したときに負の数にならない実データをみつけたら対処しておきたいところ)
  * @author taktod
  */
 public abstract class MkvSignedIntTag extends MkvTag {
