@@ -54,13 +54,13 @@ public class MkvTest {
 			IReader reader = new MkvTagReader();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
+				logger.info(container);
 				if(container instanceof BlockGroup) {
-//					logger.info(container);
 					for(MkvTag tag : ((BlockGroup)container).getChildList()) {
 						if(tag instanceof MkvBlockTag) {
-//							MkvBlockTag blockTag = (MkvBlockTag)tag;
+							MkvBlockTag blockTag = (MkvBlockTag)tag;
 //							logger.info(blockTag);
-//							logger.info(blockTag.getFrame());
+							logger.info(blockTag.getFrame());
 						}
 					}
 				}
