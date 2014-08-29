@@ -31,6 +31,12 @@ public class ContentCompression extends MkvMasterTag {
 		super(Type.ContentEncoding, size);
 	}
 	/**
+	 * コンストラクタ
+	 */
+	public ContentCompression() {
+		this(new EbmlValue());
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -53,7 +59,28 @@ public class ContentCompression extends MkvMasterTag {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected void requestUpdate() throws Exception {
+	public void addChild(MkvTag tag) {
+		if(tag instanceof ContentCompAlgo) {
+			algo = (ContentCompAlgo)tag;
+		}
+		if(tag instanceof ContentCompSettings) {
+			settings = (ContentCompSettings)tag;
+		}
+		super.addChild(tag);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public MkvTag removeChild(int i) {
+		MkvTag removedTag = super.removeChild(i);
+		if(removedTag.hashCode() == algo.hashCode()) {
+			algo = null;
+		}
+		if(removedTag.hashCode() == settings.hashCode()) {
+			settings = null;
+		}
+		return removedTag;
 	}
 	public Algo getAlgoType() throws Exception {
 		if(algo == null) {

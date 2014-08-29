@@ -23,9 +23,9 @@ public class Cues extends MkvMasterTag {
 		super(Type.Cues, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public Cues() {
+		this(new EbmlValue());
 	}
 }

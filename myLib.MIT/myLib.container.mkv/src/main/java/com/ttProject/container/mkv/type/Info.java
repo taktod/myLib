@@ -23,9 +23,9 @@ public class Info extends MkvMasterTag {
 		super(Type.Info, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public Info() {
+		this(new EbmlValue());
 	}
 }

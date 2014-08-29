@@ -23,9 +23,9 @@ public class Audio extends MkvMasterTag {
 		super(Type.Audio, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public Audio() {
+		this(new EbmlValue());
 	}
 }

@@ -23,9 +23,9 @@ public class SimpleTag extends MkvMasterTag {
 		super(Type.SimpleTag, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public SimpleTag() {
+		this(new EbmlValue());
 	}
 }

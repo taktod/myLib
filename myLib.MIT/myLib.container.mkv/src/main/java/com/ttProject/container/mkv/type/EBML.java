@@ -28,11 +28,4 @@ public class EBML extends MkvMasterTag {
 	public EBML() {
 		super(Type.EBML, new EbmlValue());
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	protected void requestUpdate() throws Exception {
-		// 中の子要素を確認して、sizeを決定する必要がある。
-	}
 }

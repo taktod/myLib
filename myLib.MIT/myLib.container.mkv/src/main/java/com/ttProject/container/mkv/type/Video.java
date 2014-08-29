@@ -23,9 +23,9 @@ public class Video extends MkvMasterTag {
 		super(Type.Video, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public Video() {
+		this(new EbmlValue());
 	}
 }

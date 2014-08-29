@@ -23,9 +23,9 @@ public class Tracks extends MkvMasterTag {
 		super(Type.Tracks, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public Tracks() {
+		this(new EbmlValue());
 	}
 }

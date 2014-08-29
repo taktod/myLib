@@ -23,9 +23,9 @@ public class CuePoint extends MkvMasterTag {
 		super(Type.CuePoint, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public CuePoint() {
+		this(new EbmlValue());
 	}
 }

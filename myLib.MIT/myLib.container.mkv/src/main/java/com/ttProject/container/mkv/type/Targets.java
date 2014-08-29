@@ -23,9 +23,9 @@ public class Targets extends MkvMasterTag {
 		super(Type.Targets, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public Targets() {
+		this(new EbmlValue());
 	}
 }

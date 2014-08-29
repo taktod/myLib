@@ -23,9 +23,9 @@ public class BlockGroup extends MkvMasterTag {
 		super(Type.BlockGroup, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public BlockGroup() {
+		this(new EbmlValue());
 	}
 }

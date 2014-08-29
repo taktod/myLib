@@ -23,9 +23,9 @@ public class CueTrackPositions extends MkvMasterTag {
 		super(Type.CueTrackPositions, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public CueTrackPositions() {
+		this(new EbmlValue());
 	}
 }

@@ -24,9 +24,9 @@ public class ContentEncodings extends MkvMasterTag {
 		super(Type.ContentEncodings, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public ContentEncodings() {
+		this(new EbmlValue());
 	}
 }

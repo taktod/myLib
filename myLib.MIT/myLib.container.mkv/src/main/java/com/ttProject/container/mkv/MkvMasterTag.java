@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
@@ -52,8 +53,44 @@ public abstract class MkvMasterTag extends MkvTag {
 		}
 		super.load(channel);
 	}
+	/**
+	 * 子要素を追加する
+	 */
+	public void addChild(MkvTag tag) {
+		childTags.add(tag);
+		super.update();
+	}
+	/**
+	 * 子要素を撤去する
+	 * @param i
+	 * @return
+	 */
+	public MkvTag removeChild(int i) {
+		MkvTag removedTag = childTags.remove(i);
+		super.update();
+		return removedTag;
+	}
+	/**
+	 * 子要素を参照する
+	 * @return
+	 */
 	public List<MkvTag> getChildList() {
 		return new ArrayList<MkvTag>(childTags);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected void requestUpdate() throws Exception {
+		// ここで子要素のサイズについて、調査しておけばいいかな？
+		int size = 0;
+		for(MkvTag tag : childTags) {
+			size += tag.getData().remaining();
+		}
+		getTagSize().set(size);
+		// とりあえず、headerとsizeの部分だけ応答として返したい
+		BitConnector connector = new BitConnector();
+		super.setData(connector.connect(getTagId(), getTagSize()));
 	}
 	/**
 	 * {@inheritDoc}

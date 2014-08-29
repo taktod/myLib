@@ -67,10 +67,10 @@ public class TrackEntry extends MkvMasterTag {
 		super(Type.TrackEntry, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public TrackEntry() {
+		this(new EbmlValue());
 	}
 	/**
 	 * load後に、扱いやすいようにデータを設定しておきます。
@@ -250,5 +250,13 @@ public class TrackEntry extends MkvMasterTag {
 	}
 	public ContentEncodings getEncodings() {
 		return encodings;
+	}
+	@Override
+	public void addChild(MkvTag tag) {
+		super.addChild(tag);
+	}
+	@Override
+	public MkvTag removeChild(int i) {
+		return super.removeChild(i);
 	}
 }

@@ -23,9 +23,9 @@ public class Seek extends MkvMasterTag {
 		super(Type.Seek, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public Seek() {
+		this(new EbmlValue());
 	}
 }

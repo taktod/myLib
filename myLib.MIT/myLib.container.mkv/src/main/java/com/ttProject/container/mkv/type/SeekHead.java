@@ -23,9 +23,9 @@ public class SeekHead extends MkvMasterTag {
 		super(Type.SeekHead, size);
 	}
 	/**
-	 * {@inheritDoc}
+	 * コンストラクタ
 	 */
-	@Override
-	protected void requestUpdate() throws Exception {
+	public SeekHead() {
+		this(new EbmlValue());
 	}
 }
