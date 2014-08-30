@@ -78,11 +78,30 @@ public abstract class MkvMasterTag extends MkvTag {
 		return new ArrayList<MkvTag>(childTags);
 	}
 	/**
+	 * サイズを無限にする
+	 * @param set true:設定する false:解除する
+	 */
+	public void setInfinite(boolean set) {
+		if(set) {
+			getTagSize().setLong(0xFFFFFFFFFFFFFFL);
+		}
+		else {
+			getTagSize().set(0);
+		}
+		super.update();
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		// ここで子要素のサイズについて、調査しておけばいいかな？
+		if(getTagSize().getLong() == 0xFFFFFFFFFFFFFFL) {
+			// とりあえず、headerとsizeの部分だけ応答として返したい
+			BitConnector connector = new BitConnector();
+			super.setData(connector.connect(getTagId(), getTagSize()));
+			return;
+		}
 		int size = 0;
 		for(MkvTag tag : childTags) {
 			size += tag.getData().remaining();

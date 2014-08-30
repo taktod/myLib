@@ -23,6 +23,7 @@ import com.ttProject.container.mkv.type.MuxingApp;
 import com.ttProject.container.mkv.type.ReferenceBlock;
 import com.ttProject.container.mkv.type.SamplingFrequency;
 import com.ttProject.container.mkv.type.SeekID;
+import com.ttProject.container.mkv.type.Segment;
 import com.ttProject.util.HexUtil;
 
 /**
@@ -33,6 +34,17 @@ import com.ttProject.util.HexUtil;
 public class EachTagTest {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(EachTagTest.class);
+	/**
+	 * 無限に続くデータをつくるための動作テストs
+	 * @throws Exception
+	 */
+	@Test
+	public void InfiniteEbmlTagTest() throws Exception {
+		logger.info("InfiniteEbmlTagTest");
+		Segment segment = new Segment();
+		segment.setInfinite(true);
+		logger.info(HexUtil.toHex(segment.getData(), true));
+	}
 	/**
 	 * MkvBinaryTagの動作テスト
 	 * @throws Exception
