@@ -30,7 +30,9 @@ public enum CodecType {
 	VP8(12,          Type.VIDEO),
 	VP9(13,          Type.VIDEO),
 	H265(14,         Type.VIDEO),
-	NONE(-1,         Type.OTHER);
+	NONE(-1,         Type.OTHER),
+	UNKNOWN_AUDIO(-2,Type.AUDIO),
+	UNKNOWN_VIDEO(-3,Type.VIDEO);
 	private static enum Type {
 		AUDIO,
 		VIDEO,

@@ -6,6 +6,8 @@
  */
 package com.ttProject.container.flv;
 
+import com.ttProject.frame.CodecType;
+
 /**
  * コーデック処理
  * @author taktod
@@ -31,11 +33,18 @@ http://ee72078.moo.jp/chinsan/pc/Lab/index.php?AAC
 http://blog-imgs-18-origin.fc2.com/n/a/n/nanncyatte/aacfileheader.png
  */
 public enum FlvCodecType {
-	NONE,
+	NONE(CodecType.NONE),
 	// 映像用コーデック
-	JPEG,FLV1,SCREEN,ON2VP6,ON2VP6_ALPHA,SCREEN_V2,H264,
+	JPEG(CodecType.UNKNOWN_VIDEO),FLV1(CodecType.FLV1),SCREEN(CodecType.UNKNOWN_VIDEO),ON2VP6(CodecType.VP6),ON2VP6_ALPHA(CodecType.UNKNOWN_VIDEO),SCREEN_V2(CodecType.UNKNOWN_VIDEO),H264(CodecType.H264),
 	// 音声用コーデック
-	PCM,ADPCM,MP3,LPCM,NELLY_16,NELLY_8,NELLY,G711_A,G711_U,RESERVED,AAC,SPEEX,MP3_8,DEVICE_SPECIFIC;
+	PCM(CodecType.UNKNOWN_AUDIO),ADPCM(CodecType.ADPCM_SWF),MP3(CodecType.MP3),LPCM(CodecType.UNKNOWN_AUDIO),NELLY_16(CodecType.NELLYMOSER),NELLY_8(CodecType.NELLYMOSER),NELLY(CodecType.NELLYMOSER),G711_A(CodecType.PCM_ALAW),G711_U(CodecType.PCM_MULAW),RESERVED(CodecType.UNKNOWN_AUDIO),AAC(CodecType.AAC),SPEEX(CodecType.SPEEX),MP3_8(CodecType.MP3),DEVICE_SPECIFIC(CodecType.UNKNOWN_AUDIO);
+	private final CodecType codecType;
+	private FlvCodecType(CodecType codecType) {
+		this.codecType = codecType;
+	}
+	public CodecType getCodecType() {
+		return codecType;
+	}
 	/**
 	 * 音声用コーデック判定
 	 * @param tagByte
