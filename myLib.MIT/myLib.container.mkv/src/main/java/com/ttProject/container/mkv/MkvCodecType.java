@@ -6,20 +6,22 @@
  */
 package com.ttProject.container.mkv;
 
+import com.ttProject.frame.CodecType;
+
 public enum MkvCodecType {
-	V_MPEG4_ISO_AVC("V_MPEG4/ISO/AVC"),
-	V_MPEG_ISO_HEVC("V_MPEG/ISO/HEVC"),
-	V_VP8("V_VP8"),
-	V_VP9("V_VP9"),
-	V_MJPEG("V_MJPEG"),
+	V_MPEG4_ISO_AVC("V_MPEG4/ISO/AVC", CodecType.H264),
+	V_MPEG_ISO_HEVC("V_MPEG/ISO/HEVC", CodecType.H265),
+	V_VP8("V_VP8", CodecType.VP8),
+	V_VP9("V_VP9", CodecType.VP9),
+	V_MJPEG("V_MJPEG", CodecType.MJPEG),
 
 //	V_MS("V_MS/VFW/FOURCC"), // microsoft mpeg4 v2っぽい
 //	V_THEORA("V_THEORA"), // theora
-	A_AAC("A_AAC"),
-	A_MPEG_L3("A_MPEG/L3"),
-	A_VORBIS("A_VORBIS"),
-	A_OPUS("A_OPUS"),
-	A_MS_ACM("A_MS/ACM"),
+	A_AAC("A_AAC", CodecType.AAC),
+	A_MPEG_L3("A_MPEG/L3", CodecType.MP3),
+	A_VORBIS("A_VORBIS", CodecType.VORBIS),
+	A_OPUS("A_OPUS", CodecType.OPUS),
+	A_MS_ACM("A_MS/ACM", CodecType.ADPCM_IMA_WAV),
 //	S_TEXT_UTF8("S_TEXT/UTF8"), // subtitle
 /*	D_WEBVTT_SUBTITLES("D_WEBVTT/SUBTITLES"), // webVtt用
 	D_WEBVTT_CAPTIONS("D_WEBVTT/CAPTIONS"),
@@ -27,8 +29,13 @@ public enum MkvCodecType {
 	D_WEBVTT_METADATA("D_WEBVTT/METADATA"),*/
 	;
 	private final String name;
-	private MkvCodecType(String name) {
+	private final CodecType codecType;
+	private MkvCodecType(String name, CodecType codecType) {
 		this.name = name;
+		this.codecType = codecType;
+	}
+	public CodecType getCodecType() {
+		return codecType;
 	}
 	@Override
 	public String toString() {
