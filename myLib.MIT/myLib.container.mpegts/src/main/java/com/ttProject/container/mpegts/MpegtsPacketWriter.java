@@ -20,6 +20,7 @@ import com.ttProject.container.mpegts.type.Pat;
 import com.ttProject.container.mpegts.type.Pes;
 import com.ttProject.container.mpegts.type.Pmt;
 import com.ttProject.container.mpegts.type.Sdt;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
@@ -128,7 +129,7 @@ public class MpegtsPacketWriter implements IWriter {
 		continuityCounterMap.put(packet.getPid(), packet.getContinuityCounter() + 1);
 	}
 	@Override
-	public void prepareHeader() throws Exception {
+	public void prepareHeader(CodecType ...codecs) throws Exception {
 
 	}
 	@Override

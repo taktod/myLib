@@ -16,6 +16,7 @@ import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
 import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.VideoTag;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
@@ -83,7 +84,7 @@ public class FlvTagWriter implements IWriter {
 		}
 	}
 	@Override
-	public void prepareHeader() throws Exception {
+	public void prepareHeader(CodecType... codecs) throws Exception {
 		logger.info("headerを準備します。");
 	}
 	@Override

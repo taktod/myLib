@@ -22,6 +22,7 @@ import com.ttProject.container.mkv.type.EBMLMaxSizeLength;
 import com.ttProject.container.mkv.type.EBMLReadVersion;
 import com.ttProject.container.mkv.type.EBMLVersion;
 import com.ttProject.container.mkv.type.Segment;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IFrame;
 
 /**
@@ -234,18 +235,34 @@ public class MkvTagWriter implements IWriter {
 		this.outputChannel = outputChannel;
 	}
 	@Override
-	public void prepareHeader() throws Exception {
+	public void prepareHeader(CodecType ...codecs) throws Exception {
 		// EBMLの動作はwebmになったらoverrideしてmatroskaではなく、webmと記入してやりたいところ
 		// EBML
 		setupEbml();
 		// Segment
+		setupSegment();
+		// infoはいいけど、tracksの作成が不能になるわけか・・・
+		// 仮データをつくっておいて、データがうけとったら、必要なものを書き込むようにしておく。
+		// といった感じにしておこうかね
+		// コーデックの詳細情報がわからないとどうしていいかわからなくなる
+		// SeekHead
+		setupSeekHead();
+		// Info
+		// Tracks
+		// あたりは記入できるか？
+	}
+	private void setupSeekHead() {
+		// この部分では、Info Tracks TagsとVoidを準備しておく(voidのところにあとでcuesを追加する(tailer?))
+		// infoとtracks、tagsについては長さを知っている必要があるので、あらかじめつくらないとだめか？
+	}
+	/**
+	 * segmentの冒頭部つくっておく
+	 * @throws Exception
+	 */
+	private void setupSegment() throws Exception {
 		Segment segment = new Segment();
 		segment.setInfinite(true);
 		addContainer(segment);
-		//  SeekHead
-		//  Info
-		//  Tracks
-		// あたりは記入できるか？
 	}
 	/**
 	 * ebmlの部分の初期化を実施

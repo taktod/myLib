@@ -8,6 +8,7 @@ package com.ttProject.container.riff;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IFrame;
 
 /**
@@ -24,7 +25,7 @@ public class RiffUnitWriter implements IWriter {
 		
 	}
 	@Override
-	public void prepareHeader() throws Exception {
+	public void prepareHeader(CodecType ...codecs) throws Exception {
 		
 	}
 	@Override

@@ -6,6 +6,7 @@
  */
 package com.ttProject.container;
 
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IFrame;
 
 /**
@@ -30,7 +31,7 @@ public interface IWriter {
 	/**
 	 * headerデータを構築
 	 */
-	public void prepareHeader() throws Exception;
+	public void prepareHeader(CodecType ...codecs) throws Exception;
 	/**
 	 * 終端データを構築
 	 */

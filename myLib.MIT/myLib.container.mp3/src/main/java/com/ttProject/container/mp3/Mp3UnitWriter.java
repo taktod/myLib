@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.mp3.type.Frame;
 
@@ -50,7 +51,7 @@ public class Mp3UnitWriter implements IWriter {
 		}
 	}
 	@Override
-	public void prepareHeader() {
+	public void prepareHeader(CodecType ...codecs) {
 		logger.info("header準備");
 	}
 	@Override

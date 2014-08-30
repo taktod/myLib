@@ -17,6 +17,7 @@ import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
 import com.ttProject.container.ogg.type.Page;
 import com.ttProject.container.ogg.type.StartPage;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.unit.extra.bit.Bit1;
@@ -95,7 +96,7 @@ public class OggPageWriter implements IWriter {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void prepareHeader() throws Exception {
+	public void prepareHeader(CodecType ...codecs) throws Exception {
 		
 	}
 	/**

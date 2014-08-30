@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.aac.type.Frame;
 
@@ -49,7 +50,7 @@ public class AdtsUnitWriter implements IWriter {
 	}
 
 	@Override
-	public void prepareHeader() throws Exception {
+	public void prepareHeader(CodecType... codecs) throws Exception {
 		logger.info("header準備");
 	}
 
