@@ -23,10 +23,12 @@ import com.ttProject.container.mkv.type.EBMLMaxIDLength;
 import com.ttProject.container.mkv.type.EBMLMaxSizeLength;
 import com.ttProject.container.mkv.type.EBMLReadVersion;
 import com.ttProject.container.mkv.type.EBMLVersion;
+import com.ttProject.container.mkv.type.Segment;
 import com.ttProject.container.mkv.type.TrackEntry;
 import com.ttProject.frame.IFrame;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.EbmlValue;
 
 /**
  * mkvによるデータの書き込み動作テスト
@@ -52,7 +54,6 @@ public class MkvWriteTest {
 		// ある程度どうなるかわかっているとだいぶ助かるけど・・・
 		// frameが着てから解析するというのはやらないでおこうというのがいいのか？
 		// ただしmpegtsと違ってサイズやサンプルレートといった情報も必要になるので、そのあたりもきちんと調整しておいた方がよさそうですね。
-		setupHeader(writer);
 		IContainer container = null;
 		while((container = reader.read(source)) != null) {
 			if(container instanceof TrackEntry) {
@@ -69,7 +70,7 @@ public class MkvWriteTest {
 		writer.prepareTailer();
 		logger.info("処理おわり");
 	}
-	private void setupHeader(IWriter writer) throws Exception {
+/*	private void setupHeader(MkvTagWriter writer) throws Exception {
 		EBML ebml = new EBML();
 
 		EBMLVersion ebmlVersion = new EBMLVersion();
@@ -110,5 +111,21 @@ public class MkvWriteTest {
 		// うーん。
 		// pipe出力にすると、01FFFFFFFFFFFFFFFFとして動作するみたいですね。
 		// cueも入力されないみたいです。
-	}
+		// とりあえずstreamingと同じことができるようにしたいので、次のようにします。
+		/*
+		 * segmentはinfinity扱いで動作させる。
+		 * seekについては、Info、Tracks、Tagsの情報 (通常の動画ならCuesもいれたいが、liveStreamでははいらないっぽい)
+		 * がはいっていればよさそう。
+		 * Cuesはシークしないので、とりいそぎなくてもいい
+		 * Infoについて
+		 *   TimecodeScale1000000(ナノ秒していだったか？)これで1ミリ秒刻みになるはず
+		 *   MuxingApp情報
+		 *   WritingApp情報
+		 *   SegmentUID(とりあえずランダム数値をいれておきたいところ。)
+		 *   Durationなしにしておきたいところ・・・どうなんだろう。
+		 * このあたりの必要な情報はMkvTagWriterにカキコ済みっぽいですね。
+		 * /
+		Segment segment = new Segment();
+		segment.setInfinite(true); // 値的に無限化して書き込んでおく
+	} // */
 }

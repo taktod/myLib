@@ -13,7 +13,15 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
+import com.ttProject.container.mkv.type.DocType;
+import com.ttProject.container.mkv.type.DocTypeReadVersion;
+import com.ttProject.container.mkv.type.DocTypeVersion;
 import com.ttProject.container.mkv.type.EBML;
+import com.ttProject.container.mkv.type.EBMLMaxIDLength;
+import com.ttProject.container.mkv.type.EBMLMaxSizeLength;
+import com.ttProject.container.mkv.type.EBMLReadVersion;
+import com.ttProject.container.mkv.type.EBMLVersion;
+import com.ttProject.container.mkv.type.Segment;
 import com.ttProject.frame.IFrame;
 
 /**
@@ -79,7 +87,7 @@ public class MkvTagWriter implements IWriter {
 06:25:14,123 [main] INFO [MkvTagReader] -    Language size:3 string:und
 06:25:14,124 [main] INFO [MkvTagReader] -    CodecID size:f string:V_MPEG4/ISO/AVC
 06:25:14,124 [main] INFO [MkvTagReader] -    TrackType size:1 uint:1
-06:25:14,124 [main] INFO [MkvTagReader] -    DefaultDuration size:3 uint:1000000
+06:25:14,124 [main] INFO [MkvTagReader] -    DefaultDuration size:3 uint:1000000 fpsを知るために必要っぽい
 06:25:14,125 [main] INFO [MkvTagReader] -    Video size:7*
 06:25:14,125 [main] INFO [MkvTagReader] -     PixelWidth size:2 uint:320
 06:25:14,125 [main] INFO [MkvTagReader] -     PixelHeight size:1 uint:240
@@ -227,14 +235,54 @@ public class MkvTagWriter implements IWriter {
 	}
 	@Override
 	public void prepareHeader() throws Exception {
-		// header情報はデータがこないとなんともいえないので、放置しておくことにするか？
-		// そもそもまだMkvMasterTagで要素を追加できるようになっていないみたいですね。
+		// EBMLの動作はwebmになったらoverrideしてmatroskaではなく、webmと記入してやりたいところ
 		// EBML
+		setupEbml();
 		// Segment
+		Segment segment = new Segment();
+		segment.setInfinite(true);
+		addContainer(segment);
 		//  SeekHead
 		//  Info
 		//  Tracks
 		// あたりは記入できるか？
+	}
+	/**
+	 * ebmlの部分の初期化を実施
+	 */
+	protected void setupEbml() throws Exception {
+		EBML ebml = new EBML();
+
+		EBMLVersion ebmlVersion = new EBMLVersion();
+		ebmlVersion.setValue(1);
+		ebml.addChild(ebmlVersion);
+
+		EBMLReadVersion ebmlReadVersion = new EBMLReadVersion();
+		ebmlReadVersion.setValue(1);
+		ebml.addChild(ebmlReadVersion);
+
+		EBMLMaxIDLength ebmlMaxIdLength = new EBMLMaxIDLength();
+		ebmlMaxIdLength.setValue(4);
+		ebml.addChild(ebmlMaxIdLength);
+
+		EBMLMaxSizeLength ebmlMaxSizeLength = new EBMLMaxSizeLength();
+		ebmlMaxSizeLength.setValue(8);
+		ebml.addChild(ebmlMaxSizeLength);
+
+		DocType docType = new DocType();
+		docType.setValue("matroska");
+		ebml.addChild(docType);
+
+		DocTypeVersion docTypeVersion = new DocTypeVersion();
+		docTypeVersion.setValue(2);
+		ebml.addChild(docTypeVersion);
+
+		DocTypeReadVersion docTypeReadVersion = new DocTypeReadVersion();
+		docTypeReadVersion.setValue(2);
+		ebml.addChild(docTypeReadVersion);
+
+		// ebmlのタグを書き込んでおく
+		addContainer(ebml);
 	}
 	@Override
 	public void prepareTailer() throws Exception {
