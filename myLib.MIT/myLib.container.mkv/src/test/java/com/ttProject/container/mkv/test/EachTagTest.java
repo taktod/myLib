@@ -24,6 +24,8 @@ import com.ttProject.container.mkv.type.ReferenceBlock;
 import com.ttProject.container.mkv.type.SamplingFrequency;
 import com.ttProject.container.mkv.type.SeekID;
 import com.ttProject.container.mkv.type.Segment;
+import com.ttProject.container.mkv.type.Void;
+import com.ttProject.unit.extra.EbmlValue;
 import com.ttProject.util.HexUtil;
 
 /**
@@ -44,6 +46,18 @@ public class EachTagTest {
 		Segment segment = new Segment();
 		segment.setInfinite(true);
 		logger.info(HexUtil.toHex(segment.getData(), true));
+	}
+	/**
+	 * VoidTagの動作テスト
+	 * @throws Exception
+	 */
+	@Test
+	public void VoidTest() throws Exception {
+		logger.info("VoidTest");
+		EbmlValue size = new EbmlValue();
+		size.set(15);
+		Void voidTag = new Void(size);
+		logger.info(HexUtil.toHex(voidTag.getData(), true));
 	}
 	/**
 	 * MkvBinaryTagの動作テスト
