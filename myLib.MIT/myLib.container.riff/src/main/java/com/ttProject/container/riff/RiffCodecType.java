@@ -11,7 +11,7 @@ package com.ttProject.container.riff;
  * いろいろあるけど、とりあえず一部だけいれとく。
  * @author taktod
  */
-public enum CodecType {
+public enum RiffCodecType {
 	Unknown(0x0000),
 	PCM(0x0001),
 	MS_ADPCM(0x0002),
@@ -22,14 +22,14 @@ public enum CodecType {
 	IMA_ADPCM(0x0011), // 今回の肝
 	MP3(0x0055);
 	private final int value;
-	private CodecType(int value) {
+	private RiffCodecType(int value) {
 		this.value = value;
 	}
 	public int intValue() {
 		return value;
 	}
-	public static CodecType getCodec(int num) {
-		for(CodecType type : values()) {
+	public static RiffCodecType getCodec(int num) {
+		for(RiffCodecType type : values()) {
 			if(type.intValue() == num) {
 				return type;
 			}

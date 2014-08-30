@@ -12,7 +12,7 @@ import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
 import com.ttProject.container.adts.AdtsUnit;
 import com.ttProject.container.adts.AdtsUnitReader;
-import com.ttProject.container.mpegts.CodecType;
+import com.ttProject.container.mpegts.MpegtsCodecType;
 import com.ttProject.container.mpegts.MpegtsPacketReader;
 import com.ttProject.container.mpegts.MpegtsPacketWriter;
 import com.ttProject.container.mpegts.field.PmtElementaryField;
@@ -55,10 +55,10 @@ public class FixMpegtsToTest {
 			writer.addContainer(pat);
 			// make pmt
 			Pmt pmt = new Pmt(pat.getPmtPid());
-			PmtElementaryField h264Field = factory.makeNewField(CodecType.VIDEO_H264);
+			PmtElementaryField h264Field = factory.makeNewField(MpegtsCodecType.VIDEO_H264);
 			pmt.setPcrPid(h264Field.getPid());
 			pmt.addNewField(h264Field);
-			PmtElementaryField aacField = factory.makeNewField(CodecType.AUDIO_AAC);
+			PmtElementaryField aacField = factory.makeNewField(MpegtsCodecType.AUDIO_AAC);
 			pmt.addNewField(aacField);
 			writer.addContainer(pmt);
 			

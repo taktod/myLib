@@ -6,7 +6,7 @@
  */
 package com.ttProject.container.mpegts.field;
 
-import com.ttProject.container.mpegts.CodecType;
+import com.ttProject.container.mpegts.MpegtsCodecType;
 import com.ttProject.unit.extra.bit.Bit12;
 import com.ttProject.unit.extra.bit.Bit13;
 import com.ttProject.unit.extra.bit.Bit3;
@@ -31,7 +31,7 @@ public class PmtElementaryFieldFactory {
 	 * @return
 	 * @throws Exception
 	 */
-	public PmtElementaryField makeNewField(CodecType codec) throws Exception {
+	public PmtElementaryField makeNewField(MpegtsCodecType codec) throws Exception {
 		PmtElementaryField elementField = new PmtElementaryField(
 				new Bit8(codec.intValue()), new Bit3(0x07), new Bit13(nextTrackPid ++), new Bit4(0x0F), new Bit12(0));
 		switch(codec) {

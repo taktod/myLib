@@ -12,23 +12,11 @@ import org.junit.Test;
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
 import com.ttProject.container.IWriter;
-import com.ttProject.container.mkv.MkvBlockTag;
 import com.ttProject.container.mkv.MkvTagReader;
 import com.ttProject.container.mkv.MkvTagWriter;
-import com.ttProject.container.mkv.type.DocType;
-import com.ttProject.container.mkv.type.DocTypeReadVersion;
-import com.ttProject.container.mkv.type.DocTypeVersion;
-import com.ttProject.container.mkv.type.EBML;
-import com.ttProject.container.mkv.type.EBMLMaxIDLength;
-import com.ttProject.container.mkv.type.EBMLMaxSizeLength;
-import com.ttProject.container.mkv.type.EBMLReadVersion;
-import com.ttProject.container.mkv.type.EBMLVersion;
-import com.ttProject.container.mkv.type.Segment;
 import com.ttProject.container.mkv.type.TrackEntry;
-import com.ttProject.frame.IFrame;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.extra.EbmlValue;
 
 /**
  * mkvによるデータの書き込み動作テスト

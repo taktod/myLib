@@ -6,7 +6,7 @@
  */
 package com.ttProject.container.mkv;
 
-public enum CodecType {
+public enum MkvCodecType {
 	V_MPEG4_ISO_AVC("V_MPEG4/ISO/AVC"),
 	V_MPEG_ISO_HEVC("V_MPEG/ISO/HEVC"),
 	V_VP8("V_VP8"),
@@ -27,7 +27,7 @@ public enum CodecType {
 	D_WEBVTT_METADATA("D_WEBVTT/METADATA"),*/
 	;
 	private final String name;
-	private CodecType(String name) {
+	private MkvCodecType(String name) {
 		this.name = name;
 	}
 	@Override
@@ -40,7 +40,7 @@ public enum CodecType {
 	 * @return
 	 * @throws Exception
 	 */
-	public static CodecType getCodecType(String data) throws Exception {
+	public static MkvCodecType getCodecType(String data) throws Exception {
 		if(data.startsWith("V_MPEG")) {
 			if(data.contains("AVC")) {
 				return V_MPEG4_ISO_AVC;

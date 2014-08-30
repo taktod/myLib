@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.ttProject.container.flv.CodecType;
+import com.ttProject.container.flv.FlvCodecType;
 import com.ttProject.container.flv.FlvTag;
 import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.AudioFrame;
@@ -185,8 +185,8 @@ public class AudioTag extends FlvTag {
 	 * コーデック参照
 	 * @return
 	 */
-	public CodecType getCodec() {
-		return CodecType.getAudioCodecType(codecId.get());
+	public FlvCodecType getCodec() {
+		return FlvCodecType.getAudioCodecType(codecId.get());
 	}
 	/**
 	 * {@inheritDoc}
@@ -200,7 +200,7 @@ public class AudioTag extends FlvTag {
 		}
 		BitLoader loader = new BitLoader(channel);
 		loader.load(codecId, sampleRate, bitCount, channels);
-		if(getCodec() == CodecType.AAC) {
+		if(getCodec() == FlvCodecType.AAC) {
 			sequenceHeaderFlag = new Bit8();
 			loader.load(sequenceHeaderFlag);
 		}
@@ -229,7 +229,7 @@ public class AudioTag extends FlvTag {
 			int sizeEx = 0;
 			switch(codecCheckFrame.getCodecType()) {
 			case AAC:
-				codecId.set(CodecType.getAudioCodecNum(CodecType.AAC));
+				codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.AAC));
 				sequenceHeaderFlag = new Bit8(1);
 				sizeEx = 1;
 				break;
@@ -237,31 +237,31 @@ public class AudioTag extends FlvTag {
 				if(frame.getSampleRate() == 8000) {
 					// mp3 8はデータが手元にないので、どうなるかわからない。
 					// とりあえず0xD2にでもしておくか・・・
-					codecId.set(CodecType.getAudioCodecNum(CodecType.MP3_8));
+					codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.MP3_8));
 					sampleRate = new Bit2();
 				}
 				else {
-					codecId.set(CodecType.getAudioCodecNum(CodecType.MP3));
+					codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.MP3));
 				}
 				break;
 			case NELLYMOSER:
 				if(frame.getSampleRate() == 16000) {
 					// nelly16 0x42
-					codecId.set(CodecType.getAudioCodecNum(CodecType.NELLY_16));
+					codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.NELLY_16));
 					sampleRate = new Bit2();
 				}
 				else if(frame.getSampleRate() == 8000) {
 					// nelly8の場合0x52になる。
-					codecId.set(CodecType.getAudioCodecNum(CodecType.NELLY_8));
+					codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.NELLY_8));
 					sampleRate = new Bit2();
 				}
 				else {
-					codecId.set(CodecType.getAudioCodecNum(CodecType.NELLY));
+					codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.NELLY));
 				}
 				break;
 			case SPEEX:
 				// 0xB6みたい。
-				codecId.set(CodecType.getAudioCodecNum(CodecType.SPEEX));
+				codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.SPEEX));
 				if(frame.getSampleRate() != 16000) {
 					throw new Exception("speexのsampleRateは16kHzのみサポートします。");
 				}
@@ -271,14 +271,14 @@ public class AudioTag extends FlvTag {
 				sampleRate = new Bit2(1);
 				break;
 			case ADPCM_SWF:
-				codecId.set(CodecType.getAudioCodecNum(CodecType.ADPCM));
+				codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.ADPCM));
 				break;
 			case PCM_ALAW:
-				codecId.set(CodecType.getAudioCodecNum(CodecType.G711_A));
+				codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.G711_A));
 				sampleRate = new Bit2(0);
 				break;
 			case PCM_MULAW:
-				codecId.set(CodecType.getAudioCodecNum(CodecType.G711_U));
+				codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.G711_U));
 				sampleRate = new Bit2(0);
 				break;
 			default:
@@ -404,7 +404,7 @@ public class AudioTag extends FlvTag {
 		if(frameBuffer == null) {
 			throw new Exception("frameデータが読み込まれていません");
 		}
-		if(getCodec() == CodecType.AAC && sequenceHeaderFlag.get() != 1) {
+		if(getCodec() == FlvCodecType.AAC && sequenceHeaderFlag.get() != 1) {
 			// aacのmshも処理しません。
 			return;
 		}
@@ -487,14 +487,14 @@ public class AudioTag extends FlvTag {
 	 * @return
 	 */
 	public boolean isSequenceHeader() {
-		return getCodec() == CodecType.AAC && sequenceHeaderFlag.get() == 0;
+		return getCodec() == FlvCodecType.AAC && sequenceHeaderFlag.get() == 0;
 	}
 	/**
 	 * aacのmediaSequenceHeaderとして初期化します
 	 * @param dsi
 	 */
 	public void setAacMediaSequenceHeader(AacFrame frame, DecoderSpecificInfo dsi) throws Exception {
-		codecId.set(CodecType.getAudioCodecNum(CodecType.AAC));
+		codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.AAC));
 		switch(frame.getChannel()) {
 		case 1:
 			channels.set(0);

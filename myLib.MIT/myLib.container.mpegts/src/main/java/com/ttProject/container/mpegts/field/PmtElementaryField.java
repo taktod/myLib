@@ -9,7 +9,7 @@ package com.ttProject.container.mpegts.field;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ttProject.container.mpegts.CodecType;
+import com.ttProject.container.mpegts.MpegtsCodecType;
 import com.ttProject.container.mpegts.descriptor.Descriptor;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.Bit;
@@ -80,8 +80,8 @@ public class PmtElementaryField implements IDescriptorHolder {
 	 * @return
 	 * @throws Exception
 	 */
-	public CodecType getCodecType() throws Exception {
-		return CodecType.getType(streamType.get());
+	public MpegtsCodecType getCodecType() throws Exception {
+		return MpegtsCodecType.getType(streamType.get());
 	}
 	public List<Bit> getBits() {
 		List<Bit> list = new ArrayList<Bit>();
@@ -129,7 +129,7 @@ public class PmtElementaryField implements IDescriptorHolder {
 		data.append("  ");
 		data.append("pmtElementrayField:");
 		try {
-			data.append(" type:").append(CodecType.getType(streamType.get()));
+			data.append(" type:").append(MpegtsCodecType.getType(streamType.get()));
 		}
 		catch (Exception e) {
 		}

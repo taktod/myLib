@@ -14,7 +14,7 @@ import com.ttProject.container.IReader;
 import com.ttProject.container.IWriter;
 import com.ttProject.container.flv.FlvHeaderTag;
 import com.ttProject.container.flv.FlvTagWriter;
-import com.ttProject.container.mpegts.CodecType;
+import com.ttProject.container.mpegts.MpegtsCodecType;
 import com.ttProject.container.mpegts.MpegtsPacketReader;
 import com.ttProject.container.mpegts.MpegtsPacketWriter;
 import com.ttProject.container.mpegts.field.PmtElementaryField;
@@ -74,10 +74,10 @@ public class MpegtsToTest {
 		writer.addContainer(pat);
 		// pmtを追加
 		Pmt pmt = new Pmt(pat.getPmtPid());
-		PmtElementaryField videoElementaryField = pmtFieldFactory.makeNewField(CodecType.VIDEO_H264);
+		PmtElementaryField videoElementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.VIDEO_H264);
 		pmt.setPcrPid(videoElementaryField.getPid());
 		pmt.addNewField(videoElementaryField);
-		PmtElementaryField audioElementaryField = pmtFieldFactory.makeNewField(CodecType.AUDIO_AAC);
+		PmtElementaryField audioElementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.AUDIO_AAC);
 		pmt.addNewField(audioElementaryField);
 		writer.addContainer(pmt);
 		// frame追記にあわせてpesを書き込んでいく

@@ -10,7 +10,7 @@ package com.ttProject.container.mpegts;
  * mpegtsの内部にあるコーデック情報
  * @author taktod
  */
-public enum CodecType {
+public enum MpegtsCodecType {
 	VIDEO_MPEG1(0x01),
 	VIDEO_MPEG2(0x02),
 	AUDIO_MPEG1(0x03), // mp3とか
@@ -27,14 +27,14 @@ public enum CodecType {
 	AUDIO_DTS(0x8A),
 	SUBTITLE_DVB(0x100);
 	private final int value;
-	private CodecType(int value) {
+	private MpegtsCodecType(int value) {
 		this.value = value;
 	}
 	public int intValue() {
 		return value;
 	}
-	public static CodecType getType(int value) throws Exception {
-		for(CodecType t : values()) {
+	public static MpegtsCodecType getType(int value) throws Exception {
+		for(MpegtsCodecType t : values()) {
 			if(t.intValue() == value) {
 				return t;
 			}

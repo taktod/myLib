@@ -19,7 +19,7 @@ import com.ttProject.container.flv.FlvTagWriter;
 import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.VideoTag;
 import com.ttProject.container.mp3.Mp3UnitWriter;
-import com.ttProject.container.mpegts.CodecType;
+import com.ttProject.container.mpegts.MpegtsCodecType;
 import com.ttProject.container.mpegts.MpegtsPacketWriter;
 import com.ttProject.container.mpegts.field.PmtElementaryField;
 import com.ttProject.container.mpegts.field.PmtElementaryFieldFactory;
@@ -114,7 +114,7 @@ public class FlvToTest {
 		writer.addContainer(pat);
 		// pmtを追加
 		Pmt pmt = new Pmt(pat.getPmtPid());
-		PmtElementaryField elementaryField = pmtFieldFactory.makeNewField(CodecType.AUDIO_MPEG1);
+		PmtElementaryField elementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.AUDIO_MPEG1);
 		pmt.addNewField(elementaryField);
 		pmt.setPcrPid(elementaryField.getPid());
 		writer.addContainer(pmt);
@@ -147,7 +147,7 @@ public class FlvToTest {
 		writer.addContainer(pat);
 		// pmtを追加
 		Pmt pmt = new Pmt(pat.getPmtPid());
-		PmtElementaryField elementaryField = pmtFieldFactory.makeNewField(CodecType.AUDIO_AAC);
+		PmtElementaryField elementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.AUDIO_AAC);
 		pmt.setPcrPid(elementaryField.getPid());
 		pmt.addNewField(elementaryField);
 		writer.addContainer(pmt);
@@ -180,7 +180,7 @@ public class FlvToTest {
 		writer.addContainer(pat);
 		// pmtを追加
 		Pmt pmt = new Pmt(pat.getPmtPid());
-		PmtElementaryField elementaryField = pmtFieldFactory.makeNewField(CodecType.VIDEO_H264);
+		PmtElementaryField elementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.VIDEO_H264);
 		pmt.setPcrPid(elementaryField.getPid());
 		pmt.addNewField(elementaryField);
 		writer.addContainer(pmt);
@@ -213,10 +213,10 @@ public class FlvToTest {
 		writer.addContainer(pat);
 		// pmtを追加
 		Pmt pmt = new Pmt(pat.getPmtPid());
-		PmtElementaryField videoElementaryField = pmtFieldFactory.makeNewField(CodecType.VIDEO_H264);
+		PmtElementaryField videoElementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.VIDEO_H264);
 		pmt.setPcrPid(videoElementaryField.getPid());
 		pmt.addNewField(videoElementaryField);
-		PmtElementaryField audioElementaryField = pmtFieldFactory.makeNewField(CodecType.AUDIO_AAC);
+		PmtElementaryField audioElementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.AUDIO_AAC);
 		pmt.addNewField(audioElementaryField);
 		writer.addContainer(pmt);
 		// frame追記にあわせてpesを書き込んでいく
@@ -248,10 +248,10 @@ public class FlvToTest {
 		writer.addContainer(pat);
 		// pmtを追加
 		Pmt pmt = new Pmt(pat.getPmtPid());
-		PmtElementaryField videoElementaryField = pmtFieldFactory.makeNewField(CodecType.VIDEO_H264);
+		PmtElementaryField videoElementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.VIDEO_H264);
 		pmt.setPcrPid(videoElementaryField.getPid());
 		pmt.addNewField(videoElementaryField);
-		PmtElementaryField audioElementaryField = pmtFieldFactory.makeNewField(CodecType.AUDIO_AAC);
+		PmtElementaryField audioElementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.AUDIO_AAC);
 		pmt.addNewField(audioElementaryField);
 		writer.addContainer(pmt);
 		// frame追記にあわせてpesを書き込んでいく

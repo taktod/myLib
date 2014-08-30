@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
 
-import com.ttProject.container.riff.CodecType;
+import com.ttProject.container.riff.RiffCodecType;
 import com.ttProject.container.riff.RiffUnit;
 import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.AudioSelector;
@@ -49,7 +49,7 @@ public class Fmt extends RiffUnit {
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
 		loader.load(pcmType, channels, sampleRate, dataSpeed, blockSize, bitNum, extraInfoSize);
-		logger.info(CodecType.getCodec(pcmType.get()));
+		logger.info(RiffCodecType.getCodec(pcmType.get()));
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
@@ -62,8 +62,8 @@ public class Fmt extends RiffUnit {
 	 * コーデックタイプを参照する
 	 * @return
 	 */
-	public CodecType getCodecType() {
-		return CodecType.getCodec(pcmType.get());
+	public RiffCodecType getCodecType() {
+		return RiffCodecType.getCodec(pcmType.get());
 	}
 	/**
 	 * フレームの解析プログラムを参照します。

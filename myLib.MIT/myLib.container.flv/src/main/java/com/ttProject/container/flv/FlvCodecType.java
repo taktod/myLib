@@ -30,7 +30,7 @@ http://jongyeob.com/moniwiki/pds/upload/13818-7.pdf
 http://ee72078.moo.jp/chinsan/pc/Lab/index.php?AAC
 http://blog-imgs-18-origin.fc2.com/n/a/n/nanncyatte/aacfileheader.png
  */
-public enum CodecType {
+public enum FlvCodecType {
 	NONE,
 	// 映像用コーデック
 	JPEG,FLV1,SCREEN,ON2VP6,ON2VP6_ALPHA,SCREEN_V2,H264,
@@ -41,7 +41,7 @@ public enum CodecType {
 	 * @param tagByte
 	 * @return
 	 */
-	public static CodecType getAudioCodecType(int codecId) {
+	public static FlvCodecType getAudioCodecType(int codecId) {
 		switch(codecId) {
 		case 0:  return PCM;
 		case 1:  return ADPCM; // 1byte startPos? 2byte or 4byte 16bit?
@@ -69,7 +69,7 @@ public enum CodecType {
 	 * @param tagByte
 	 * @return
 	 */
-	public static CodecType getVideoCodecType(int codecId) {
+	public static FlvCodecType getVideoCodecType(int codecId) {
 		switch(codecId) {
 		case 1: return JPEG;
 		case 2: return FLV1;
@@ -90,7 +90,7 @@ public enum CodecType {
 	 * @return
 	 * @throws Exception
 	 */
-	public static byte getVideoByte(CodecType codec) throws Exception {
+	public static byte getVideoByte(FlvCodecType codec) throws Exception {
 		switch(codec) {
 		case JPEG:         return 1;
 		case FLV1:         return 2;
@@ -110,7 +110,7 @@ public enum CodecType {
 	 * @return
 	 * @throws Exception
 	 */
-	public static byte getVideoCodecNum(CodecType codec) throws Exception {
+	public static byte getVideoCodecNum(FlvCodecType codec) throws Exception {
 		return getVideoByte(codec);
 	}
 	/**
@@ -119,7 +119,7 @@ public enum CodecType {
 	 * @return
 	 * @throws Exception
 	 */
-	public static byte getAudioCodecNum(CodecType codec) throws Exception {
+	public static byte getAudioCodecNum(FlvCodecType codec) throws Exception {
 		switch(codec) {
 		case PCM:             return 0;
 		case ADPCM:           return 1;

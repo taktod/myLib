@@ -8,7 +8,7 @@ package com.ttProject.container.mkv.type;
 
 import org.apache.log4j.Logger;
 
-import com.ttProject.container.mkv.CodecType;
+import com.ttProject.container.mkv.MkvCodecType;
 import com.ttProject.container.mkv.MkvMasterTag;
 import com.ttProject.container.mkv.MkvTag;
 import com.ttProject.container.mkv.Type;
@@ -213,7 +213,7 @@ public class TrackEntry extends MkvMasterTag {
 	public int getLacingFlag() {
 		return lacingFlag;
 	}
-	public CodecType getCodecType() throws Exception {
+	public MkvCodecType getCodecType() throws Exception {
 		return codecId.getCodecType();
 	}
 	public int getWidth() throws Exception {

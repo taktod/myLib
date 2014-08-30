@@ -31,7 +31,7 @@ import com.flazr.rtmp.client.ClientHandshakeHandler;
 import com.flazr.rtmp.client.ClientOptions;
 import com.flazr.rtmp.message.Metadata;
 import com.flazr.rtmp.message.MetadataAmf0;
-import com.ttProject.container.flv.CodecType;
+import com.ttProject.container.flv.FlvCodecType;
 import com.ttProject.container.flv.FlvTag;
 import com.ttProject.container.flv.type.AudioTag;
 import com.ttProject.container.flv.type.VideoTag;
@@ -320,10 +320,10 @@ public class SendReader implements RtmpReader {
 				videoMshTag = vTag;
 				return;
 			}
-			else if(vTag.getCodec() != CodecType.H264) {
+			else if(vTag.getCodec() != FlvCodecType.H264) {
 				videoMshTag = null;
 			}
-			if(vTag.getCodec() == CodecType.H264 && vTag.isKeyFrame() &&videoMshTag != null) {
+			if(vTag.getCodec() == FlvCodecType.H264 && vTag.isKeyFrame() &&videoMshTag != null) {
 				// mshも送っておく。
 				videoMshTag.setPts(vTag.getPts());
 				dataQueue.add(manager.getAtom(videoMshTag));
@@ -338,10 +338,10 @@ public class SendReader implements RtmpReader {
 				audioMshTag = aTag;
 				return;
 			}
-			else if(aTag.getCodec() != CodecType.AAC) {
+			else if(aTag.getCodec() != FlvCodecType.AAC) {
 				audioMshTag = null;
 			}
-			if(aTag.getCodec() == CodecType.AAC && audioMshTag != null) {
+			if(aTag.getCodec() == FlvCodecType.AAC && audioMshTag != null) {
 				audioMshTag.setPts(aTag.getPts());
 				dataQueue.add(manager.getAtom(audioMshTag));
 			}

@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
-import com.ttProject.container.mpegts.CodecType;
+import com.ttProject.container.mpegts.MpegtsCodecType;
 import com.ttProject.container.mpegts.MpegtsPacketReader;
 import com.ttProject.container.mpegts.MpegtsPacketWriter;
 import com.ttProject.container.mpegts.field.PmtElementaryField;
@@ -63,17 +63,17 @@ public class MpegtsTestMulti {
 			writer3.addContainer(pat);
 			writer4.addContainer(pat);
 			Pmt pmt = new Pmt(pat.getPmtPid());
-			PmtElementaryField videoElementaryField = factory.makeNewField(CodecType.VIDEO_H264);
+			PmtElementaryField videoElementaryField = factory.makeNewField(MpegtsCodecType.VIDEO_H264);
 			pmt.addNewField(videoElementaryField);
 			pmt.setPcrPid(videoElementaryField.getPid());
-			PmtElementaryField audioElementaryField = factory.makeNewField(CodecType.AUDIO_AAC);
+			PmtElementaryField audioElementaryField = factory.makeNewField(MpegtsCodecType.AUDIO_AAC);
 			pmt.addNewField(audioElementaryField);
 			writer1.addContainer(pmt);
 			writer2.addContainer(pmt);
 			writer3.addContainer(pmt);
 			
 			pmt = new Pmt(pat.getPmtPid());
-			PmtElementaryField audioElementaryField2 = factory_audio.makeNewField(CodecType.AUDIO_AAC);
+			PmtElementaryField audioElementaryField2 = factory_audio.makeNewField(MpegtsCodecType.AUDIO_AAC);
 			pmt.addNewField(audioElementaryField2);
 			pmt.setPcrPid(audioElementaryField2.getPid());
 			writer4.addContainer(pmt);

@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
 
-import com.ttProject.container.flv.CodecType;
+import com.ttProject.container.flv.FlvCodecType;
 import com.ttProject.container.flv.FlvTag;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
@@ -138,8 +138,8 @@ public class VideoTag extends FlvTag {
 	 * コーデック参照
 	 * @return
 	 */
-	public CodecType getCodec() {
-		return CodecType.getVideoCodecType(codecId.get());
+	public FlvCodecType getCodec() {
+		return FlvCodecType.getVideoCodecType(codecId.get());
 	}
 	/**
 	 * {@inheritDoc}
@@ -155,7 +155,7 @@ public class VideoTag extends FlvTag {
 		// コーデック情報等を取得する必要あり
 		BitLoader loader = new BitLoader(channel);
 		loader.load(frameType, codecId);
-		if(getCodec() == CodecType.H264) {
+		if(getCodec() == FlvCodecType.H264) {
 			// h264用の特殊データも読み込んでおく。
 			packetType = new Bit8();
 			dts = new Bit24();
@@ -181,18 +181,18 @@ public class VideoTag extends FlvTag {
 //			codecId;
 			int sizeEx = 0;
 			if(codecCheckFrame instanceof Flv1Frame) {
-				codecId.set(CodecType.getVideoCodecNum(CodecType.FLV1));
+				codecId.set(FlvCodecType.getVideoCodecNum(FlvCodecType.FLV1));
 				sizeEx = 0;
 			}
 			else if(codecCheckFrame instanceof Vp6Frame) {
 				// vp6aは対応しないことにします。
 				horizontalAdjustment = new Bit4();
 				verticalAdjustment = new Bit4();
-				codecId.set(CodecType.getVideoCodecNum(CodecType.ON2VP6));
+				codecId.set(FlvCodecType.getVideoCodecNum(FlvCodecType.ON2VP6));
 				sizeEx = 1;
 			}
 			else if(codecCheckFrame instanceof H264Frame) {
-				codecId.set(CodecType.getVideoCodecNum(CodecType.H264));
+				codecId.set(FlvCodecType.getVideoCodecNum(FlvCodecType.H264));
 				packetType = new Bit8(1);
 				dts = new Bit24((int)(1.0D * frame.getDts() / frame.getTimebase() * 1000));
 				sizeEx = 4;
@@ -248,7 +248,7 @@ public class VideoTag extends FlvTag {
 			// この部分注意が必要
 			// vp6やflv1はそのまま戻せばよいが
 			// h264の場合は、sizeNalにしないとだめ。
-			if(CodecType.getVideoCodecType(codecId.get()) == CodecType.H264) {
+			if(FlvCodecType.getVideoCodecType(codecId.get()) == FlvCodecType.H264) {
 				// h264のフレームの場合は、調整することがあるので、やらないとだめ。
 				if(frame instanceof SliceFrame) {
 					frameBuffer = ((SliceFrame) frame).getDataPackBuffer();
@@ -277,7 +277,7 @@ public class VideoTag extends FlvTag {
 		if(frameBuffer == null) {
 			throw new Exception("frameデータが読み込まれていません");
 		}
-		if(getCodec() == CodecType.H264 && packetType.get() != 1) {
+		if(getCodec() == FlvCodecType.H264 && packetType.get() != 1) {
 			// h264でpacketTypeが0:mshや2:endOfSequenceの場合はframeがとれない。
 			return;
 		}
@@ -405,7 +405,7 @@ public class VideoTag extends FlvTag {
 	 * @return
 	 */
 	public boolean isSequenceHeader() {
-		return getCodec() == CodecType.H264 && packetType.get() == 0;
+		return getCodec() == FlvCodecType.H264 && packetType.get() == 0;
 	}
 	/**
 	 * キーフレームであるかの判定
@@ -425,7 +425,7 @@ public class VideoTag extends FlvTag {
 	 * @throws Exception
 	 */
 	public void setH264MediaSequenceHeader(H264Frame frame, SequenceParameterSet sps, PictureParameterSet pps) throws Exception {
-		codecId.set(CodecType.getVideoCodecNum(CodecType.H264));
+		codecId.set(FlvCodecType.getVideoCodecNum(FlvCodecType.H264));
 		frameType.set(1); // keyFrame指定
 		packetType = new Bit8(0);
 		dts = new Bit24(0);
