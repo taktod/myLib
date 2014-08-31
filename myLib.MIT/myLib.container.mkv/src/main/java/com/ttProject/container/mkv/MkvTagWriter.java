@@ -309,7 +309,7 @@ public class MkvTagWriter implements IWriter {
 		// cuesはとりあえずいれないでおいとく。
 //		seekHead.addChild(setupSeek(Type.Cues));
 		Void voidTag = new Void();
-		voidTag.setTagSize(15);
+		voidTag.setTagSize(30);
 		seekHead.addChild(voidTag); // あとでcuesをいれるときに利用する空白領域をつくっておく
 	}
 	/**
@@ -343,7 +343,7 @@ public class MkvTagWriter implements IWriter {
 		info.addChild(writingApp);
 //		Duration duration = new Duration(); // durationはtailerで書き込む
 		Void voidTag = new Void();
-		voidTag.setTagSize(12);
+		voidTag.setTagSize(16);
 		info.addChild(voidTag);
 	}
 	// codecPrivateがあるので、ここのサイズは不明か・・・
@@ -358,32 +358,48 @@ public class MkvTagWriter implements IWriter {
 		number ++;
 		TrackNumber trackNumber = new TrackNumber();
 		trackNumber.setValue(number);
+		trackEntry.addChild(trackNumber);
 		TrackUID trackUID = new TrackUID();
 		trackUID.setValue(number);
+		trackEntry.addChild(trackUID);
 		FlagLacing flagLacing = new FlagLacing();
 		flagLacing.setValue(0);
+		trackEntry.addChild(flagLacing);
 		Language language = new Language();
 		language.setValue("und");
+		trackEntry.addChild(language);
 		CodecID codecId = new CodecID();
 		codecId.setCodecType(codec);
+		trackEntry.addChild(codecId);
 		TrackType trackType = new TrackType();
 		if(codec.isAudio()) {
 			trackType.setValue(2); // 映像1音声2
+			trackEntry.addChild(trackType);
 			Audio audio = new Audio();
 			Channels channels = new Channels();
+			audio.addChild(channels);
 			SamplingFrequency samplingFrequency = new SamplingFrequency();
+			audio.addChild(samplingFrequency);
 			BitDepth bitDepth = new BitDepth();
+			audio.addChild(bitDepth);
+			trackEntry.addChild(audio);
 		}
 		else if(codec.isVideo()) {
 			trackType.setValue(1); // 映像1音声2
+			trackEntry.addChild(trackType);
 			DefaultDuration defaultDuration = new DefaultDuration(); // fpsを知るために必要
+			trackEntry.addChild(defaultDuration);
 			Video video = new Video();
 			PixelWidth pixelWidth = new PixelWidth();
+			video.addChild(pixelWidth);
 			PixelHeight pixelHeight = new PixelHeight();
+			video.addChild(pixelHeight);
+			trackEntry.addChild(video);
 		}
 		else {
 			throw new Exception("コーデックのtypeが不明です");
 		}
+		
 		return trackEntry;
 	}
 	private void setupTags() throws Exception {
