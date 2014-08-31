@@ -17,7 +17,6 @@ import com.ttProject.util.BufferUtil;
 /**
  * Voidタグ
  * @author taktod
- *
  */
 public class Void extends MkvTag {
 	/**
@@ -34,9 +33,19 @@ public class Void extends MkvTag {
 		this(new EbmlValue());
 	}
 	/**
-	 * サイズを設定する
+	 * コンストラクタ
+	 * @param position
 	 */
-	public void setSize() {
+	public Void(long position) {
+		this();
+		setPosition((int)position);
+	}
+	/**
+	 * tagのサイズを設定する
+	 * @param size
+	 */
+	public void setTagSize(int size) {
+		getTagSize().set(size);
 	}
 	/**
 	 * {@inheritDoc}

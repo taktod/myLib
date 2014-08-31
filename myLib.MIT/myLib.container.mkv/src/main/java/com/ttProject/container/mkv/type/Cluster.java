@@ -22,7 +22,18 @@ public class Cluster extends MkvMasterTag {
 	public Cluster(EbmlValue size) {
 		super(Type.Cluster, size);
 	}
+	/**
+	 * コンストラクタ
+	 */
 	public Cluster() {
 		this(new EbmlValue());
+	}
+	/**
+	 * コンストラクタ
+	 * @param position
+	 */
+	public Cluster(long position) {
+		this();
+		setPosition((int)position);
 	}
 }

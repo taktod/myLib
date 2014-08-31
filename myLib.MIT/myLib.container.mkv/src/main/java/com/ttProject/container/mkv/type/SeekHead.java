@@ -28,4 +28,12 @@ public class SeekHead extends MkvMasterTag {
 	public SeekHead() {
 		this(new EbmlValue());
 	}
+	/**
+	 * コンストラクタ
+	 * @param position
+	 */
+	public SeekHead(long position) {
+		this();
+		setPosition((int)position);
+	}
 }

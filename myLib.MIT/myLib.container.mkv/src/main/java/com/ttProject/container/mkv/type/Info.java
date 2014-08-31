@@ -28,4 +28,12 @@ public class Info extends MkvMasterTag {
 	public Info() {
 		this(new EbmlValue());
 	}
+	/**
+	 * コンストラクタ
+	 * @param position
+	 */
+	public Info(long position) {
+		this();
+		setPosition((int)position);
+	}
 }

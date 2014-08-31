@@ -28,4 +28,12 @@ public class Tags extends MkvMasterTag {
 	public Tags() {
 		this(new EbmlValue());
 	}
+	/**
+	 * コンストラクタ
+	 * @param position
+	 */
+	public Tags(long position) {
+		this();
+		setPosition((int)position);
+	}
 }

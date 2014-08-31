@@ -28,4 +28,12 @@ public class Tracks extends MkvMasterTag {
 	public Tracks() {
 		this(new EbmlValue());
 	}
+	/**
+	 * コンストラクタ
+	 * @param position
+	 */
+	public Tracks(long position) {
+		this();
+		setPosition((int)position);
+	}
 }
