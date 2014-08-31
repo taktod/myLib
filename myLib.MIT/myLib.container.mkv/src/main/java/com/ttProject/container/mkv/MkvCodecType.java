@@ -42,7 +42,21 @@ public enum MkvCodecType {
 		return name;
 	}
 	/**
-	 * 
+	 * CodecTypeからMkvCodecTypeを取得する
+	 * @param codecType
+	 * @return
+	 * @throws Exception
+	 */
+	public static MkvCodecType getCodecType(CodecType codecType) throws Exception {
+		for(MkvCodecType type : values()) {
+			if(type.getCodecType() == codecType) {
+				return type;
+			}
+		}
+		throw new RuntimeException("対応するMkvCodecTypeがわかりませんでした。:" + codecType);
+	}
+	/**
+	 * CodecIDの文字列からCodecTypeを取得する
 	 * @param data
 	 * @return
 	 * @throws Exception

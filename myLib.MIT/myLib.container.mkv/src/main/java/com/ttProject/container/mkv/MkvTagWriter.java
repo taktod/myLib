@@ -359,6 +359,7 @@ public class MkvTagWriter implements IWriter {
 		Language language = new Language();
 		language.setValue("und");
 		CodecID codecId = new CodecID();
+		codecId.setCodecType(codec);
 		TrackType trackType = new TrackType();
 		if(codec.isAudio()) {
 			trackType.setValue(2); // 映像1音声2

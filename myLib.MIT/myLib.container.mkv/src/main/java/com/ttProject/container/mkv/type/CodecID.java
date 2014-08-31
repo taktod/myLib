@@ -9,6 +9,7 @@ package com.ttProject.container.mkv.type;
 import com.ttProject.container.mkv.MkvCodecType;
 import com.ttProject.container.mkv.MkvStringTag;
 import com.ttProject.container.mkv.Type;
+import com.ttProject.frame.CodecType;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
@@ -41,7 +42,20 @@ public class CodecID extends MkvStringTag {
 		}
 		return MkvCodecType.getCodecType(name);
 	}
-	public void setCodecType(MkvCodecType codecType) throws Exception {
-		setValue(codecType.toString());
+	/**
+	 * CodecIDを設定する
+	 * @param mkvCodecType
+	 * @throws Exception
+	 */
+	public void setCodecType(MkvCodecType mkvCodecType) throws Exception {
+		setValue(mkvCodecType.toString());
+	}
+	/**
+	 * CodecIDを設定する
+	 * @param codecType
+	 * @throws Exception
+	 */
+	public void setCodecType(CodecType codecType) throws Exception {
+		setValue(MkvCodecType.getCodecType(codecType).toString());
 	}
 }
