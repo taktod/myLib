@@ -349,11 +349,17 @@ public class MkvTagWriter implements IWriter {
 	// codecPrivateがあるので、ここのサイズは不明か・・・
 	private void setupTracks(CodecType ...codecs) throws Exception {
 		tracks = new Tracks();
+		for(CodecType codecType : codecs) {
+			tracks.addChild(setupTrackEntry(codecType));
+		}
 	}
 	private MkvTag setupTrackEntry(CodecType codec) throws Exception {
 		TrackEntry trackEntry = new TrackEntry();
+		number ++;
 		TrackNumber trackNumber = new TrackNumber();
+		trackNumber.setValue(number);
 		TrackUID trackUID = new TrackUID();
+		trackUID.setValue(number);
 		FlagLacing flagLacing = new FlagLacing();
 		flagLacing.setValue(0);
 		Language language = new Language();
@@ -378,7 +384,7 @@ public class MkvTagWriter implements IWriter {
 		else {
 			throw new Exception("コーデックのtypeが不明です");
 		}
-		return null;
+		return trackEntry;
 	}
 	private void setupTags() throws Exception {
 		tags = new Tags();
