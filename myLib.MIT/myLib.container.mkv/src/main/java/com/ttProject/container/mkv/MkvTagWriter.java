@@ -7,21 +7,56 @@
 package com.ttProject.container.mkv;
 
 import java.io.FileOutputStream;
+import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
+import com.ttProject.container.mkv.type.Audio;
+import com.ttProject.container.mkv.type.BitDepth;
+import com.ttProject.container.mkv.type.Channels;
+import com.ttProject.container.mkv.type.CodecID;
+import com.ttProject.container.mkv.type.DefaultDuration;
 import com.ttProject.container.mkv.type.DocType;
 import com.ttProject.container.mkv.type.DocTypeReadVersion;
 import com.ttProject.container.mkv.type.DocTypeVersion;
+import com.ttProject.container.mkv.type.Duration;
 import com.ttProject.container.mkv.type.EBML;
 import com.ttProject.container.mkv.type.EBMLMaxIDLength;
 import com.ttProject.container.mkv.type.EBMLMaxSizeLength;
 import com.ttProject.container.mkv.type.EBMLReadVersion;
 import com.ttProject.container.mkv.type.EBMLVersion;
+import com.ttProject.container.mkv.type.FlagLacing;
+import com.ttProject.container.mkv.type.Info;
+import com.ttProject.container.mkv.type.Language;
+import com.ttProject.container.mkv.type.MuxingApp;
+import com.ttProject.container.mkv.type.PixelHeight;
+import com.ttProject.container.mkv.type.PixelWidth;
+import com.ttProject.container.mkv.type.SamplingFrequency;
+import com.ttProject.container.mkv.type.Seek;
+import com.ttProject.container.mkv.type.SeekHead;
+import com.ttProject.container.mkv.type.SeekID;
+import com.ttProject.container.mkv.type.SeekPosition;
 import com.ttProject.container.mkv.type.Segment;
+import com.ttProject.container.mkv.type.SimpleTag;
+import com.ttProject.container.mkv.type.Tag;
+import com.ttProject.container.mkv.type.TagName;
+import com.ttProject.container.mkv.type.TagString;
+import com.ttProject.container.mkv.type.Tags;
+import com.ttProject.container.mkv.type.Targets;
+import com.ttProject.container.mkv.type.TimecodeScale;
+import com.ttProject.container.mkv.type.TrackEntry;
+import com.ttProject.container.mkv.type.TrackNumber;
+import com.ttProject.container.mkv.type.TrackType;
+import com.ttProject.container.mkv.type.TrackUID;
+import com.ttProject.container.mkv.type.Tracks;
+import com.ttProject.container.mkv.type.Video;
+import com.ttProject.container.mkv.type.Void;
+import com.ttProject.container.mkv.type.WritingApp;
 import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IFrame;
 
@@ -32,8 +67,18 @@ import com.ttProject.frame.IFrame;
 public class MkvTagWriter implements IWriter {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(MkvTagWriter.class);
+	private long position = 0; // すでに書き込んだデータ量
 	private final WritableByteChannel outputChannel;
 	private FileOutputStream outputStream = null;
+	
+	private SeekHead seekHead = null;
+	private Void voidTag = null;
+	private Info info = null; // こいつらは位置情報をいれておきたい
+	private Tracks tracks = null; // こいつらは位置情報をいれておきたい
+	private Tags tags = null; // こいつらは位置情報をいれておきたい
+	// type -> seekPositionのマップを保持しておくことであとでInfoやTrackEntry、Tagsをつくったときに位置情報をいれることができるようにしておく
+	private Map<Type, SeekPosition> positionMap = new HashMap<Type, SeekPosition>();
+	private int number = 0; // trackNumberの値
 	// 最少の場合はMuxer名だけ追加入力してもらって、あとは自動入力でなんとかした方がよさそう。
 	// frameを入力する前に送ったmkvTagがある場合は、そっちを使うようにする。(なるべく)
 	// 実際の書き込みはframeうけとってから実行みたいな感じがいいとおもう。
@@ -79,7 +124,7 @@ public class MkvTagWriter implements IWriter {
 06:25:14,119 [main] INFO [MkvTagReader] -   MuxingApp size:c string:Lavf54.2.100
 06:25:14,119 [main] INFO [MkvTagReader] -   WritingApp size:c string:Lavf54.2.100
 06:25:14,119 [main] INFO [MkvTagReader] -   SegmentUID size:10 binary:10 (ランダムでOKっぽい)
-06:25:14,121 [main] INFO [MkvTagReader] -   Duration size:8 float:913.0 (ライブならスキップでOKか？それともFFFFFFFFFFFFにすべき？)
+06:25:14,121 [main] INFO [MkvTagReader] -   Duration size:8 float:913.0 (ライブならスキップでOKか？)一応voidいれておいてtailerで書き込むようにしておくべし
 06:25:14,152 [main] INFO [MkvTagReader] -  Tracks size:af*
 06:25:14,126 [main] INFO [MkvTagReader] -   TrackEntry size:64*
 06:25:14,123 [main] INFO [MkvTagReader] -    TrackNumber size:1 uint:1(この数値はSimpleBlockと一致させる必要あり)
@@ -241,19 +286,108 @@ public class MkvTagWriter implements IWriter {
 		setupEbml();
 		// Segment
 		setupSegment();
-		// infoはいいけど、tracksの作成が不能になるわけか・・・
-		// 仮データをつくっておいて、データがうけとったら、必要なものを書き込むようにしておく。
-		// といった感じにしておこうかね
-		// コーデックの詳細情報がわからないとどうしていいかわからなくなる
-		// SeekHead
+		// このあとだけど、前から順に追記していって、情報がかわったら過去のデータも書き換えとしようとおもったが、そういうわけにもいかなそうです。(ライブストリームの場合はもどれないため)
+		// やっぱりseekHead -> tagsの間のデータはいったんメモリー上に保持しておいて、対処しないとだめっぽいですね。
+		// ライブストリームする場合はデータがもったいないので、musicTubeみたいにheader部の情報だけ、どこかに保存しておいた方がいいかもしれません。
+		// となるとやっぱり、格フレームデータがそろうまでTrackEntryのデータが集まらないので調整しておいた方がよさそうですね。
+		// なおtailerの書き込みについては、問題なく動作できるはずなので、そこは気にしない。
 		setupSeekHead();
-		// Info
-		// Tracks
+		setupInfo();
+		setupTracks();
+		setupTags();
+		// ここまできたらclusterの記入が可能になる
 		// あたりは記入できるか？
 	}
 	private void setupSeekHead() {
 		// この部分では、Info Tracks TagsとVoidを準備しておく(voidのところにあとでcuesを追加する(tailer?))
 		// infoとtracks、tagsについては長さを知っている必要があるので、あらかじめつくらないとだめか？
+		// seekHeadの保持しているデータ位置は、seekHeadの先頭の位置から各情報への相対位置情報っぽいです
+		seekHead = new SeekHead(position);
+		seekHead.addChild(setupSeek(Type.Info));
+		seekHead.addChild(setupSeek(Type.Tracks));
+		seekHead.addChild(setupSeek(Type.Tags));
+		// cuesはとりあえずいれないでおいとく。
+//		seekHead.addChild(setupSeek(Type.Cues));
+		Void voidTag = new Void();
+		voidTag.setTagSize(15);
+		seekHead.addChild(voidTag); // あとでcuesをいれるときに利用する空白領域をつくっておく
+	}
+	/**
+	 * seekの中身を作成する
+	 * @param type
+	 * @return
+	 */
+	private MkvTag setupSeek(Type type) {
+		Seek seek = new Seek();
+		SeekID seekId = new SeekID();
+		ByteBuffer idBuffer = ByteBuffer.allocate(4);
+		idBuffer.putInt(type.intValue());
+		seekId.setValue(idBuffer);
+		SeekPosition position = new SeekPosition();
+		positionMap.put(type, position);
+		return seek;
+	}
+	/**
+	 * info情報をつくっておく
+	 */
+	private void setupInfo() throws Exception {
+		info = new Info();
+		TimecodeScale timecodeScale = new TimecodeScale();
+		timecodeScale.setValue(1000000L);
+		info.addChild(timecodeScale);
+		MuxingApp muxingApp = new MuxingApp();
+		muxingApp.setValue("ttProject.mkvMuxer");
+		info.addChild(muxingApp);
+		WritingApp writingApp = new WritingApp();
+		writingApp.setValue("ttProject.mkvWriter");
+		info.addChild(writingApp);
+//		Duration duration = new Duration(); // durationはtailerで書き込む
+		Void voidTag = new Void();
+		voidTag.setTagSize(12);
+		info.addChild(voidTag);
+	}
+	// codecPrivateがあるので、ここのサイズは不明か・・・
+	private void setupTracks(CodecType ...codecs) throws Exception {
+		tracks = new Tracks();
+	}
+	private MkvTag setupTrackEntry(CodecType codec) throws Exception {
+		TrackEntry trackEntry = new TrackEntry();
+		TrackNumber trackNumber = new TrackNumber();
+		TrackUID trackUID = new TrackUID();
+		FlagLacing flagLacing = new FlagLacing();
+		flagLacing.setValue(0);
+		Language language = new Language();
+		language.setValue("und");
+		CodecID codecId = new CodecID();
+		TrackType trackType = new TrackType();
+		if(codec.isAudio()) {
+			trackType.setValue(2); // 映像1音声2
+			Audio audio = new Audio();
+			Channels channels = new Channels();
+			SamplingFrequency samplingFrequency = new SamplingFrequency();
+			BitDepth bitDepth = new BitDepth();
+		}
+		else if(codec.isVideo()) {
+			trackType.setValue(1); // 映像1音声2
+			DefaultDuration defaultDuration = new DefaultDuration(); // fpsを知るために必要
+			Video video = new Video();
+			PixelWidth pixelWidth = new PixelWidth();
+			PixelHeight pixelHeight = new PixelHeight();
+		}
+		else {
+			throw new Exception("コーデックのtypeが不明です");
+		}
+		return null;
+	}
+	private void setupTags() throws Exception {
+		tags = new Tags();
+		Tag tag = new Tag();
+		Targets targets = new Targets(); // masterタグなのに空っぽなんだ、へぇ〜
+		SimpleTag simpleTag = new SimpleTag();
+		TagName tagName = new TagName();
+		tagName.setValue("ENCODER");
+		TagString tagString = new TagString();
+		tagString.setValue("ttProject.mkvMuxer");
 	}
 	/**
 	 * segmentの冒頭部つくっておく
@@ -316,17 +450,26 @@ public class MkvTagWriter implements IWriter {
 	public void addContainer(IContainer container) throws Exception {
 		if(container instanceof MkvMasterTag) {
 			MkvMasterTag masterTag = (MkvMasterTag)container;
-			outputChannel.write(masterTag.getData());
+			writeData(masterTag.getData());
 			for(MkvTag tag : masterTag.getChildList()) {
 				addContainer(tag);
 			}
 		}
 		else {
-			outputChannel.write(container.getData());
+			writeData(container.getData());
 		}
 	}
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
 		// vp8やvp9の場合はinvisible判定をとっておかないとこまったことになるかもしれない。(BlockTagに設定項目があるため。)
+	}
+	/**
+	 * 実データの書き込み処理
+	 * @param buffer
+	 * @throws Exception
+	 */
+	private void writeData(ByteBuffer buffer) throws Exception {
+		position += buffer.remaining(); // 書き込む量を追加していく
+		outputChannel.write(buffer);
 	}
 }
