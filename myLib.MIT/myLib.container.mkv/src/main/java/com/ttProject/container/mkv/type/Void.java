@@ -41,6 +41,13 @@ public class Void extends MkvTag {
 		setPosition((int)position);
 	}
 	/**
+	 * 位置を設定する
+	 * @param position
+	 */
+	public void setPosition(long position) {
+		super.setPosition((int)position);
+	}
+	/**
 	 * tagのサイズを設定する
 	 * @param size
 	 */

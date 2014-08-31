@@ -36,4 +36,11 @@ public class Cluster extends MkvMasterTag {
 		this();
 		setPosition((int)position);
 	}
+	/**
+	 * 位置を設定する
+	 * @param position
+	 */
+	public void setPosition(long position) {
+		super.setPosition((int)position);
+	}
 }
