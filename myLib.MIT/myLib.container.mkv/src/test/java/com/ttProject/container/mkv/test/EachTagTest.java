@@ -25,13 +25,11 @@ import com.ttProject.container.mkv.type.SamplingFrequency;
 import com.ttProject.container.mkv.type.SeekID;
 import com.ttProject.container.mkv.type.Segment;
 import com.ttProject.container.mkv.type.Void;
-import com.ttProject.unit.extra.EbmlValue;
 import com.ttProject.util.HexUtil;
 
 /**
  * それぞれのtagについて、byteStream化したときにどうなるかのテスト
- * @author hps
- *
+ * @author taktod
  */
 public class EachTagTest {
 	/** ロガー */
@@ -46,6 +44,7 @@ public class EachTagTest {
 		Segment segment = new Segment();
 		segment.setInfinite(true);
 		logger.info(HexUtil.toHex(segment.getData(), true));
+		logger.info("size:" + segment.getSize());
 	}
 	/**
 	 * VoidTagの動作テスト
@@ -54,10 +53,10 @@ public class EachTagTest {
 	@Test
 	public void VoidTest() throws Exception {
 		logger.info("VoidTest");
-		EbmlValue size = new EbmlValue();
-		size.set(15);
-		Void voidTag = new Void(size);
+		Void voidTag = new Void();
+		voidTag.setTagSize(15);
 		logger.info(HexUtil.toHex(voidTag.getData(), true));
+		logger.info("size:" + voidTag.getSize());
 	}
 	/**
 	 * MkvBinaryTagの動作テスト
@@ -69,6 +68,7 @@ public class EachTagTest {
 		SeekID seekId = new SeekID();
 		seekId.setValue(HexUtil.makeBuffer("1549A966"));
 		logger.info(HexUtil.toHex(seekId.getData(), true));
+		logger.info("size:" + seekId.getSize());
 		// 53 AB 84 14 39 A9 66 
 	}
 	/**
@@ -83,6 +83,7 @@ public class EachTagTest {
 		dateUTC.setValue(d);
 		logger.info(dateUTC.toString());
 		logger.info(HexUtil.toHex(dateUTC.getData(), true));
+		logger.info("size:" + dateUTC.getSize());
 		// 44 61 88 03 AF FA 97 5A 4A B6 00 
 	}
 	/**
@@ -95,6 +96,7 @@ public class EachTagTest {
 		SamplingFrequency samplingFrequency = new SamplingFrequency();
 		samplingFrequency.setValue(44100.0f);
 		logger.info(HexUtil.toHex(samplingFrequency.getData(), true));
+		logger.info("size:" + samplingFrequency.getSize());
 		// B5 84 47 2C 44 00
 	}
 	/**
@@ -120,6 +122,7 @@ public class EachTagTest {
 		for(MkvTag tag : ebml.getChildList()) {
 			logger.info(HexUtil.toHex(tag.getData(), true));
 		}
+		logger.info("size:" + ebml.getSize());
 		// 1A 45 DF A3 93 42 82 88 6D 61 74 72 6F 73 6B 61 42 87 81 01 42 85 81 01
 	}
 	/**
@@ -132,8 +135,8 @@ public class EachTagTest {
 		logger.info("MkvSignedIntTest");
 		ReferenceBlock referenceBlock = new ReferenceBlock();
 		referenceBlock.setValue(5);
-//		logger.info(referenceBlock);
 		logger.info(HexUtil.toHex(referenceBlock.getData(), true));
+		logger.info("size:" + referenceBlock.getSize());
 		// FB 81 05(このデータは実データベースではないです。)
 	}
 	/**
@@ -146,6 +149,7 @@ public class EachTagTest {
 		DocType docType = new DocType();
 		docType.setValue("matroska");
 		logger.info(HexUtil.toHex(docType.getData(), true));
+		logger.info("size:" + docType.getSize());
 		// 42 82 88 6D 61 74 72 6F 73 6B 61
 	}
 	/**
@@ -158,6 +162,7 @@ public class EachTagTest {
 		DocTypeVersion docTypeVersion = new DocTypeVersion();
 		docTypeVersion.setValue(1);
 		logger.info(HexUtil.toHex(docTypeVersion.getData(), true));
+		logger.info("size:" + docTypeVersion.getSize());
 		// 42 87 81 01
 	}
 	/**
@@ -170,6 +175,7 @@ public class EachTagTest {
 		MuxingApp muxingApp = new MuxingApp();
 		muxingApp.setValue("libebml v0.7.7 + libmatroska v0.8.1");
 		logger.info(HexUtil.toHex(muxingApp.getData(), true));
+		logger.info("size:" + muxingApp.getSize());
 		// 4D 80 A3 6C 69 62 65 62 6D 6C 20 76 30 2E 37 2E 37 20 2B 20 6C 69 62 6D 61 74 72 6F 73 6B 61 20 76 30 2E 38 2E 31
 	}
 }

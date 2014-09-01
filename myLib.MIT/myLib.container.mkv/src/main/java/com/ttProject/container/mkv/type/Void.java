@@ -60,13 +60,12 @@ public class Void extends MkvTag {
 	@Override
 	protected void requestUpdate() throws Exception {
 		// ここつくっておかないとだめ
-		byte[] data = new byte[getTagSize().get()];
+		byte[] empty = new byte[getTagSize().get()];
 		BitConnector connector = new BitConnector();
-		super.setData(
-				BufferUtil.connect(
-					connector.connect(getTagId(), getTagSize()),
-					ByteBuffer.wrap(data)
-				)
-		);
+		ByteBuffer data = BufferUtil.connect(
+				connector.connect(getTagId(), getTagSize()),
+				ByteBuffer.wrap(empty));
+		setSize(data.remaining());
+		super.setData(data);
 	}
 }
