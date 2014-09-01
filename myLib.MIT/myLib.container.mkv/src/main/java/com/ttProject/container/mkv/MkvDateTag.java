@@ -6,6 +6,7 @@
  */
 package com.ttProject.container.mkv;
 
+import java.nio.ByteBuffer;
 import java.util.Date;
 
 import com.ttProject.nio.channels.IReadChannel;
@@ -52,7 +53,9 @@ public abstract class MkvDateTag extends MkvTag {
 			throw new Exception("値が決定していないので、動作できません。");
 		}
 		BitConnector connector = new BitConnector();
-		super.setData(connector.connect(getTagId(), getTagSize(), value));
+		ByteBuffer data = connector.connect(getTagId(), getTagSize(), value);
+		setSize(data.remaining());
+		super.setData(data);
 	}
 	public Date getValue() {
 		return new Date(946684800000L + value.getLong() / 1000000);

@@ -51,7 +51,9 @@ public abstract class MkvUtf8Tag extends MkvTag{
 			throw new Exception("値が設定されていません。");
 		}
 		BitConnector connector = new BitConnector();
-		super.setData(BufferUtil.connect(connector.connect(getTagId(), getTagSize()), ByteBuffer.wrap(value.getBytes())));
+		ByteBuffer data = BufferUtil.connect(connector.connect(getTagId(), getTagSize()), ByteBuffer.wrap(value.getBytes()));
+		setSize(data.remaining());
+		super.setData(data);
 	}
 	/**
 	 * {@inheritDoc}

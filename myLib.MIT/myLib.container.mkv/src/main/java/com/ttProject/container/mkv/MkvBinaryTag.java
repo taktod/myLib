@@ -73,10 +73,12 @@ public abstract class MkvBinaryTag extends MkvTag {
 			throw new Exception("値がありません。");
 		}
 		BitConnector connector = new BitConnector();
-		super.setData(BufferUtil.connect(
+		ByteBuffer data = BufferUtil.connect(
 				connector.connect(getTagId(), getTagSize()),
 				buffer
-		));
+		);
+		setSize(data.remaining());
+		super.setData(data);
 	}
 	/**
 	 * {@inheritDoc}

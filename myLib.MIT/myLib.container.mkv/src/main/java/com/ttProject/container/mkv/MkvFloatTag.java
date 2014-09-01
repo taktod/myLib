@@ -6,6 +6,8 @@
  */
 package com.ttProject.container.mkv;
 
+import java.nio.ByteBuffer;
+
 import org.apache.log4j.Logger;
 
 import com.ttProject.nio.channels.IReadChannel;
@@ -59,7 +61,9 @@ public abstract class MkvFloatTag extends MkvTag {
 			throw new Exception("値が決定していないので、動作できません。");
 		}
 		BitConnector connector = new BitConnector();
-		super.setData(connector.connect(getTagId(), getTagSize(), value));
+		ByteBuffer data = connector.connect(getTagId(), getTagSize(), value);
+		setSize(data.remaining());
+		super.setData(data);
 	}
 	public double getValue() {
 		if(value instanceof Bit32) {

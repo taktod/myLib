@@ -6,6 +6,7 @@
  */
 package com.ttProject.container.mkv;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +56,9 @@ public abstract class MkvSignedIntTag extends MkvTag {
 			throw new Exception("値が決定していないので、動作不能です。");
 		}
 		BitConnector connector = new BitConnector();
-		super.setData(connector.connect(getTagId(), getTagSize(), value));
+		ByteBuffer data = connector.connect(getTagId(), getTagSize(), value);
+		setSize(data.remaining());
+		super.setData(data);
 	}
 	/**
 	 * データ応答

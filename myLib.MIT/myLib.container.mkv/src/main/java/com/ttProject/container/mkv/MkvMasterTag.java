@@ -6,6 +6,7 @@
  */
 package com.ttProject.container.mkv;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,7 +110,9 @@ public abstract class MkvMasterTag extends MkvTag {
 		getTagSize().set(size);
 		// とりあえず、headerとsizeの部分だけ応答として返したい
 		BitConnector connector = new BitConnector();
-		super.setData(connector.connect(getTagId(), getTagSize()));
+		ByteBuffer data = connector.connect(getTagId(), getTagSize());
+		setSize(data.remaining() + size);
+		super.setData(data);
 	}
 	/**
 	 * {@inheritDoc}
