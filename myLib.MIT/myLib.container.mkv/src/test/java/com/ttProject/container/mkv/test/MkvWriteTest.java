@@ -12,9 +12,12 @@ import org.junit.Test;
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
 import com.ttProject.container.IWriter;
+import com.ttProject.container.mkv.MkvBlockTag;
 import com.ttProject.container.mkv.MkvTagReader;
 import com.ttProject.container.mkv.MkvTagWriter;
 import com.ttProject.container.mkv.type.TrackEntry;
+import com.ttProject.frame.CodecType;
+import com.ttProject.frame.IFrame;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
@@ -37,7 +40,7 @@ public class MkvWriteTest {
 		);
 		IReader reader = new MkvTagReader();
 		IWriter writer = new MkvTagWriter("output.mkv");
-		writer.prepareHeader();
+		writer.prepareHeader(CodecType.H264, CodecType.AAC);
 		// mpegtsとかでもあらかじめ書き込みを実行することで対処しているので、mkvもそうすればいいかな・・・
 		// ある程度どうなるかわかっているとだいぶ助かるけど・・・
 		// frameが着てから解析するというのはやらないでおこうというのがいいのか？
@@ -47,13 +50,12 @@ public class MkvWriteTest {
 			if(container instanceof TrackEntry) {
 				logger.info(container);
 			}
-/*			if(container instanceof MkvBlockTag) {
+			if(container instanceof MkvBlockTag) {
 				MkvBlockTag blockTag = (MkvBlockTag) container;
 				IFrame frame = blockTag.getFrame();
-				blockTag.getTrackId().get();
 				logger.info(frame);
 				writer.addFrame(blockTag.getTrackId().get(), frame);
-			}*/
+			}
 		}
 		writer.prepareTailer();
 		logger.info("処理おわり");

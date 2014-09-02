@@ -9,7 +9,9 @@ package com.ttProject.container.mkv;
 import java.io.FileOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -17,14 +19,12 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
 import com.ttProject.container.mkv.type.Audio;
-import com.ttProject.container.mkv.type.BitDepth;
 import com.ttProject.container.mkv.type.Channels;
 import com.ttProject.container.mkv.type.CodecID;
 import com.ttProject.container.mkv.type.DefaultDuration;
 import com.ttProject.container.mkv.type.DocType;
 import com.ttProject.container.mkv.type.DocTypeReadVersion;
 import com.ttProject.container.mkv.type.DocTypeVersion;
-import com.ttProject.container.mkv.type.Duration;
 import com.ttProject.container.mkv.type.EBML;
 import com.ttProject.container.mkv.type.EBMLMaxIDLength;
 import com.ttProject.container.mkv.type.EBMLMaxSizeLength;
@@ -58,7 +58,9 @@ import com.ttProject.container.mkv.type.Video;
 import com.ttProject.container.mkv.type.Void;
 import com.ttProject.container.mkv.type.WritingApp;
 import com.ttProject.frame.CodecType;
+import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
+import com.ttProject.frame.IVideoFrame;
 
 /**
  * mkvを作成するためのwriter
@@ -79,6 +81,8 @@ public class MkvTagWriter implements IWriter {
 	// type -> seekPositionのマップを保持しておくことであとでInfoやTrackEntry、Tagsをつくったときに位置情報をいれることができるようにしておく
 	private Map<Type, SeekPosition> positionMap = new HashMap<Type, SeekPosition>();
 	private int number = 0; // trackNumberの値
+	private List<TrackEntry> trackEntries = new ArrayList<TrackEntry>(); // リストの形で持っておく。(trackEntryとframeの紐付けのため)
+	private Map<Integer, TrackEntry> trackEntryMap = new HashMap<Integer, TrackEntry>();
 	// 最少の場合はMuxer名だけ追加入力してもらって、あとは自動入力でなんとかした方がよさそう。
 	// frameを入力する前に送ったmkvTagがある場合は、そっちを使うようにする。(なるべく)
 	// 実際の書き込みはframeうけとってから実行みたいな感じがいいとおもう。
@@ -292,8 +296,11 @@ public class MkvTagWriter implements IWriter {
 		// となるとやっぱり、格フレームデータがそろうまでTrackEntryのデータが集まらないので調整しておいた方がよさそうですね。
 		// なおtailerの書き込みについては、問題なく動作できるはずなので、そこは気にしない。
 		setupSeekHead();
+		seekHead.getData();
+		logger.info("seekHeadSize:" + seekHead.getSize()); // データサイズを取得してみる
+		logger.info("seekHeadTagSize:" + seekHead.getTagSize().get());
 		setupInfo();
-		setupTracks();
+		setupTracks(codecs);
 		setupTags();
 		// ここまできたらclusterの記入が可能になる
 		// あたりは記入できるか？
@@ -306,11 +313,10 @@ public class MkvTagWriter implements IWriter {
 		seekHead.addChild(setupSeek(Type.Info));
 		seekHead.addChild(setupSeek(Type.Tracks));
 		seekHead.addChild(setupSeek(Type.Tags));
-		// cuesはとりあえずいれないでおいとく。
-//		seekHead.addChild(setupSeek(Type.Cues));
+//		seekHead.addChild(setupSeek(Type.Cues)); // cuesはtailerで書き込む
 		Void voidTag = new Void();
 		voidTag.setTagSize(30);
-		seekHead.addChild(voidTag); // あとでcuesをいれるときに利用する空白領域をつくっておく
+		seekHead.addChild(voidTag);
 	}
 	/**
 	 * seekの中身を作成する
@@ -346,14 +352,28 @@ public class MkvTagWriter implements IWriter {
 		voidTag.setTagSize(16);
 		info.addChild(voidTag);
 	}
-	// codecPrivateがあるので、ここのサイズは不明か・・・
+	/**
+	 * tracks情報をつくっておく(この場では完了しない)
+	 * @param codecs
+	 * @throws Exception
+	 */
 	private void setupTracks(CodecType ...codecs) throws Exception {
 		tracks = new Tracks();
 		for(CodecType codecType : codecs) {
 			tracks.addChild(setupTrackEntry(codecType));
 		}
 	}
+	/**
+	 * trackEntryをつくっておく(やっぱりこの場では完了しない)
+	 * @param codec
+	 * @return
+	 * @throws Exception
+	 */
 	private MkvTag setupTrackEntry(CodecType codec) throws Exception {
+		/*
+どのコーデック -> trackという紐付けをつくっておきたい
+Listかな・・・Setだと重複できないしね・・・
+		 */
 		TrackEntry trackEntry = new TrackEntry();
 		number ++;
 		TrackNumber trackNumber = new TrackNumber();
@@ -380,14 +400,15 @@ public class MkvTagWriter implements IWriter {
 			audio.addChild(channels);
 			SamplingFrequency samplingFrequency = new SamplingFrequency();
 			audio.addChild(samplingFrequency);
-			BitDepth bitDepth = new BitDepth();
-			audio.addChild(bitDepth);
+//			BitDepth bitDepth = new BitDepth();
+//			audio.addChild(bitDepth); // aacみたいにbitDepthの設定がないものもある
 			trackEntry.addChild(audio);
 		}
 		else if(codec.isVideo()) {
 			trackType.setValue(1); // 映像1音声2
 			trackEntry.addChild(trackType);
 			DefaultDuration defaultDuration = new DefaultDuration(); // fpsを知るために必要
+			defaultDuration.setValue(100000000); // とりあえず10fpsにしてみる。(正解であるかは不明)
 			trackEntry.addChild(defaultDuration);
 			Video video = new Video();
 			PixelWidth pixelWidth = new PixelWidth();
@@ -399,18 +420,28 @@ public class MkvTagWriter implements IWriter {
 		else {
 			throw new Exception("コーデックのtypeが不明です");
 		}
-		
+		trackEntries.add(trackEntry); // trackEntryを保持しておく。
+		logger.info(trackEntries);
 		return trackEntry;
 	}
+	/**
+	 * tagsをつくっておく
+	 * @throws Exception
+	 */
 	private void setupTags() throws Exception {
 		tags = new Tags();
 		Tag tag = new Tag();
+		tags.addChild(tag);
 		Targets targets = new Targets(); // masterタグなのに空っぽなんだ、へぇ〜
+		tag.addChild(targets);
 		SimpleTag simpleTag = new SimpleTag();
+		tags.addChild(simpleTag);
 		TagName tagName = new TagName();
 		tagName.setValue("ENCODER");
+		simpleTag.addChild(tagName);
 		TagString tagString = new TagString();
 		tagString.setValue("ttProject.mkvMuxer");
+		simpleTag.addChild(tagString);
 	}
 	/**
 	 * segmentの冒頭部つくっておく
@@ -483,7 +514,49 @@ public class MkvTagWriter implements IWriter {
 		}
 	}
 	@Override
-	public void addFrame(int trackId, IFrame frame) throws Exception {
+	public synchronized void addFrame(int trackId, IFrame frame) throws Exception {
+		if(!trackEntryMap.containsKey(trackId)) {
+			// trackEntryMap化していないトラック
+			logger.info("trackEntryMap化されていないトラック");
+			TrackEntry findTrackEntry = null;
+			for(TrackEntry trackEntry : trackEntries) {
+				for(MkvTag tag : trackEntry.getChildList()) {
+					if(tag instanceof CodecID) {
+						CodecID codecID = (CodecID) tag;
+						if(codecID.getCodecType() == MkvCodecType.getCodecType(frame.getCodecType())) {
+							logger.info("コーデック情報が一致した。:" + frame.getCodecType() + " / " + codecID.getCodecType());
+							findTrackEntry = trackEntry;
+							break;
+						}
+					}
+				}
+				if(findTrackEntry != null) {
+					break;
+				}
+			}
+			if(findTrackEntry != null) {
+				logger.info("データが見つかった");
+				trackEntryMap.put(trackId, findTrackEntry);
+				trackEntries.remove(findTrackEntry);
+				// 必要な情報を追記しておく。
+				if(frame instanceof IAudioFrame) {
+					IAudioFrame aFrame = (IAudioFrame)frame;
+					logger.info(aFrame.getSampleRate());
+					logger.info(aFrame.getChannel());
+					logger.info(aFrame.getBit());
+					// aacの場合はcodecPrivateあり
+				}
+				else if(frame instanceof IVideoFrame) {
+					IVideoFrame vFrame = (IVideoFrame)frame;
+					logger.info(vFrame.getWidth());
+					logger.info(vFrame.getHeight());
+				}
+				if(trackEntries.size() == 0) {
+					logger.info("全トラック情報がみつかったので、調整しておく。");
+					// この段階で情報がすべてそろう
+				}
+			}
+		}
 		// vp8やvp9の場合はinvisible判定をとっておかないとこまったことになるかもしれない。(BlockTagに設定項目があるため。)
 	}
 	/**
