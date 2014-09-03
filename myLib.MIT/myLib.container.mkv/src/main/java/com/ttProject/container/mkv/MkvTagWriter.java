@@ -314,6 +314,7 @@ public class MkvTagWriter implements IWriter {
 		// この部分では、Info Tracks TagsとVoidを準備しておく(voidのところにあとでcuesを追加する(tailer?))
 		// infoとtracks、tagsについては長さを知っている必要があるので、あらかじめつくらないとだめか？
 		// seekHeadの保持しているデータ位置は、seekHeadの先頭の位置から各情報への相対位置情報っぽいです
+		// 先にこれを定義する意味がなさそうだな。
 		seekHead = new SeekHead(position);
 		seekHead.addChild(setupSeek(Type.Info));
 		seekHead.addChild(setupSeek(Type.Tracks));
@@ -387,51 +388,9 @@ Listかな・・・Setだと重複できないしね・・・
 その方がスマートでしょwxx
 		 */
 		TrackEntry trackEntry = new TrackEntry();
-/*		number ++;
-		TrackNumber trackNumber = new TrackNumber();
-		trackNumber.setValue(number);
-		trackEntry.addChild(trackNumber);
-		TrackUID trackUID = new TrackUID();
-		trackUID.setValue(number);
-		trackEntry.addChild(trackUID);
-		FlagLacing flagLacing = new FlagLacing();
-		flagLacing.setValue(0);
-		trackEntry.addChild(flagLacing);
-		Language language = new Language();
-		language.setValue("und");
-		trackEntry.addChild(language);*/
 		CodecID codecId = new CodecID();
 		codecId.setCodecType(codec);
 		trackEntry.addChild(codecId);
-/*		TrackType trackType = new TrackType();
-		if(codec.isAudio()) {
-			trackType.setValue(2); // 映像1音声2
-			trackEntry.addChild(trackType);
-			Audio audio = new Audio();
-			Channels channels = new Channels();
-			audio.addChild(channels);
-			SamplingFrequency samplingFrequency = new SamplingFrequency();
-			audio.addChild(samplingFrequency);
-//			BitDepth bitDepth = new BitDepth();
-//			audio.addChild(bitDepth); // aacみたいにbitDepthの設定がないものもある
-			trackEntry.addChild(audio);
-		}
-		else if(codec.isVideo()) {
-			trackType.setValue(1); // 映像1音声2
-			trackEntry.addChild(trackType);
-			DefaultDuration defaultDuration = new DefaultDuration(); // fpsを知るために必要
-			defaultDuration.setValue(100000000); // とりあえず10fpsにしてみる。(正解であるかは不明)
-			trackEntry.addChild(defaultDuration);
-			Video video = new Video();
-			PixelWidth pixelWidth = new PixelWidth();
-			video.addChild(pixelWidth);
-			PixelHeight pixelHeight = new PixelHeight();
-			video.addChild(pixelHeight);
-			trackEntry.addChild(video);
-		}
-		else {
-			throw new Exception("コーデックのtypeが不明です");
-		}*/
 		trackEntries.add(trackEntry); // trackEntryを保持しておく。
 		logger.info(trackEntries);
 		return trackEntry;
@@ -671,8 +630,8 @@ Listかな・・・Setだと重複できないしね・・・
 					// とりあえずデータをつくるか・・・
 					logger.info(Long.toHexString(position));
 					// 強制的にsizeを更新しておく
-					seekHead.getData();
-					int originalSeekHeadSize = seekHead.getSize(); // seekHeadのサイズが大きくなった分、voidのサイズを削らないとだめ
+//					seekHead.getData();
+					int originalSeekHeadSize = 80; // seekHeadのサイズが大きくなった分、voidのサイズを削らないとだめ
 					logger.info("orgSeekHead:" + originalSeekHeadSize);
 					info.getData();
 					tracks.getData();
