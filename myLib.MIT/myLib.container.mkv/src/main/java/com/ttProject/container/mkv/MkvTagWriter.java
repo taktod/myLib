@@ -62,12 +62,10 @@ import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
-import com.ttProject.frame.aac.AacFrame;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.h264.H264Frame;
-import com.ttProject.util.HexUtil;
 
 /**
  * mkvを作成するためのwriter
@@ -85,7 +83,6 @@ public class MkvTagWriter implements IWriter {
 	private Tracks tracks = null; // こいつらは位置情報をいれておきたい
 	private Tags tags = null; // こいつらは位置情報をいれておきたい
 	// type -> seekPositionのマップを保持しておくことであとでInfoやTrackEntry、Tagsをつくったときに位置情報をいれることができるようにしておく
-	private Map<Type, SeekPosition> positionMap = new HashMap<Type, SeekPosition>();
 	private List<TrackEntry> trackEntries = new ArrayList<TrackEntry>(); // リストの形で持っておく。(trackEntryとframeの紐付けのため)
 	private Map<Integer, TrackEntry> trackEntryMap = new HashMap<Integer, TrackEntry>();
 	// 最少の場合はMuxer名だけ追加入力してもらって、あとは自動入力でなんとかした方がよさそう。
@@ -339,7 +336,6 @@ public class MkvTagWriter implements IWriter {
 		seek.addChild(seekId);
 		SeekPosition position = new SeekPosition();
 		position.setValue(pos);
-		positionMap.put(type, position);
 		seek.addChild(position);
 		return seek;
 	}
