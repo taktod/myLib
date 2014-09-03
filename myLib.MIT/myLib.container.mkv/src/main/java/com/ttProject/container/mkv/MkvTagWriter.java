@@ -18,9 +18,8 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
-import com.ttProject.container.mkv.type.Audio;
-import com.ttProject.container.mkv.type.Channels;
 import com.ttProject.container.mkv.type.CodecID;
+import com.ttProject.container.mkv.type.CodecPrivate;
 import com.ttProject.container.mkv.type.DefaultDuration;
 import com.ttProject.container.mkv.type.DocType;
 import com.ttProject.container.mkv.type.DocTypeReadVersion;
@@ -32,11 +31,9 @@ import com.ttProject.container.mkv.type.EBMLReadVersion;
 import com.ttProject.container.mkv.type.EBMLVersion;
 import com.ttProject.container.mkv.type.FlagLacing;
 import com.ttProject.container.mkv.type.Info;
-import com.ttProject.container.mkv.type.Language;
 import com.ttProject.container.mkv.type.MuxingApp;
 import com.ttProject.container.mkv.type.PixelHeight;
 import com.ttProject.container.mkv.type.PixelWidth;
-import com.ttProject.container.mkv.type.SamplingFrequency;
 import com.ttProject.container.mkv.type.Seek;
 import com.ttProject.container.mkv.type.SeekHead;
 import com.ttProject.container.mkv.type.SeekID;
@@ -61,6 +58,9 @@ import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.extra.AudioMultiFrame;
+import com.ttProject.frame.extra.VideoMultiFrame;
+import com.ttProject.frame.h264.H264Frame;
 
 /**
  * mkvを作成するためのwriter
@@ -74,13 +74,11 @@ public class MkvTagWriter implements IWriter {
 	private FileOutputStream outputStream = null;
 	
 	private SeekHead seekHead = null;
-	private Void voidTag = null;
 	private Info info = null; // こいつらは位置情報をいれておきたい
 	private Tracks tracks = null; // こいつらは位置情報をいれておきたい
 	private Tags tags = null; // こいつらは位置情報をいれておきたい
 	// type -> seekPositionのマップを保持しておくことであとでInfoやTrackEntry、Tagsをつくったときに位置情報をいれることができるようにしておく
 	private Map<Type, SeekPosition> positionMap = new HashMap<Type, SeekPosition>();
-	private int number = 0; // trackNumberの値
 	private List<TrackEntry> trackEntries = new ArrayList<TrackEntry>(); // リストの形で持っておく。(trackEntryとframeの紐付けのため)
 	private Map<Integer, TrackEntry> trackEntryMap = new HashMap<Integer, TrackEntry>();
 	// 最少の場合はMuxer名だけ追加入力してもらって、あとは自動入力でなんとかした方がよさそう。
@@ -373,9 +371,12 @@ public class MkvTagWriter implements IWriter {
 		/*
 どのコーデック -> trackという紐付けをつくっておきたい
 Listかな・・・Setだと重複できないしね・・・
+
+とりあえず、codecTypeだけいれておく。他のデータはあとで設定することにします
+その方がスマートでしょwxx
 		 */
 		TrackEntry trackEntry = new TrackEntry();
-		number ++;
+/*		number ++;
 		TrackNumber trackNumber = new TrackNumber();
 		trackNumber.setValue(number);
 		trackEntry.addChild(trackNumber);
@@ -387,11 +388,11 @@ Listかな・・・Setだと重複できないしね・・・
 		trackEntry.addChild(flagLacing);
 		Language language = new Language();
 		language.setValue("und");
-		trackEntry.addChild(language);
+		trackEntry.addChild(language);*/
 		CodecID codecId = new CodecID();
 		codecId.setCodecType(codec);
 		trackEntry.addChild(codecId);
-		TrackType trackType = new TrackType();
+/*		TrackType trackType = new TrackType();
 		if(codec.isAudio()) {
 			trackType.setValue(2); // 映像1音声2
 			trackEntry.addChild(trackType);
@@ -419,7 +420,7 @@ Listかな・・・Setだと重複できないしね・・・
 		}
 		else {
 			throw new Exception("コーデックのtypeが不明です");
-		}
+		}*/
 		trackEntries.add(trackEntry); // trackEntryを保持しておく。
 		logger.info(trackEntries);
 		return trackEntry;
@@ -515,6 +516,20 @@ Listかな・・・Setだと重複できないしね・・・
 	}
 	@Override
 	public synchronized void addFrame(int trackId, IFrame frame) throws Exception {
+		if(frame instanceof AudioMultiFrame) {
+			AudioMultiFrame multiFrame = (AudioMultiFrame)frame;
+			for(IAudioFrame aFrame : multiFrame.getFrameList()) {
+				addFrame(trackId, aFrame);
+			}
+			return;
+		}
+		else if(frame instanceof VideoMultiFrame) {
+			VideoMultiFrame multiFrame = (VideoMultiFrame)frame;
+			for(IVideoFrame vFrame : multiFrame.getFrameList()) {
+				addFrame(trackId, vFrame);
+			}
+			return;
+		}
 		if(!trackEntryMap.containsKey(trackId)) {
 			// trackEntryMap化していないトラック
 			logger.info("trackEntryMap化されていないトラック");
@@ -538,6 +553,19 @@ Listかな・・・Setだと重複できないしね・・・
 				logger.info("データが見つかった");
 				trackEntryMap.put(trackId, findTrackEntry);
 				trackEntries.remove(findTrackEntry);
+				// 共通情報をつけておく
+				TrackNumber trackNumber = new TrackNumber();
+				trackNumber.setValue(trackId);
+				findTrackEntry.addChild(trackNumber);
+				
+				TrackUID trackUID = new TrackUID();
+				trackUID.setValue(trackId);
+				findTrackEntry.addChild(trackUID);
+				
+				FlagLacing flagLacing = new FlagLacing();
+				flagLacing.setValue(0);
+				findTrackEntry.addChild(flagLacing);
+				
 				// 必要な情報を追記しておく。
 				if(frame instanceof IAudioFrame) {
 					IAudioFrame aFrame = (IAudioFrame)frame;
@@ -550,6 +578,44 @@ Listかな・・・Setだと重複できないしね・・・
 					IVideoFrame vFrame = (IVideoFrame)frame;
 					logger.info(vFrame.getWidth());
 					logger.info(vFrame.getHeight());
+					TrackType trackType = new TrackType();
+					trackType.setValue(1); // 動画は1
+					findTrackEntry.addChild(trackType);
+					
+					// これはいらないかもしれないな
+					DefaultDuration defaultDuration = new DefaultDuration();
+					defaultDuration.setValue(1000000); // 10fps
+					findTrackEntry.addChild(defaultDuration);
+					
+					Video video = new Video();
+					findTrackEntry.addChild(video);
+					
+					PixelWidth pixelWidth = new PixelWidth();
+					pixelWidth.setValue(vFrame.getWidth());
+					video.addChild(pixelWidth);
+					
+					PixelHeight pixelHeight = new PixelHeight();
+					pixelHeight.setValue(vFrame.getHeight());
+					video.addChild(pixelHeight);
+					
+					// あとはh264やh265ならcodecPrivateを設定する必要あり
+					switch(vFrame.getCodecType()) {
+					case H264:
+						{
+							H264Frame h264Frame = (H264Frame) vFrame;
+							// h264のcodecPrivateを作る必要あり
+							com.ttProject.frame.h264.ConfigData configData = new com.ttProject.frame.h264.ConfigData();
+							CodecPrivate codecPrivate = new CodecPrivate();
+							codecPrivate.setValue(configData.makeConfigData(h264Frame.getSps(), h264Frame.getPps()));
+							findTrackEntry.addChild(codecPrivate);
+						}
+						break;
+					case H265:
+						logger.error("h265はまだ未実装です。");
+						break;
+					default:
+						break;
+					}
 				}
 				if(trackEntries.size() == 0) {
 					logger.info("全トラック情報がみつかったので、調整しておく。");
