@@ -18,6 +18,8 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
+import com.ttProject.container.mkv.type.Audio;
+import com.ttProject.container.mkv.type.Channels;
 import com.ttProject.container.mkv.type.CodecID;
 import com.ttProject.container.mkv.type.CodecPrivate;
 import com.ttProject.container.mkv.type.DefaultDuration;
@@ -31,9 +33,11 @@ import com.ttProject.container.mkv.type.EBMLReadVersion;
 import com.ttProject.container.mkv.type.EBMLVersion;
 import com.ttProject.container.mkv.type.FlagLacing;
 import com.ttProject.container.mkv.type.Info;
+import com.ttProject.container.mkv.type.Language;
 import com.ttProject.container.mkv.type.MuxingApp;
 import com.ttProject.container.mkv.type.PixelHeight;
 import com.ttProject.container.mkv.type.PixelWidth;
+import com.ttProject.container.mkv.type.SamplingFrequency;
 import com.ttProject.container.mkv.type.Seek;
 import com.ttProject.container.mkv.type.SeekHead;
 import com.ttProject.container.mkv.type.SeekID;
@@ -58,9 +62,12 @@ import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.aac.AacFrame;
+import com.ttProject.frame.aac.DecoderSpecificInfo;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.h264.H264Frame;
+import com.ttProject.util.HexUtil;
 
 /**
  * mkvを作成するためのwriter
@@ -566,18 +573,53 @@ Listかな・・・Setだと重複できないしね・・・
 				flagLacing.setValue(0);
 				findTrackEntry.addChild(flagLacing);
 				
+				Language language = new Language();
+				language.setValue("und");
+				findTrackEntry.addChild(language);
+				
 				// 必要な情報を追記しておく。
 				if(frame instanceof IAudioFrame) {
 					IAudioFrame aFrame = (IAudioFrame)frame;
 					logger.info(aFrame.getSampleRate());
 					logger.info(aFrame.getChannel());
 					logger.info(aFrame.getBit());
-					// aacの場合はcodecPrivateあり
+					
+					TrackType trackType = new TrackType();
+					trackType.setValue(2); // 音声は2
+					findTrackEntry.addChild(trackType);
+					
+					Audio audio = new Audio();
+					findTrackEntry.addChild(audio);
+					
+					Channels channels = new Channels();
+					channels.setValue(aFrame.getChannel());
+					audio.addChild(channels);
+					
+					SamplingFrequency samplingFrequency = new SamplingFrequency();
+					samplingFrequency.setValue(aFrame.getSampleRate());
+					audio.addChild(samplingFrequency);
+					
+					switch(aFrame.getCodecType()) {
+					case AAC:
+						{
+							DecoderSpecificInfo dsi = ((com.ttProject.frame.aac.type.Frame)aFrame).getDecoderSpecificInfo();
+							CodecPrivate codecPrivate = new CodecPrivate();
+							codecPrivate.setValue(dsi.getData());
+							findTrackEntry.addChild(codecPrivate);
+						}
+						break;
+					case VORBIS:
+					case SPEEX:
+					case OPUS:
+					default:
+						break;
+					}
 				}
 				else if(frame instanceof IVideoFrame) {
 					IVideoFrame vFrame = (IVideoFrame)frame;
 					logger.info(vFrame.getWidth());
 					logger.info(vFrame.getHeight());
+					
 					TrackType trackType = new TrackType();
 					trackType.setValue(1); // 動画は1
 					findTrackEntry.addChild(trackType);
