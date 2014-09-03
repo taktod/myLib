@@ -300,17 +300,17 @@ public class MkvTagWriter implements IWriter {
 		// ライブストリームする場合はデータがもったいないので、musicTubeみたいにheader部の情報だけ、どこかに保存しておいた方がいいかもしれません。
 		// となるとやっぱり、格フレームデータがそろうまでTrackEntryのデータが集まらないので調整しておいた方がよさそうですね。
 		// なおtailerの書き込みについては、問題なく動作できるはずなので、そこは気にしない。
-		setupSeekHead();
-		seekHead.getData();
-		logger.info("seekHeadSize:" + seekHead.getSize()); // データサイズを取得してみる
-		logger.info("seekHeadTagSize:" + seekHead.getTagSize().get());
+//		setupSeekHead();
+//		seekHead.getData();
+//		logger.info("seekHeadSize:" + seekHead.getSize()); // データサイズを取得してみる
+//		logger.info("seekHeadTagSize:" + seekHead.getTagSize().get());
 		setupInfo();
 		setupTracks(codecs);
 		setupTags();
 		// ここまできたらclusterの記入が可能になる
 		// あたりは記入できるか？
 	}
-	private void setupSeekHead() throws Exception {
+/*	private void setupSeekHead() throws Exception {
 		// この部分では、Info Tracks TagsとVoidを準備しておく(voidのところにあとでcuesを追加する(tailer?))
 		// infoとtracks、tagsについては長さを知っている必要があるので、あらかじめつくらないとだめか？
 		// seekHeadの保持しているデータ位置は、seekHeadの先頭の位置から各情報への相対位置情報っぽいです
@@ -323,13 +323,13 @@ public class MkvTagWriter implements IWriter {
 		Void voidTag = new Void();
 		voidTag.setTagSize(32);
 		seekHead.addChild(voidTag);
-	}
+	}*/
 	/**
 	 * seekの中身を作成する
 	 * @param type
 	 * @return
 	 */
-	private MkvTag setupSeek(Type type) throws Exception {
+	private MkvTag setupSeek(Type type, long pos) throws Exception {
 		Seek seek = new Seek();
 		SeekID seekId = new SeekID();
 		ByteBuffer idBuffer = ByteBuffer.allocate(4);
@@ -338,7 +338,7 @@ public class MkvTagWriter implements IWriter {
 		seekId.setValue(idBuffer);
 		seek.addChild(seekId);
 		SeekPosition position = new SeekPosition();
-		position.setValue(1);
+		position.setValue(pos);
 		positionMap.put(type, position);
 		seek.addChild(position);
 		return seek;
@@ -630,38 +630,33 @@ Listかな・・・Setだと重複できないしね・・・
 					// とりあえずデータをつくるか・・・
 					logger.info(Long.toHexString(position));
 					// 強制的にsizeを更新しておく
+					// seekHeadのサイズは0x80くらいとする
 //					seekHead.getData();
-					int originalSeekHeadSize = 80; // seekHeadのサイズが大きくなった分、voidのサイズを削らないとだめ
+					int originalSeekHeadSize = 0x60; // seekHeadのサイズが大きくなった分、voidのサイズを削らないとだめ
 					logger.info("orgSeekHead:" + originalSeekHeadSize);
 					info.getData();
 					tracks.getData();
 					tags.getData();
-					long skipSize = seekHead.getSize();
-					SeekPosition seekPosition = positionMap.get(Type.Info);
-					seekPosition.setValue(skipSize);
+					long skipSize = originalSeekHeadSize;
+					seekHead = new SeekHead();
+					seekHead.addChild(setupSeek(Type.Info, skipSize));
 
 					skipSize += info.getSize();
-					seekPosition = positionMap.get(Type.Tracks);
-					seekPosition.setValue(skipSize);
+					seekHead.addChild(setupSeek(Type.Tracks, skipSize));
 
 					skipSize += tracks.getSize();
-					seekPosition = positionMap.get(Type.Tags);
-					seekPosition.setValue(skipSize);
+					seekHead.addChild(setupSeek(Type.Tags, skipSize));
 
 					// seekHeadのサイズがかわっているかもしれないので、構築しなおし
 					seekHead.getData();
 					logger.info("updatedSeekHead:" + seekHead.getSize());
 					if(seekHead.getSize() != originalSeekHeadSize) {
-						int diff = seekHead.getSize() - originalSeekHeadSize;
+						int diff = originalSeekHeadSize - seekHead.getSize();
 						logger.info("seekHeadの大きさがかわったので、調整する必要あり。" + diff);
-						for(MkvTag mTag : seekHead.getChildList()) {
-							if(mTag instanceof Void) {
-								Void voidTag = (Void)mTag;
-								voidTag.setTagSize(voidTag.getTagSize().get() - diff);
-								break;
-							}
-						}
 						// voidのサイズを変更したので、構築しなおし
+						Void voidTag = new Void();
+						voidTag.setTagSize(diff - 2);
+						seekHead.addChild(voidTag);
 						seekHead.getData();
 					}
 					addContainer(seekHead);
