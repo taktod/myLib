@@ -310,7 +310,7 @@ public class MkvTagWriter implements IWriter {
 		// ここまできたらclusterの記入が可能になる
 		// あたりは記入できるか？
 	}
-	private void setupSeekHead() {
+	private void setupSeekHead() throws Exception {
 		// この部分では、Info Tracks TagsとVoidを準備しておく(voidのところにあとでcuesを追加する(tailer?))
 		// infoとtracks、tagsについては長さを知っている必要があるので、あらかじめつくらないとだめか？
 		// seekHeadの保持しているデータ位置は、seekHeadの先頭の位置から各情報への相対位置情報っぽいです
@@ -320,7 +320,7 @@ public class MkvTagWriter implements IWriter {
 		seekHead.addChild(setupSeek(Type.Tags));
 //		seekHead.addChild(setupSeek(Type.Cues)); // cuesはtailerで書き込む
 		Void voidTag = new Void();
-		voidTag.setTagSize(30);
+		voidTag.setTagSize(32);
 		seekHead.addChild(voidTag);
 	}
 	/**
@@ -328,14 +328,18 @@ public class MkvTagWriter implements IWriter {
 	 * @param type
 	 * @return
 	 */
-	private MkvTag setupSeek(Type type) {
+	private MkvTag setupSeek(Type type) throws Exception {
 		Seek seek = new Seek();
 		SeekID seekId = new SeekID();
 		ByteBuffer idBuffer = ByteBuffer.allocate(4);
 		idBuffer.putInt(type.intValue());
+		idBuffer.flip();
 		seekId.setValue(idBuffer);
+		seek.addChild(seekId);
 		SeekPosition position = new SeekPosition();
+		position.setValue(1);
 		positionMap.put(type, position);
+		seek.addChild(position);
 		return seek;
 	}
 	/**
@@ -611,6 +615,8 @@ Listかな・・・Setだと重複できないしね・・・
 					case VORBIS:
 					case SPEEX:
 					case OPUS:
+						logger.error(aFrame.getCodecType() + "の処理はまだ未作成");
+						break;
 					default:
 						break;
 					}
@@ -662,6 +668,50 @@ Listかな・・・Setだと重複できないしね・・・
 				if(trackEntries.size() == 0) {
 					logger.info("全トラック情報がみつかったので、調整しておく。");
 					// この段階で情報がすべてそろう
+					// とりあえずデータをつくるか・・・
+					logger.info(Long.toHexString(position));
+					// 強制的にsizeを更新しておく
+					seekHead.getData();
+					int originalSeekHeadSize = seekHead.getSize(); // seekHeadのサイズが大きくなった分、voidのサイズを削らないとだめ
+					logger.info("orgSeekHead:" + originalSeekHeadSize);
+					info.getData();
+					tracks.getData();
+					tags.getData();
+					long skipSize = seekHead.getSize();
+					SeekPosition seekPosition = positionMap.get(Type.Info);
+					seekPosition.setValue(skipSize);
+
+					skipSize += info.getSize();
+					seekPosition = positionMap.get(Type.Tracks);
+					seekPosition.setValue(skipSize);
+
+					skipSize += tracks.getSize();
+					seekPosition = positionMap.get(Type.Tags);
+					seekPosition.setValue(skipSize);
+
+					// seekHeadのサイズがかわっているかもしれないので、構築しなおし
+					seekHead.getData();
+					logger.info("updatedSeekHead:" + seekHead.getSize());
+					if(seekHead.getSize() != originalSeekHeadSize) {
+						int diff = seekHead.getSize() - originalSeekHeadSize;
+						logger.info("seekHeadの大きさがかわったので、調整する必要あり。" + diff);
+						for(MkvTag mTag : seekHead.getChildList()) {
+							if(mTag instanceof Void) {
+								Void voidTag = (Void)mTag;
+								voidTag.setTagSize(voidTag.getTagSize().get() - diff);
+								break;
+							}
+						}
+						// voidのサイズを変更したので、構築しなおし
+						seekHead.getData();
+					}
+					addContainer(seekHead);
+					addContainer(info);
+					addContainer(tracks);
+					addContainer(tags);
+				}
+				else {
+					// ここにきた場合はframeデータをcacheしておかないとだめ
 				}
 			}
 		}

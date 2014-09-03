@@ -96,6 +96,7 @@ public abstract class MkvMasterTag extends MkvTag {
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
+		// TODO 子要素に更新がかかったら親要素の更新をしなければいけない・・・どうすれば大丈夫にできるかね？
 		// ここで子要素のサイズについて、調査しておけばいいかな？
 		if(getTagSize().getLong() == 0xFFFFFFFFFFFFFFL) {
 			// とりあえず、headerとsizeの部分だけ応答として返したい
@@ -105,7 +106,9 @@ public abstract class MkvMasterTag extends MkvTag {
 		}
 		int size = 0;
 		for(MkvTag tag : childTags) {
-			size += tag.getData().remaining();
+			// masterTagをこれでやっちゃうと正しいサイズにならないわけか・・・
+			tag.getData();
+			size += tag.getSize();
 		}
 		getTagSize().set(size);
 		// とりあえず、headerとsizeの部分だけ応答として返したい
