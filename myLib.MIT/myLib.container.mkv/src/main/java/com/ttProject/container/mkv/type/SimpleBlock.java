@@ -6,17 +6,30 @@
  */
 package com.ttProject.container.mkv.type;
 
+import java.nio.ByteBuffer;
+
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.mkv.Lacing;
 import com.ttProject.container.mkv.MkvBlockTag;
 import com.ttProject.container.mkv.Type;
+import com.ttProject.frame.IAudioFrame;
+import com.ttProject.frame.IFrame;
+import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.aac.AacFrame;
+import com.ttProject.frame.h264.H264Frame;
+import com.ttProject.frame.h264.SliceFrame;
+import com.ttProject.frame.vp8.Vp8Frame;
+import com.ttProject.frame.vp9.Vp9Frame;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.EbmlValue;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit3;
+import com.ttProject.util.BufferUtil;
+import com.ttProject.util.HexUtil;
 
 /**
  * SimpleBlockタグ
@@ -54,6 +67,12 @@ public class SimpleBlock extends MkvBlockTag {
 		super(Type.SimpleBlock, size);
 	}
 	/**
+	 * コンストラクタ
+	 */
+	public SimpleBlock() {
+		this(new EbmlValue());
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -87,6 +106,81 @@ public class SimpleBlock extends MkvBlockTag {
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		
+		logger.info("simpleBlockとして組み立てておく必要あり");
+		// ここでframeを参照しながら必要な形にくみ上げ直すことができたらそれでOK
+		// 音声はkeyFrame扱いっぽい。
+		// 映像はframeによってかわるっぽい
+		// lacingについては、mp3はなんとかしなきゃだめっぽいが・・・
+		BitConnector connector = new BitConnector();
+		ByteBuffer buffer = connector.connect(getTrackId(), getTimestampDiff(),
+				keyFrameFlag, reserved, invisibleFrameFlag, lacing, discardableFlag);
+		// このあとはframeの実データがはいっている。// h264の場合はdataNalの形ではいっている
+		IFrame frame = getFrame();
+		switch(frame.getCodecType()) {
+		case AAC:
+			com.ttProject.frame.aac.type.Frame aacFrame = (com.ttProject.frame.aac.type.Frame)frame;
+			buffer = BufferUtil.connect(buffer, aacFrame.getBuffer());
+			break;
+		case H264:
+			// dataNalの形で応答しないとだめ
+			if(frame instanceof SliceFrame) {
+				SliceFrame sliceFrame = (SliceFrame) frame;
+				buffer = BufferUtil.connect(buffer, sliceFrame.getDataPackBuffer());
+			}
+			else {
+				throw new Exception("slice以外のh264データについて、データ化しようとしました。");
+			}
+			break;
+//		case H265:
+		default:
+			buffer = BufferUtil.connect(buffer, frame.getData());
+			break;
+		}
+		getTagSize().set(buffer.remaining());
+		buffer = BufferUtil.connect(connector.connect(getTagId(), getTagSize()), buffer);
+		setSize(buffer.remaining());
+		setData(buffer);
+	}
+	/**
+	 * フレームを追加する
+	 * @param trackId
+	 * @param frame
+	 */
+	public void addFrame(int trackId, IFrame frame, long clusterTimestamp) throws Exception {
+		// とりあえずつくるか・・・
+		super.getTrackId().set(trackId);
+		super.addFrame(frame);
+		// trackIdとframeをいれた。
+		// trackEntryの開始位置のtimediffについて、参照する必要あり。
+		// mkvはいまのところtimebase = 1000で動作しているものとするので、ptsを変換しておく
+		long timestampDiff = frame.getPts() * 1000L / frame.getTimebase();
+		getTimestampDiff().set((int)(timestampDiff - clusterTimestamp));
+		if(frame instanceof IAudioFrame) {
+			keyFrameFlag.set(1);
+		}
+		else if(frame instanceof IVideoFrame) {
+			IVideoFrame vFrame = (IVideoFrame)frame;
+			if(vFrame.isKeyFrame()) {
+				keyFrameFlag.set(1);
+			}
+			else {
+				keyFrameFlag.set(0);
+			}
+			switch(frame.getCodecType()) {
+			case VP8:
+				Vp8Frame vp8Frame = (Vp8Frame)frame;
+				// invisibleであるか判定
+				break;
+			case VP9:
+				Vp9Frame vp9Frame = (Vp9Frame)frame;
+				// invisibleであるか判定
+				break;
+			default:
+				break;
+			}
+		}
+		// 自分でつくるときはlacingはなしにしておく。
+		// よってこれ以上のデータはない
+		super.update();
 	}
 }

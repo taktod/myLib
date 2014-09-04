@@ -230,7 +230,7 @@ public abstract class MkvBlockTag extends MkvBinaryTag {
 	 * @param tmpFrame
 	 * @throws Exception
 	 */
-	public void addFrame(IFrame tmpFrame) throws Exception {
+	protected void addFrame(IFrame tmpFrame) throws Exception {
 		if(tmpFrame == null) {
 			return;
 		}
@@ -277,6 +277,13 @@ public abstract class MkvBlockTag extends MkvBinaryTag {
 	 */
 	public EbmlValue getTrackId() {
 		return trackId;
+	}
+	/**
+	 * clusterとのtimestampの差分について参照する
+	 * @return
+	 */
+	protected Bit16 getTimestampDiff() {
+		return timestampDiff;
 	}
 	/**
 	 * {@inheritDoc}

@@ -24,7 +24,9 @@ import com.ttProject.container.mkv.type.ReferenceBlock;
 import com.ttProject.container.mkv.type.SamplingFrequency;
 import com.ttProject.container.mkv.type.SeekID;
 import com.ttProject.container.mkv.type.Segment;
+import com.ttProject.container.mkv.type.SimpleBlock;
 import com.ttProject.container.mkv.type.Void;
+import com.ttProject.frame.aac.AacFrame;
 import com.ttProject.util.HexUtil;
 
 /**
@@ -177,5 +179,20 @@ public class EachTagTest {
 		logger.info(HexUtil.toHex(muxingApp.getData(), true));
 		logger.info("size:" + muxingApp.getSize());
 		// 4D 80 A3 6C 69 62 65 62 6D 6C 20 76 30 2E 37 2E 37 20 2B 20 6C 69 62 6D 61 74 72 6F 73 6B 61 20 76 30 2E 38 2E 31
+	}
+	/**
+	 * SimpleBlockの動作テスト
+	 * @throws Exception
+	 */
+	@Test
+	public void SimpleBlockTest() throws Exception {
+		logger.info("simpleBlockTest");
+		SimpleBlock simpleBlock = new SimpleBlock();
+		AacFrame frame = AacFrame.getMutedFrame(44100, 2, 0);
+		frame.setPts(1000);
+		frame.setTimebase(44100);
+		simpleBlock.addFrame(1, frame, 0);
+		logger.info(simpleBlock);
+		logger.info(HexUtil.toHex(simpleBlock.getData(), true));
 	}
 }
