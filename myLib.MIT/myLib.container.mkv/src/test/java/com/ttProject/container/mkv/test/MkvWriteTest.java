@@ -53,7 +53,7 @@ public class MkvWriteTest {
 			if(container instanceof MkvBlockTag) {
 				MkvBlockTag blockTag = (MkvBlockTag) container;
 				IFrame frame = blockTag.getFrame();
-				logger.info(frame);
+//				logger.info(frame);
 				writer.addFrame(blockTag.getTrackId().get(), frame);
 			}
 		}
