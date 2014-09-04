@@ -126,7 +126,7 @@ public class Frame extends AacFrame {
 						originalFlg, home, copyrightIdentificationBit,
 						copyrightIdentificationStart, frameSize, adtsBufferFullness,
 						noRawDataBlocksInFrame),
-				buffer));
+				buffer.duplicate()));
 	}
 	/**
 	 * {@inheritDoc}
@@ -134,6 +134,12 @@ public class Frame extends AacFrame {
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		return getData();
+	}
+	/**
+	 * dsiを抜いたbuffer部のみ参照
+	 */
+	public ByteBuffer getBuffer() {
+		return buffer.duplicate();
 	}
 	public DecoderSpecificInfo getDecoderSpecificInfo() {
 		// decoderSpecifcInfo情報を取得して応答します。
