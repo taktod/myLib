@@ -79,8 +79,19 @@ import com.ttProject.util.HexUtil;
  * timediffは線形増加になっているので、転置が発生するとまずいかもしれませんね。
  * 
  * 一応、keyFrame間隔をベースにつくっておいた方がシークとしては、有利に働きそうだが・・・
- * cuesの動作については、いまのところ不明・・・あとでファイルを解析すればいいか・・・
  * とりあえず、h264 + aacのデータを再生成させて、再生できるところまでもっていきたいね。
+ * 
+ * cuesの動作について
+ * 同じsegmentに属しているデータへのリンクを保持している感じ。
+ * segmentのtagIdとtagSizeを抜いた部分からの相対位置を保持しているらしいです。
+ * よってpositionとして、先頭からのデータ量をもっていても意味がないっぽいですね。
+ * cuesはcuesのtimestamp情報(任意っぽいです。)
+ * trackId情報(参照したいtrackId、映像コーデックのものにしておけば間違いなさそう)
+ * clusterPosition(クラスタの位置情報、実際のデータの位置ではなく、clusterの位置っぽいです)
+ * となっているみたいですね。
+ * 
+ * とりあえず、それぞれのclusterが1keyFrameから次のkeyFrameまでの集まりみたいにしておけば、cuesは毎回クラスタの先頭になるし(なお全frameを動向というわけではないみたいです。適当なtimestampが適当なところからはじまるようになっていればいいみたい。)
+ * 
  * @author taktod
  */
 public class MkvTagWriter implements IWriter {
