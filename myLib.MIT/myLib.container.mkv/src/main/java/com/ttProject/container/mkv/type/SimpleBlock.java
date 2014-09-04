@@ -16,8 +16,6 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
-import com.ttProject.frame.aac.AacFrame;
-import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.frame.h264.SliceFrame;
 import com.ttProject.frame.vp8.Vp8Frame;
 import com.ttProject.frame.vp9.Vp9Frame;
@@ -29,7 +27,6 @@ import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtil;
 
 /**
  * SimpleBlockタグ
@@ -106,11 +103,7 @@ public class SimpleBlock extends MkvBlockTag {
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		logger.info("simpleBlockとして組み立てておく必要あり");
 		// ここでframeを参照しながら必要な形にくみ上げ直すことができたらそれでOK
-		// 音声はkeyFrame扱いっぽい。
-		// 映像はframeによってかわるっぽい
-		// lacingについては、mp3はなんとかしなきゃだめっぽいが・・・
 		BitConnector connector = new BitConnector();
 		ByteBuffer buffer = connector.connect(getTrackId(), getTimestampDiff(),
 				keyFrameFlag, reserved, invisibleFrameFlag, lacing, discardableFlag);
@@ -155,11 +148,13 @@ public class SimpleBlock extends MkvBlockTag {
 		// mkvはいまのところtimebase = 1000で動作しているものとするので、ptsを変換しておく
 		long timestampDiff = frame.getPts() * 1000L / frame.getTimebase();
 		getTimestampDiff().set((int)(timestampDiff - clusterTimestamp));
+		// 音声はkeyFrame扱いっぽい。
 		if(frame instanceof IAudioFrame) {
 			keyFrameFlag.set(1);
 		}
 		else if(frame instanceof IVideoFrame) {
 			IVideoFrame vFrame = (IVideoFrame)frame;
+			// 映像はframeによってかわるっぽい
 			if(vFrame.isKeyFrame()) {
 				keyFrameFlag.set(1);
 			}
@@ -168,10 +163,12 @@ public class SimpleBlock extends MkvBlockTag {
 			}
 			switch(frame.getCodecType()) {
 			case VP8:
+				@SuppressWarnings("unused")
 				Vp8Frame vp8Frame = (Vp8Frame)frame;
 				// invisibleであるか判定
 				break;
 			case VP9:
+				@SuppressWarnings("unused")
 				Vp9Frame vp9Frame = (Vp9Frame)frame;
 				// invisibleであるか判定
 				break;
@@ -179,8 +176,7 @@ public class SimpleBlock extends MkvBlockTag {
 				break;
 			}
 		}
-		// 自分でつくるときはlacingはなしにしておく。
-		// よってこれ以上のデータはない
+		// lacingについては、サンプルのデータでmp3の複数フレームを混入したものがあったが、別に単体でも問題ないことがわかったので、とりあえず、lacingは考えないことにする
 		super.update();
 	}
 }
