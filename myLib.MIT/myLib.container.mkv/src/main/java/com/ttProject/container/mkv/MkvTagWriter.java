@@ -43,6 +43,7 @@ import com.ttProject.container.mkv.type.SeekHead;
 import com.ttProject.container.mkv.type.SeekID;
 import com.ttProject.container.mkv.type.SeekPosition;
 import com.ttProject.container.mkv.type.Segment;
+import com.ttProject.container.mkv.type.SimpleBlock;
 import com.ttProject.container.mkv.type.SimpleTag;
 import com.ttProject.container.mkv.type.Tag;
 import com.ttProject.container.mkv.type.TagName;
@@ -66,6 +67,7 @@ import com.ttProject.frame.aac.DecoderSpecificInfo;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.h264.H264Frame;
+import com.ttProject.util.HexUtil;
 
 /**
  * mkvを作成するためのwriter
@@ -627,8 +629,16 @@ public class MkvTagWriter implements IWriter {
 				else {
 					// ここにきた場合はframeデータをcacheしておかないとだめ
 					// データが構築済みになっていないので、データを保持しておく必要あるかも・・・
+					// とりあえず１つsimpleTagをつくってみようと思う。
+					// 過去あつかったときには、mp3はlacingをつかって、１つのsimpleTagに大量にデータがはいっていたけど、aacのデータを確認してみたところ、1つのAACFrameに対して1つのsimpleTagで動作しているみたいですね。
 				}
 			}
+		}
+		if(frame instanceof IAudioFrame) {
+			logger.info("音声の場合のみちょっとsimpleTag化してみよう");
+			SimpleBlock simpleBlock = new SimpleBlock();
+			simpleBlock.addFrame(trackId, frame, 0);
+			logger.info(HexUtil.toHex(simpleBlock.getData()));
 		}
 		// vp8やvp9の場合はinvisible判定をとっておかないとこまったことになるかもしれない。(BlockTagに設定項目があるため。)
 	}
