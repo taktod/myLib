@@ -69,6 +69,14 @@ import com.ttProject.frame.h264.H264Frame;
 
 /**
  * mkvを作成するためのwriter
+ * とりあえず、headerの部分はできたつもり、次はCluster
+ * Clusterはまとまり分できたら一気に出力するという形にしないとだめっぽいですね。
+ * ffmpegの出力のmkvをみてみたけど、別にkeyFrameからはじまらないとだめということはないみたいですね。
+ * timediffは線形増加になっているので、転置が発生するとまずいかもしれませんね。
+ * 
+ * 一応、keyFrame間隔をベースにつくっておいた方がシークとしては、有利に働きそうだが・・・
+ * cuesの動作については、いまのところ不明・・・あとでファイルを解析すればいいか・・・
+ * とりあえず、h264 + aacのデータを再生成させて、再生できるところまでもっていきたいね。
  * @author taktod
  */
 public class MkvTagWriter implements IWriter {
@@ -79,27 +87,16 @@ public class MkvTagWriter implements IWriter {
 	private FileOutputStream outputStream = null;
 	
 	private SeekHead seekHead = null;
-	private Info info = null; // こいつらは位置情報をいれておきたい
-	private Tracks tracks = null; // こいつらは位置情報をいれておきたい
-	private Tags tags = null; // こいつらは位置情報をいれておきたい
-	// type -> seekPositionのマップを保持しておくことであとでInfoやTrackEntry、Tagsをつくったときに位置情報をいれることができるようにしておく
-	private List<TrackEntry> trackEntries = new ArrayList<TrackEntry>(); // リストの形で持っておく。(trackEntryとframeの紐付けのため)
+	private Info info = null;
+	private Tracks tracks = null;
+	private Tags tags = null;
+	// ライブストリームとして動作することを考慮すると、seekHead、info、tracks、tagsの情報はよこから取得できるようになっていると有利になりそう
+	// またclusterの作成を実施した時点で、そのデータを出力として取り上げることができると助かるけど・・・
+	// trackEntryのデータを保持しておいて、frameを取得したときに、対応するtrackEntryの詳細情報を構築するようにしむける
+	/** trackEntryの紐付け用の一時データ */
+	private List<TrackEntry> trackEntries = new ArrayList<TrackEntry>();
+	/** 追加frameがどのtrackEntryであるかのmap保持(これ必要ないかもしれませんね。再生中にtrackEntryのデータを参照する必要ないのでは？) */
 	private Map<Integer, TrackEntry> trackEntryMap = new HashMap<Integer, TrackEntry>();
-	// 最少の場合はMuxer名だけ追加入力してもらって、あとは自動入力でなんとかした方がよさそう。
-	// frameを入力する前に送ったmkvTagがある場合は、そっちを使うようにする。(なるべく)
-	// 実際の書き込みはframeうけとってから実行みたいな感じがいいとおもう。
-	/*
-	 * とりあえずこれをつくろうとおもったら、各MkvTagの動作の書き込み動作をまずつくる必要がありそうだ。
-	 * テストコードで読み取ったデータをそのまま書き込むみたいな動作がほしいところ。
-	 * 
-	 * ebmlは適当に書く
-	 * Segmentの内容、tracksまでは１つのファイルに書き出しておく。
-	 * tracks指定がなかったらclusterの１つ目をつくりつつデータを構築する。
-	 * １つ目のclusterが処理おわったら、tracksは決定したものとする。
-	 * Clusterの内容は１つずつどこかに書き出しておく
-	 * Cueデータをつくっておく。(Clusterの並びしだい)
-	 * 最後にデータを結合して、おわり。
-	 */
 	/*
 	 * 必要であろう、エレメントリスト
 06:25:14,113 [main] INFO [MkvTagReader] - EBML size:23*
@@ -275,16 +272,32 @@ public class MkvTagWriter implements IWriter {
 06:25:14,190 [main] INFO [MkvTagReader] -    CueTrack size:1 uint:1
 06:25:14,190 [main] INFO [MkvTagReader] -    CueClusterPosition size:2 uint:19042
 	 */
+	/**
+	 * コンストラクタ
+	 * @param fileName
+	 * @throws Exception
+	 */
 	public MkvTagWriter(String fileName) throws Exception {
 		outputStream = new FileOutputStream(fileName);
 		this.outputChannel = outputStream.getChannel();
 	}
+	/**
+	 * コンストラクタ
+	 * @param fileOutputStream
+	 */
 	public MkvTagWriter(FileOutputStream fileOutputStream) {
 		this(fileOutputStream.getChannel());
 	}
+	/**
+	 * コンストラクタ
+	 * @param outputChannel
+	 */
 	public MkvTagWriter(WritableByteChannel outputChannel) {
 		this.outputChannel = outputChannel;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void prepareHeader(CodecType ...codecs) throws Exception {
 		// EBMLの動作はwebmになったらoverrideしてmatroskaではなく、webmと記入してやりたいところ
@@ -292,135 +305,17 @@ public class MkvTagWriter implements IWriter {
 		setupEbml();
 		// Segment
 		setupSegment();
-		// このあとだけど、前から順に追記していって、情報がかわったら過去のデータも書き換えとしようとおもったが、そういうわけにもいかなそうです。(ライブストリームの場合はもどれないため)
-		// やっぱりseekHead -> tagsの間のデータはいったんメモリー上に保持しておいて、対処しないとだめっぽいですね。
-		// ライブストリームする場合はデータがもったいないので、musicTubeみたいにheader部の情報だけ、どこかに保存しておいた方がいいかもしれません。
-		// となるとやっぱり、格フレームデータがそろうまでTrackEntryのデータが集まらないので調整しておいた方がよさそうですね。
-		// なおtailerの書き込みについては、問題なく動作できるはずなので、そこは気にしない。
-//		setupSeekHead();
-//		seekHead.getData();
-//		logger.info("seekHeadSize:" + seekHead.getSize()); // データサイズを取得してみる
-//		logger.info("seekHeadTagSize:" + seekHead.getTagSize().get());
+		// ここまではここで書き込みを実施しておく
+		// seekHeadは作成しません。大きさは0x60になるように調整しますが、Voidタグで埋めを実施します。
+		// あとで情報がそろってから作成します。(masterTagのremakeができないため)
 		setupInfo();
 		setupTracks(codecs);
 		setupTags();
-		// ここまできたらclusterの記入が可能になる
-		// あたりは記入できるか？
-	}
-/*	private void setupSeekHead() throws Exception {
-		// この部分では、Info Tracks TagsとVoidを準備しておく(voidのところにあとでcuesを追加する(tailer?))
-		// infoとtracks、tagsについては長さを知っている必要があるので、あらかじめつくらないとだめか？
-		// seekHeadの保持しているデータ位置は、seekHeadの先頭の位置から各情報への相対位置情報っぽいです
-		// 先にこれを定義する意味がなさそうだな。
-		seekHead = new SeekHead(position);
-		seekHead.addChild(setupSeek(Type.Info));
-		seekHead.addChild(setupSeek(Type.Tracks));
-		seekHead.addChild(setupSeek(Type.Tags));
-//		seekHead.addChild(setupSeek(Type.Cues)); // cuesはtailerで書き込む
-		Void voidTag = new Void();
-		voidTag.setTagSize(32);
-		seekHead.addChild(voidTag);
-	}*/
-	/**
-	 * seekの中身を作成する
-	 * @param type
-	 * @return
-	 */
-	private MkvTag setupSeek(Type type, long pos) throws Exception {
-		Seek seek = new Seek();
-		SeekID seekId = new SeekID();
-		ByteBuffer idBuffer = ByteBuffer.allocate(4);
-		idBuffer.putInt(type.intValue());
-		idBuffer.flip();
-		seekId.setValue(idBuffer);
-		seek.addChild(seekId);
-		SeekPosition position = new SeekPosition();
-		position.setValue(pos);
-		seek.addChild(position);
-		return seek;
-	}
-	/**
-	 * info情報をつくっておく
-	 */
-	private void setupInfo() throws Exception {
-		info = new Info();
-		TimecodeScale timecodeScale = new TimecodeScale();
-		timecodeScale.setValue(1000000L);
-		info.addChild(timecodeScale);
-		MuxingApp muxingApp = new MuxingApp();
-		muxingApp.setValue("ttProject.mkvMuxer");
-		info.addChild(muxingApp);
-		WritingApp writingApp = new WritingApp();
-		writingApp.setValue("ttProject.mkvWriter");
-		info.addChild(writingApp);
-//		Duration duration = new Duration(); // durationはtailerで書き込む
-		Void voidTag = new Void();
-		voidTag.setTagSize(16);
-		info.addChild(voidTag);
-	}
-	/**
-	 * tracks情報をつくっておく(この場では完了しない)
-	 * @param codecs
-	 * @throws Exception
-	 */
-	private void setupTracks(CodecType ...codecs) throws Exception {
-		tracks = new Tracks();
-		for(CodecType codecType : codecs) {
-			tracks.addChild(setupTrackEntry(codecType));
-		}
-	}
-	/**
-	 * trackEntryをつくっておく(やっぱりこの場では完了しない)
-	 * @param codec
-	 * @return
-	 * @throws Exception
-	 */
-	private MkvTag setupTrackEntry(CodecType codec) throws Exception {
-		/*
-どのコーデック -> trackという紐付けをつくっておきたい
-Listかな・・・Setだと重複できないしね・・・
-
-とりあえず、codecTypeだけいれておく。他のデータはあとで設定することにします
-その方がスマートでしょwxx
-		 */
-		TrackEntry trackEntry = new TrackEntry();
-		CodecID codecId = new CodecID();
-		codecId.setCodecType(codec);
-		trackEntry.addChild(codecId);
-		trackEntries.add(trackEntry); // trackEntryを保持しておく。
-		logger.info(trackEntries);
-		return trackEntry;
-	}
-	/**
-	 * tagsをつくっておく
-	 * @throws Exception
-	 */
-	private void setupTags() throws Exception {
-		tags = new Tags();
-		Tag tag = new Tag();
-		tags.addChild(tag);
-		Targets targets = new Targets(); // masterタグなのに空っぽなんだ、へぇ〜
-		tag.addChild(targets);
-		SimpleTag simpleTag = new SimpleTag();
-		tags.addChild(simpleTag);
-		TagName tagName = new TagName();
-		tagName.setValue("ENCODER");
-		simpleTag.addChild(tagName);
-		TagString tagString = new TagString();
-		tagString.setValue("ttProject.mkvMuxer");
-		simpleTag.addChild(tagString);
-	}
-	/**
-	 * segmentの冒頭部つくっておく
-	 * @throws Exception
-	 */
-	private void setupSegment() throws Exception {
-		Segment segment = new Segment();
-		segment.setInfinite(true);
-		addContainer(segment);
+		// header情報そのものは、必要なcodecsに対応するframeデータを取得完了したときに、完了します。
 	}
 	/**
 	 * ebmlの部分の初期化を実施
+	 * webmのwriterではこの部分をoverrideさせて終わらせようと思う。
 	 */
 	protected void setupEbml() throws Exception {
 		EBML ebml = new EBML();
@@ -456,6 +351,76 @@ Listかな・・・Setだと重複できないしね・・・
 		// ebmlのタグを書き込んでおく
 		addContainer(ebml);
 	}
+	/**
+	 * segmentの冒頭部つくっておく
+	 * @throws Exception
+	 */
+	private void setupSegment() throws Exception {
+		Segment segment = new Segment();
+		segment.setInfinite(true);
+		addContainer(segment);
+	}
+	/**
+	 * info情報をつくっておく
+	 */
+	private void setupInfo() throws Exception {
+		info = new Info();
+		TimecodeScale timecodeScale = new TimecodeScale();
+		timecodeScale.setValue(1000000L);
+		info.addChild(timecodeScale);
+		MuxingApp muxingApp = new MuxingApp();
+		muxingApp.setValue("ttProject.mkvMuxer");
+		info.addChild(muxingApp);
+		WritingApp writingApp = new WritingApp();
+		writingApp.setValue("ttProject.mkvWriter");
+		info.addChild(writingApp);
+//		Duration duration = new Duration(); // durationはtailerで書き込む (上書きを実施するときには、必要な箇所にbyteデータを書き込むという形で対処します。)
+		Void voidTag = new Void();
+		voidTag.setTagSize(16);
+		info.addChild(voidTag);
+	}
+	/**
+	 * tracks情報をつくっておく(この場では完了しない)
+	 * @param codecs
+	 * @throws Exception
+	 */
+	private void setupTracks(CodecType ...codecs) throws Exception {
+		tracks = new Tracks();
+		for(CodecType codecType : codecs) {
+			// trackEntryの基本となる、codecTypeの指定のみ実施しておきます。
+			TrackEntry trackEntry = new TrackEntry();
+			CodecID codecId = new CodecID();
+			codecId.setCodecType(codecType);
+			trackEntry.addChild(codecId);
+			// 全部取得済みであるかをこのリストのsizeが0になったかで判定するので、必要か・・・
+			trackEntries.add(trackEntry); // trackEntryを保持しておく。
+			tracks.addChild(trackEntry);
+		}
+	}
+	/**
+	 * tagsをつくっておく
+	 * @throws Exception
+	 */
+	private void setupTags() throws Exception {
+		tags = new Tags();
+		Tag tag = new Tag();
+		tags.addChild(tag);
+		Targets targets = new Targets(); // masterタグなのに空っぽなんだ、へぇ〜
+		tag.addChild(targets);
+		SimpleTag simpleTag = new SimpleTag();
+		tags.addChild(simpleTag);
+		TagName tagName = new TagName();
+		tagName.setValue("ENCODER");
+		simpleTag.addChild(tagName);
+		TagString tagString = new TagString();
+		tagString.setValue("ttProject.mkvMuxer");
+		simpleTag.addChild(tagString);
+	}
+	/**
+	 * {@inheritDoc}
+	 * TODO INFO のduration設定、Segmentのデータ量設定、SeekHeadにCuesへのseek動作の追加
+	 * Cuesとその配下データの構築が必要になると思う。
+	 */
 	@Override
 	public void prepareTailer() throws Exception {
 		if(outputStream != null) {
@@ -467,6 +432,9 @@ Listかな・・・Setだと重複できないしね・・・
 			outputStream = null;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void addContainer(IContainer container) throws Exception {
 		if(container instanceof MkvMasterTag) {
@@ -480,8 +448,12 @@ Listかな・・・Setだと重複できないしね・・・
 			writeData(container.getData());
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized void addFrame(int trackId, IFrame frame) throws Exception {
+		// マルチframeデータの場合は分解させる
 		if(frame instanceof AudioMultiFrame) {
 			AudioMultiFrame multiFrame = (AudioMultiFrame)frame;
 			for(IAudioFrame aFrame : multiFrame.getFrameList()) {
@@ -496,6 +468,8 @@ Listかな・・・Setだと重複できないしね・・・
 			}
 			return;
 		}
+		// TODO この部分別関数化しておく。
+		// 正直邪魔
 		if(!trackEntryMap.containsKey(trackId)) {
 			// trackEntryMap化していないトラック
 			logger.info("trackEntryMap化されていないトラック");
@@ -516,7 +490,6 @@ Listかな・・・Setだと重複できないしね・・・
 				}
 			}
 			if(findTrackEntry != null) {
-				logger.info("データが見つかった");
 				trackEntryMap.put(trackId, findTrackEntry);
 				trackEntries.remove(findTrackEntry);
 				// 共通情報をつけておく
@@ -539,9 +512,6 @@ Listかな・・・Setだと重複できないしね・・・
 				// 必要な情報を追記しておく。
 				if(frame instanceof IAudioFrame) {
 					IAudioFrame aFrame = (IAudioFrame)frame;
-					logger.info(aFrame.getSampleRate());
-					logger.info(aFrame.getChannel());
-					logger.info(aFrame.getBit());
 					
 					TrackType trackType = new TrackType();
 					trackType.setValue(2); // 音声は2
@@ -578,8 +548,6 @@ Listかな・・・Setだと重複できないしね・・・
 				}
 				else if(frame instanceof IVideoFrame) {
 					IVideoFrame vFrame = (IVideoFrame)frame;
-					logger.info(vFrame.getWidth());
-					logger.info(vFrame.getHeight());
 					
 					TrackType trackType = new TrackType();
 					trackType.setValue(1); // 動画は1
@@ -620,52 +588,67 @@ Listかな・・・Setだと重複できないしね・・・
 						break;
 					}
 				}
+				// この完了して、headerを構築する部分も別関数化しておきたいけど・・・
 				if(trackEntries.size() == 0) {
 					logger.info("全トラック情報がみつかったので、調整しておく。");
-					// この段階で情報がすべてそろう
-					// とりあえずデータをつくるか・・・
-					logger.info(Long.toHexString(position));
 					// 強制的にsizeを更新しておく
 					// seekHeadのサイズは0x80くらいとする
-//					seekHead.getData();
 					int originalSeekHeadSize = 0x60; // seekHeadのサイズが大きくなった分、voidのサイズを削らないとだめ
-					logger.info("orgSeekHead:" + originalSeekHeadSize);
+					// それぞれのデータについてgetDataを実施して、サイズを確定させる
 					info.getData();
 					tracks.getData();
 					tags.getData();
+					// スキップさせるデータ量を確認し、seekの値として保持させる。
 					long skipSize = originalSeekHeadSize;
 					seekHead = new SeekHead();
 					seekHead.addChild(setupSeek(Type.Info, skipSize));
-
 					skipSize += info.getSize();
 					seekHead.addChild(setupSeek(Type.Tracks, skipSize));
-
 					skipSize += tracks.getSize();
 					seekHead.addChild(setupSeek(Type.Tags, skipSize));
 
-					// seekHeadのサイズがかわっているかもしれないので、構築しなおし
+					// seekHeadのデータ構築開始
 					seekHead.getData();
-					logger.info("updatedSeekHead:" + seekHead.getSize());
 					if(seekHead.getSize() != originalSeekHeadSize) {
+						// 空白がある場合はVoidでうめておく。
 						int diff = originalSeekHeadSize - seekHead.getSize();
-						logger.info("seekHeadの大きさがかわったので、調整する必要あり。" + diff);
-						// voidのサイズを変更したので、構築しなおし
 						Void voidTag = new Void();
 						voidTag.setTagSize(diff - 2);
 						seekHead.addChild(voidTag);
 						seekHead.getData();
 					}
+					// データの書き込みを実施
 					addContainer(seekHead);
 					addContainer(info);
 					addContainer(tracks);
 					addContainer(tags);
+					// header部作成完了
 				}
 				else {
 					// ここにきた場合はframeデータをcacheしておかないとだめ
+					// データが構築済みになっていないので、データを保持しておく必要あるかも・・・
 				}
 			}
 		}
 		// vp8やvp9の場合はinvisible判定をとっておかないとこまったことになるかもしれない。(BlockTagに設定項目があるため。)
+	}
+	/**
+	 * seekの中身を作成する
+	 * @param type
+	 * @return
+	 */
+	private MkvTag setupSeek(Type type, long pos) throws Exception {
+		Seek seek = new Seek();
+		SeekID seekId = new SeekID();
+		ByteBuffer idBuffer = ByteBuffer.allocate(4);
+		idBuffer.putInt(type.intValue());
+		idBuffer.flip();
+		seekId.setValue(idBuffer);
+		seek.addChild(seekId);
+		SeekPosition position = new SeekPosition();
+		position.setValue(pos);
+		seek.addChild(position);
+		return seek;
 	}
 	/**
 	 * 実データの書き込み処理
