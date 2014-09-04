@@ -63,10 +63,12 @@ import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.aac.AacFrame;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 import com.ttProject.frame.h264.H264Frame;
+import com.ttProject.frame.h264.SliceFrame;
 import com.ttProject.util.HexUtil;
 
 /**
@@ -533,7 +535,8 @@ public class MkvTagWriter implements IWriter {
 					switch(aFrame.getCodecType()) {
 					case AAC:
 						{
-							DecoderSpecificInfo dsi = ((com.ttProject.frame.aac.type.Frame)aFrame).getDecoderSpecificInfo();
+							AacFrame aacFrame = (AacFrame)aFrame;
+							DecoderSpecificInfo dsi = aacFrame.getDecoderSpecificInfo();
 							CodecPrivate codecPrivate = new CodecPrivate();
 							codecPrivate.setValue(dsi.getData());
 							findTrackEntry.addChild(codecPrivate);
@@ -638,7 +641,19 @@ public class MkvTagWriter implements IWriter {
 			logger.info("音声の場合のみちょっとsimpleTag化してみよう");
 			SimpleBlock simpleBlock = new SimpleBlock();
 			simpleBlock.addFrame(trackId, frame, 0);
-			logger.info(HexUtil.toHex(simpleBlock.getData()));
+			logger.info(HexUtil.toHex(simpleBlock.getData(), true));
+		}
+		else if(frame instanceof SliceFrame) {
+			SliceFrame sFrame = (SliceFrame)frame;
+			if(sFrame.isKeyFrame()) {
+				logger.info("■■■■■h264の方もちょっとsimpleTag化してみよう");
+			}
+			else {
+				logger.info("h264の方もちょっとsimpleTag化してみよう");
+			}
+			SimpleBlock simpleBlock = new SimpleBlock();
+			simpleBlock.addFrame(trackId, frame, 0);
+			logger.info(HexUtil.toHex(simpleBlock.getData(), true));
 		}
 		// vp8やvp9の場合はinvisible判定をとっておかないとこまったことになるかもしれない。(BlockTagに設定項目があるため。)
 	}
