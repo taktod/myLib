@@ -378,12 +378,7 @@ public class AudioTag extends FlvTag {
 				}
 				else if(frame instanceof AacFrame) {
 					// aacの場合は先頭の7byteをドロップする必要あり。(mshでglobalHeaderがあるので、header部分を落とします)
-					com.ttProject.frame.aac.type.Frame aacFrame = (com.ttProject.frame.aac.type.Frame)frame;
-/*					ByteBuffer frameData = frame.getData();
-					frameData.position(7);
-					frameBuffer = ByteBuffer.allocate(frameData.remaining());
-					frameBuffer.put(frameData);
-					frameBuffer.flip();*/
+					AacFrame aacFrame = (AacFrame)frame;
 					frameBuffer = aacFrame.getBuffer();
 				}
 				else {

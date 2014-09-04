@@ -6,6 +6,8 @@
  */
 package com.ttProject.frame.aac;
 
+import java.nio.ByteBuffer;
+
 import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.CodecType;
 import com.ttProject.frame.aac.type.Frame;
@@ -73,4 +75,14 @@ public abstract class AacFrame extends AudioFrame {
 	public CodecType getCodecType() {
 		return CodecType.AAC;
 	}
+	/**
+	 * decoderSpecificInfoを共通化している場合に取得する共有化外データ参照
+	 * @return bufferデータ
+	 */
+	public abstract ByteBuffer getBuffer();
+	/**
+	 * decoderSpecificInfo情報を参照します。
+	 * @return decoderSpecificInfo情報
+	 */
+	public abstract DecoderSpecificInfo getDecoderSpecificInfo();
 }

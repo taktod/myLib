@@ -138,9 +138,17 @@ public class Frame extends AacFrame {
 	/**
 	 * dsiを抜いたbuffer部のみ参照
 	 */
+	@Override
 	public ByteBuffer getBuffer() {
+		if(buffer == null) {
+			return null;
+		}
 		return buffer.duplicate();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public DecoderSpecificInfo getDecoderSpecificInfo() {
 		// decoderSpecifcInfo情報を取得して応答します。
 		DecoderSpecificInfo dsi = new DecoderSpecificInfo();

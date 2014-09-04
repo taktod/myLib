@@ -16,6 +16,7 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.aac.AacFrame;
 import com.ttProject.frame.h264.SliceFrame;
 import com.ttProject.frame.vp8.Vp8Frame;
 import com.ttProject.frame.vp9.Vp9Frame;
@@ -111,7 +112,7 @@ public class SimpleBlock extends MkvBlockTag {
 		IFrame frame = getFrame();
 		switch(frame.getCodecType()) {
 		case AAC:
-			com.ttProject.frame.aac.type.Frame aacFrame = (com.ttProject.frame.aac.type.Frame)frame;
+			AacFrame aacFrame = (AacFrame)frame;
 			buffer = BufferUtil.connect(buffer, aacFrame.getBuffer());
 			break;
 		case H264:
