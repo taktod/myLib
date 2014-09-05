@@ -8,6 +8,7 @@ package com.ttProject.container.mkv.type;
 
 import com.ttProject.container.mkv.MkvMasterTag;
 import com.ttProject.container.mkv.Type;
+import com.ttProject.frame.IVideoFrame;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
@@ -27,5 +28,18 @@ public class Video extends MkvMasterTag {
 	 */
 	public Video() {
 		this(new EbmlValue());
+	}
+	/**
+	 * 内容データをセットアップする動作
+	 * @param frame
+	 * @throws Exception
+	 */
+	public void setup(IVideoFrame frame) throws Exception {
+		PixelWidth pixelWidth = new PixelWidth();
+		pixelWidth.setValue(frame.getWidth());
+		addChild(pixelWidth);
+		PixelHeight pixelHeight = new PixelHeight();
+		pixelHeight.setValue(frame.getHeight());
+		addChild(pixelHeight);
 	}
 }

@@ -8,6 +8,7 @@ package com.ttProject.container.mkv.type;
 
 import com.ttProject.container.mkv.MkvMasterTag;
 import com.ttProject.container.mkv.Type;
+import com.ttProject.frame.IAudioFrame;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
@@ -27,5 +28,21 @@ public class Audio extends MkvMasterTag {
 	 */
 	public Audio() {
 		this(new EbmlValue());
+	}
+	/**
+	 * 内容データをセットアップする動作
+	 * @param frame
+	 * @throws Exception
+	 */
+	public void setup(IAudioFrame frame) throws Exception {
+		Channels channels = new Channels();
+		channels.setValue(frame.getChannel());
+		addChild(channels);
+		SamplingFrequency samplingFrequency = new SamplingFrequency();
+		samplingFrequency.setValue(frame.getSampleRate());
+		addChild(samplingFrequency);
+		BitDepth bitDepth = new BitDepth();
+		bitDepth.setValue(frame.getBit());
+		addChild(bitDepth);
 	}
 }
