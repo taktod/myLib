@@ -28,4 +28,19 @@ public class SimpleTag extends MkvMasterTag {
 	public SimpleTag() {
 		this(new EbmlValue());
 	}
+	/**
+	 * 構築する
+	 * @param name
+	 * @param value
+	 * @throws Exception
+	 */
+	public void setup(String name, String value) throws Exception {
+		TagName tagName = new TagName();
+		tagName.setValue(name);
+		addChild(tagName);
+		
+		TagString tagString = new TagString();
+		tagString.setValue(value);
+		addChild(tagString);
+	}
 }
