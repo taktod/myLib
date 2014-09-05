@@ -18,6 +18,7 @@ import com.ttProject.container.mkv.type.DateUTC;
 import com.ttProject.container.mkv.type.DocType;
 import com.ttProject.container.mkv.type.DocTypeReadVersion;
 import com.ttProject.container.mkv.type.DocTypeVersion;
+import com.ttProject.container.mkv.type.Duration;
 import com.ttProject.container.mkv.type.EBML;
 import com.ttProject.container.mkv.type.MuxingApp;
 import com.ttProject.container.mkv.type.ReferenceBlock;
@@ -100,6 +101,15 @@ public class EachTagTest {
 		logger.info(HexUtil.toHex(samplingFrequency.getData(), true));
 		logger.info("size:" + samplingFrequency.getSize());
 		// B5 84 47 2C 44 00
+		logger.info("durationテスト");
+		Duration duration = new Duration();
+		duration.setValue(1D);
+		logger.info(HexUtil.toHex(duration.getData(), true));
+		duration.setValue(1F);
+		logger.info(HexUtil.toHex(duration.getData(), true));
+		Void voidTag = new Void();
+		voidTag.setTagSize(9);
+		logger.info(HexUtil.toHex(voidTag.getData(), true));
 	}
 	/**
 	 * MkvMasterTagの動作テスト
