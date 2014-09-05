@@ -8,22 +8,27 @@ package com.ttProject.container.mkv.type;
 
 import org.apache.log4j.Logger;
 
-import com.ttProject.container.mkv.MkvCodecType;
 import com.ttProject.container.mkv.MkvMasterTag;
 import com.ttProject.container.mkv.MkvTag;
 import com.ttProject.container.mkv.Type;
 import com.ttProject.container.mkv.type.TrackType.Media;
 import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.AudioSelector;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAnalyzer;
+import com.ttProject.frame.IAudioFrame;
+import com.ttProject.frame.IFrame;
+import com.ttProject.frame.IVideoFrame;
 import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.frame.VideoSelector;
 import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
 import com.ttProject.frame.aac.AacDsiFrameSelector;
+import com.ttProject.frame.aac.AacFrame;
 import com.ttProject.frame.aac.DecoderSpecificInfo;
 import com.ttProject.frame.adpcmimawav.AdpcmImaWavFrameAnalyzer;
 import com.ttProject.frame.h264.ConfigData;
 import com.ttProject.frame.h264.DataNalAnalyzer;
+import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.frame.h264.H264FrameSelector;
 import com.ttProject.frame.h265.H265DataNalAnalyzer;
 import com.ttProject.frame.h265.H265FrameSelector;
@@ -37,27 +42,16 @@ import com.ttProject.unit.extra.EbmlValue;
 
 /**
  * TrackEntryタグ
- * ここからデータを拾えるようにだけ調整しておきたいね。
- * TODO static関数でTrackEntryをねつ造できるようにしておきたいところ。
  * @author taktod
  */
 public class TrackEntry extends MkvMasterTag {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(TrackEntry.class);
-	private long  timebase; // timebaseは他から設定されるもの
+	private long  timebase; // timebaseは他から設定されるもの(これはinfoの情報)
 	private int   lacingFlag = 0; // 子要素由来
+	@SuppressWarnings("unused")
 	private Media type = null; // 子要素由来
 
-	private CodecID codecId = null; // 子要素由来
-	// 以下は孫要素由来
-	private PixelWidth  pixelWidth  = null;
-	private PixelHeight pixelHeight = null;
-	private Channels          channels          = null;
-	private SamplingFrequency samplingFrequency = null;
-	private BitDepth          bitDepth          = null; // このデータはnullなことがあるみたいです。(aacで実際そうなってた。)
-	
-	// 圧縮や暗号化がある場合のデータ指定
-	private ContentEncodings encodings = null; // 子要素由来
 	/** frame解析用のオブジェクト */
 	private IAnalyzer analyzer = null;
 	/**
@@ -75,15 +69,20 @@ public class TrackEntry extends MkvMasterTag {
 	}
 	/**
 	 * load後に、扱いやすいようにデータを設定しておきます。
-	 * @param defaultTimebase
+	 * @param defaultTimebase (frameでつかっているtimebaseと同じ 通常1000がはいっているミリ秒指定)
 	 * @return trackIdを応答します。(uintですが、そこまで大きな数字になることはほぼないと思うのでintegerにまるめます。)
 	 */
 	public int setupEntry(long defaultTimebase) throws Exception {
 		timebase = defaultTimebase;
 		TrackNumber trackNumber = null;
 		CodecPrivate codecPrivate = null;
+		CodecID codecId = null;
+		int width = 0;
+		int height = 0;
+		int bitDepth = 16;
+		int channels = 0;
+		int samplingRate = 0;
 		for(MkvTag tag : getChildList()) {
-			logger.info(tag);
 			// trackUIDをつかわずにtrackNumberをつかった方がいいっぽい。
 			if(tag instanceof TrackNumber) {
 				trackNumber = (TrackNumber)tag;
@@ -98,24 +97,36 @@ public class TrackEntry extends MkvMasterTag {
 				codecPrivate = (CodecPrivate)tag;
 			}
 			else if(tag instanceof Video) {
-				// videoをループさせる必要あり
-				setupVideo((Video)tag);
+				for(MkvTag vTag : ((Video) tag).getChildList()) {
+					if(vTag instanceof PixelWidth) {
+						width = (int)((PixelWidth) vTag).getValue();
+					}
+					else if(vTag instanceof PixelHeight) {
+						height = (int)((PixelHeight) vTag).getValue();
+					}
+				}
 			}
 			else if(tag instanceof Audio) {
-				// audioもループさせる必要あり
-				setupAudio((Audio)tag);
+				for(MkvTag aTag : ((Audio) tag).getChildList()) {
+					if(aTag instanceof SamplingFrequency) {
+						samplingRate = (int)((SamplingFrequency) aTag).getValue();
+					}
+					else if(aTag instanceof Channels) {
+						channels = (int)((Channels) aTag).getValue();
+					}
+					else if(aTag instanceof BitDepth) {
+						bitDepth = (int)((BitDepth) aTag).getValue();
+					}
+				}
 			}
 			else if(tag instanceof TrackType) {
 				type = ((TrackType)tag).getType();
-			}
-			else if(tag instanceof ContentEncodings) {
-				encodings = (ContentEncodings)tag;
 			}
 		}
 		if(trackNumber == null) {
 			throw new Exception("trackNumberが見つかりませんでした。");
 		}
-		switch(codecId.getCodecType()) {
+		switch(codecId.getMkvCodecType()) {
 		case A_AAC:
 			analyzer = new AacDsiFrameAnalyzer();
 			DecoderSpecificInfo dsi = new DecoderSpecificInfo();
@@ -166,39 +177,16 @@ public class TrackEntry extends MkvMasterTag {
 		}
 		if(analyzer instanceof AudioAnalyzer) {
 			AudioSelector selector = ((AudioAnalyzer)analyzer).getSelector();
-			selector.setBit(getBitDepth());
-			selector.setChannel(getChannels());
-			selector.setSampleRate((int)getSampleRate());
+			selector.setBit(bitDepth);
+			selector.setChannel(channels);
+			selector.setSampleRate(samplingRate);
 		}
 		else if(analyzer instanceof VideoAnalyzer) {
 			VideoSelector selector = ((VideoAnalyzer)analyzer).getSelector();
-			selector.setWidth(getWidth());
-			selector.setHeight(getHeight());
+			selector.setWidth(width);
+			selector.setHeight(height);
 		}
 		return (int)trackNumber.getValue();
-	}
-	private void setupVideo(Video video) {
-		for(MkvTag tag : video.getChildList()) {
-			if(tag instanceof PixelWidth) {
-				pixelWidth = (PixelWidth)tag;
-			}
-			else if(tag instanceof PixelHeight) {
-				pixelHeight = (PixelHeight)tag;
-			}
-		}
-	}
-	private void setupAudio(Audio audio) {
-		for(MkvTag tag : audio.getChildList()) {
-			if(tag instanceof SamplingFrequency) {
-				samplingFrequency = (SamplingFrequency)tag;
-			}
-			else if(tag instanceof Channels) {
-				channels = (Channels)tag;
-			}
-			else if(tag instanceof BitDepth) {
-				bitDepth = (BitDepth)tag;
-			}
-		}
 	}
 	/**
 	 * analyzer参照
@@ -207,57 +195,132 @@ public class TrackEntry extends MkvMasterTag {
 	public IAnalyzer getAnalyzer() {
 		return analyzer;
 	}
+	/**
+	 * timebaseを応答する
+	 */
+	@Override
 	public long getTimebase() {
 		return timebase;
 	}
+	/**
+	 * 該当trackIdのlacing状態を応答する
+	 * @return
+	 */
 	public int getLacingFlag() {
 		return lacingFlag;
 	}
-	public MkvCodecType getCodecType() throws Exception {
-		return codecId.getCodecType();
-	}
-	public int getWidth() throws Exception {
-		if(type != Media.Video) {
-			throw new Exception("データタイプが映像ではありませんでした。");
-		}
-		return (int)pixelWidth.getValue();
-	}
-	public int getHeight() throws Exception {
-		if(type != Media.Video) {
-			throw new Exception("データタイプが映像ではありませんでした。");
-		}
-		return (int)pixelHeight.getValue();
-	}
-	public int getChannels() throws Exception {
-		if(type != Media.Audio) {
-			throw new Exception("データタイプが音声ではありませんでした。");
-		}
-		return (int)channels.getValue();
-	}
-	public double getSampleRate() throws Exception {
-		if(type != Media.Audio) {
-			throw new Exception("データタイプが音声ではありませんでした。");
-		}
-		return samplingFrequency.getValue();
-	}
-	public int getBitDepth() throws Exception {
-		if(type != Media.Audio) {
-			throw new Exception("データタイプが音声ではありませんでした。");
-		}
-		if(bitDepth == null) {
-			return 32;
-		}
-		return (int)bitDepth.getValue();
-	}
+	/**
+	 * encoding情報を応答します。
+	 * @return
+	 */
 	public ContentEncodings getEncodings() {
-		return encodings;
+		for(MkvTag tag : getChildList()) {
+			if(tag instanceof ContentEncodings) {
+				return (ContentEncodings)tag;
+			}
+		}
+		return null;
 	}
-	@Override
-	public void addChild(MkvTag tag) {
-		super.addChild(tag);
+	/**
+	 * codecTypeを参照する
+	 * @return
+	 * @throws Exception
+	 */
+	public CodecType getCodecType() throws Exception {
+		for(MkvTag tag : getChildList()) {
+			if(tag instanceof CodecID) {
+				return ((CodecID) tag).getCodecType();
+			}
+		}
+		throw new Exception("CodecIDが未定義です。");
 	}
-	@Override
-	public MkvTag removeChild(int i) {
-		return super.removeChild(i);
+	/**
+	 * codecTypeを設定する
+	 * @param codecType
+	 */
+	public void setCodecType(CodecType codecType) throws Exception {
+		CodecID codecId = new CodecID();
+		codecId.setCodecType(codecType);
+		addChild(codecId);
+	}
+	/**
+	 * 
+	 * @param trackId
+	 * @param frame
+	 * @throws Exception
+	 */
+	public void setupFrame(int trackId, IFrame frame) throws Exception {
+		TrackNumber trackNumber = new TrackNumber();
+		trackNumber.setValue(trackId);
+		addChild(trackNumber);
+		TrackUID trackUID = new TrackUID();
+		trackUID.setValue(trackId);
+		addChild(trackUID);
+		FlagLacing flagLacing = new FlagLacing();
+		flagLacing.setValue(0);
+		addChild(flagLacing);
+		Language language = new Language();
+		language.setValue("und");
+		addChild(language);
+		if(frame instanceof IAudioFrame) {
+			IAudioFrame aFrame = (IAudioFrame)frame;
+			TrackType trackType = new TrackType();
+			trackType.setType(Media.Audio);
+			addChild(trackType);
+			
+			Audio audio = new Audio();
+			audio.setup(aFrame);
+			addChild(audio);
+			switch(aFrame.getCodecType()) {
+			case AAC:
+				{
+					AacFrame aacFrame = (AacFrame)aFrame;
+					DecoderSpecificInfo dsi = aacFrame.getDecoderSpecificInfo();
+					CodecPrivate codecPrivate = new CodecPrivate();
+					codecPrivate.setValue(dsi.getData());
+					addChild(codecPrivate);
+				}
+				break;
+			case VORBIS:
+			case SPEEX:
+			case OPUS:
+				logger.error(aFrame.getCodecType() + "の処理はまだ未作成");
+				break;
+			default:
+				break;
+			}
+		}
+		else if(frame instanceof IVideoFrame) {
+			IVideoFrame vFrame = (IVideoFrame)frame;
+			TrackType trackType = new TrackType();
+			trackType.setType(Media.Video);
+			addChild(trackType);
+			
+			DefaultDuration defaultDuration = new DefaultDuration();
+			defaultDuration.setValue(1000000L);
+			addChild(defaultDuration);
+			
+			Video video = new Video();
+			video.setup(vFrame);
+			addChild(video);
+			// あとはh264やh265ならcodecPrivateを設定する必要あり
+			switch(vFrame.getCodecType()) {
+			case H264:
+				{
+					H264Frame h264Frame = (H264Frame) vFrame;
+					// h264のcodecPrivateを作る必要あり
+					com.ttProject.frame.h264.ConfigData configData = new com.ttProject.frame.h264.ConfigData();
+					CodecPrivate codecPrivate = new CodecPrivate();
+					codecPrivate.setValue(configData.makeConfigData(h264Frame.getSps(), h264Frame.getPps()));
+					addChild(codecPrivate);
+				}
+				break;
+			case H265:
+				logger.error("h265はまだ未実装です。");
+				break;
+			default:
+				break;
+			}
+		}
 	}
 }

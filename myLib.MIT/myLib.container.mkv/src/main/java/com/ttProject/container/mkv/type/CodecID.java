@@ -31,11 +31,11 @@ public class CodecID extends MkvStringTag {
 		this(new EbmlValue());
 	}
 	/**
-	 * codecTypeを参照
+	 * mkvCodecTypeを参照
 	 * @return
 	 * @throws Exception
 	 */
-	public MkvCodecType getCodecType() throws Exception {
+	public MkvCodecType getMkvCodecType() throws Exception {
 		String name = getValue();
 		if(name == null) {
 			throw new Exception("loadを実行して実体を取得してください。");
@@ -43,11 +43,19 @@ public class CodecID extends MkvStringTag {
 		return MkvCodecType.getCodecType(name);
 	}
 	/**
+	 * codecTypeを参照
+	 * @return
+	 * @throws Exception
+	 */
+	public CodecType getCodecType() throws Exception {
+		return getMkvCodecType().getCodecType();
+	}
+	/**
 	 * CodecIDを設定する
 	 * @param mkvCodecType
 	 * @throws Exception
 	 */
-	public void setCodecType(MkvCodecType mkvCodecType) throws Exception {
+	public void setMkvCodecType(MkvCodecType mkvCodecType) throws Exception {
 		setValue(mkvCodecType.toString());
 	}
 	/**

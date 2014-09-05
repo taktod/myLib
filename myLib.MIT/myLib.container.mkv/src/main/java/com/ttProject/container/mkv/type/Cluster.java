@@ -8,6 +8,7 @@ package com.ttProject.container.mkv.type;
 
 import com.ttProject.container.mkv.MkvMasterTag;
 import com.ttProject.container.mkv.Type;
+import com.ttProject.frame.IFrame;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
@@ -42,5 +43,23 @@ public class Cluster extends MkvMasterTag {
 	 */
 	public void setPosition(long position) {
 		super.setPosition((int)position);
+	}
+	/**
+	 * pts情報を設定する
+	 */
+	@Override
+	public void setPts(long pts) {
+		// このptsがtimecodeに影響を与えるものとします
+		super.setPts(pts);
+	}
+	/**
+	 * 保持するフレームを追加します
+	 * @param trackId
+	 * @param frame
+	 */
+	public Cluster addFrame(int trackId, IFrame frame) {
+		// このデータがcluster内のsimpleBlockになります。
+		// 追加していくけど、次のclusterが来たときに、実は次のclusterにいれるべきデータがでてくるかもしれないので注意が必要
+		return null;
 	}
 }
