@@ -26,7 +26,7 @@ public class ListTest {
 		list.add(5);
 		list.add(2);
 		logger.info(list);
-		logger.info(list.remove(3));
+		logger.info(list.remove(1));
 		logger.info(list);
 	}
 }
