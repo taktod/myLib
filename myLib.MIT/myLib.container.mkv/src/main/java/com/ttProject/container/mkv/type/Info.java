@@ -43,4 +43,31 @@ public class Info extends MkvMasterTag {
 	public void setPosition(long position) {
 		super.setPosition((int)position);
 	}
+	/**
+	 * セットアップ動作
+	 * @param timecodeScale 1000000L(ナノ秒単位で指定、この値だと1ミリ秒刻みになります)
+	 * @param muxApp
+	 * @param writeApp
+	 * @return timecodeScaleの実動作値を応答します。通常なら1000(１ミリ秒刻みなため)
+	 */
+	public long setup(long scale, String muxApp, String writeApp) throws Exception {
+		TimecodeScale timecodeScale = new TimecodeScale();
+		timecodeScale.setValue(scale);
+		addChild(timecodeScale);
+		
+		MuxingApp muxingApp = new MuxingApp();
+		muxingApp.setValue(muxApp);
+		addChild(muxingApp);
+		
+		WritingApp writingApp = new WritingApp();
+		writingApp.setValue(writeApp);
+		addChild(writingApp);
+		
+		// あとでdurationをいれる場所となる、void値(doubleのタグをいれる予定なのでこのサイズ)
+		Void voidTag = new Void();
+		voidTag.setTagSize(9);
+		addChild(voidTag);
+		
+		return timecodeScale.getTimebaseValue();
+	}
 }
