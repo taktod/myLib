@@ -28,8 +28,21 @@ public class TrackType extends MkvUnsignedIntTag {
 	public TrackType() {
 		this(new EbmlValue());
 	}
+	/**
+	 * タイプ情報を参照する
+	 * @return
+	 * @throws Exception
+	 */
 	public Media getType() throws Exception {
 		return Media.getType((int)super.getValue());
+	}
+	/**
+	 * タイプ情報を設定する
+	 * @param media
+	 * @throws Exception
+	 */
+	public void setType(Media media) throws Exception {
+		super.setValue(media.value);
 	}
 	public static enum Media {
 		Video(0x01),
