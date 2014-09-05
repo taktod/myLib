@@ -58,7 +58,7 @@ public class MkvTest {
 				if(container instanceof BlockGroup) {
 					for(MkvTag tag : ((BlockGroup)container).getChildList()) {
 						if(tag instanceof MkvBlockTag) {
-							MkvBlockTag blockTag = (MkvBlockTag)tag;
+//							MkvBlockTag blockTag = (MkvBlockTag)tag;
 //							logger.info(blockTag);
 //							logger.info(blockTag.getFrame());
 						}
@@ -69,11 +69,11 @@ public class MkvTest {
 //					logger.info(blockTag);
 //					logger.info(blockTag.getFrame());
 					if(blockTag.getFrame() instanceof VideoFrame) {
-						VideoFrame vFrame = (VideoFrame)blockTag.getFrame();
+//						VideoFrame vFrame = (VideoFrame)blockTag.getFrame();
 //						logger.info(vFrame.getWidth() + "x" + vFrame.getHeight());
 					}
 					else if(blockTag.getFrame() instanceof AudioFrame) {
-						AudioFrame aFrame = (AudioFrame)blockTag.getFrame();
+//						AudioFrame aFrame = (AudioFrame)blockTag.getFrame();
 //						logger.info(aFrame.getSampleRate() + ":" + aFrame.getChannel());
 					}
 				}
