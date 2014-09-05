@@ -50,6 +50,10 @@ import com.ttProject.util.HexUtil;
  * 一応、keyFrame間隔をベースにつくっておいた方がシークとしては、有利に働きそうだが・・・
  * とりあえず、h264 + aacのデータを再生成させて、再生できるところまでもっていきたいね。
  * 
+ * keyFrame間隔にしようとするとマルチトラックで複数の映像フレームがあるときにややこしくなりそう。
+ * よって、単に時間ベースにしておこうと思います。
+ * 0.25秒ごとみたいな。
+ * 
  * cuesの動作について
  * 同じsegmentに属しているデータへのリンクを保持している感じ。
  * segmentのtagIdとtagSizeを抜いた部分からの相対位置を保持しているらしいです。
@@ -67,6 +71,7 @@ public class MkvTagWriter implements IWriter {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(MkvTagWriter.class);
 	/** segmentの位置からの位置(cuesやseekHeadで利用する) */
+	private long segmentPos = 0;
 	private long position = 0;
 	private final WritableByteChannel outputChannel;
 	private FileOutputStream outputStream = null;
@@ -83,6 +88,7 @@ public class MkvTagWriter implements IWriter {
 	private List<TrackEntry> trackEntries = new ArrayList<TrackEntry>();
 	/** 追加frameがどのtrackEntryであるかのmap保持(これ必要ないかもしれませんね。再生中にtrackEntryのデータを参照する必要ないのでは？) */
 	private Map<Integer, TrackEntry> trackEntryMap = new HashMap<Integer, TrackEntry>();
+	private Map<Integer, List<IFrame>> frameListMap = new HashMap<Integer, List<IFrame>>();
 	/*
 	 * 必要であろう、エレメントリスト
 06:25:14,113 [main] INFO [MkvTagReader] - EBML size:23*
@@ -288,9 +294,11 @@ public class MkvTagWriter implements IWriter {
 	public void prepareHeader(CodecType ...codecs) throws Exception {
 		// EBMLの動作はwebmになったらoverrideしてmatroskaではなく、webmと記入してやりたいところ
 		// EBML
+		position = 0;
 		setupEbml();
 		// Segment
 		setupSegment();
+		segmentPos = position;
 		position = 0;
 		// ここまではここで書き込みを実施しておく
 		// seekHeadは作成しません。大きさは0x60になるように調整しますが、Voidタグで埋めを実施します。
@@ -428,50 +436,15 @@ public class MkvTagWriter implements IWriter {
 			if(findTrackEntry != null) {
 				trackEntryMap.put(trackId, findTrackEntry);
 				trackEntries.remove(findTrackEntry);
-				findTrackEntry.setupFrame(trackId, frame);
+				findTrackEntry.setupFrame(trackId, frame, defaultTimebase);
 
 				// この完了して、headerを構築する部分も別関数化しておきたいけど・・・
 				if(trackEntries.size() == 0) {
 					logger.info("全トラック情報がみつかったので、調整しておく。");
-					// 強制的にsizeを更新しておく
-					// seekHeadのサイズは0x80くらいとする
-					int originalSeekHeadSize = 0x60; // seekHeadのサイズが大きくなった分、voidのサイズを削らないとだめ
-					// それぞれのデータについてgetDataを実施して、サイズを確定させる
-					info.getData();
-					tracks.getData();
-					tags.getData();
-					// スキップさせるデータ量を確認し、seekの値として保持させる。
-					long skipSize = originalSeekHeadSize;
-					seekHead = new SeekHead();
-					seekHead.addChild(setupSeek(Type.Info, skipSize));
-					skipSize += info.getSize();
-					seekHead.addChild(setupSeek(Type.Tracks, skipSize));
-					skipSize += tracks.getSize();
-					seekHead.addChild(setupSeek(Type.Tags, skipSize));
-
-					// seekHeadのデータ構築開始
-					seekHead.getData();
-					if(seekHead.getSize() != originalSeekHeadSize) {
-						// 空白がある場合はVoidでうめておく。
-						int diff = originalSeekHeadSize - seekHead.getSize();
-						Void voidTag = new Void();
-						voidTag.setTagSize(diff - 2);
-						seekHead.addChild(voidTag);
-						seekHead.getData();
-					}
-					// データの書き込みを実施
-					addContainer(seekHead);
-					addContainer(info);
-					addContainer(tracks);
-					addContainer(tags);
-					// header部作成完了
+					makeHeader();
 				}
-				else {
-					// ここにきた場合はframeデータをcacheしておかないとだめ
-					// データが構築済みになっていないので、データを保持しておく必要あるかも・・・
-					// とりあえず１つsimpleTagをつくってみようと思う。
-					// 過去あつかったときには、mp3はlacingをつかって、１つのsimpleTagに大量にデータがはいっていたけど、aacのデータを確認してみたところ、1つのAACFrameに対して1つのsimpleTagで動作しているみたいですね。
-				}
+				// データが構築済みになっていないので、データを保持しておく必要あるかも・・・
+				// 過去あつかったときには、mp3はlacingをつかって、１つのsimpleTagに大量にデータがはいっていたけど、aacのデータを確認してみたところ、1つのAACFrameに対して1つのsimpleTagで動作しているみたいですね。
 			}
 		}
 		if(frame instanceof IAudioFrame) {
@@ -493,6 +466,43 @@ public class MkvTagWriter implements IWriter {
 			logger.info(HexUtil.toHex(simpleBlock.getData(), true));
 		}
 		// vp8やvp9の場合はinvisible判定をとっておかないとこまったことになるかもしれない。(BlockTagに設定項目があるため。)
+	}
+	/**
+	 * header部を完成させる
+	 */
+	private void makeHeader() throws Exception {
+		// 強制的にsizeを更新しておく
+		// seekHeadのサイズは0x80くらいとする
+		int originalSeekHeadSize = 0x60; // seekHeadのサイズが大きくなった分、voidのサイズを削らないとだめ
+		// それぞれのデータについてgetDataを実施して、サイズを確定させる
+		info.getData();
+		tracks.getData();
+		tags.getData();
+		// スキップさせるデータ量を確認し、seekの値として保持させる。
+		long skipSize = originalSeekHeadSize;
+		seekHead = new SeekHead();
+		seekHead.addChild(setupSeek(Type.Info, skipSize));
+		skipSize += info.getSize();
+		seekHead.addChild(setupSeek(Type.Tracks, skipSize));
+		skipSize += tracks.getSize();
+		seekHead.addChild(setupSeek(Type.Tags, skipSize));
+
+		// seekHeadのデータ構築開始
+		seekHead.getData();
+		if(seekHead.getSize() != originalSeekHeadSize) {
+			// 空白がある場合はVoidでうめておく。
+			int diff = originalSeekHeadSize - seekHead.getSize();
+			Void voidTag = new Void();
+			voidTag.setTagSize(diff - 2);
+			seekHead.addChild(voidTag);
+			seekHead.getData();
+		}
+		// データの書き込みを実施
+		addContainer(seekHead);
+		addContainer(info);
+		addContainer(tracks);
+		addContainer(tags);
+		// header部作成完了
 	}
 	/**
 	 * seekの中身を作成する

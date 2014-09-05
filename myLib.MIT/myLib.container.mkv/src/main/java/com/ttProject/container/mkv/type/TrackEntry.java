@@ -249,7 +249,8 @@ public class TrackEntry extends MkvMasterTag {
 	 * @param frame
 	 * @throws Exception
 	 */
-	public void setupFrame(int trackId, IFrame frame) throws Exception {
+	public void setupFrame(int trackId, IFrame frame, long defaultTimebase) throws Exception {
+		timebase = defaultTimebase;
 		TrackNumber trackNumber = new TrackNumber();
 		trackNumber.setValue(trackId);
 		addChild(trackNumber);
