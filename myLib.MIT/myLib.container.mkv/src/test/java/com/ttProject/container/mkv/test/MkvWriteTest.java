@@ -15,7 +15,6 @@ import com.ttProject.container.IWriter;
 import com.ttProject.container.mkv.MkvBlockTag;
 import com.ttProject.container.mkv.MkvTagReader;
 import com.ttProject.container.mkv.MkvTagWriter;
-import com.ttProject.container.mkv.type.TrackEntry;
 import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IFrame;
 import com.ttProject.nio.channels.FileReadChannel;
@@ -47,9 +46,6 @@ public class MkvWriteTest {
 		// ただしmpegtsと違ってサイズやサンプルレートといった情報も必要になるので、そのあたりもきちんと調整しておいた方がよさそうですね。
 		IContainer container = null;
 		while((container = reader.read(source)) != null) {
-			if(container instanceof TrackEntry) {
-				logger.info(container);
-			}
 			if(container instanceof MkvBlockTag) {
 				MkvBlockTag blockTag = (MkvBlockTag) container;
 				IFrame frame = blockTag.getFrame();

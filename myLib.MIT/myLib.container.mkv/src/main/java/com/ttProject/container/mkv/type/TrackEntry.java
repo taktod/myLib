@@ -34,6 +34,7 @@ import com.ttProject.frame.h265.H265DataNalAnalyzer;
 import com.ttProject.frame.h265.H265FrameSelector;
 import com.ttProject.frame.mjpeg.MjpegFrameAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
+import com.ttProject.frame.vorbis.VorbisFrame;
 import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
 import com.ttProject.frame.vp8.Vp8FrameAnalyzer;
 import com.ttProject.frame.vp9.Vp9FrameAnalyzer;
@@ -162,7 +163,6 @@ public class TrackEntry extends MkvMasterTag {
 			h265ConfigData.analyze(new ByteReadChannel(codecPrivate.getMkvData()));
 			break;
 		case V_VP8:
-			logger.info("vp8は動作があやしいです。");
 			analyzer = new Vp8FrameAnalyzer();
 			break;
 		case V_MJPEG:
@@ -283,6 +283,13 @@ public class TrackEntry extends MkvMasterTag {
 				}
 				break;
 			case VORBIS:
+				{
+					VorbisFrame vorbisFrame = (VorbisFrame)aFrame;
+					CodecPrivate codecPrivate = new CodecPrivate();
+					codecPrivate.setValue(vorbisFrame.getCodecPrivate());
+					addChild(codecPrivate);
+				}
+				break;
 			case SPEEX:
 			case OPUS:
 				logger.error(aFrame.getCodecType() + "の処理はまだ未作成");
