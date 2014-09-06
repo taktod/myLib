@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IWriter;
+import com.ttProject.container.mkv.type.Cluster;
 import com.ttProject.container.mkv.type.EBML;
 import com.ttProject.container.mkv.type.Info;
 import com.ttProject.container.mkv.type.Seek;
@@ -88,7 +89,9 @@ public class MkvTagWriter implements IWriter {
 	private List<TrackEntry> trackEntries = new ArrayList<TrackEntry>();
 	/** 追加frameがどのtrackEntryであるかのmap保持(これ必要ないかもしれませんね。再生中にtrackEntryのデータを参照する必要ないのでは？) */
 	private Map<Integer, TrackEntry> trackEntryMap = new HashMap<Integer, TrackEntry>();
-	private Map<Integer, List<IFrame>> frameListMap = new HashMap<Integer, List<IFrame>>();
+	/** 処理候補のclusterリスト */
+	private List<Cluster> clusterList = new ArrayList<Cluster>();
+	private long nextClusterPts = 0; // 次のclusterの位置情報
 	/*
 	 * 必要であろう、エレメントリスト
 06:25:14,113 [main] INFO [MkvTagReader] - EBML size:23*
@@ -420,15 +423,11 @@ public class MkvTagWriter implements IWriter {
 			}
 			return;
 		}
-		// TODO この部分別関数化しておく。
-		// 正直邪魔
 		if(!trackEntryMap.containsKey(trackId)) {
 			// trackEntryMap化していないトラック
-			logger.info("trackEntryMap化されていないトラック");
 			TrackEntry findTrackEntry = null;
 			for(TrackEntry trackEntry : trackEntries) {
 				if(trackEntry.getCodecType() == frame.getCodecType()) {
-					logger.info("コーデック情報が一致した。:" + frame.getCodecType());
 					findTrackEntry = trackEntry;
 					break;
 				}
@@ -447,6 +446,7 @@ public class MkvTagWriter implements IWriter {
 				// 過去あつかったときには、mp3はlacingをつかって、１つのsimpleTagに大量にデータがはいっていたけど、aacのデータを確認してみたところ、1つのAACFrameに対して1つのsimpleTagで動作しているみたいですね。
 			}
 		}
+		// frameにデータを追加する
 		if(frame instanceof IAudioFrame) {
 			logger.info("音声の場合のみちょっとsimpleTag化してみよう");
 			SimpleBlock simpleBlock = new SimpleBlock();
@@ -466,6 +466,32 @@ public class MkvTagWriter implements IWriter {
 			logger.info(HexUtil.toHex(simpleBlock.getData(), true));
 		}
 		// vp8やvp9の場合はinvisible判定をとっておかないとこまったことになるかもしれない。(BlockTagに設定項目があるため。)
+		if(frame.getPts() >= nextClusterPts) {
+			logger.info("次のclusterを作る必要があります。:" + nextClusterPts + ":" + defaultTimebase / 4);
+			// clusterをつくって登録しておく
+			Cluster newCluster = new Cluster();
+			newCluster.setPts(nextClusterPts);
+			newCluster.setTimebase(defaultTimebase);
+			newCluster.setDuration(defaultTimebase / 4);
+			// clusterは250ミリ秒ごとにつくっていく。
+			clusterList.add(newCluster);
+			nextClusterPts += defaultTimebase / 4;
+		}
+		int count = 0;
+		for(Cluster cluster : clusterList) {
+			if(cluster.addFrame(trackId, frame) != null) {
+				if(cluster.isCompleteCluster()) {
+					count ++;
+				}
+				continue;
+			}
+			break;
+		}
+		for(int i = 0;i < count;i ++) {
+			Cluster cluster = clusterList.remove(0);
+			logger.info("clusterが完了したので、データの書き込みを実施したい。");
+			logger.info(cluster);
+		}
 	}
 	/**
 	 * header部を完成させる
