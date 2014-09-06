@@ -6,14 +6,20 @@
  */
 package com.ttProject.container.mkv.type;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.container.mkv.MkvBlockTag;
 import com.ttProject.container.mkv.MkvMasterTag;
 import com.ttProject.container.mkv.Type;
 import com.ttProject.frame.IFrame;
+import com.ttProject.frame.h264.SliceFrame;
+import com.ttProject.unit.UnitComparator;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
@@ -28,6 +34,10 @@ public class Cluster extends MkvMasterTag {
 	private long duration;
 	/** 処理中のtrackIdのリスト */
 	private Set<Integer> trackIdSet = new HashSet<Integer>();
+	/** 保持しているblockリスト */
+	private List<SimpleBlock> blockList = new ArrayList<SimpleBlock>();
+	/** ソート用のクラス */
+	private static UnitComparator comparator = new UnitComparator();
 	/**
 	 * コンストラクタ
 	 * @param size
@@ -57,26 +67,19 @@ public class Cluster extends MkvMasterTag {
 		super.setPosition((int)position);
 	}
 	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setPts(long pts) {
-		// このptsがtimecodeに影響を与えるものとします
-		super.setPts(pts);
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void setTimebase(long timebase) {
-		super.setTimebase(timebase);
-	}
-	/**
-	 * データの長さのduration値
+	 * 時間に関するデータをセットアップする
+	 * @param pts
+	 * @param timebase
 	 * @param duration
+	 * @throws Exception
 	 */
-	public void setDuration(long duration) {
+	public void setupTimeinfo(long pts, long timebase, long duration) throws Exception {
+		setPts(pts);
+		setTimebase(timebase);
 		this.duration = duration;
+		Timecode timecode = new Timecode();
+		timecode.setValue(pts);
+		addChild(timecode);
 	}
 	/**
 	 * 保持するフレームを追加します
@@ -84,17 +87,39 @@ public class Cluster extends MkvMasterTag {
 	 * @param frame
 	 * @return IFrame 追加されなかったらframeを応答します。追加されたらnullを応答します。
 	 */
-	public IFrame addFrame(int trackId, IFrame frame) {
+	public IFrame addFrame(int trackId, IFrame frame) throws Exception {
 		trackIdSet.add(trackId);
 		// このデータがcluster内のsimpleBlockになります。
 		// 追加していくけど、次のclusterが来たときに、実は次のclusterにいれるべきデータがでてくるかもしれないので注意が必要
-		long pts = getTimebase() * frame.getPts() / frame.getTimebase() - getPts();
+		int pts = (int)(getTimebase() * frame.getPts() / frame.getTimebase() - getPts());
 		if(pts >= 0 && pts < duration) {
 			// 内部に入るデータ
+			setupSimpleBlock(trackId, frame, pts);
 			return null;
 		}
 		trackIdSet.remove((Integer)trackId);
 		return frame;
+	}
+	/**
+	 * ブロック化して保持しておく
+	 * @param trackId
+	 * @param frame
+	 * @throws Exception
+	 */
+	private void setupSimpleBlock(int trackId, IFrame frame, int clusterPts) throws Exception {
+		switch(frame.getCodecType()) {
+		case H264:
+			// h264の場合はsliceFrameのみ扱う
+			if(!(frame instanceof SliceFrame)) {
+				return;
+			}
+			break;
+		default:
+			break;
+		}
+		SimpleBlock simpleBlock = new SimpleBlock();
+		simpleBlock.addFrame(trackId, frame, clusterPts);
+		blockList.add(simpleBlock);
 	}
 	/**
 	 * リストが空であるか判定する
@@ -102,5 +127,16 @@ public class Cluster extends MkvMasterTag {
 	 */
 	public boolean isCompleteCluster() {
 		return trackIdSet.isEmpty();
+	}
+	/**
+	 * 完了したclusterのデータを構築しておく。
+	 */
+	public void setupComplete() {
+		// ソートする
+		Collections.sort(blockList, comparator);
+		for(MkvBlockTag blockTag : blockList) {
+			addChild(blockTag);
+		}
+		blockList.clear();
 	}
 }

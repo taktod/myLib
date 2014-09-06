@@ -24,7 +24,6 @@ import com.ttProject.container.mkv.type.Info;
 import com.ttProject.container.mkv.type.Seek;
 import com.ttProject.container.mkv.type.SeekHead;
 import com.ttProject.container.mkv.type.Segment;
-import com.ttProject.container.mkv.type.SimpleBlock;
 import com.ttProject.container.mkv.type.SimpleTag;
 import com.ttProject.container.mkv.type.Tag;
 import com.ttProject.container.mkv.type.Tags;
@@ -38,8 +37,6 @@ import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
-import com.ttProject.frame.h264.SliceFrame;
-import com.ttProject.util.HexUtil;
 
 /**
  * mkvを作成するためのwriter
@@ -72,6 +69,7 @@ public class MkvTagWriter implements IWriter {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(MkvTagWriter.class);
 	/** segmentの位置からの位置(cuesやseekHeadで利用する) */
+	@SuppressWarnings("unused")
 	private long segmentPos = 0;
 	private long position = 0;
 	private final WritableByteChannel outputChannel;
@@ -446,33 +444,11 @@ public class MkvTagWriter implements IWriter {
 				// 過去あつかったときには、mp3はlacingをつかって、１つのsimpleTagに大量にデータがはいっていたけど、aacのデータを確認してみたところ、1つのAACFrameに対して1つのsimpleTagで動作しているみたいですね。
 			}
 		}
-		// frameにデータを追加する
-		if(frame instanceof IAudioFrame) {
-			logger.info("音声の場合のみちょっとsimpleTag化してみよう");
-			SimpleBlock simpleBlock = new SimpleBlock();
-			simpleBlock.addFrame(trackId, frame, 0);
-			logger.info(HexUtil.toHex(simpleBlock.getData(), true));
-		}
-		else if(frame instanceof SliceFrame) {
-			SliceFrame sFrame = (SliceFrame)frame;
-			if(sFrame.isKeyFrame()) {
-				logger.info("■■■■■h264の方もちょっとsimpleTag化してみよう");
-			}
-			else {
-				logger.info("h264の方もちょっとsimpleTag化してみよう");
-			}
-			SimpleBlock simpleBlock = new SimpleBlock();
-			simpleBlock.addFrame(trackId, frame, 0);
-			logger.info(HexUtil.toHex(simpleBlock.getData(), true));
-		}
-		// vp8やvp9の場合はinvisible判定をとっておかないとこまったことになるかもしれない。(BlockTagに設定項目があるため。)
 		if(frame.getPts() >= nextClusterPts) {
 			logger.info("次のclusterを作る必要があります。:" + nextClusterPts + ":" + defaultTimebase / 4);
 			// clusterをつくって登録しておく
 			Cluster newCluster = new Cluster();
-			newCluster.setPts(nextClusterPts);
-			newCluster.setTimebase(defaultTimebase);
-			newCluster.setDuration(defaultTimebase / 4);
+			newCluster.setupTimeinfo(nextClusterPts, defaultTimebase, defaultTimebase / 4);
 			// clusterは250ミリ秒ごとにつくっていく。
 			clusterList.add(newCluster);
 			nextClusterPts += defaultTimebase / 4;
@@ -490,7 +466,9 @@ public class MkvTagWriter implements IWriter {
 		for(int i = 0;i < count;i ++) {
 			Cluster cluster = clusterList.remove(0);
 			logger.info("clusterが完了したので、データの書き込みを実施したい。");
-			logger.info(cluster);
+			cluster.setupComplete();
+			addContainer(cluster);
+//			logger.info(cluster);
 		}
 	}
 	/**

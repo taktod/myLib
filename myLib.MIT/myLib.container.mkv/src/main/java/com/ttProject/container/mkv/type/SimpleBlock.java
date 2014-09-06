@@ -140,15 +140,16 @@ public class SimpleBlock extends MkvBlockTag {
 	 * @param trackId
 	 * @param frame
 	 */
-	public void addFrame(int trackId, IFrame frame, long clusterTimestamp) throws Exception {
+	public void addFrame(int trackId, IFrame frame, int timestampDiff) throws Exception {
 		// とりあえずつくるか・・・
+		super.setPts(timestampDiff);
+		super.setTimebase(1000); // ここのtimebaseは変更した方がいいかも
 		super.getTrackId().set(trackId);
 		super.addFrame(frame);
 		// trackIdとframeをいれた。
 		// trackEntryの開始位置のtimediffについて、参照する必要あり。
 		// mkvはいまのところtimebase = 1000で動作しているものとするので、ptsを変換しておく
-		long timestampDiff = frame.getPts() * 1000L / frame.getTimebase();
-		getTimestampDiff().set((int)(timestampDiff - clusterTimestamp));
+		getTimestampDiff().set(timestampDiff);
 		// 音声はkeyFrame扱いっぽい。
 		if(frame instanceof IAudioFrame) {
 			keyFrameFlag.set(1);
@@ -162,6 +163,7 @@ public class SimpleBlock extends MkvBlockTag {
 			else {
 				keyFrameFlag.set(0);
 			}
+			// vp8やvp9の場合はinvisible判定をとっておかないとこまったことになるかもしれない。(BlockTagに設定項目があるため。)
 			switch(frame.getCodecType()) {
 			case VP8:
 				@SuppressWarnings("unused")
