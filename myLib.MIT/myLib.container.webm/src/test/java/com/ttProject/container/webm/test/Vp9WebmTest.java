@@ -11,8 +11,8 @@ import org.junit.Test;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
-import com.ttProject.container.mkv.MkvTagReader;
 import com.ttProject.container.mkv.type.SimpleBlock;
+import com.ttProject.container.webm.WebmTagReader;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
@@ -31,7 +31,7 @@ public class Vp9WebmTest {
 		IFileReadChannel source = null;
 		try {
 			source = FileReadChannel.openFileReadChannel("http://yt-dash-mse-test.commondatastorage.googleapis.com/media/feelings_vp9-20130806-247.webm");
-			IReader reader = new MkvTagReader();
+			IReader reader = new WebmTagReader();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
 				if(container instanceof SimpleBlock) {

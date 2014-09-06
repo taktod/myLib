@@ -11,8 +11,8 @@ import org.junit.Test;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
-import com.ttProject.container.mkv.MkvTagReader;
 import com.ttProject.container.mkv.type.SimpleBlock;
+import com.ttProject.container.webm.WebmTagReader;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
@@ -33,7 +33,7 @@ public class WebmTest {
 			source = FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("test.webm")
 			);
-			IReader reader = new MkvTagReader();
+			IReader reader = new WebmTagReader();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
 				if(container instanceof SimpleBlock) {
