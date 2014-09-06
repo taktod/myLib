@@ -7,7 +7,6 @@
 package com.ttProject.container.webm.test;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
@@ -26,7 +25,7 @@ public class Vp9WebmTest {
 	/**
 	 * 読み込み動作テスト
 	 */
-	@Test
+//	@Test
 	public void analyzerTest() {
 		IFileReadChannel source = null;
 		try {
