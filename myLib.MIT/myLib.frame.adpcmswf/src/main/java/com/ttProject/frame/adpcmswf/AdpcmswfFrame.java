@@ -105,11 +105,11 @@ public abstract class AdpcmswfFrame extends AudioFrame {
 		}
 		IReadChannel channel = new ByteReadChannel(HexUtil.makeBuffer(bufferString));
 		Frame frame = new Frame();
-		frame.minimumLoad(channel);
-		frame.load(channel);
 		frame.setChannel(channels);
 		frame.setSampleRate(sampleRate);
 		frame.setBit(16);
+		frame.minimumLoad(channel);
+		frame.load(channel);
 		return frame;
 	}
 	/**

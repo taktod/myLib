@@ -34,8 +34,8 @@ public class SilentFrameTest {
 	@Test
 	public void test() throws Exception {
 		logger.info("動作テスト開始");
-		IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_VORBIS);
-		encoder.setSampleRate(32000);
+		IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_PCM_MULAW);
+		encoder.setSampleRate(44100);
 		encoder.setBitRate(48000);
 		encoder.setChannels(1);
 		ICodec codec = encoder.getCodec();
@@ -57,6 +57,8 @@ public class SilentFrameTest {
 		if(encoder.open(null, null) < 0) {
 			throw new Exception("音声エンコーダーが開けませんでした");
 		}
+		logger.info(encoder.getSampleRate());
+		logger.info(encoder.getChannels());
 		IAudioSamples samples = IAudioSamples.make(44100, encoder.getChannels(), findFormat);
 		samples.setComplete(true, 44100, encoder.getSampleRate(), encoder.getChannels(), findFormat, 0);
 		samples.setTimeBase(IRational.make(1, encoder.getSampleRate()));
@@ -73,6 +75,7 @@ public class SilentFrameTest {
 				IFrame frame = depacketizer.getFrame(encoder, packet);
 				logger.info(frame.getCodecType());
 				logger.info(HexUtil.toHex(frame.getData()));
+				logger.info(frame.getData().remaining());
 				IAudioFrame aFrame = (IAudioFrame) frame;
 				logger.info(aFrame.getSampleNum() + " : " + (sampleConsumed - lastCount));
 				lastCount = sampleConsumed;
