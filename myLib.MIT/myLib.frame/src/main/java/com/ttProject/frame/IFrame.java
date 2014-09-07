@@ -34,4 +34,10 @@ public interface IFrame extends IUnit {
 	 * @return
 	 */
 	public CodecType getCodecType();
+	/**
+	 * フレーム固有のprivateデータを参照する
+	 * (h264のconfigDataやaacのdecoderSpecificInfo、vorbis、opus、speexのcodecPrivateなど)
+	 * @return
+	 */
+	public ByteBuffer getPrivateData();
 }

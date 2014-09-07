@@ -6,6 +6,8 @@
  */
 package com.ttProject.frame;
 
+import java.nio.ByteBuffer;
+
 import com.ttProject.unit.Unit;
 
 /**
@@ -42,5 +44,14 @@ public abstract class Frame extends Unit implements IFrame {
 	@Override
 	public void setTimebase(long timebase) {
 		super.setTimebase(timebase);
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ByteBuffer getPrivateData() {
+		ByteBuffer buffer = ByteBuffer.allocate(0);
+		buffer.flip();
+		return buffer;
 	}
 }
