@@ -50,6 +50,13 @@ public abstract class VorbisFrame extends AudioFrame {
 	 * @return
 	 */
 	public ByteBuffer getCodecPrivate() throws Exception {
+		return getPrivateData();
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ByteBuffer getPrivateData() throws Exception {
 		if(identificationHeaderFrame == null) {
 			return null;
 		}
