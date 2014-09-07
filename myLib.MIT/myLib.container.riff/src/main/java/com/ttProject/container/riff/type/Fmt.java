@@ -14,6 +14,7 @@ import com.ttProject.container.riff.RiffCodecType;
 import com.ttProject.container.riff.RiffUnit;
 import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.AudioSelector;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.adpcmimawav.AdpcmImaWavFrameAnalyzer;
 import com.ttProject.frame.pcmalaw.PcmalawFrameAnalyzer;
@@ -31,6 +32,7 @@ import com.ttProject.util.BufferUtil;
  */
 public class Fmt extends RiffUnit {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Fmt.class);
 	private Bit16 pcmType       = new Bit16();
 	private Bit16 channels      = new Bit16();
@@ -49,7 +51,6 @@ public class Fmt extends RiffUnit {
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
 		loader.load(pcmType, channels, sampleRate, dataSpeed, blockSize, bitNum, extraInfoSize);
-		logger.info(RiffCodecType.getCodec(pcmType.get()));
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
@@ -62,8 +63,15 @@ public class Fmt extends RiffUnit {
 	 * コーデックタイプを参照する
 	 * @return
 	 */
-	public RiffCodecType getCodecType() {
+	public RiffCodecType getRiffCodecType() {
 		return RiffCodecType.getCodec(pcmType.get());
+	}
+	/**
+	 * コーデックタイプを参照する
+	 * @return
+	 */
+	public CodecType getCodecType() {
+		return RiffCodecType.getCodec(pcmType.get()).getCodecType();
 	}
 	/**
 	 * フレームの解析プログラムを参照します。
@@ -73,7 +81,7 @@ public class Fmt extends RiffUnit {
 		if(frameAnalyzer != null) {
 			return frameAnalyzer;
 		}
-		switch(getCodecType()) {
+		switch(getRiffCodecType()) {
 		case IMA_ADPCM:
 			frameAnalyzer = new AdpcmImaWavFrameAnalyzer();
 			break;

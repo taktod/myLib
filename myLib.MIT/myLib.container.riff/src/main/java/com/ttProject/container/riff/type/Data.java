@@ -41,7 +41,7 @@ public class Data extends RiffUnit {
 		while(channel.position() < channel.size()) {
 			// ここのfmt.getBlockSizeの値がpcm_alawとpcm_mulawの場合に１になって、いやな感じのデータになってしまう。
 			int blockSize = 0;
-			switch(fmt.getCodecType()) {
+			switch(fmt.getRiffCodecType()) {
 			case A_LAW:
 			case U_LAW:
 				blockSize = 0x0100;

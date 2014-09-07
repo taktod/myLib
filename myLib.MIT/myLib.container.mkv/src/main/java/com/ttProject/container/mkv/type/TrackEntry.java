@@ -6,12 +6,16 @@
  */
 package com.ttProject.container.mkv.type;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.mkv.MkvMasterTag;
 import com.ttProject.container.mkv.MkvTag;
 import com.ttProject.container.mkv.Type;
 import com.ttProject.container.mkv.type.TrackType.Media;
+import com.ttProject.container.riff.type.Fmt;
 import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.CodecType;
@@ -38,8 +42,8 @@ import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
 import com.ttProject.frame.vp8.Vp8FrameAnalyzer;
 import com.ttProject.frame.vp9.Vp9FrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.EbmlValue;
-import com.ttProject.util.HexUtil;
 
 /**
  * TrackEntryタグ
@@ -141,10 +145,25 @@ public class TrackEntry extends MkvMasterTag {
 			((VorbisFrameAnalyzer)analyzer).setPrivateData(new ByteReadChannel(codecPrivate.getMkvData()));
 			break;
 		case A_MS_ACM:
-			logger.info("A_MS_ACMと判定されたけど・・・");
-			logger.info(HexUtil.toHex(codecPrivate.getMkvData(), true));
+			Fmt fmt = new Fmt();
+			ByteBuffer privateBuffer = codecPrivate.getMkvData();
+			ByteBuffer buffer = ByteBuffer.allocate(privateBuffer.remaining() + 4);
+			buffer.order(ByteOrder.LITTLE_ENDIAN);
+			buffer.putInt(privateBuffer.remaining());
+			buffer.put(privateBuffer);
+			buffer.flip();
+			IReadChannel channel = new ByteReadChannel(buffer);
+			fmt.minimumLoad(channel);
+			fmt.load(channel);
+			codecId.setCodecType(fmt.getCodecType());
 			// fmt の中身が入ってるのか
-			analyzer = new AdpcmImaWavFrameAnalyzer();
+			switch(codecId.getCodecType()) {
+			case ADPCM_IMA_WAV:
+				analyzer = new AdpcmImaWavFrameAnalyzer();
+				break;
+			default:
+				throw new RuntimeException(codecId.getCodecType() + "の解析はまだ不明です。");
+			}
 			break;
 		case V_MPEG4_ISO_AVC:
 			DataNalAnalyzer dataNalAnalyzer = new DataNalAnalyzer();
