@@ -111,4 +111,15 @@ public abstract class H264Frame extends VideoFrame {
 	public CodecType getCodecType() {
 		return CodecType.H264;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ByteBuffer getPrivateData() throws Exception {
+		if(sps == null || pps == null) {
+			throw new Exception("情報が不足しています。");
+		}
+		ConfigData configData = new ConfigData();
+		return configData.makeConfigData(sps, pps);
+	}
 }
