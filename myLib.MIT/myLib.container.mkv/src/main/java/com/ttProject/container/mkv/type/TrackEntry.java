@@ -276,9 +276,9 @@ public class TrackEntry extends MkvMasterTag {
 			case AAC:
 				{
 					AacFrame aacFrame = (AacFrame)aFrame;
-					DecoderSpecificInfo dsi = aacFrame.getDecoderSpecificInfo();
+//					DecoderSpecificInfo dsi = aacFrame.getDecoderSpecificInfo();
 					CodecPrivate codecPrivate = new CodecPrivate();
-					codecPrivate.setValue(dsi.getData());
+					codecPrivate.setValue(aacFrame.getPrivateData());
 					addChild(codecPrivate);
 				}
 				break;
