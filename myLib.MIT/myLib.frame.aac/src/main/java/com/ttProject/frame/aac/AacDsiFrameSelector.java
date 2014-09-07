@@ -40,6 +40,7 @@ public class AacDsiFrameSelector extends AudioSelector {
 	public void setDecoderSpecificInfo(ByteBuffer data) throws Exception {
 		DecoderSpecificInfo dsi = new DecoderSpecificInfo();
 		dsi.minimumLoad(new ByteReadChannel(data));
+		this.dsi = dsi;
 	}
 	/**
 	 * {@inheritDoc}
