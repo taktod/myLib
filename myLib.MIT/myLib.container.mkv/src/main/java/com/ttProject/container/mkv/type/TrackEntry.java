@@ -39,6 +39,7 @@ import com.ttProject.frame.vp8.Vp8FrameAnalyzer;
 import com.ttProject.frame.vp9.Vp9FrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.unit.extra.EbmlValue;
+import com.ttProject.util.HexUtil;
 
 /**
  * TrackEntryタグ
@@ -140,6 +141,9 @@ public class TrackEntry extends MkvMasterTag {
 			((VorbisFrameAnalyzer)analyzer).setPrivateData(new ByteReadChannel(codecPrivate.getMkvData()));
 			break;
 		case A_MS_ACM:
+			logger.info("A_MS_ACMと判定されたけど・・・");
+			logger.info(HexUtil.toHex(codecPrivate.getMkvData(), true));
+			// fmt の中身が入ってるのか
 			analyzer = new AdpcmImaWavFrameAnalyzer();
 			break;
 		case V_MPEG4_ISO_AVC:

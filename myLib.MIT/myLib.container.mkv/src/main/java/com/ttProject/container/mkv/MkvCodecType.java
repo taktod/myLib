@@ -21,7 +21,7 @@ public enum MkvCodecType {
 	A_MPEG_L3("A_MPEG/L3", CodecType.MP3),
 	A_VORBIS("A_VORBIS", CodecType.VORBIS),
 	A_OPUS("A_OPUS", CodecType.OPUS),
-	A_MS_ACM("A_MS/ACM", CodecType.ADPCM_IMA_WAV),
+	A_MS_ACM("A_MS/ACM", CodecType.UNKNOWN_AUDIO),
 //	S_TEXT_UTF8("S_TEXT/UTF8"), // subtitle
 /*	D_WEBVTT_SUBTITLES("D_WEBVTT/SUBTITLES"), // webVtt用
 	D_WEBVTT_CAPTIONS("D_WEBVTT/CAPTIONS"),

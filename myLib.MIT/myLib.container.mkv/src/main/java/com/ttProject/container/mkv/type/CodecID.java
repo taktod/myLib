@@ -17,6 +17,7 @@ import com.ttProject.unit.extra.EbmlValue;
  * @author taktod
  */
 public class CodecID extends MkvStringTag {
+	private CodecType extraCodecType = null;
 	/**
 	 * コンストラクタ
 	 * @param size
@@ -48,7 +49,10 @@ public class CodecID extends MkvStringTag {
 	 * @throws Exception
 	 */
 	public CodecType getCodecType() throws Exception {
-		return getMkvCodecType().getCodecType();
+		if(extraCodecType == null) {
+			return getMkvCodecType().getCodecType();
+		}
+		return extraCodecType;
 	}
 	/**
 	 * CodecIDを設定する
@@ -64,6 +68,14 @@ public class CodecID extends MkvStringTag {
 	 * @throws Exception
 	 */
 	public void setCodecType(CodecType codecType) throws Exception {
-		setValue(MkvCodecType.getCodecType(codecType).toString());
+		switch(codecType) {
+		case ADPCM_IMA_WAV:
+			setValue(MkvCodecType.A_MS_ACM.toString());
+			extraCodecType = codecType;
+			break;
+		default:
+			setValue(MkvCodecType.getCodecType(codecType).toString());
+			break;
+		}
 	}
 }
