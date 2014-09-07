@@ -214,6 +214,20 @@ public class SetupForContainerTest extends SetupBase {
 			throw new Exception("コンテナが開けませんでした。");
 		}
 		processConvert(container, Encoder.mjpeg(container), Encoder.adpcm_ima_wav(container));
+		logger.info("mkv準備 (theora/vorbis)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.mkv", "test.theoravorbis.mkv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした。");
+		}
+		processConvert(container, Encoder.theora(container), Encoder.vorbis(container));
+		logger.info("mkv準備 (theora/speex)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.mkv", "test.theoraspeex.mkv"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした。");
+		}
+		processConvert(container, Encoder.theora(container), Encoder.speex(container));
 	}
 	@Test
 	public void mp3() throws Exception {
