@@ -34,8 +34,6 @@ public class FrameToFlvTagConverter {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(FrameToFlvTagConverter.class);
-	// msh用のデータ変更があったら応答しておきたいところ。
-//	private DecoderSpecificInfo  dsi = null;
 	private ByteBuffer aacPrivateData = null;
 	private SequenceParameterSet sps = null;
 	private PictureParameterSet  pps = null;
@@ -75,13 +73,6 @@ public class FrameToFlvTagConverter {
 				audioTag.setAacMediaSequenceHeader(aacFrame, aacPrivateData.duplicate());
 				result.add(audioTag);
 			}
-/*			DecoderSpecificInfo dsi = aacFrame.getDecoderSpecificInfo();
-			if(this.dsi == null || this.dsi.getData().compareTo(dsi.getData()) != 0) {
-				this.dsi = dsi;
-				AudioTag audioTag = new AudioTag();
-				audioTag.setAacMediaSequenceHeader(aacFrame, dsi);
-				result.add(audioTag);
-			}*/
 		}
 		// audioTagをつくっておく
 		AudioTag audioTag = new AudioTag();

@@ -159,8 +159,6 @@ public class AudioTag extends FlvTag {
 					if(frameAnalyzer == null || !(frameAnalyzer instanceof AacDsiFrameAnalyzer)) {
 						throw new Exception("frameAnalyzerがaac(dsi)対応ではないみたいです。");
 					}
-//					DecoderSpecificInfo dsi = new DecoderSpecificInfo();
-//					dsi.minimumLoad(new ByteReadChannel(frameBuffer));
 					((AacDsiFrameSelector)frameAnalyzer.getSelector()).setDecoderSpecificInfo(frameBuffer);
 				}
 				break;
