@@ -49,6 +49,7 @@ public class WriteTest {
 //			writeLicense(f);
 		}
 	}
+	@SuppressWarnings("unused")
 	private void writeLicense(File f) {
 		// ファイルを確認して、先頭がライセンスでなければライセンス条文を挿入する必要あり。
 		String license = "/*\n" + 
