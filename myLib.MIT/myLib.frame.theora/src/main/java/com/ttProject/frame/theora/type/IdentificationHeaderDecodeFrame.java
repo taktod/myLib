@@ -83,6 +83,8 @@ public class IdentificationHeaderDecodeFrame extends TheoraFrame {
 				Frn, Frd, ParN, ParD,
 				Cs, Nombr, Qual, KfgShift, Pf, res);
 		logger.info(FmbW.get() * 16 + "x" + FmbH.get() * 16);
+		setWidth(FmbW.get() * 16);
+		setHeight(FmbH.get() * 16);
 		super.update();
 	}
 	@Override

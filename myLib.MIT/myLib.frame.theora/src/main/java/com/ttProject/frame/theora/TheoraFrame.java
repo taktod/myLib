@@ -6,10 +6,18 @@
  */
 package com.ttProject.frame.theora;
 
-import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.CodecType;
+import com.ttProject.frame.VideoFrame;
+import com.ttProject.frame.theora.type.IdentificationHeaderDecodeFrame;
 
-public abstract class TheoraFrame extends AudioFrame {
+public abstract class TheoraFrame extends VideoFrame {
+	/** データ参照用のidentificationHeaderDecodeFrame */
+	private IdentificationHeaderDecodeFrame identificationHeaderDecodeFrame = null;
+	public void setIdentificationHeaderDecodeFrame(IdentificationHeaderDecodeFrame frame) {
+		this.identificationHeaderDecodeFrame = frame;
+		super.setWidth(frame.getWidth());
+		super.setHeight(frame.getHeight());
+	}
 	/**
 	 * {@inheritDoc}
 	 */
