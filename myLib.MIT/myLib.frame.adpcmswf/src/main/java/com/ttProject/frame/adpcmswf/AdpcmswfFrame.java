@@ -9,6 +9,9 @@ package com.ttProject.frame.adpcmswf;
 import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.CodecType;
 import com.ttProject.frame.adpcmswf.type.Frame;
+import com.ttProject.nio.channels.ByteReadChannel;
+import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.util.HexUtil;
 
 /**
  * adpcmswfの動作ですが、適当なデータがなかったので、いろんなフォーマットをつくってテストしてみました。
@@ -100,7 +103,14 @@ public abstract class AdpcmswfFrame extends AudioFrame {
 		default:
 			break;
 		}
-		return null;
+		IReadChannel channel = new ByteReadChannel(HexUtil.makeBuffer(bufferString));
+		Frame frame = new Frame();
+		frame.minimumLoad(channel);
+		frame.load(channel);
+		frame.setChannel(channels);
+		frame.setSampleRate(sampleRate);
+		frame.setBit(16);
+		return frame;
 	}
 	/**
 	 * {@inheritDoc}
