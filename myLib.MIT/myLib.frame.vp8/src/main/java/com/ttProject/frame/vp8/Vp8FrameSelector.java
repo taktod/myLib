@@ -20,6 +20,7 @@ import com.ttProject.unit.extra.bit.Bit3;
 
 public class Vp8FrameSelector extends VideoSelector {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Vp8FrameSelector.class);
 	/** 参照用のkeyFrameデータ */
 	private KeyFrame keyFrame = null;
@@ -31,7 +32,6 @@ public class Vp8FrameSelector extends VideoSelector {
 		if(channel.position() == channel.size()) {
 			return null;
 		}
-		logger.info("frameを解析します。");
 		// 先頭の3byteからframeType version showFrame, firstPartSizeを取り出す
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
