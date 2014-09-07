@@ -57,6 +57,13 @@ public abstract class Vp9Frame extends VideoFrame {
 		);
 	}
 	/**
+	 * invisibleであるか判定
+	 * @return
+	 */
+	public boolean isInvisible() {
+		return invisibleFlag.get() == 0;
+	}
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override

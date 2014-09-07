@@ -21,7 +21,6 @@ import com.ttProject.unit.extra.bit.Bit3;
 /**
  * Vp8のフレームのベース
  * @author taktod
- *
  */
 public abstract class Vp8Frame extends VideoFrame {
 	/** ロガー */
@@ -66,6 +65,13 @@ public abstract class Vp8Frame extends VideoFrame {
 		BitConnector connector = new BitConnector();
 		connector.setLittleEndianFlg(true);
 		return connector.connect(frameType, version, showFrame, firstPartSize);
+	}
+	/**
+	 * 非表示フレームであるかどうか？
+	 * @return
+	 */
+	public boolean isInvisible() {
+		return showFrame.get() != 1;
 	}
 	/**
 	 * {@inheritDoc}
