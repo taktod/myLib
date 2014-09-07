@@ -21,7 +21,6 @@ import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
 import com.ttProject.frame.aac.AacDsiFrameSelector;
 import com.ttProject.frame.aac.AacFrame;
-import com.ttProject.frame.aac.DecoderSpecificInfo;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -160,9 +159,9 @@ public class AudioTag extends FlvTag {
 					if(frameAnalyzer == null || !(frameAnalyzer instanceof AacDsiFrameAnalyzer)) {
 						throw new Exception("frameAnalyzerがaac(dsi)対応ではないみたいです。");
 					}
-					DecoderSpecificInfo dsi = new DecoderSpecificInfo();
-					dsi.minimumLoad(new ByteReadChannel(frameBuffer));
-					((AacDsiFrameSelector)frameAnalyzer.getSelector()).setDecoderSpecificInfo(dsi);
+//					DecoderSpecificInfo dsi = new DecoderSpecificInfo();
+//					dsi.minimumLoad(new ByteReadChannel(frameBuffer));
+					((AacDsiFrameSelector)frameAnalyzer.getSelector()).setDecoderSpecificInfo(frameBuffer);
 				}
 				break;
 			default:

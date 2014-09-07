@@ -6,10 +6,13 @@
  */
 package com.ttProject.frame.aac;
 
+import java.nio.ByteBuffer;
+
 import org.apache.log4j.Logger;
 
 import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.aac.type.Frame;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IUnit;
 
@@ -29,6 +32,14 @@ public class AacDsiFrameSelector extends AudioSelector {
 	 */
 	public void setDecoderSpecificInfo(DecoderSpecificInfo dsi) {
 		this.dsi = dsi;
+	}
+	/**
+	 * dsiのデータsetter
+	 * @param data
+	 */
+	public void setDecoderSpecificInfo(ByteBuffer data) throws Exception {
+		DecoderSpecificInfo dsi = new DecoderSpecificInfo();
+		dsi.minimumLoad(new ByteReadChannel(data));
 	}
 	/**
 	 * {@inheritDoc}
