@@ -48,5 +48,16 @@ public class BufferTest {
 		buffer2.flip();
 		logger.info(buffer1 == buffer2);
 		logger.info(buffer1.equals(buffer2));
+		buffer1 = ByteBuffer.allocate(4);
+		buffer2 = ByteBuffer.allocate(4);
+		buffer1.put((byte)0x00);
+		buffer1.put((byte)0x00);
+		buffer1.put((byte)0x00);
+		buffer1.put((byte)0x02);
+		buffer2.putInt(2);
+		buffer1.flip();
+		buffer2.flip();
+		logger.info(buffer1 == buffer2);
+		logger.info(buffer1.equals(buffer2));
 	}
 }
