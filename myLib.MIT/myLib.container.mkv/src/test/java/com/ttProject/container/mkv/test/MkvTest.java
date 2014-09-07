@@ -40,7 +40,7 @@ public class MkvTest {
 			 * test1 msmpeg4v2
 			 */
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("test.mjpegadpcmimawav.mkv")
+					Thread.currentThread().getContextClassLoader().getResource("test.theoravorbis.mkv")
 //					Thread.currentThread().getContextClassLoader().getResource("test.mkv")
 //					Thread.currentThread().getContextClassLoader().getResource("test1.mkv") // msmpeg4v2なのでframeがいまのところない
 //					Thread.currentThread().getContextClassLoader().getResource("test2.mkv")
@@ -58,9 +58,9 @@ public class MkvTest {
 				if(container instanceof BlockGroup) {
 					for(MkvTag tag : ((BlockGroup)container).getChildList()) {
 						if(tag instanceof MkvBlockTag) {
-//							MkvBlockTag blockTag = (MkvBlockTag)tag;
+							MkvBlockTag blockTag = (MkvBlockTag)tag;
 //							logger.info(blockTag);
-//							logger.info(blockTag.getFrame());
+							logger.info(blockTag.getFrame());
 						}
 					}
 				}
@@ -69,12 +69,12 @@ public class MkvTest {
 //					logger.info(blockTag);
 //					logger.info(blockTag.getFrame());
 					if(blockTag.getFrame() instanceof VideoFrame) {
-//						VideoFrame vFrame = (VideoFrame)blockTag.getFrame();
-//						logger.info(vFrame.getWidth() + "x" + vFrame.getHeight());
+						VideoFrame vFrame = (VideoFrame)blockTag.getFrame();
+						logger.info(vFrame.getCodecType() + " " + vFrame.getWidth() + "x" + vFrame.getHeight());
 					}
 					else if(blockTag.getFrame() instanceof AudioFrame) {
-//						AudioFrame aFrame = (AudioFrame)blockTag.getFrame();
-//						logger.info(aFrame.getSampleRate() + ":" + aFrame.getChannel());
+						AudioFrame aFrame = (AudioFrame)blockTag.getFrame();
+						logger.info(aFrame.getCodecType() + " " + aFrame.getSampleRate() + ":" + aFrame.getChannel());
 					}
 				}
 				lastPosition = source.position();

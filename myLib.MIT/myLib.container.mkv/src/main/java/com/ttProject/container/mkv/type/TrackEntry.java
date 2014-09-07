@@ -37,6 +37,7 @@ import com.ttProject.frame.h265.H265DataNalAnalyzer;
 import com.ttProject.frame.h265.H265FrameSelector;
 import com.ttProject.frame.mjpeg.MjpegFrameAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
+import com.ttProject.frame.theora.TheoraFrameAnalyzer;
 import com.ttProject.frame.vorbis.VorbisFrame;
 import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
 import com.ttProject.frame.vp8.Vp8FrameAnalyzer;
@@ -44,6 +45,7 @@ import com.ttProject.frame.vp9.Vp9FrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.EbmlValue;
+import com.ttProject.util.HexUtil;
 
 /**
  * TrackEntryタグ
@@ -143,6 +145,12 @@ public class TrackEntry extends MkvMasterTag {
 			logger.info("vorbisは動作がだめだと思います。");
 			analyzer = new VorbisFrameAnalyzer();
 			((VorbisFrameAnalyzer)analyzer).setPrivateData(new ByteReadChannel(codecPrivate.getMkvData()));
+			break;
+		case V_THEORA:
+			logger.info("theoraでした。");
+			logger.info(HexUtil.toHex(codecPrivate.getMkvData(), true));
+			analyzer = new TheoraFrameAnalyzer();
+			((TheoraFrameAnalyzer)analyzer).setPrivateData(new ByteReadChannel(codecPrivate.getMkvData()));
 			break;
 		case A_MS_ACM:
 			Fmt fmt = new Fmt();

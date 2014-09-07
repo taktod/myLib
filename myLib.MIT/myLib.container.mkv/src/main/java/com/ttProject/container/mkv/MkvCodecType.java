@@ -16,7 +16,7 @@ public enum MkvCodecType {
 	V_MJPEG("V_MJPEG", CodecType.MJPEG),
 
 //	V_MS("V_MS/VFW/FOURCC"), // microsoft mpeg4 v2っぽい
-//	V_THEORA("V_THEORA"), // theora
+	V_THEORA("V_THEORA", CodecType.THEORA), // theora
 	A_AAC("A_AAC", CodecType.AAC),
 	A_MPEG_L3("A_MPEG/L3", CodecType.MP3),
 	A_VORBIS("A_VORBIS", CodecType.VORBIS),
@@ -98,9 +98,9 @@ public enum MkvCodecType {
 /*		else if(data.startsWith("V_MS")) {
 			return V_MS;
 		}*/
-/*		else if(data.startsWith("V_THEORA")) {
+		else if(data.startsWith("V_THEORA")) {
 			return V_THEORA;
-		}*/
+		}
 /*		else if(data.startsWith("S_TEXT")) {
 			return S_TEXT;
 		}*/

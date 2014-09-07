@@ -72,9 +72,14 @@
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
-    	<groupId>com.ttProject</groupId>
-    	<artifactId>myLib.container.riff</artifactId>
-    	<version>0.0.2-SNAPSHOT</version>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.frame.theora</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.container.riff</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
