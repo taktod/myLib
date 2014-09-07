@@ -490,7 +490,7 @@ public class AudioTag extends FlvTag {
 	 * aacのmediaSequenceHeaderとして初期化します
 	 * @param dsi
 	 */
-	public void setAacMediaSequenceHeader(AacFrame frame, DecoderSpecificInfo dsi) throws Exception {
+	public void setAacMediaSequenceHeader(AacFrame frame, ByteBuffer data) throws Exception {
 		codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.AAC));
 		switch(frame.getChannel()) {
 		case 1:
@@ -530,7 +530,7 @@ public class AudioTag extends FlvTag {
 			throw new Exception("frameRateが適合しないものでした。");
 		}
 		sequenceHeaderFlag = new Bit8(0);
-		frameBuffer = dsi.getData();
+		frameBuffer = data;
 		// サイズの計算が必要
 		setPts((long)(1.0D * frame.getPts() / frame.getTimebase() * 1000));
 		setTimebase(1000);

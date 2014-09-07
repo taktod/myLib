@@ -6,6 +6,7 @@
  */
 package com.ttProject.container.flv;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,6 @@ import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.aac.AacFrame;
-import com.ttProject.frame.aac.DecoderSpecificInfo;
 import com.ttProject.frame.aac.type.Frame;
 import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.frame.h264.type.PictureParameterSet;
@@ -35,7 +35,8 @@ public class FrameToFlvTagConverter {
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(FrameToFlvTagConverter.class);
 	// msh用のデータ変更があったら応答しておきたいところ。
-	private DecoderSpecificInfo  dsi = null;
+//	private DecoderSpecificInfo  dsi = null;
+	private ByteBuffer aacPrivateData = null;
 	private SequenceParameterSet sps = null;
 	private PictureParameterSet  pps = null;
 	/** 前回の音声タグデータ */
@@ -67,13 +68,20 @@ public class FrameToFlvTagConverter {
 		// aacの場合はmshチェックをしておく
 		if(frame instanceof AacFrame) {
 			Frame aacFrame = (Frame) frame;
-			DecoderSpecificInfo dsi = aacFrame.getDecoderSpecificInfo();
+			ByteBuffer privateData = aacFrame.getPrivateData();
+			if(privateData.equals(aacPrivateData)) {
+				aacPrivateData = privateData;
+				AudioTag audioTag = new AudioTag();
+				audioTag.setAacMediaSequenceHeader(aacFrame, aacPrivateData.duplicate());
+				result.add(audioTag);
+			}
+/*			DecoderSpecificInfo dsi = aacFrame.getDecoderSpecificInfo();
 			if(this.dsi == null || this.dsi.getData().compareTo(dsi.getData()) != 0) {
 				this.dsi = dsi;
 				AudioTag audioTag = new AudioTag();
 				audioTag.setAacMediaSequenceHeader(aacFrame, dsi);
 				result.add(audioTag);
-			}
+			}*/
 		}
 		// audioTagをつくっておく
 		AudioTag audioTag = new AudioTag();
