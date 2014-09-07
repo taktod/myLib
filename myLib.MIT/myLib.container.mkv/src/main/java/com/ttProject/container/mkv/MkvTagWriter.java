@@ -474,7 +474,7 @@ public class MkvTagWriter implements IWriter {
 	/**
 	 * header部を完成させる
 	 */
-	private void makeHeader() throws Exception {
+	protected void makeHeader() throws Exception {
 		// 強制的にsizeを更新しておく
 		// seekHeadのサイズは0x80くらいとする
 		int originalSeekHeadSize = 0x60; // seekHeadのサイズが大きくなった分、voidのサイズを削らないとだめ
