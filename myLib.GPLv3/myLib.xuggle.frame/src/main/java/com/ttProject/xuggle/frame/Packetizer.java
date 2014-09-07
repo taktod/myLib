@@ -159,7 +159,7 @@ public class Packetizer {
 				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_VORBIS);
 				VorbisFrame vorbisFrame = (VorbisFrame)frame;
 				// このタイミングでextraDataをいれないとだめっぽい
-				ByteBuffer buffer = vorbisFrame.getCodecPrivate();
+				ByteBuffer buffer = vorbisFrame.getPrivateData();
 				int size = buffer.remaining();
 				IBuffer extraData = IBuffer.make(decoder, buffer.array(), 0, size);
 				decoder.setExtraData(extraData, 0, size, true);

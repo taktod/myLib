@@ -286,7 +286,7 @@ public class TrackEntry extends MkvMasterTag {
 				{
 					VorbisFrame vorbisFrame = (VorbisFrame)aFrame;
 					CodecPrivate codecPrivate = new CodecPrivate();
-					codecPrivate.setValue(vorbisFrame.getCodecPrivate());
+					codecPrivate.setValue(vorbisFrame.getPrivateData());
 					addChild(codecPrivate);
 				}
 				break;

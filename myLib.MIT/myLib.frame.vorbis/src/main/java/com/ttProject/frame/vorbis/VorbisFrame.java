@@ -45,14 +45,6 @@ public abstract class VorbisFrame extends AudioFrame {
 		return identificationHeaderFrame;
 	}
 	/**
-	 * codec用のprivateデータを応答します。
-	 * identification + comment + setupの組み合わせのデータとなります。
-	 * @return
-	 */
-	public ByteBuffer getCodecPrivate() throws Exception {
-		return getPrivateData();
-	}
-	/**
 	 * {@inheritDoc}
 	 */
 	@Override
