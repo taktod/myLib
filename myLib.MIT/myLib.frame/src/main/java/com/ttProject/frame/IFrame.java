@@ -39,5 +39,5 @@ public interface IFrame extends IUnit {
 	 * (h264のconfigDataやaacのdecoderSpecificInfo、vorbis、opus、speexのcodecPrivateなど)
 	 * @return
 	 */
-	public ByteBuffer getPrivateData();
+	public ByteBuffer getPrivateData() throws Exception;
 }

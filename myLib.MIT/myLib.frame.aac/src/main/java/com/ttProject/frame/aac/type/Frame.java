@@ -157,4 +157,8 @@ public class Frame extends AacFrame {
 		dsi.setChannelConfiguration(channelConfiguration.get());
 		return dsi;
 	}
+	@Override
+	public ByteBuffer getPrivateData() throws Exception {
+		return getDecoderSpecificInfo().getData();
+	}
 }

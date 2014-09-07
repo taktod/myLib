@@ -49,7 +49,7 @@ public abstract class Frame extends Unit implements IFrame {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public ByteBuffer getPrivateData() {
+	public ByteBuffer getPrivateData() throws Exception {
 		ByteBuffer buffer = ByteBuffer.allocate(0);
 		buffer.flip();
 		return buffer;
