@@ -45,7 +45,6 @@ import com.ttProject.frame.vp9.Vp9FrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.EbmlValue;
-import com.ttProject.util.HexUtil;
 
 /**
  * TrackEntryタグ
@@ -142,15 +141,8 @@ public class TrackEntry extends MkvMasterTag {
 			analyzer = new Mp3FrameAnalyzer();
 			break;
 		case A_VORBIS:
-			logger.info("vorbisは動作がだめだと思います。");
 			analyzer = new VorbisFrameAnalyzer();
 			((VorbisFrameAnalyzer)analyzer).setPrivateData(new ByteReadChannel(codecPrivate.getMkvData()));
-			break;
-		case V_THEORA:
-			logger.info("theoraでした。");
-			logger.info(HexUtil.toHex(codecPrivate.getMkvData(), true));
-			analyzer = new TheoraFrameAnalyzer();
-			((TheoraFrameAnalyzer)analyzer).setPrivateData(new ByteReadChannel(codecPrivate.getMkvData()));
 			break;
 		case A_MS_ACM:
 			Fmt fmt = new Fmt();
@@ -190,11 +182,15 @@ public class TrackEntry extends MkvMasterTag {
 			h265ConfigData.setSelector((H265FrameSelector)((H265DataNalAnalyzer)analyzer).getSelector());
 			h265ConfigData.analyze(new ByteReadChannel(codecPrivate.getMkvData()));
 			break;
-		case V_VP8:
-			analyzer = new Vp8FrameAnalyzer();
+		case V_THEORA:
+			analyzer = new TheoraFrameAnalyzer();
+			((TheoraFrameAnalyzer)analyzer).setPrivateData(new ByteReadChannel(codecPrivate.getMkvData()));
 			break;
 		case V_MJPEG:
 			analyzer = new MjpegFrameAnalyzer();
+			break;
+		case V_VP8:
+			analyzer = new Vp8FrameAnalyzer();
 			break;
 		case V_VP9:
 			logger.info("vp9の動作は作成中です。");

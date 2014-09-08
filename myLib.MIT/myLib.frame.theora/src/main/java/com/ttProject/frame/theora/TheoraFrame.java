@@ -6,13 +6,23 @@
  */
 package com.ttProject.frame.theora;
 
+import java.nio.ByteBuffer;
+
 import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.theora.type.IdentificationHeaderDecodeFrame;
 
+/**
+ * theoraのデータのベース
+ * @author taktod
+ */
 public abstract class TheoraFrame extends VideoFrame {
 	/** データ参照用のidentificationHeaderDecodeFrame */
 	private IdentificationHeaderDecodeFrame identificationHeaderDecodeFrame = null;
+	/**
+	 * ヘッダ情報をつけておきます。
+	 * @param frame
+	 */
 	public void setIdentificationHeaderDecodeFrame(IdentificationHeaderDecodeFrame frame) {
 		this.identificationHeaderDecodeFrame = frame;
 		super.setWidth(frame.getWidth());
@@ -24,5 +34,15 @@ public abstract class TheoraFrame extends VideoFrame {
 	@Override
 	public CodecType getCodecType() {
 		return CodecType.THEORA;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public ByteBuffer getPrivateData() throws Exception {
+		if(identificationHeaderDecodeFrame != null) {
+			return identificationHeaderDecodeFrame.getPrivateData();
+		}
+		return super.getPrivateData();
 	}
 }

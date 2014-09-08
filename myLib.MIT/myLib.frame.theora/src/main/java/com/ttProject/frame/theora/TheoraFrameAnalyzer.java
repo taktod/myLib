@@ -8,8 +8,8 @@ package com.ttProject.frame.theora;
 
 import org.apache.log4j.Logger;
 
-import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.CodecType;
+import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
@@ -20,7 +20,7 @@ import com.ttProject.util.BufferUtil;
  * theoraのframeを解析します。
  * @author taktod
  */
-public class TheoraFrameAnalyzer extends AudioAnalyzer {
+public class TheoraFrameAnalyzer extends VideoAnalyzer {
 	/** ロガー */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(TheoraFrameAnalyzer.class);
