@@ -19,53 +19,10 @@
     <module>myLib.MIT/myLib.productHelper</module>
     <module>myLib.MIT/myLib.channels</module>
     <module>myLib.MIT/myLib.util</module>
-    <module>myLib.MIT/myLib.packet</module>
-    <module>myLib.MIT/myLib.packet.flv</module>
-    <module>myLib.MIT/myLib.packet.mpegts</module>
-    <module>myLib.MIT/myLib.packet.mp3</module>
-    <module>myLib.MIT/myLib.segment</module>
     <module>myLib.LGPLv3/myLib.flazr</module>
-    <module>myLib.MIT/myLib.convert</module>
-    <module>myLib.MIT/myLib.convert.ffmpeg</module>
-    <module>myLib.MIT/myLib.convert.ffmpeg2</module>
-    <module>myLib.MIT/myLib.convertprocess</module>
-    <module>myLib.GPLv3/myLib.convert.xuggle</module>
     <module>myLib.MIT/myLib.jmx</module>
     <module>myLib.MIT/myLib.log4j</module>
-    <module>myLib.MIT/myLib.media</module>
-    <module>myLib.MIT/myLib.media.mp3</module>
-    <module>myLib.MIT/myLib.media.flv</module>
-    <module>myLib.MIT/myLib.media.mp4</module>
-    <module>myLib.MIT/myLib.media.mkv</module>
-    <module>myLib.MIT/myLib.media.mpegts</module>
-    <module>myLib.MIT/myLib.media.aac</module>
-    <module>myLib.MIT/myLib.media.h264</module>
-    <module>myLib.MIT/myLib.media.extra</module>
-    <module>myLib.MIT/myLib.media.raw</module>
     <module>myLib.MIT/myLib.swing</module>
-    <module>myLib.GPLv3/myLib.xuggle.raw</module>
-    <module>myLib.GPLv3/myLib.xuggle</module>
-    <module>myLib.GPLv3/myLib.xuggle.flv</module>
-    <module>myLib.MIT/myLib.chunk</module>
-    <module>myLib.MIT/myLib.chunk.mpegts</module>
-    <module>myLib.MIT/myLib.chunk.mpegts.h264</module>
-    <module>myLib.MIT/myLib.chunk.mp3</module>
-    <module>myLib.MIT/myLib.chunk.aac</module>
-    <module>myLib.MIT/myLib.chunk.mpegts.flv</module>
-    <module>myLib.MIT/myLib.transcode</module>
-    <module>myLib.MIT/myLib.transcode.ffmpeg</module>
-    <module>myLib.MIT/myLib.transcode.ffmpeg.flv</module>
-    <module>myLib.GPLv3/myLib.transcode.xuggle</module>
-    <module>myLib.GPLv3/myLib.transcode.xuggle.flv</module>
-    <module>myLib.GPLv3/myLib.transcode.xuggle.h264</module>
-    <module>myLib.GPLv3/myLib.transcode.xuggle.aac</module>
-    <module>myLib.GPLv3/myLib.transcode.xuggle.mp3</module>
-    <module>myLib.GPLv3/myLib.media.xuggle</module>
-    <module>myLib.MIT/myLib.media.flv1</module>
-    <module>myLib.MIT/myLib.media.vp6</module>
-    <module>myLib.MIT/myLib.media.nellymoser</module>
-    <module>myLib.MIT/myLib.media.adpcmswf</module>
-    <module>myLib.MIT/myLib.media.speex</module>
     <module>myLib.MIT/myLib.unit</module>
     <module>myLib.MIT/myLib.frame</module>
     <module>myLib.MIT/myLib.frame.aac</module>
@@ -99,9 +56,7 @@
     <module>myLib.MIT/myLib.container.riff</module>
     <module>myLib.MIT/myLib.container.wav</module>
     <module>myLib.MIT/myLib.container.test</module>
-    <module>myLib.GPLv3/myLib.xuggle.frame</module>
     <module>myLib.GPLv3/myLib.xuggle.frameutil</module>
-    <module>myLib.GPLv3/myLib.xuggle.test</module>
     <module>myLib.MIT/myLib.pool.redis</module>
     <module>myLib.MIT/myLib.pipe</module>
     <module>myLib.MIT/myLib.license</module>
