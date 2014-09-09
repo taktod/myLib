@@ -86,6 +86,19 @@ public class FlvTagWriter implements IWriter {
 	@Override
 	public void prepareHeader(CodecType... codecs) throws Exception {
 		logger.info("headerを準備します。");
+		if(codecs.length == 0) {
+			return;
+		}
+		FlvHeaderTag headerTag = new FlvHeaderTag();
+		for(CodecType codec : codecs) {
+			if(codec.isAudio()) {
+				headerTag.setAudioFlag(true);
+			}
+			else if(codec.isVideo()) {
+				headerTag.setVideoFlag(true);
+			}
+		}
+		addContainer(headerTag);
 	}
 	@Override
 	public void prepareTailer() throws Exception {
