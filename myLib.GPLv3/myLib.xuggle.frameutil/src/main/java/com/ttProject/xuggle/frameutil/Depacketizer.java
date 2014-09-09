@@ -155,6 +155,7 @@ public class Depacketizer {
 		while((frame = analyzer.analyze(channel)) != null) {
 			Frame f = (Frame) frame;
 			f.setPts(packet.getPts());
+			f.setTimebase((long)(1 / packet.getTimeBase().getDouble()));
 			result.addFrame((IAudioFrame)frame);
 		}
 		frame = analyzer.getRemainFrame();
