@@ -229,8 +229,33 @@ public class ConfigData {
 		ByteBuffer data = ByteBuffer.allocate(11 + spsBuffer.remaining() + ppsBuffer.remaining());
 		data.put((byte)1);
 		spsBuffer.position(1);
-		data.put(spsBuffer.get());
-		data.put(spsBuffer.get());
+		int profile = spsBuffer.get() & 0xFF;
+		byte compatibility = spsBuffer.get();
+		data.put((byte)profile);
+		switch(profile) {
+		case 0x42:
+			if(compatibility != (byte)0xE0) {
+				compatibility = 0x00;
+			}
+			break;
+		case 0x58:
+			if(compatibility != (byte)0xA0) {
+				compatibility = 0x00;
+			}
+			break;
+		case 0x4D:
+			if(compatibility != (byte)0x40) {
+				compatibility = 0x00;
+			}
+			break;
+		case 0x64:
+			compatibility = 0x00;
+			break;
+		default:
+			compatibility = 0x00;
+			break;
+		}
+		data.put(compatibility);
 		data.put(spsBuffer.get());
 		spsBuffer.position(0);
 		data.put((byte)0xFF);
