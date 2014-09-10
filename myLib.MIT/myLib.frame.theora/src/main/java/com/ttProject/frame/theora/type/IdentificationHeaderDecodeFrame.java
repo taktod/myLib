@@ -62,6 +62,8 @@ public class IdentificationHeaderDecodeFrame extends TheoraFrame {
 
 	private CommentHeaderFrame commentHeaderFrame = null;
 	private SetupHeaderFrame setupHeaderFrame = null;
+	
+	private ByteBuffer privateBuffer = null;
 	/**
 	 * コンストラクタ
 	 * @param buffer
@@ -146,18 +148,21 @@ public class IdentificationHeaderDecodeFrame extends TheoraFrame {
 	 */
 	@Override
 	public ByteBuffer getPrivateData() throws Exception {
-		ByteBuffer ihdFrame = getData();
-		ByteBuffer chFrame = commentHeaderFrame.getData();
-		ByteBuffer shFrame = setupHeaderFrame.getData();
-		ByteBuffer header = ByteBuffer.allocate(3);
-		header.put((byte)0x02);
-		header.put((byte)ihdFrame.remaining());
-		header.put((byte)chFrame.remaining());
-		header.flip();
+		if(privateBuffer == null) {
+			ByteBuffer ihdFrame = getData();
+			ByteBuffer chFrame = commentHeaderFrame.getData();
+			ByteBuffer shFrame = setupHeaderFrame.getData();
+			ByteBuffer header = ByteBuffer.allocate(3);
+			header.put((byte)0x02);
+			header.put((byte)ihdFrame.remaining());
+			header.put((byte)chFrame.remaining());
+			header.flip();
 
-		return BufferUtil.connect(header,
-				ihdFrame,
-				chFrame,
-				shFrame);
+			privateBuffer = BufferUtil.connect(header,
+					ihdFrame,
+					chFrame,
+					shFrame);
+		}
+		return privateBuffer;
 	}
 }

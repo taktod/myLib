@@ -154,7 +154,7 @@ public class IdentificationHeaderFrame extends VorbisFrame {
 					commentData,
 					setupData);
 		}
-		return privateBuffer.duplicate();
+		return privateBuffer;
 	}
 	@Override
 	public ByteBuffer getPrivateData() throws Exception {
