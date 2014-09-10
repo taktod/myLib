@@ -34,4 +34,10 @@ public interface IAnalyzer {
 	 * @return
 	 */
 	public CodecType getCodecType();
+	/**
+	 * 該当コーデック用のprivateDataを設定する
+	 * @param channel
+	 * @throws Exception
+	 */
+	public void setPrivateData(IReadChannel channel) throws Exception;
 }

@@ -45,8 +45,17 @@ public abstract class AudioAnalyzer implements IAnalyzer {
 		}
 		return frame;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public IFrame getRemainFrame() throws Exception {
 		return null;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setPrivateData(IReadChannel channel) throws Exception {
 	}
 }
