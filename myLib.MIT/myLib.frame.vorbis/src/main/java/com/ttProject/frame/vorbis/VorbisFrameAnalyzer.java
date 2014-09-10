@@ -26,9 +26,9 @@ public class VorbisFrameAnalyzer extends AudioAnalyzer {
 		super(new VorbisFrameSelector());
 	}
 	/**
-	 * vorbisのprivateデータを設定する
-	 * @param channel
+	 * {@inheritDoc}
 	 */
+	@Override
 	public void setPrivateData(IReadChannel channel) throws Exception {
 		// ここでcodecPrivateのデータを先行して解析する必要あり。
 		// 02 1E 56
