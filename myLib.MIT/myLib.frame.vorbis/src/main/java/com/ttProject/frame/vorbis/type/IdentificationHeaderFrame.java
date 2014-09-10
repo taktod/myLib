@@ -69,6 +69,8 @@ public class IdentificationHeaderFrame extends VorbisFrame {
 	
 	private CommentHeaderFrame commentHeaderFrame = null;
 	private SetupHeaderFrame   setupHeaderFrame   = null;
+	
+	private ByteBuffer privateBuffer = null;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -138,18 +140,25 @@ public class IdentificationHeaderFrame extends VorbisFrame {
 	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
-		// ここで応答するデータはidentificationHeaderFrame + commentHeaderFrame + setupHeaderFrameのデータの組み合わせとなります。
-		ByteBuffer identificationData = getData();
-		ByteBuffer commentData = commentHeaderFrame.getMinimumBuffer();
-		ByteBuffer setupData = setupHeaderFrame.getPackBuffer();
-		BitConnector connector = new BitConnector();
-		return BufferUtil.connect(
-				connector.connect(new Bit8(2),
-						new Bit8(identificationData.remaining()),
-						new Bit8(commentData.remaining())),
-				identificationData,
-				commentData,
-				setupData);
+		if(privateBuffer == null) {
+			// ここで応答するデータはidentificationHeaderFrame + commentHeaderFrame + setupHeaderFrameのデータの組み合わせとなります。
+			ByteBuffer identificationData = getData();
+			ByteBuffer commentData = commentHeaderFrame.getMinimumBuffer();
+			ByteBuffer setupData = setupHeaderFrame.getPackBuffer();
+			BitConnector connector = new BitConnector();
+			privateBuffer = BufferUtil.connect(
+					connector.connect(new Bit8(2),
+							new Bit8(identificationData.remaining()),
+							new Bit8(commentData.remaining())),
+					identificationData,
+					commentData,
+					setupData);
+		}
+		return privateBuffer.duplicate();
+	}
+	@Override
+	public ByteBuffer getPrivateData() throws Exception {
+		return getPackBuffer();
 	}
 	/**
 	 * CommentHeaderFrame設定

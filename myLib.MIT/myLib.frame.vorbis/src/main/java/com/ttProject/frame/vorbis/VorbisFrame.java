@@ -52,7 +52,7 @@ public abstract class VorbisFrame extends AudioFrame {
 		if(identificationHeaderFrame == null) {
 			return null;
 		}
-		return identificationHeaderFrame.getPackBuffer();
+		return identificationHeaderFrame.getPrivateData();
 	}
 	/**
 	 * {@inheritDoc}
