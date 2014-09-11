@@ -421,6 +421,9 @@ public class MkvTagWriter implements IWriter {
 			}
 			return;
 		}
+		if(frame == null) {
+			return;
+		}
 		if(!trackEntryMap.containsKey(trackId)) {
 			// trackEntryMap化していないトラック
 			TrackEntry findTrackEntry = null;
