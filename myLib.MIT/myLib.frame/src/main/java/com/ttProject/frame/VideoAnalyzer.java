@@ -14,13 +14,13 @@ import com.ttProject.nio.channels.IReadChannel;
  */
 public abstract class VideoAnalyzer implements IAnalyzer {
 	/** 映像解析のデータ選択オブジェクト */
-	private final VideoSelector selector;
+	private VideoSelector selector;
 	/**
 	 * コンストラクタ
 	 * @param selector
 	 */
 	public VideoAnalyzer(VideoSelector selector) {
-		this.selector = selector;
+		setSelector(selector);
 	}
 	/**
 	 * 映像解析セレクター参照
@@ -28,6 +28,13 @@ public abstract class VideoAnalyzer implements IAnalyzer {
 	 */
 	public VideoSelector getSelector() {
 		return selector;
+	}
+	/**
+	 * 映像セレクターを設定
+	 * @param selector
+	 */
+	public void setSelector(VideoSelector selector) {
+		this.selector = selector;
 	}
 	/**
 	 * {@inheritDoc}

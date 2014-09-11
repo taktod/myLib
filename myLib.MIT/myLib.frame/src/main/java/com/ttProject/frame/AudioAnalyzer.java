@@ -19,13 +19,13 @@ public abstract class AudioAnalyzer implements IAnalyzer {
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(AudioAnalyzer.class);
 	/** audioデータ選択オブジェクト */
-	private final AudioSelector selector;
+	private AudioSelector selector;
 	/**
 	 * コンストラクタ
 	 * @param selector
 	 */
 	public AudioAnalyzer(AudioSelector selector) {
-		this.selector = selector;
+		setSelector(selector);
 	}
 	/**
 	 * セレクター参照
@@ -33,6 +33,13 @@ public abstract class AudioAnalyzer implements IAnalyzer {
 	 */
 	public AudioSelector getSelector() {
 		return selector;
+	}
+	/**
+	 * {@inheritDoc}
+	 * @param selector
+	 */
+	protected void setSelector(AudioSelector selector) {
+		this.selector = selector;
 	}
 	/**
 	 * {@inheritDoc}
