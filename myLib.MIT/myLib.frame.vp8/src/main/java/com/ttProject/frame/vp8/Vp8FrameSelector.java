@@ -47,6 +47,9 @@ public class Vp8FrameSelector extends VideoSelector {
 			keyFrame = (KeyFrame)frame;
 			break;
 		case 1: // intraFrame
+			if(keyFrame == null) {
+				return null;
+			}
 			frame = new IntraFrame(frameType, version, showFrame, firstPartSize);
 			frame.setKeyFrame(keyFrame);
 			break;
