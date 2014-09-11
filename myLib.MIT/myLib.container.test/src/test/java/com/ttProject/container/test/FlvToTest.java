@@ -13,7 +13,6 @@ import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
 import com.ttProject.container.IWriter;
 import com.ttProject.container.adts.AdtsUnitWriter;
-import com.ttProject.container.flv.FlvHeaderTag;
 import com.ttProject.container.flv.FlvTagReader;
 import com.ttProject.container.flv.FlvTagWriter;
 import com.ttProject.container.flv.type.AudioTag;
@@ -27,6 +26,7 @@ import com.ttProject.container.mpegts.type.Pat;
 import com.ttProject.container.mpegts.type.Pmt;
 import com.ttProject.container.mpegts.type.Sdt;
 import com.ttProject.container.ogg.OggPageWriter;
+import com.ttProject.frame.CodecType;
 import com.ttProject.frame.speex.type.CommentFrame;
 import com.ttProject.frame.speex.type.HeaderFrame;
 import com.ttProject.nio.channels.FileReadChannel;
@@ -273,10 +273,7 @@ public class FlvToTest {
 	public void flv_mp3() throws Exception {
 		logger.info("flvに変換するテスト(mp3)");
 		FlvTagWriter writer = new FlvTagWriter("output_mp3.flv");
-		FlvHeaderTag flvHeader = new FlvHeaderTag();
-		flvHeader.setAudioFlag(true);
-		flvHeader.setVideoFlag(false);
-		writer.addContainer(flvHeader);
+		writer.prepareHeader(CodecType.MP3);
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("mp3.flv")
@@ -295,10 +292,7 @@ public class FlvToTest {
 	public void flv_aac() throws Exception {
 		logger.info("flvに変換するテスト(aac)");
 		FlvTagWriter writer = new FlvTagWriter("output_aac.flv");
-		FlvHeaderTag flvHeader = new FlvHeaderTag();
-		flvHeader.setAudioFlag(true);
-		flvHeader.setVideoFlag(false);
-		writer.addContainer(flvHeader);
+		writer.prepareHeader(CodecType.AAC);
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("aac.flv")
@@ -317,10 +311,7 @@ public class FlvToTest {
 	public void flv_flv1() throws Exception {
 		logger.info("flvに変換するテスト(flv1)");
 		FlvTagWriter writer = new FlvTagWriter("output_flv1.flv");
-		FlvHeaderTag flvHeader = new FlvHeaderTag();
-		flvHeader.setAudioFlag(false);
-		flvHeader.setVideoFlag(true);
-		writer.addContainer(flvHeader);
+		writer.prepareHeader(CodecType.FLV1);
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("flv1.flv")
@@ -339,10 +330,7 @@ public class FlvToTest {
 	public void flv_h264() throws Exception {
 		logger.info("flvに変換するテスト(h264)");
 		FlvTagWriter writer = new FlvTagWriter("output_h264.flv");
-		FlvHeaderTag flvHeader = new FlvHeaderTag();
-		flvHeader.setAudioFlag(false);
-		flvHeader.setVideoFlag(true);
-		writer.addContainer(flvHeader);
+		writer.prepareHeader(CodecType.H264);
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("h264.flv")
