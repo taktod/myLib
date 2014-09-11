@@ -289,6 +289,33 @@ public class SetupForContainerTest extends SetupBase {
 			throw new Exception("コンテナが開けませんでした");
 		}
 		processConvert(container, null, Encoder.speex(container));
+		logger.info("ogg準備 (speex)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.ogg", "test.speex8.ogg"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		IStreamCoder encoder = Encoder.speex(container);
+		encoder.setSampleRate(8000);
+		processConvert(container, null, encoder);
+		logger.info("ogg準備 (speex)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.ogg", "test.speex16.ogg"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		encoder = Encoder.speex(container);
+		encoder.setSampleRate(16000);
+		processConvert(container, null, encoder);
+		logger.info("ogg準備 (speex)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.ogg", "test.speex32.ogg"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("コンテナが開けませんでした");
+		}
+		encoder = Encoder.speex(container);
+		encoder.setSampleRate(32000);
+		processConvert(container, null, encoder);
 		logger.info("ogg準備 (theora / vorbis)");
 		init();
 		container = IContainer.make();
