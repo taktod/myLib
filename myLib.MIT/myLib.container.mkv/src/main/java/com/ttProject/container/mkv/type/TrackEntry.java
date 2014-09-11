@@ -26,7 +26,6 @@ import com.ttProject.frame.IVideoFrame;
 import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.frame.VideoSelector;
 import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
-import com.ttProject.frame.aac.AacDsiFrameSelector;
 import com.ttProject.frame.aac.AacFrame;
 import com.ttProject.frame.adpcmimawav.AdpcmImaWavFrameAnalyzer;
 import com.ttProject.frame.h264.ConfigData;
@@ -135,7 +134,7 @@ public class TrackEntry extends MkvMasterTag {
 		switch(codecId.getMkvCodecType()) {
 		case A_AAC:
 			analyzer = new AacDsiFrameAnalyzer();
-			((AacDsiFrameSelector)((AacDsiFrameAnalyzer)analyzer).getSelector()).setDecoderSpecificInfo(codecPrivate.getMkvData());
+			analyzer.setPrivateData(new ByteReadChannel(codecPrivate.getMkvData()));
 			break;
 		case A_MPEG_L3:
 			analyzer = new Mp3FrameAnalyzer();

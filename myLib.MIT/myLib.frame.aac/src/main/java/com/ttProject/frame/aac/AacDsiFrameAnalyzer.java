@@ -8,6 +8,7 @@ package com.ttProject.frame.aac;
 
 import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.CodecType;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * dsiベースのaacのframeを解析する動作
@@ -20,6 +21,16 @@ public class AacDsiFrameAnalyzer extends AudioAnalyzer {
 	 */
 	public AacDsiFrameAnalyzer() {
 		super(new AacDsiFrameSelector());
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void setPrivateData(IReadChannel channel) throws Exception {
+		// ここでdsiのデータを設定する形にしておきます。
+		DecoderSpecificInfo dsi = new DecoderSpecificInfo();
+		dsi.minimumLoad(channel);
+		((AacDsiFrameSelector)getSelector()).setDecoderSpecificInfo(dsi);
 	}
 	/**
 	 * {@inheritDoc}
