@@ -47,6 +47,7 @@
     <module>myLib.MIT/myLib.container.wav</module>
     <module>myLib.MIT/myLib.container.test</module>
     <module>myLib.GPLv3/myLib.xuggle.frameutil</module>
+    <module>myLib.GPLv3/myLib.xuggle.convert</module>
     <module>myLib.GPLv3/myLib.xuggle.test</module>
     <module>myLib.MIT/myLib.pool.redis</module>
     <module>myLib.MIT/myLib.pipe</module>
