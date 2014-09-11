@@ -27,6 +27,7 @@ public class AacDsiFrameAnalyzer extends AudioAnalyzer {
 	 */
 	@Override
 	public void setPrivateData(IReadChannel channel) throws Exception {
+		// ここでselectorを作り直してもいいけど、aacDsiFrameSelectorについては、作り直さなくても問題ない。
 		// ここでdsiのデータを設定する形にしておきます。
 		DecoderSpecificInfo dsi = new DecoderSpecificInfo();
 		dsi.minimumLoad(channel);
