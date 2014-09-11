@@ -36,6 +36,7 @@ public class TheoraFrameAnalyzer extends VideoAnalyzer {
 	 * @throws Exception
 	 */
 	public void setPrivateData(IReadChannel channel) throws Exception {
+		setSelector(new TheoraFrameSelector());
 		BitLoader loader = new BitLoader(channel);
 		Bit8 count = new Bit8();
 		Bit8 identificationHeaderSize = new Bit8();

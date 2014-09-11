@@ -30,6 +30,8 @@ public class VorbisFrameAnalyzer extends AudioAnalyzer {
 	 */
 	@Override
 	public void setPrivateData(IReadChannel channel) throws Exception {
+		// selectorをリセットする。
+		setSelector(new VorbisFrameSelector());
 		// ここでcodecPrivateのデータを先行して解析する必要あり。
 		// 02 1E 56
 		// サイズ指定要素２つ
