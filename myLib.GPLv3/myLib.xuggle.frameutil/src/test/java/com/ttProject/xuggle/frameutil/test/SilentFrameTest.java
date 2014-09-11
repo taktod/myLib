@@ -6,6 +6,8 @@
  */
 package com.ttProject.xuggle.frameutil.test;
 
+import java.nio.ByteBuffer;
+
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
@@ -34,10 +36,12 @@ public class SilentFrameTest {
 	@Test
 	public void test() throws Exception {
 		logger.info("動作テスト開始");
-		IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_PCM_MULAW);
-		encoder.setSampleRate(44100);
+		IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_SPEEX);
+		encoder.setSampleRate(16000);
 		encoder.setBitRate(48000);
 		encoder.setChannels(1);
+		ByteBuffer buffer = encoder.getExtraData().getByteBuffer(0, encoder.getExtraDataSize());
+		logger.info(HexUtil.toHex(buffer, true));
 		ICodec codec = encoder.getCodec();
 		Depacketizer depacketizer = new Depacketizer();
 		IAudioSamples.Format findFormat = null;

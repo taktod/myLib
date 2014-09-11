@@ -82,6 +82,7 @@ public class FlvToTest {
 		headerFrame.fillWithFlvDefault();
 		writer.addFrame(1, headerFrame);
 		writer.completePage(1);
+		logger.info(headerFrame);
 		logger.info(HexUtil.toHex(headerFrame.getData(), true));
 		CommentFrame commentFrame = new CommentFrame();
 		logger.info(HexUtil.toHex(commentFrame.getData(), true));

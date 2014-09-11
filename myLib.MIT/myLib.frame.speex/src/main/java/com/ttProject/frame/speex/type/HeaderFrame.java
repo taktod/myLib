@@ -118,9 +118,7 @@ public class HeaderFrame extends SpeexFrame {
 		extraHeaders = buffer.getInt();
 		reserved1 = buffer.getInt();
 		reserved2 = buffer.getInt();
-//		logger.info(rate);
-//		logger.info(frameSize);
-//		logger.info(framesPerPacket);
+//		logger.info(toString());
 		// ここでデータの読み込みを実行する。
 		super.setReadPosition(channel.position());
 		super.setSize(channel.size());
@@ -135,6 +133,7 @@ public class HeaderFrame extends SpeexFrame {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		// 読み込むデータは特になし。
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
@@ -175,8 +174,34 @@ public class HeaderFrame extends SpeexFrame {
 	public ByteBuffer getPackBuffer() {
 		return null;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isComplete() {
 		return true;
+	}
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		StringBuilder data = new StringBuilder("speexHeaderFrame:\n");
+		data.append(" string:").append(speexString).append("\n");
+		data.append(" version:").append(speexVersion).append("\n");
+		data.append(" versionId:").append(speexVersionId).append("\n");
+		data.append(" headerSize:").append(headerSize).append("\n");
+		data.append(" rate:").append(rate).append("\n");
+		data.append(" mode:").append(mode).append("\n");
+		data.append(" modeBitstreamVersion:").append(modeBitstreamVersion).append("\n");
+		data.append(" nbChannels:").append(nbChannels).append("\n");
+		data.append(" bitRate:").append(bitRate).append("\n");
+		data.append(" frameSize:").append(frameSize).append("\n");
+		data.append(" vbr:").append(vbr).append("\n");
+		data.append(" framesPerPacket:").append(framesPerPacket).append("\n");
+		data.append(" extraHeaders:").append(extraHeaders).append("\n");
+		data.append(" reserved1:").append(reserved1).append("\n");
+		data.append(" reserved2:").append(reserved2).append("\n");
+		return data.toString();
 	}
 }
