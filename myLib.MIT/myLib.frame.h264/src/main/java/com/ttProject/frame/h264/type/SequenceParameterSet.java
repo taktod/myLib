@@ -16,7 +16,11 @@ import com.ttProject.unit.extra.Bit;
 import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
+import com.ttProject.unit.extra.bit.Bit16;
 import com.ttProject.unit.extra.bit.Bit2;
+import com.ttProject.unit.extra.bit.Bit3;
+import com.ttProject.unit.extra.bit.Bit32;
+import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.unit.extra.bit.Seg;
@@ -93,7 +97,53 @@ public class SequenceParameterSet extends H264Frame {
 	private Ueg  frameCropTopOffset             = null;
 	private Ueg  frameCropBottomOffset          = null;
 	private Bit1 vuiParametersPresentFlag       = new Bit1();
-
+	
+	private Bit1  aspectRatioInfoPresentFlag       = null;
+	private Bit8    aspectRatioIdc                 = null;
+	private Bit16     sarWidth                     = null;
+	private Bit16     sarHeight                    = null;
+	private Bit1  overscanInfoPresentFlag          = null;
+	private Bit1    overscanAppropriateFlag        = null;
+	private Bit1  videoSignalTypePresentFlag       = null;
+	private Bit3    videoFormat                    = null;
+	private Bit1    videoFullRangeFlag             = null;
+	private Bit1    colourDescriptionPresentFlag   = null;
+	private Bit8      colourPrimaries              = null;
+	private Bit8      transferCharacteristics      = null;
+	private Bit8      matrixCoefficients           = null;
+	private Bit1  chromaLocInfoPresentFlag         = null;
+	private Ueg     chromaSampleLocTypeTopField    = null;
+	private Ueg     chromaSampleLocTypeBottomField = null;
+	private Bit1  timingInfoPresentFlag            = null;
+	private Bit32   numUnitsInTick                 = null;
+	private Bit32   timeScale                      = null;
+	private Bit1    fixedFrameRateFlag             = null;
+	private Bit1  nalHrdParametersPresentFlag      = null;
+	private Bit1  vclHrdParametersPresentFlag      = null;
+	
+	// hrdParameters
+	private Ueg   cpbCntMinus1                       = null;
+	private Bit4  bitRateScale                       = null;
+	private Bit4  cpbSizeScale                       = null;
+	private Ueg[]   bitRateValueMinus1               = null;
+	private Ueg[]   cpbSizeValueMinus1               = null;
+	private Bit1[]  cbrFlag                          = null;
+	private Bit5  initialCpbRemovalDelayLengthMinus1 = null;
+	private Bit5  cpbRemovalDelayLengthMinus1        = null;
+	private Bit5  dpbOutputDelayLengthMinus1         = null;
+	private Bit5  timeOffsetLength                   = null;
+	
+	private Bit1    lowDelayHrdFlag                    = null;
+	private Bit1  picStructPresentFlag                 = null;
+	private Bit1  bitstreamRestrictionFlag             = null;
+	private Bit1    motionVectorsOverPicBoundariesFlag = null;
+	private Ueg     maxBytesPerPicDenom                = null;
+	private Ueg     maxBitsPerMbDenom                  = null;
+	private Ueg     log2MaxMvLengthHorizontal          = null;
+	private Ueg     log2MaxMvLengthVertical            = null;
+	private Ueg     maxNumReorderFrames                = null;
+	private Ueg     maxDecFrameBuffering               = null;
+	
 	private Bit extraBit = null; // 超過bit
 	
 	private ByteBuffer buffer = null;
@@ -194,6 +244,8 @@ public class SequenceParameterSet extends H264Frame {
 		loader.load(vuiParametersPresentFlag);
 		if(vuiParametersPresentFlag.get() == 1) {
 			// parameterを読み込む
+			// この先のデータ読み込みを実施しないと、SupplementalEnhancementInformationで時間データを取得しないといけないかがわからない。
+			loadVuiParameters();
 		}
 		// 超過bitを保持しておく
 		extraBit = loader.getExtraBit();
@@ -210,6 +262,12 @@ public class SequenceParameterSet extends H264Frame {
 		super.setWidth(width);
 		super.setHeight(height);
 		super.update();
+	}
+	/**
+	 * vuiParameterを読み込む
+	 */
+	private void loadVuiParameters() {
+		
 	}
 	/**
 	 * {@inheritDoc}
