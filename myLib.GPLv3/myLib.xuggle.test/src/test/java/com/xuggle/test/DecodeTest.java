@@ -7,7 +7,6 @@
 package com.xuggle.test;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.flv.FlvTagReader;
@@ -63,11 +62,11 @@ public class DecodeTest {
 	/**
 	 * 動作テスト
 	 */
-	@Test
+//	@Test
 	public void test() {
 		try {
 			IReadChannel source = FileReadChannel.openFileReadChannel(
-					"xuggle_sound.error.flv"
+					"xuggle_sound.error.flv" // timestampがおかしくてぷつぷついってうまく動作しなかった音声変換動作・・・原因はptsがおかしくなることだった
 			);
 			FlvTagReader reader = new FlvTagReader();
 			writer = new FlvTagWriter("output4.flv");
@@ -192,6 +191,7 @@ public class DecodeTest {
 			sampleConsumed += retval;
 			if(packet.isComplete()) {
 				IFrame frame = depacketizer.getFrame(encoder, packet);
+				logger.info("frameできました:" + frame);
 				writer.addFrame(0x08, frame);
 			}
 		}
