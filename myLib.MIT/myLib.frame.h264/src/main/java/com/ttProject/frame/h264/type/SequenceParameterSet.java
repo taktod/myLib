@@ -502,7 +502,7 @@ public class SequenceParameterSet extends H264Frame {
 	 * @return
 	 */
 	public boolean getNalHrdBpPresentFlag() {
-		if(nalHrdParametersPresentFlag.get() == 1) {
+		if(nalHrdParametersPresentFlag != null && nalHrdParametersPresentFlag.get() == 1) {
 			return true;
 		}
 		return false;
@@ -512,7 +512,7 @@ public class SequenceParameterSet extends H264Frame {
 	 * @return
 	 */
 	public boolean getVclHrdBpPresentFlag() {
-		if(vclHrdParametersPresentFlag.get() == 1) {
+		if(vclHrdParametersPresentFlag != null && vclHrdParametersPresentFlag.get() == 1) {
 			return true;
 		}
 		return false;
@@ -522,12 +522,40 @@ public class SequenceParameterSet extends H264Frame {
 	 * @return
 	 */
 	public boolean getCpbDpbDelaysPresentFlag() {
-		if(nalHrdParametersPresentFlag.get() == 1) {
+		if(getNalHrdBpPresentFlag()) {
 			return true;
 		}
-		if(vclHrdParametersPresentFlag.get() == 1) {
+		if(getVclHrdBpPresentFlag()) {
 			return true;
 		}
 		return false;
+	}
+	/**
+	 * cpbCntMinus1の値を参照する
+	 * @return
+	 */
+	public int getCpbCntMinus1() {
+		if(cpbCntMinus1 == null) {
+			throw new RuntimeException("cpbCntMinus1の値が設定されていないのに、参照しようとしました。");
+		}
+		return cpbCntMinus1.get();
+	}
+	public int getInitialCpbRemovalDelayLengthMinus1() {
+		if(initialCpbRemovalDelayLengthMinus1 == null) {
+			throw new RuntimeException("initialCpbRemovalDelayLengthMinus1の値が設定されていないのに、参照しようとしました。");
+		}
+		return initialCpbRemovalDelayLengthMinus1.get();
+	}
+	public int getPicStructPresentFlag() {
+		if(picStructPresentFlag == null) {
+			throw new RuntimeException("picStructPresentFlagの値が設定されていないのに、参照しようとしました。");
+		}
+		return picStructPresentFlag.get();
+	}
+	public int getTimeOffsetLength() {
+		if(timeOffsetLength == null) {
+			throw new RuntimeException("timeoffsetLengthの値が設定されていないのに、参照しようとしました。");
+		}
+		return timeOffsetLength.get();
 	}
 }
