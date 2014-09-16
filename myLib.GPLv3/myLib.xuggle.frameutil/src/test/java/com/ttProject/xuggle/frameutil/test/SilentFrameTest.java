@@ -33,13 +33,16 @@ public class SilentFrameTest {
 	 * テスト動作
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void test() throws Exception {
 		logger.info("動作テスト開始");
-		IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_SPEEX);
-		encoder.setSampleRate(16000);
+		IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_VORBIS);
+		encoder.setSampleRate(32000);
 		encoder.setBitRate(48000);
 		encoder.setChannels(1);
+		if(encoder.open(null, null) < 0) {
+			throw new Exception("encoderがひらけませんでした。");
+		}
 		ByteBuffer buffer = encoder.getExtraData().getByteBuffer(0, encoder.getExtraDataSize());
 		logger.info(HexUtil.toHex(buffer, true));
 		ICodec codec = encoder.getCodec();
