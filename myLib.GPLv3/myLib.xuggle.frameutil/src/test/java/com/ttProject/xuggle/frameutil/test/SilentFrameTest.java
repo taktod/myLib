@@ -9,7 +9,6 @@ package com.ttProject.xuggle.frameutil.test;
 import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
