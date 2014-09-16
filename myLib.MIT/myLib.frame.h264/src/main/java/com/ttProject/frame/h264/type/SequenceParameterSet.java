@@ -11,9 +11,8 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
 import com.ttProject.frame.h264.H264Frame;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.extra.Bit;
-import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit16;
@@ -144,7 +143,7 @@ public class SequenceParameterSet extends H264Frame {
 	private Ueg     maxNumReorderFrames                = null;
 	private Ueg     maxDecFrameBuffering               = null;
 	
-	private Bit extraBit = null; // 超過bit
+//	private Bit extraBit = null; // 超過bit
 	
 	private ByteBuffer buffer = null;
 	
@@ -164,7 +163,10 @@ public class SequenceParameterSet extends H264Frame {
 	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		BitLoader loader = new BitLoader(channel);
+		// 全データをコピーしておく。
+		buffer = BufferUtil.safeRead(channel, channel.size() - channel.position());
+		BitLoader loader = new BitLoader(new ByteReadChannel(buffer.duplicate()));
+		loader.setEmulationPreventionFlg(true);
 		loader.load(profileIdc,
 				constraintSet0Flag,
 				constraintSet1Flag,
@@ -245,10 +247,10 @@ public class SequenceParameterSet extends H264Frame {
 		if(vuiParametersPresentFlag.get() == 1) {
 			// parameterを読み込む
 			// この先のデータ読み込みを実施しないと、SupplementalEnhancementInformationで時間データを取得しないといけないかがわからない。
-			loadVuiParameters();
+			loadVuiParameters(loader);
 		}
 		// 超過bitを保持しておく
-		extraBit = loader.getExtraBit();
+//		extraBit = loader.getExtraBit();
 		// このタイミングで縦横データが取得可能になります。
 		super.setReadPosition(channel.position());
 		super.setSize(channel.size());
@@ -266,16 +268,189 @@ public class SequenceParameterSet extends H264Frame {
 	/**
 	 * vuiParameterを読み込む
 	 */
-	private void loadVuiParameters() {
-		
+	private void loadVuiParameters(BitLoader loader) throws Exception {
+		aspectRatioInfoPresentFlag = new Bit1();
+		loader.load(aspectRatioInfoPresentFlag);
+		if(aspectRatioInfoPresentFlag.get() != 0) {
+			aspectRatioIdc = new Bit8();
+			loader.load(aspectRatioIdc);
+			if(aspectRatioIdc.get() == 255) {
+				sarWidth = new Bit16();
+				sarHeight = new Bit16();
+				loader.load(sarWidth, sarHeight);
+			}
+		}
+		overscanInfoPresentFlag = new Bit1();
+		loader.load(overscanInfoPresentFlag);
+		if(overscanInfoPresentFlag.get() == 1) {
+			overscanAppropriateFlag = new Bit1();
+			loader.load(overscanAppropriateFlag);
+		}
+		videoSignalTypePresentFlag = new Bit1();
+		loader.load(videoSignalTypePresentFlag);
+		if(videoSignalTypePresentFlag.get() == 1) {
+			videoFormat = new Bit3();
+			videoFullRangeFlag = new Bit1();
+			colourDescriptionPresentFlag = new Bit1();
+			loader.load(videoFormat, videoFullRangeFlag, colourDescriptionPresentFlag);
+			if(colourDescriptionPresentFlag.get() == 1) {
+				colourPrimaries = new Bit8();
+				transferCharacteristics = new Bit8();
+				matrixCoefficients = new Bit8();
+				loader.load(colourPrimaries, transferCharacteristics, matrixCoefficients);
+			}
+		}
+		chromaLocInfoPresentFlag = new Bit1();
+		loader.load(chromaLocInfoPresentFlag);
+		if(chromaLocInfoPresentFlag.get() == 1) {
+			chromaSampleLocTypeTopField = new Ueg();
+			chromaSampleLocTypeBottomField = new Ueg();
+			loader.load(chromaSampleLocTypeTopField, chromaSampleLocTypeBottomField);
+		}
+		timingInfoPresentFlag = new Bit1();
+		loader.load(timingInfoPresentFlag);
+		if(timingInfoPresentFlag.get() == 1) {
+			numUnitsInTick = new Bit32();
+			timeScale = new Bit32();
+			fixedFrameRateFlag = new Bit1();
+			loader.load(numUnitsInTick, timeScale, fixedFrameRateFlag);
+		}
+		nalHrdParametersPresentFlag = new Bit1();
+		loader.load(nalHrdParametersPresentFlag);
+		if(nalHrdParametersPresentFlag.get() == 1) {
+			loadHrdParameters(loader);
+		}
+		vclHrdParametersPresentFlag = new Bit1();
+		loader.load(vclHrdParametersPresentFlag);
+		if(vclHrdParametersPresentFlag.get() == 1) {
+			loadHrdParameters(loader);
+		}
+		if(nalHrdParametersPresentFlag.get() == 1 || vclHrdParametersPresentFlag.get() == 1) {
+			lowDelayHrdFlag = new Bit1();
+			loader.load(lowDelayHrdFlag);
+		}
+		picStructPresentFlag = new Bit1();
+		bitstreamRestrictionFlag = new Bit1();
+		loader.load(picStructPresentFlag, bitstreamRestrictionFlag);
+		if(bitstreamRestrictionFlag.get() == 1) {
+			motionVectorsOverPicBoundariesFlag = new Bit1();
+			maxBytesPerPicDenom = new Ueg();
+			maxBitsPerMbDenom = new Ueg();
+			log2MaxMvLengthHorizontal = new Ueg();
+			log2MaxMvLengthVertical = new Ueg();
+			maxNumReorderFrames = new Ueg();
+			maxDecFrameBuffering = new Ueg();
+			loader.load(motionVectorsOverPicBoundariesFlag, maxBytesPerPicDenom, maxBitsPerMbDenom,
+					log2MaxMvLengthHorizontal, log2MaxMvLengthVertical, maxNumReorderFrames, maxDecFrameBuffering);
+		}
+	}
+	/**
+	 * hrdParametersの内部の読み込みを実施
+	 * 2度読み込むことがあるっぽいが、同じデータがはいるみたいです。
+	 * とりあえず、1度読み込んだら2度目は違いがないか確認して、違いがある場合は例外なげる方がよさそうではある・・・あとで考えよう
+	 * @param loader
+	 */
+	private void loadHrdParameters(BitLoader loader) throws Exception {
+		Ueg val1 = new Ueg();
+		Bit4 val2 = new Bit4();
+		Bit4 val3 = new Bit4();
+//		cpbCntMinus1 = new Ueg();
+//		bitRateScale = new Bit4();
+//		cpbSizeScale = new Bit4();
+		loader.load(val1, val2, val3);
+		if(cpbCntMinus1 == null) {
+			cpbCntMinus1 = val1;
+		}
+		else if(cpbCntMinus1.get() != val1.get()) {
+			throw new RuntimeException("cpbCntMinus1の値が前回の値と一致しませんでした。");
+		}
+		if(bitRateScale == null) {
+			bitRateScale = val2;
+		}
+		else if(bitRateScale.get() != val2.get()) {
+			throw new RuntimeException("bitRateScaleの値が前回の値と一致しませんでした。");
+		}
+		if(cpbSizeScale == null) {
+			cpbSizeScale = val3;
+		}
+		else if(cpbSizeScale.get() != val3.get()) {
+			throw new RuntimeException("cpbSizeScaleの値が前回の値と一致しませんでした。");
+		}
+
+		int num = cpbCntMinus1.get() + 1;
+		if(bitRateValueMinus1 == null) {
+			bitRateValueMinus1 = new Ueg[num];
+		}
+		if(cpbSizeValueMinus1 == null) {
+			cpbSizeValueMinus1 = new Ueg[num];
+		}
+		if(cbrFlag == null) {
+			cbrFlag = new Bit1[num];
+		}
+		for(int schedSelIdx = 0;schedSelIdx < num;schedSelIdx ++) {
+			Ueg val4 = new Ueg();
+			Ueg val5 = new Ueg();
+			Bit1 val6 = new Bit1();
+			loader.load(val4, val5, val6);
+			if(bitRateValueMinus1[schedSelIdx] == null) {
+				bitRateValueMinus1[schedSelIdx] = val4;
+			}
+			else if(bitRateValueMinus1[schedSelIdx].get() != val4.get()) {
+				throw new RuntimeException("bitRateValueMinus1の値が前回の値と一致しませんでした。");
+			}
+			if(cpbSizeValueMinus1[schedSelIdx] == null) {
+				cpbSizeValueMinus1[schedSelIdx] = val5;
+			}
+			else if(cpbSizeValueMinus1[schedSelIdx].get() != val5.get()) {
+				throw new RuntimeException("cpbSizeValueMinus1の値が前回の値と一致しませんでした。");
+			}
+			if(cbrFlag[schedSelIdx] == null) {
+				cbrFlag[schedSelIdx] = val6;
+			}
+			else if(cbrFlag[schedSelIdx].get() != val6.get()) {
+				throw new RuntimeException("cbrFlagの値が前回の値と一致しませんでした。");
+			}
+			bitRateValueMinus1[schedSelIdx] = val4;
+			cpbSizeValueMinus1[schedSelIdx] = val5;
+			cbrFlag[schedSelIdx] = val6;
+		}
+		Bit5 val7 = new Bit5();
+		Bit5 val8 = new Bit5();
+		Bit5 val9 = new Bit5();
+		Bit5 val10 = new Bit5();
+		loader.load(val7, val8, val9, val10);
+		if(initialCpbRemovalDelayLengthMinus1 == null) {
+			initialCpbRemovalDelayLengthMinus1 = val7;
+		}
+		else if(initialCpbRemovalDelayLengthMinus1.get() != val7.get()) {
+			throw new RuntimeException("initialCpbRemovalDelayLengthMinus1の値が前回の値と一致しませんでした。");
+		}
+		if(cpbRemovalDelayLengthMinus1 == null) {
+			cpbRemovalDelayLengthMinus1 = val8;
+		}
+		else if(cpbRemovalDelayLengthMinus1.get() != val8.get()) {
+			throw new RuntimeException("cpbRemovalDelayLengthMinus1の値が前回の値と一致しませんでした。");
+		}
+		if(dpbOutputDelayLengthMinus1 == null) {
+			dpbOutputDelayLengthMinus1 = val9;
+		}
+		else if(dpbOutputDelayLengthMinus1.get() != val9.get()) {
+			throw new RuntimeException("dpbOutputDelayLengthMinus1の値が前回の値と一致しませんでした。");
+		}
+		if(timeOffsetLength == null) {
+			timeOffsetLength = val10;
+		}
+		else if(timeOffsetLength.get() != val10.get()) {
+			throw new RuntimeException("timeOffsetLengthの値が前回の値と一致しませんでした。");
+		}
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		channel.position(super.getReadPosition());
-		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
+//		channel.position(super.getReadPosition());
+//		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
 		super.update();
 	}
 	/**
@@ -288,7 +463,8 @@ public class SequenceParameterSet extends H264Frame {
 		}
 		// TODO この部分のこの方法は修正しないとだめ、自力でコネクトしてやるのではなく、大元のデータを保持しておいて、それを応答するようにする。
 		// でないと、00 00 03の扱いを自力で作る必要がでてくるので、非常にややこしいことになる。
-		BitConnector connector = new BitConnector();
+		// ここの結合動作をつくっておく必要がありそう。(でも読み込んだデータをベースにしておいた方がいいかも・・・)
+/*		BitConnector connector = new BitConnector();
 		// コネクトしていく。
 		connector.feed(profileIdc, constraintSet0Flag, constraintSet1Flag,
 				constraintSet2Flag, constraintSet3Flag, constraintSet4Flag,
@@ -311,7 +487,8 @@ public class SequenceParameterSet extends H264Frame {
 				vuiParametersPresentFlag, extraBit);
 		setData(BufferUtil.connect(getTypeBuffer(),
 				connector.connect(),
-				buffer));
+				buffer));*/
+		setData(BufferUtil.connect(getTypeBuffer(), buffer));
 	}
 	/**
 	 * {@inheritDoc}
@@ -319,5 +496,38 @@ public class SequenceParameterSet extends H264Frame {
 	@Override
 	public ByteBuffer getPackBuffer() {
 		return null;
+	}
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean getNalHrdBpPresentFlag() {
+		if(nalHrdParametersPresentFlag.get() == 1) {
+			return true;
+		}
+		return false;
+	}
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean getVclHrdBpPresentFlag() {
+		if(vclHrdParametersPresentFlag.get() == 1) {
+			return true;
+		}
+		return false;
+	}
+	/**
+	 * 
+	 * @return
+	 */
+	public boolean getCpbDpbDelaysPresentFlag() {
+		if(nalHrdParametersPresentFlag.get() == 1) {
+			return true;
+		}
+		if(vclHrdParametersPresentFlag.get() == 1) {
+			return true;
+		}
+		return false;
 	}
 }
