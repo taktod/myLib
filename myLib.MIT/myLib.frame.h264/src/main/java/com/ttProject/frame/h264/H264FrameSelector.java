@@ -29,7 +29,7 @@ import com.ttProject.unit.extra.bit.Bit5;
  */
 public class H264FrameSelector extends VideoSelector {
 	/** ロガー */
-	@SuppressWarnings("unused")
+//	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(H264FrameSelector.class);
 	// こちらのspsやppsは複数保持可能にならないと正しい動作にはならないっぽい。
 	/** 解析sps */
@@ -86,6 +86,13 @@ public class H264FrameSelector extends VideoSelector {
 			}
 		}
 		frame.minimumLoad(channel);
+		if(frame instanceof SequenceParameterSet) {
+			// この部分で必要なデータを参照しておきたいね。
+			SequenceParameterSet sps = (SequenceParameterSet)frame;
+			logger.info(sps.getNalHrdBpPresentFlag());
+			logger.info(sps.getVclHrdBpPresentFlag());
+			logger.info(sps.getCpbDpbDelaysPresentFlag());
+		}
 		return frame;
 	}
 }
