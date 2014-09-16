@@ -50,6 +50,7 @@ public class SupplementalEnhancementInformationTest {
 		// 010D000100000090806D3DA9000000
 		// buffering_periodの読み込み動作
 		target = new ByteReadChannel(HexUtil.makeBuffer("80003E848000000000003E848000000040"));
+		target.close();
 		// delay:32009とdelayoffset:0
 		target = new ByteReadChannel(HexUtil.makeBuffer("80001BF30000000000001BF30000000040"));
 		// delay:14310とdelayoffset:0
@@ -68,6 +69,7 @@ public class SupplementalEnhancementInformationTest {
 		logger.info("initialCpbRemovalDelay" + initialCpbRemovalDelay.get());
 		logger.info(initialCpbRemovalDelayOffset.get());
 		logger.info(target.position() + " / " + target.size());
+		target.close();
 	}
 	@Test
 	public void timeperiodTest() throws Exception {
