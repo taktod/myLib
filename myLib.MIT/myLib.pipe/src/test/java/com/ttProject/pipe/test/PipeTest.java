@@ -13,7 +13,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.pipe.PipeHandler;
 import com.ttProject.pipe.PipeManager;
@@ -29,7 +28,7 @@ public class PipeTest {
 	 * 動作テスト
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void test() throws Exception {
 		logger.info("動作テスト");
 		// とりあえず、managerをつくる。
