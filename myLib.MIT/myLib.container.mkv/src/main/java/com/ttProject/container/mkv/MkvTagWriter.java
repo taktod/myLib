@@ -63,6 +63,11 @@ import com.ttProject.frame.extra.VideoMultiFrame;
  * 
  * とりあえず、それぞれのclusterが1keyFrameから次のkeyFrameまでの集まりみたいにしておけば、cuesは毎回クラスタの先頭になるし(なお全frameを動向というわけではないみたいです。適当なtimestampが適当なところからはじまるようになっていればいいみたい。)
  * 
+ * clusterにcodecTypeの情報をのせておく方がよくて、そのcodecTypeのデータがすべて過ぎ去ったら、書き込みする。という形にしておけばよくなりそう。
+ * 現状では、すべてのcodecTypeがそろう前に登録をしたり書き込みしたりするのが問題で、かつ属するclusterがみつからないことがあるのも問題っぽい。
+ * 書き込み開始までは、放置にしておく。
+ * 書き込み開始した瞬間にすべてのクラスタに必要なデータについて登録するようにしておく。
+ * まだ未登録のtrackについて書き込みor終了データがくるまで放置しないとだめ。
  * @author taktod
  */
 public class MkvTagWriter implements IWriter {
@@ -426,6 +431,7 @@ public class MkvTagWriter implements IWriter {
 		}
 		if(!trackEntryMap.containsKey(trackId)) {
 			// trackEntryMap化していないトラック
+			logger.info("trackEntryMap化していないトラックだった。" + trackId);
 			TrackEntry findTrackEntry = null;
 			for(TrackEntry trackEntry : trackEntries) {
 				if(trackEntry.getCodecType() == frame.getCodecType()) {
@@ -439,7 +445,7 @@ public class MkvTagWriter implements IWriter {
 				findTrackEntry.setupFrame(trackId, frame, defaultTimebase);
 
 				// この完了して、headerを構築する部分も別関数化しておきたいけど・・・
-				if(trackEntries.size() == 0) {
+				if(isReadyToWork()) {
 					logger.info("全トラック情報がみつかったので、調整しておく。");
 					makeHeader();
 				}
@@ -447,18 +453,22 @@ public class MkvTagWriter implements IWriter {
 				// 過去あつかったときには、mp3はlacingをつかって、１つのsimpleTagに大量にデータがはいっていたけど、aacのデータを確認してみたところ、1つのAACFrameに対して1つのsimpleTagで動作しているみたいですね。
 			}
 		}
-		if(frame.getPts() >= nextClusterPts) {
-			logger.info("次のclusterを作る必要があります。:" + nextClusterPts + ":" + defaultTimebase / 4);
+		long pts = frame.getPts() * 1000L / frame.getTimebase();
+//		logger.info("pts:" + pts + " " + frame.getCodecType());
+		if(pts >= nextClusterPts) {
+			long duration = defaultTimebase * 5;
+//			logger.info("次のclusterを作る必要があります。:" + nextClusterPts + ":" + duration);
 			// clusterをつくって登録しておく
 			Cluster newCluster = new Cluster();
-			newCluster.setupTimeinfo(nextClusterPts, defaultTimebase, defaultTimebase / 4);
+			newCluster.setupTimeinfo(nextClusterPts, defaultTimebase, duration);
 			// clusterは250ミリ秒ごとにつくっていく。
 			clusterList.add(newCluster);
-			nextClusterPts += defaultTimebase / 4;
+			nextClusterPts += duration;
 		}
 		int count = 0;
 		for(Cluster cluster : clusterList) {
 			if(cluster.addFrame(trackId, frame) != null) {
+				// clusterが完了したと判定しているのが、おかしいことがあるみたい。
 				if(cluster.isCompleteCluster()) {
 					count ++;
 				}
@@ -470,9 +480,18 @@ public class MkvTagWriter implements IWriter {
 			Cluster cluster = clusterList.remove(0);
 			logger.info("clusterが完了したので、データの書き込みを実施したい。");
 			cluster.setupComplete();
-			addContainer(cluster);
+			if(isReadyToWork()) {
+				logger.info("実際の書き込み実施");
+				addContainer(cluster);
+			}
+			else {
+				logger.info("初期化前なので捨てます。");
+			}
 //			logger.info(cluster);
 		}
+	}
+	private boolean isReadyToWork() {
+		return trackEntries.size() == 0;
 	}
 	/**
 	 * header部を完成させる

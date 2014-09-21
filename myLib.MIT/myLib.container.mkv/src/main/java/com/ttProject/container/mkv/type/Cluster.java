@@ -88,15 +88,22 @@ public class Cluster extends MkvMasterTag {
 	 * @return IFrame 追加されなかったらframeを応答します。追加されたらnullを応答します。
 	 */
 	public IFrame addFrame(int trackId, IFrame frame) throws Exception {
+		// TODO 登録されるであろうトラックがくる前にコンプリート扱いになることがあるみたいです。これはこまりますね。
 		trackIdSet.add(trackId);
 		// このデータがcluster内のsimpleBlockになります。
 		// 追加していくけど、次のclusterが来たときに、実は次のclusterにいれるべきデータがでてくるかもしれないので注意が必要
 		int pts = (int)(getTimebase() * frame.getPts() / frame.getTimebase() - getPts());
+//		logger.info(pts);
+		if(pts <= 0) {
+			return null;
+		}
 		if(pts >= 0 && pts < duration) {
+//			logger.info("内部に入るデータだった:" + getPts() + " " + frame);
 			// 内部に入るデータ
 			setupSimpleBlock(trackId, frame, pts);
 			return null;
 		}
+//		logger.info("除外データだった:" + getPts() + " " + frame);
 		trackIdSet.remove((Integer)trackId);
 		return frame;
 	}
