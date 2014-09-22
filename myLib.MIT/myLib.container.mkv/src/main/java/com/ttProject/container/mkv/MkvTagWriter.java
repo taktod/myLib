@@ -456,7 +456,7 @@ public class MkvTagWriter implements IWriter {
 		long pts = frame.getPts() * 1000L / frame.getTimebase();
 //		logger.info("pts:" + pts + " " + frame.getCodecType());
 		if(pts >= nextClusterPts) {
-			long duration = defaultTimebase * 5;
+			long duration = defaultTimebase;
 //			logger.info("次のclusterを作る必要があります。:" + nextClusterPts + ":" + duration);
 			// clusterをつくって登録しておく
 			Cluster newCluster = new Cluster();
@@ -464,6 +464,9 @@ public class MkvTagWriter implements IWriter {
 			// clusterは250ミリ秒ごとにつくっていく。
 			clusterList.add(newCluster);
 			nextClusterPts += duration;
+		}
+		for(Cluster cluster : clusterList) {
+			cluster.checkTrackId(trackId);
 		}
 		int count = 0;
 		for(Cluster cluster : clusterList) {

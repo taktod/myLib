@@ -81,6 +81,9 @@ public class Cluster extends MkvMasterTag {
 		timecode.setValue(pts);
 		addChild(timecode);
 	}
+	public void checkTrackId(int trackId) {
+		trackIdSet.add(trackId);
+	}
 	/**
 	 * 保持するフレームを追加します
 	 * @param trackId
@@ -89,7 +92,7 @@ public class Cluster extends MkvMasterTag {
 	 */
 	public IFrame addFrame(int trackId, IFrame frame) throws Exception {
 		// TODO 登録されるであろうトラックがくる前にコンプリート扱いになることがあるみたいです。これはこまりますね。
-		trackIdSet.add(trackId);
+//		trackIdSet.add(trackId);
 		// このデータがcluster内のsimpleBlockになります。
 		// 追加していくけど、次のclusterが来たときに、実は次のclusterにいれるべきデータがでてくるかもしれないので注意が必要
 		int pts = (int)(getTimebase() * frame.getPts() / frame.getTimebase() - getPts());
