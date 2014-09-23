@@ -150,7 +150,7 @@ public class Packetizer {
 			}
 			break;
 		case VORBIS:
-			if(decoder == null|| decoder.getCodecID() != ICodec.ID.CODEC_ID_VORBIS) {
+			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_VORBIS) {
 				if(frame instanceof IdentificationHeaderFrame || frame instanceof CommentHeaderFrame || frame instanceof SetupHeaderFrame) {
 					// 初期化中のデータの場合は処理できない。
 					return null;

@@ -21,6 +21,10 @@ import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
+import com.ttProject.frame.vorbis.VorbisFrame;
+import com.ttProject.frame.vorbis.type.CommentHeaderFrame;
+import com.ttProject.frame.vorbis.type.IdentificationHeaderFrame;
+import com.ttProject.frame.vorbis.type.SetupHeaderFrame;
 
 /**
  * frame -> packet変換
@@ -111,21 +115,67 @@ public class Packetizer {
 		case AAC:
 			if(decoder == null || decoder.getCodecID() != Codec.ID.CODEC_ID_AAC) {
 				decoder = makeAudioDecoder((IAudioFrame)frame, Codec.ID.CODEC_ID_AAC);
+				decoder.open(null, null);
 			}
 			break;
 		case ADPCM_IMA_WAV:
+			if(decoder == null || decoder.getCodecID() != Codec.ID.CODEC_ID_ADPCM_IMA_WAV) {
+				decoder = makeAudioDecoder((IAudioFrame)frame, Codec.ID.CODEC_ID_ADPCM_IMA_WAV);
+				decoder.open(null, null);
+			}
+			break;
 		case ADPCM_SWF:
+			if(decoder == null || decoder.getCodecID() != Codec.ID.CODEC_ID_ADPCM_SWF) {
+				decoder = makeAudioDecoder((IAudioFrame)frame, Codec.ID.CODEC_ID_ADPCM_SWF);
+				decoder.open(null, null);
+			}
+			break;
 		case MP3:
 			if(decoder == null || decoder.getCodecID() != Codec.ID.CODEC_ID_MP3) {
 				decoder = makeAudioDecoder((IAudioFrame)frame, Codec.ID.CODEC_ID_MP3);
+				decoder.open(null, null);
 			}
 			break;
 		case NELLYMOSER:
+			if(decoder == null || decoder.getCodecID() != Codec.ID.CODEC_ID_NELLYMOSER) {
+				decoder = makeAudioDecoder((IAudioFrame)frame, Codec.ID.CODEC_ID_NELLYMOSER);
+				decoder.open(null, null);
+			}
+			break;
 		case OPUS:
+			// opusは多分codecPrivateがあると思う。
 		case PCM_ALAW:
+			if(decoder == null || decoder.getCodecID() != Codec.ID.CODEC_ID_PCM_ALAW) {
+				decoder = makeAudioDecoder((IAudioFrame)frame, Codec.ID.CODEC_ID_PCM_ALAW);
+				decoder.open(null, null);
+			}
+			break;
 		case PCM_MULAW:
+			if(decoder == null || decoder.getCodecID() != Codec.ID.CODEC_ID_PCM_MULAW) {
+				decoder = makeAudioDecoder((IAudioFrame)frame, Codec.ID.CODEC_ID_PCM_MULAW);
+				decoder.open(null, null);
+			}
+			break;
 		case SPEEX:
+			if(decoder == null || decoder.getCodecID() != Codec.ID.CODEC_ID_SPEEX) {
+				decoder = makeAudioDecoder((IAudioFrame)frame, Codec.ID.CODEC_ID_SPEEX);
+				decoder.open(null, null);
+			}
+			break;
 		case VORBIS:
+			if(decoder == null || decoder.getCodecID() != Codec.ID.CODEC_ID_VORBIS) {
+				if(frame instanceof IdentificationHeaderFrame || frame instanceof CommentHeaderFrame || frame instanceof SetupHeaderFrame) {
+					// 初期化中のデータの場合は処理できない。
+					return null;
+				}
+				decoder = makeAudioDecoder((IAudioFrame)frame, Codec.ID.CODEC_ID_VORBIS);
+				VorbisFrame vorbisFrame = (VorbisFrame)frame;
+				// ここでextraDataをつけておきます。
+				ByteBuffer buffer = vorbisFrame.getPrivateData();
+				int size = buffer.remaining();
+				Buffer extraData = Buffer.make(decoder, buffer.array(), 0, size);
+				// どうやってextraデータいれるんだ？これ・・・
+			}
 			
 		case FLV1:
 		case H264:
@@ -153,7 +203,7 @@ public class Packetizer {
 		decoder.setSampleRate(frame.getSampleRate());
 //		decoder.setTimeBase(Rational.make(1, (int)frame.getTimebase()));
 		decoder.setChannels(frame.getChannel());
-		decoder.open(null, null); // 開いてしまう
+		// ここでopenしてしまうとvorbisはうまく動作しないみたい。
 		return decoder;
 	}
 }
