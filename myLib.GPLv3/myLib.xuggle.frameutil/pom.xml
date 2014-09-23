@@ -26,7 +26,7 @@
   </dependency>
  </dependencies>
  <name>myLib.xuggle.frameutil</name>
- <description>xuggleの変換動作のテスト用</description>
+ <description>xuggleのframe変換用プロジェクト</description>
   <licenses>
     <license>
       <name>GNU GENERAL PUBLIC LICENSE</name>
