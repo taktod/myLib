@@ -15,11 +15,6 @@
   </repositories>
   <dependencies>
     <dependency>
-      <groupId>xuggle</groupId>
-      <artifactId>xuggle-xuggler</artifactId>
-      <version>5.4</version>
-    </dependency>
-    <dependency>
       <groupId>com.ttProject</groupId>
       <artifactId>myLib.xuggle.frameutil</artifactId>
       <version>0.0.2-SNAPSHOT</version>
