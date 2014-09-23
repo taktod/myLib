@@ -49,6 +49,8 @@
     <module>myLib.GPLv3/myLib.xuggle.frameutil</module>
     <module>myLib.GPLv3/myLib.xuggle.convert</module>
     <module>myLib.GPLv3/myLib.xuggle.test</module>
+    <module>myLib.AGPLv3/myLib.humble.frameutil</module>
+    <module>myLib.AGPLv3/myLib.humble.test</module>
     <module>myLib.MIT/myLib.pool.redis</module>
     <module>myLib.MIT/myLib.pipe</module>
     <module>myLib.MIT/myLib.license</module>

@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.ttProject</groupId>
+    <artifactId>myLib</artifactId>
+    <version>0.0.2-SNAPSHOT</version>
+    <relativePath>../../</relativePath>
+  </parent>
+  <artifactId>myLib.humble.test</artifactId>
+  <repositories>
+    <repository>
+      <id>xuggle repo</id>
+      <url>http://xuggle.googlecode.com/svn/trunk/repo/share/java/</url>
+    </repository>
+  </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.container.flv</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.container.mkv</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.container.webm</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.humble.frameutil</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+  <name>myLib.humble.test</name>
+  <description>humbleVideoの変換の動作テスト用プロジェクト</description>
+  <licenses>
+    <license>
+      <name>GNU AFFERO GENERAL PUBLIC LICENSE</name>
+      <url>https://www.gnu.org/licenses/agpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+</project>
