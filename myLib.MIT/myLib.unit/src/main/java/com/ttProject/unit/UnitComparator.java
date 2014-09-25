@@ -12,9 +12,9 @@ import java.util.Comparator;
  * containerやframeのソート用クラス
  * @author taktod
  */
-public class UnitComparator implements Comparator<Unit> {
+public class UnitComparator implements Comparator<IUnit> {
 	@Override
-	public int compare(Unit unit1, Unit unit2) {
+	public int compare(IUnit unit1, IUnit unit2) {
 		return (int)(unit1.getPts() - unit2.getPts());
 	}
 }
