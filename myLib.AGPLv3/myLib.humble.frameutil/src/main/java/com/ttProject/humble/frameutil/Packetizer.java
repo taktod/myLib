@@ -176,7 +176,7 @@ public class Packetizer {
 				Buffer extraData = Buffer.make(decoder, buffer.array(), 0, size);
 				// どうやってextraデータいれるんだ？これ・・・
 			}
-			
+			break;
 		case FLV1:
 		case H264:
 		case MJPEG:

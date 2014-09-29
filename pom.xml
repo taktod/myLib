@@ -86,6 +86,11 @@
       <url>https://www.gnu.org/licenses/gpl.txt</url>
       <distribution>repo</distribution>
     </license>
+    <license>
+      <name>GNU AFFERO GENERAL PUBLIC LICENSE</name>
+      <url>https://www.gnu.org/licenses/agpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
   </licenses>
   <build>
     <plugins>

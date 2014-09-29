@@ -105,7 +105,7 @@ public class Depacketizer {
 	}
 	/**
 	 * 音声の処理
-	 * @param decoder
+	 * @param encoder
 	 * @param packet
 	 * @param type
 	 * @return
