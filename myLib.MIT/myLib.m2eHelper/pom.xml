@@ -12,8 +12,8 @@
         <version>3.1</version>
         <configuration>
           <encoding>utf-8</encoding>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.7</source>
+          <target>1.7</target>
         </configuration>
       </plugin>
       <plugin>
@@ -91,7 +91,9 @@
     </dependency>
   </dependencies>
   <name>myLib.m2eHelper</name>
-  <description>eclipseのm2eを使っているといくつか余計なwarningがでる動作があるっぽいです。</description>
+  <description>m2e will show some warning.
+this helper will fix them.
+</description>
   <licenses>
     <license>
       <name>The MIT License</name>
