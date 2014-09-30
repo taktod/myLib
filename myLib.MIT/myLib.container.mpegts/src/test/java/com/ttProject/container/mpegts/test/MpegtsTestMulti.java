@@ -32,7 +32,7 @@ public class MpegtsTestMulti {
 	private Logger logger = Logger.getLogger(MpegtsTestMulti.class);
 	@Test
 	public void test() throws Exception {
-		logger.info("test開始");
+		logger.info("test start");
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(
 					"http://49.212.39.17/mario_3video_1audio.ts" // ソースとして、3つのvideoトラック 1つのaudioトラックをもつmpegtsのデータをあてておく
@@ -115,7 +115,7 @@ public class MpegtsTestMulti {
 			}
 		}
 		catch(Exception e) {
-			logger.warn("例外発生", e);
+			logger.warn(e);
 		}
 		finally {
 			if(writer1 != null) {

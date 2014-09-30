@@ -32,7 +32,7 @@ public class Vp9FrameSelector extends VideoSelector {
 		if(channel.position() == channel.size()) {
 			return null;
 		}
-		logger.info("frameを解析します。");
+		logger.info("try to analyze frame.");
 		Bit2 frameMarker = new Bit2();
 		Bit1 profile = new Bit1();
 		Bit1 reservedBit = new Bit1(); // 0のはず

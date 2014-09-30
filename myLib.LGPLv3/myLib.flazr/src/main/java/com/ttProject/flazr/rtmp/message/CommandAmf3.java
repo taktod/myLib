@@ -74,7 +74,7 @@ public class CommandAmf3 implements RtmpMessage {
 			}
 		}
 		catch(Exception e) {
-			logger.error("パース失敗", e);
+			logger.error("failed to parse data.", e);
 		}
 	}
 	@Override

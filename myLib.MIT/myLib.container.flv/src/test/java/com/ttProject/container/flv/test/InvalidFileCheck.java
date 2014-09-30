@@ -1,3 +1,9 @@
+/*
+ * myLib - https://github.com/taktod/myLib
+ * Copyright (c) 2014 ttProject. All rights reserved.
+ * 
+ * Licensed under The MIT license.
+ */
 package com.ttProject.container.flv.test;
 
 import org.apache.log4j.Logger;
@@ -9,11 +15,11 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 public class InvalidFileCheck {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(InvalidFileCheck.class);
 	@Test
 	public void check() throws Exception {
-		logger.info("変換後の問題あるファイルを確認したい。");
+		logger.info("want to check the troubled flv.");
 		IFileReadChannel source = FileReadChannel.openFileReadChannel("../myLib.container.flv/converted.flv");
 		FlvTagReader reader = new FlvTagReader();
 		IContainer container = null;

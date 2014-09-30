@@ -54,7 +54,7 @@ public class Vp6FrameSelector extends VideoSelector {
 			throw new Exception("解析不能なデータです。");
 		}
 		if(keyFrame == null) {
-			logger.info("キーフレームが決定していません");
+			logger.info("key frame is not loaded yet.");
 			return null;
 		}
 		setup(frame);

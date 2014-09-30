@@ -78,7 +78,7 @@ public class MetadataAmf3 implements RtmpMessage {
 			// まだデータがある場合は読み込んで次のObjectに配置した方がいいのかもしれない。
 		}
 		catch (Exception e) {
-			logger.error("MetadataAmf3を解析しているときに、例外が発生しました。", e);
+			logger.error("", e);
 			logger.error("errorData: {}", HexUtil.toHex(bytes, true));
 			throw new RuntimeException("解析不能な例外が発生しました。");
 		}

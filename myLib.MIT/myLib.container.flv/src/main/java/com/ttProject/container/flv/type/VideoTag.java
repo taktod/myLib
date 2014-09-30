@@ -149,7 +149,7 @@ public class VideoTag extends FlvTag {
 		super.minimumLoad(channel);
 		if(getSize() == 15) {
 			// データの内部サイズが0の場合もありえます。
-			logger.warn("内部データのないタグができました。");
+			logger.warn("get the no data tag.");
 			return;
 		}
 		// コーデック情報等を取得する必要あり

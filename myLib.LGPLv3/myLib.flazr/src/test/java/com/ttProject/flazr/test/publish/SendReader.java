@@ -97,7 +97,7 @@ public class SendReader implements RtmpReader {
 		options.setFileToPublish(null);
 		options.setReaderToPublish(this);
 		options.setStreamName("test");
-		logger.info("接続を開きます。");
+		logger.info("open connection");
 		
 		// 接続を開始します。blockするので、threadにやらせます。
 		Thread t = new Thread(new Runnable() {
@@ -116,9 +116,9 @@ public class SendReader implements RtmpReader {
 					catch(Exception e) {
 					}
 					connect(options);
-					logger.info("接続完了");
+					logger.info("connect success.");
 				}
-				logger.info("rtmpPublishのthreadが本当に止まりました。");
+				logger.info("thread of rtmpPublish is ended.");
 				// なにか停止処理をいれる場合はここにいれるべし。
 			}
 		});
@@ -135,10 +135,10 @@ public class SendReader implements RtmpReader {
 		future = bootstrap.connect(new InetSocketAddress(options.getHost(), options.getPort()));
 		future.awaitUninterruptibly();
 		if(!future.isSuccess()) {
-			logger.warn("処理失敗しました。");
+			logger.warn("failed to connect");
 		}
 		else {
-			logger.info("接続しました。");
+			logger.info("success to connect");
 		}
 		// これやっちゃうと・・・他の処理がしにそうな気がするけど・・・
 		future.getChannel().getCloseFuture().awaitUninterruptibly(); 
@@ -280,11 +280,11 @@ public class SendReader implements RtmpReader {
 			}
 			try {
 				FlvAtom atom = dataQueue.take();
-				logger.info("flvAtomを送り出します。");
+				logger.info("send flvAtom to server.");
 				return atom;
 			}
 			catch(Exception e) {
-				logger.error("rtmpサーバーへ転送するときに致命的なエラーが発生しました。", e);
+				logger.error("", e);
 				return null;
 			}
 		}
@@ -315,7 +315,7 @@ public class SendReader implements RtmpReader {
 		if(flvTag instanceof VideoTag) {
 			// 映像タグ
 			VideoTag vTag = (VideoTag)flvTag;
-			logger.info("videoTagうけとり{}", vTag);
+			logger.info("videoTag:{}", vTag);
 			if(vTag.isSequenceHeader()) {
 				videoMshTag = vTag;
 				return;
@@ -333,7 +333,7 @@ public class SendReader implements RtmpReader {
 		else if(flvTag instanceof AudioTag) {
 			// 音声タグ
 			AudioTag aTag = (AudioTag)flvTag;
-			logger.info("audioTagうけとり{}", aTag);
+			logger.info("audioTag:{}", aTag);
 			if(aTag.isSequenceHeader()) {
 				audioMshTag = aTag;
 				return;

@@ -29,7 +29,7 @@ public class AudioGapFlvMaker {
 	 */
 //	@Test
 	public void audio() throws Exception {
-		logger.info("InvalidFlvをつくります。");
+		logger.info("try to make audio flv with timestamp gap.");
 		IFileReadChannel source = FileReadChannel.openFileReadChannel("longvp6mp3.flv");
 		FlvTagReader reader = new FlvTagReader();
 		FileChannel audioOutput0 = new FileOutputStream("gapped.flv").getChannel(); // 通常
@@ -52,7 +52,7 @@ public class AudioGapFlvMaker {
 				}
 				else {
 					if(aTag.getPts() > lastPts + 1000) {
-						logger.info("insert実行" + (lastPts + 1000));
+						logger.info("insert:" + (lastPts + 1000));
 						int channels = aTag.getChannels();
 						int sampleRate = aTag.getSampleRate();
 						IAudioFrame insertFrame = null;
@@ -64,7 +64,7 @@ public class AudioGapFlvMaker {
 							insertFrame = Mp3Frame.getMutedFrame(sampleRate, channels, 16);
 							break;
 						default:
-							throw new RuntimeException("想定外のframeでした");
+							throw new RuntimeException("this is unexpected frame:" + aTag.getCodec());
 						}
 						aTag = new AudioTag();
 						aTag.addFrame(insertFrame);
@@ -77,7 +77,7 @@ public class AudioGapFlvMaker {
 				}
 			}
 		}
-		logger.info("処理おわり");
+		logger.info("end");
 		source.close();
 		audioOutput0.close();
 	}

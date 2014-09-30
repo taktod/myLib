@@ -73,7 +73,7 @@ public class OggPageWriter implements IWriter {
 		if(frame instanceof IAudioFrame) {
 			IAudioFrame aFrame = (IAudioFrame)frame;
 			addedSampleNum += aFrame.getSampleNum();
-			logger.info("フレーム追加:" + frame);
+			logger.info("add Frame:" + frame);
 			OggPage targetPage = null;
 			if(pageMap.get(trackId) == null) {
 				targetPage = new StartPage(new Bit8(), new Bit1(), new Bit1(1), new Bit1(), new Bit5());
@@ -128,7 +128,7 @@ public class OggPageWriter implements IWriter {
 	 * 現在扱っているページが完了したとする
 	 */
 	public void completePage(int trackId) throws Exception {
-		logger.info("強制pageComplete");
+		logger.info("force pageComplete");
 		OggPage page = pageMap.get(trackId);
 		logger.info(page.getClass());
 		// このタイミングでgranulePositionを書き込まないとだめ

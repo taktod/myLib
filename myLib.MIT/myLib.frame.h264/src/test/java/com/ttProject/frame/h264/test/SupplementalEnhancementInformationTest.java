@@ -73,7 +73,7 @@ public class SupplementalEnhancementInformationTest {
 	}
 	@Test
 	public void timeperiodTest() throws Exception {
-		logger.info("テスト開始");
+		logger.info("test start");
 		IReadChannel target = new ByteReadChannel(HexUtil.makeBuffer("000380000090806D7DA9000000"));
 		BitLoader loader = new BitLoader(target);
 		Bit32 cpbRemovalDelay = new Bit32();

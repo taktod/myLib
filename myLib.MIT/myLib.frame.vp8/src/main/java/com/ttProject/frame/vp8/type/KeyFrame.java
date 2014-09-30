@@ -46,7 +46,7 @@ public class KeyFrame extends Vp8Frame {
 		if(buffer.get() != startCode[0]
 		|| buffer.get() != startCode[1]
 		|| buffer.get() != startCode[2]) {
-			logger.info("keyFrameのstartCodeがおかしいです。");
+			logger.info("start code of keyFrame is corrupted");
 		}
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);

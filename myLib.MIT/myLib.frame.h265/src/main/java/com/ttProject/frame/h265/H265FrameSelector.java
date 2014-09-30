@@ -43,7 +43,7 @@ public class H265FrameSelector extends VideoSelector {
 		loader.load(forbiddenZeroBit, nalUnitType,
 				nuhLayerId, nuhTemporalIdPlus1);
 		H265Frame frame = null;
-		logger.info("frameの読み込みを開始します。:type:" + Type.getType(nalUnitType.get()));
+		logger.info("start to read frame:type:" + Type.getType(nalUnitType.get()));
 		switch(Type.getType(nalUnitType.get())) {
 		case VPS_NUT:
 			frame = new VpsNut(forbiddenZeroBit, nalUnitType, nuhLayerId, nuhTemporalIdPlus1);

@@ -36,7 +36,7 @@ public class Mp3Test {
 			}
 		}
 		catch(Exception e) {
-			logger.warn("例外発生", e);
+			logger.warn(e);
 		}
 		finally {
 			if(source != null) {

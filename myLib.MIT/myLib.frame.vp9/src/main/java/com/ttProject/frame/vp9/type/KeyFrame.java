@@ -52,13 +52,12 @@ public class KeyFrame extends Vp9Frame {
 	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		logger.info("minimumLoadを実施します。");
 		// ここでframeのwidth x heightあたりはおさえておきたいところ。
 		ByteBuffer buffer = BufferUtil.safeRead(channel, 3);
 		if(buffer.get() != startCode[0]
 		|| buffer.get() != startCode[1]
 		|| buffer.get() != startCode[2]) {
-			logger.info("keyFrameのstartCodeがおかしいです。");
+			logger.info("start code of key frame is corrupted");
 		}
 		BitLoader loader = new BitLoader(channel);
 		loader.load(colorSpace);

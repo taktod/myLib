@@ -37,12 +37,11 @@ public class Vp9WebmTest {
 					SimpleBlock simpleBlock = (SimpleBlock) container;
 					logger.info(simpleBlock);
 					logger.info(simpleBlock.getFrame());
-					logger.info("次へ進みます。");
 				}
 			}
 		}
 		catch(Exception e) {
-			logger.warn("例外発生", e);
+			logger.warn(e);
 		}
 		finally {
 			if(source != null) {

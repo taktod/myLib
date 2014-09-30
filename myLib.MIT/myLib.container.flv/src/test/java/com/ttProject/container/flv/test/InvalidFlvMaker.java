@@ -1,3 +1,9 @@
+/*
+ * myLib - https://github.com/taktod/myLib
+ * Copyright (c) 2014 ttProject. All rights reserved.
+ * 
+ * Licensed under The MIT license.
+ */
 package com.ttProject.container.flv.test;
 
 import java.io.FileOutputStream;
@@ -13,27 +19,27 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * エラーのあるflvをつくってどうなるか試してみる
+ * try to make invalid flv files.
  * @author taktod
  */
 public class InvalidFlvMaker {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(InvalidFlvMaker.class);
 	/**
-	 * 音声の変なファイル作成
+	 * error with audio.
 	 * @throws Exception
 	 */
 //	@Test
 	public void audio() throws Exception {
-		logger.info("InvalidFlvをつくります。");
+		logger.info("make invalid flvs.");
 		IFileReadChannel source = FileReadChannel.openFileReadChannel("http://49.212.39.17/mario.flv");
 		FlvTagReader reader = new FlvTagReader();
 		FileOutputStream audioOutputStream0 = new FileOutputStream("audioOutput0.flv");
-		FileChannel audioOutput0 = audioOutputStream0.getChannel(); // 通常
+		FileChannel audioOutput0 = audioOutputStream0.getChannel(); // normal
 		FileOutputStream audioOutputStream1 = new FileOutputStream("audioOutput1.flv");
-		FileChannel audioOutput1 = audioOutputStream1.getChannel(); // 開始位置がずれてる(20秒)
+		FileChannel audioOutput1 = audioOutputStream1.getChannel(); // start with 20 sec pos.
 		FileOutputStream audioOutputStream2 = new FileOutputStream("audioOutput2.flv");
-		FileChannel audioOutput2 = audioOutputStream2.getChannel(); // 20秒目から40秒目までデータがぬけてる
+		FileChannel audioOutput2 = audioOutputStream2.getChannel(); // have gap between 20sec to 40sec.
 		FlvHeaderTag headerTag = new FlvHeaderTag();
 		headerTag.setAudioFlag(true);
 		headerTag.setVideoFlag(false);
@@ -53,7 +59,7 @@ public class InvalidFlvMaker {
 				audioOutput1.write(aTag.getData());
 			}
 		}
-		logger.info("処理おわり");
+		logger.info("end");
 		source.close();
 		audioOutputStream0.close();
 		audioOutputStream1.close();

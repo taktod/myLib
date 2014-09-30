@@ -55,7 +55,6 @@ public class CommentFrame extends OpusFrame {
 	}
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		logger.info("ここで読み込みを実施する。");
 		IReadChannel targetChannel = null;
 		if(tmpBuffer != null) {
 			tmpBuffer = BufferUtil.connect(

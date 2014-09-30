@@ -101,7 +101,7 @@ public class EachTagTest {
 		logger.info(HexUtil.toHex(samplingFrequency.getData(), true));
 		logger.info("size:" + samplingFrequency.getSize());
 		// B5 84 47 2C 44 00
-		logger.info("durationテスト");
+		logger.info("duration test");
 		Duration duration = new Duration();
 		duration.setValue(1D);
 		logger.info(HexUtil.toHex(duration.getData(), true));

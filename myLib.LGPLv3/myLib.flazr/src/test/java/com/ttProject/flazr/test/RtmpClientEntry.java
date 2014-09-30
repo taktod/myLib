@@ -38,14 +38,14 @@ public class RtmpClientEntry {
 			connect(options);
 			return;
 		}
-		logger.error("シングルのみ許可しています。");
+		logger.error("only for one connection.");
 	}
 	public static void connect(ClientOptions options) {
 		ClientBootstrap bootstrap = getBootstrap(Executors.newCachedThreadPool(), options);
 		ChannelFuture future = bootstrap.connect(new InetSocketAddress(options.getHost(), options.getPort()));
 		future.awaitUninterruptibly();
 		if(!future.isSuccess()) {
-			logger.error("client接続をつくるのに失敗した。");
+			logger.error("failed to make client connection.");
 		}
 		future.getChannel().getCloseFuture().awaitUninterruptibly();
 		bootstrap.getFactory().releaseExternalResources();

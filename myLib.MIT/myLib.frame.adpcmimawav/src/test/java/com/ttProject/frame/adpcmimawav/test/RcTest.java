@@ -23,7 +23,7 @@ public class RcTest {
 	private Logger logger = Logger.getLogger(RcTest.class);
 //	@Test
 	public void test() throws Exception {
-		logger.info("テスト開始");
+		logger.info("test start");
 		IReadChannel channel = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().
 					getResource("test_mono.wav")
@@ -40,7 +40,7 @@ public class RcTest {
 				length ++;
 			}
 		}
-		logger.info("オリジナルサイズ:" + Long.toHexString(length));
+		logger.info("original size:" + Long.toHexString(length));
 	}
 	/*
 	 * range coderの処理を実施します。

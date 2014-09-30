@@ -431,7 +431,6 @@ public class MkvTagWriter implements IWriter {
 		}
 		if(!trackEntryMap.containsKey(trackId)) {
 			// trackEntryMap化していないトラック
-			logger.info("trackEntryMap化していないトラックだった。" + trackId);
 			TrackEntry findTrackEntry = null;
 			for(TrackEntry trackEntry : trackEntries) {
 				if(trackEntry.getCodecType() == frame.getCodecType()) {
@@ -446,7 +445,7 @@ public class MkvTagWriter implements IWriter {
 
 				// この完了して、headerを構築する部分も別関数化しておきたいけど・・・
 				if(isReadyToWork()) {
-					logger.info("全トラック情報がみつかったので、調整しておく。");
+					logger.info("now all track information is ready.");
 					makeHeader();
 				}
 				// データが構築済みになっていないので、データを保持しておく必要あるかも・・・
@@ -457,11 +456,9 @@ public class MkvTagWriter implements IWriter {
 //		logger.info("pts:" + pts + " " + frame.getCodecType());
 		if(pts >= nextClusterPts) {
 			long duration = defaultTimebase;
-//			logger.info("次のclusterを作る必要があります。:" + nextClusterPts + ":" + duration);
-			// clusterをつくって登録しておく
+//			logger.info("need to make next cluster:" + nextClusterPts + ":" + duration);
 			Cluster newCluster = new Cluster();
 			newCluster.setupTimeinfo(nextClusterPts, defaultTimebase, duration);
-			// clusterは250ミリ秒ごとにつくっていく。
 			clusterList.add(newCluster);
 			nextClusterPts += duration;
 		}
@@ -471,7 +468,6 @@ public class MkvTagWriter implements IWriter {
 		int count = 0;
 		for(Cluster cluster : clusterList) {
 			if(cluster.addFrame(trackId, frame) != null) {
-				// clusterが完了したと判定しているのが、おかしいことがあるみたい。
 				if(cluster.isCompleteCluster()) {
 					count ++;
 				}
@@ -481,16 +477,15 @@ public class MkvTagWriter implements IWriter {
 		}
 		for(int i = 0;i < count;i ++) {
 			Cluster cluster = clusterList.remove(0);
-			logger.info("clusterが完了したので、データの書き込みを実施したい。");
+			logger.info("cluster is completed, try to write data.");
 			cluster.setupComplete();
 			if(isReadyToWork()) {
-				logger.info("実際の書き込み実施");
+				logger.info("write cluster.");
 				addContainer(cluster);
 			}
 			else {
-				logger.info("初期化前なので捨てます。");
+				logger.info("dispose cluster, because header info is not ready.");
 			}
-//			logger.info(cluster);
 		}
 	}
 	private boolean isReadyToWork() {

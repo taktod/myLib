@@ -56,7 +56,7 @@ public abstract class AudioRecord extends DescriptionRecord {
 		IContainer container = null;
 		StsdAtomReader reader = new StsdAtomReader();
 		while(targetSize > 0 && (container = reader.read(channel)) != null) {
-			logger.info("みつけたコンテナ:" + container);
+			logger.info("found container:" + container);
 			boxes.add((Mp4Atom)container);
 			targetSize -= container.getSize();
 		}

@@ -24,6 +24,7 @@ import com.ttProject.util.BufferUtil;
  */
 public class Data extends RiffUnit {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Data.class);
 	// 経過時間はこっちで調整する必要あり。
 	/** 音声用の経過時刻保持 */
@@ -36,7 +37,6 @@ public class Data extends RiffUnit {
 	public void load(IReadChannel channel) throws Exception {
 	}
 	public void analyzeFrame(IReadChannel channel, IFrameEventListener listener) throws Exception {
-		logger.info("frameを解析しようと思います。");
 		Fmt fmt = getFmt();
 		while(channel.position() < channel.size()) {
 			// ここのfmt.getBlockSizeの値がpcm_alawとpcm_mulawの場合に１になって、いやな感じのデータになってしまう。

@@ -46,17 +46,15 @@ public class Mp3UnitWriter implements IWriter {
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
 		if(frame instanceof Frame) {
-			logger.info("frameを書き込む" + frame.toString());
+			logger.info("write frame:" + frame.toString());
 			outputChannel.write(frame.getData());
 		}
 	}
 	@Override
 	public void prepareHeader(CodecType ...codecs) {
-		logger.info("header準備");
 	}
 	@Override
 	public void prepareTailer() {
-		logger.info("tailer準備");
 		if(outputStream != null) {
 			try {
 				outputStream.close();

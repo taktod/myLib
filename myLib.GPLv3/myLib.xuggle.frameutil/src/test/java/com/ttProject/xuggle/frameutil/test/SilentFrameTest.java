@@ -34,13 +34,13 @@ public class SilentFrameTest {
 	 */
 //	@Test
 	public void test() throws Exception {
-		logger.info("動作テスト開始");
+		logger.info("test start");
 		IStreamCoder encoder = IStreamCoder.make(Direction.ENCODING, ICodec.ID.CODEC_ID_VORBIS);
 		encoder.setSampleRate(32000);
 		encoder.setBitRate(48000);
 		encoder.setChannels(1);
 		if(encoder.open(null, null) < 0) {
-			throw new Exception("encoderがひらけませんでした。");
+			throw new Exception("failed to open encoder.");
 		}
 		ByteBuffer buffer = encoder.getExtraData().getByteBuffer(0, encoder.getExtraDataSize());
 		logger.info(HexUtil.toHex(buffer, true));
@@ -87,6 +87,6 @@ public class SilentFrameTest {
 				lastCount = sampleConsumed;
 			}
 		}
-		logger.info("終わり");
+		logger.info("end");
 	}
 }

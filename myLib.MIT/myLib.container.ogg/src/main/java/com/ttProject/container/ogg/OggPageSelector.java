@@ -40,7 +40,7 @@ public class OggPageSelector implements ISelector {
 			// もうデータがない
 			return null;
 		}
-		logger.info("位置:" + Integer.toHexString(channel.position()));
+		logger.info("position:" + Integer.toHexString(channel.position()));
 		// 先頭データ4byteを取得して、OggSであるか確認
 		String pattern = new String(BufferUtil.safeRead(channel, 4).array());
 		if(!OggPage.capturePattern.equals(pattern)) {

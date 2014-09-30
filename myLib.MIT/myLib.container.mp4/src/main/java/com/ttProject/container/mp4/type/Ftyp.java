@@ -52,7 +52,7 @@ public class Ftyp extends Mp4Atom {
 		super.minimumLoad(channel);
 		// campatibleBrandの数を計算しておく。
 		int numOfCompatibleBrand = (getSize() - 16) / 4;
-		logger.info("campatibleBrandの数:" + numOfCompatibleBrand);
+		logger.info("num of campatibleBrand:" + numOfCompatibleBrand);
 		BitLoader loader = new BitLoader(channel);
 		loader.load(majorBrand, minorVersion);
 		logger.info("majorBrand:" + IntUtil.makeHexString(majorBrand.get()));

@@ -76,7 +76,7 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 			incompletePayloads[channelId] = null;
 			try {
 				if(header.getMessageType() == MessageType.SHARED_OBJECT_AMF3) {
-					logger.warn("解釈が設定されていない命令なので、無視しておきます。(このままだとプロセスが落ちます)");
+					logger.warn("unknown order, just ignore.(will shutdown process.)");
 					logger.info("type:{}, dump:{}", header.getMessageType(), HexUtil.toHex(bytes, true));
 					return null;
 				}

@@ -33,7 +33,7 @@ public class WebmWriteTest {
 	 */
 	@Test
 	public void test() throws Exception {
-		logger.info("書き込みテスト開始");
+		logger.info("start write test.");
 		IReadChannel source = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("test.webm")
 		);
@@ -50,6 +50,6 @@ public class WebmWriteTest {
 			}
 		}
 		writer.prepareTailer();
-		logger.info("処理おわり");
+		logger.info("end");
 	}
 }

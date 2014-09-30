@@ -134,7 +134,7 @@ public class MpegtsPacketSelector implements ISelector {
 			packet = pes;
 		}
 		else {
-			logger.info("その他データ" + Integer.toHexString(pid.get()));
+			logger.info("other data." + Integer.toHexString(pid.get()));
 			// esPidであるか確認
 			// その他(よくわからないのでスルーする)
 			return null;

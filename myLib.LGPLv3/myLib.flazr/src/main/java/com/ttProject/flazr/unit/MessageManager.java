@@ -105,7 +105,6 @@ public class MessageManager {
 			in.skipBytes(4);
 			FlvTag tag = (FlvTag)flvTagReader.read(new ByteReadChannel(buffer));
 			if(tag != null) {
-//				logger.info("aTagから取り出したTag:{}", tag);
 				aTag.add(tag);
 			}
 		}

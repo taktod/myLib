@@ -57,7 +57,7 @@ public class Stsd extends Mp4Atom {
 		for(int i = 0;i < count.get();i ++) {
 			DescriptionRecord record = (DescriptionRecord)stsdAtomReader.read(channel);
 			if(record == null) {
-				logger.info("recordがありませんでした。");
+				logger.info("no record found.");
 			}
 			else {
 				logger.info(record);

@@ -23,7 +23,7 @@ public class Crc32Test {
 	private Logger logger = Logger.getLogger(Crc32Test.class);
 	@Test
 	public void test() throws Exception {
-		logger.info("crc32の計算のしかた確認");
+		logger.info("check the result of crc32");
 		// 67277B3A
 //		ByteBuffer buffer = HexUtil.makeBuffer("1A45DFA399BF8467277B3A4282886D6174726F736B614287810242858102");
 //		ByteBuffer buffer = HexUtil.makeBuffer("1A45DFA399BF84000000004282886D6174726F736B614287810242858102");

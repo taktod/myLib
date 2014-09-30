@@ -38,7 +38,7 @@ public class ChcTest {
 	 */
 //	@Test
 	public void test() throws Exception {
-		logger.info("チェック開始");
+		logger.info("start to check.");
 		IReadChannel channel = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("bm_mono.wav")
 //				Thread.currentThread().getContextClassLoader().getResource("test_mono.wav")
@@ -79,7 +79,6 @@ public class ChcTest {
 		for(int i = 0;i < 16;i ++) {
 			dat.append(i).append(":").append(order[i]).append(" ");
 		}
-		logger.info("最終1位回数メモ");
 		logger.info(dat.toString());
 	}
 	/*
@@ -198,7 +197,7 @@ public class ChcTest {
 	}
 //	@Test
 	public void test2() throws Exception {
-		logger.info("チェック開始");
+		logger.info("start to check.");
 		IReadChannel channel = FileReadChannel.openFileReadChannel(
 //				Thread.currentThread().getContextClassLoader().getResource("test_mono.wav")
 				Thread.currentThread().getContextClassLoader().getResource("rtype_mono.wav")
@@ -338,7 +337,7 @@ public class ChcTest {
 	 */
 //	@Test
 	public void test3() throws Exception {
-		logger.info("チェック開始");
+		logger.info("start to check");
 		IReadChannel channel = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("test_mono.wav")
 //				Thread.currentThread().getContextClassLoader().getResource("bm_mono.wav")

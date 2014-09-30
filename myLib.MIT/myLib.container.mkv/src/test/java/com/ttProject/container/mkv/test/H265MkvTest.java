@@ -54,12 +54,11 @@ public class H265MkvTest {
 			}
 		}
 		catch(Exception e) {
-			logger.warn("例外発生", e);
+			logger.warn(e);
 			try {
-				logger.warn("エラー発生場所:" + Integer.toHexString(lastPosition));
+				logger.warn("position:" + Integer.toHexString(lastPosition));
 			}
 			catch(Exception ex) {
-				
 			}
 		}
 		finally {

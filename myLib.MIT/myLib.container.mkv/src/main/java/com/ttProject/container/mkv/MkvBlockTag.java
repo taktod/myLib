@@ -165,24 +165,24 @@ public abstract class MkvBlockTag extends MkvBinaryTag {
 								logger.info(compression);
 								switch(compression.getAlgoType()) {
 								case Zlib:
-									throw new Exception("zlib動作は作成できていません。作者に問い合わせてください");
+									throw new Exception("zlib is not supported, I need sample.");
 								case HeaderStripping:
-									logger.info("stripでした。");
+									logger.info("header stripping...");
 									for(Integer size : lacingSizeList) {
 										analyzeFrame(entry, new ByteReadChannel(BufferUtil.connect(compression.getSettingData(), BufferUtil.safeRead(channel, size))));
 									}
 									break;
 								default:
-									throw new Exception("非推奨な圧縮形式でした。:" + compression.getAlgoType());
+									throw new Exception("this algo type is not supported:" + compression.getAlgoType());
 								}
 							}
 							else {
-								throw new Exception("encodingの保持データが未知なものを発見しました。:" + etag);
+								throw new Exception("unknown encoding data is founded.:" + etag);
 							}
 						}
 					}
 					else {
-						throw new Exception("contentEncodingsが想定外のデータを保持していました。:" + tag);
+						throw new Exception("contentEncodings has unexpected data.:" + tag);
 					}
 				}
 			}

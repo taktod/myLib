@@ -46,7 +46,7 @@ public class FlvToTest {
 	 */
 //	@Test
 	public void mp3() throws Exception {
-		logger.info("mp3に変換する動作テスト");
+		logger.info("from flv to mp3 test.");
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("mp3.flv")
@@ -61,7 +61,7 @@ public class FlvToTest {
 	 */
 	@Test
 	public void adts() throws Exception {
-		logger.info("adtsに変換する動作テスト");
+		logger.info("from flv to adts test");
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("aac.flv")
@@ -77,7 +77,7 @@ public class FlvToTest {
 	@Test
 	public void ogg() throws Exception {
 		OggPageWriter writer = new OggPageWriter("output.ogg");
-		logger.info("oggに変換する動作テスト");
+		logger.info("from flv to ogg test");
 		HeaderFrame headerFrame = new HeaderFrame();
 		headerFrame.fillWithFlvDefault();
 		writer.addFrame(1, headerFrame);
@@ -102,7 +102,7 @@ public class FlvToTest {
 	 */
 	@Test
 	public void mpegts_mp3() throws Exception {
-		logger.info("mpegtsに変換するテスト(mp3)");
+		logger.info("from flv to mpegts test(mp3)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_mp3.ts");
 		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
 		// とりあえずsdt pat pmtを設定しなければいけない。
@@ -135,7 +135,7 @@ public class FlvToTest {
 	 */
 	@Test
 	public void mpegts_aac() throws Exception {
-		logger.info("mpegtsに変換するテスト(aac)");
+		logger.info("from flv to mpegts test(aac)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_aac.ts");
 		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
 		// とりあえずsdt pat pmtを設定しなければいけない。
@@ -168,7 +168,7 @@ public class FlvToTest {
 	 */
 	@Test
 	public void mpegts_h264() throws Exception {
-		logger.info("mpegtsに変換するテスト(h264)");
+		logger.info("from flv to mpegts test(h264)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_h264.ts");
 		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
 		// とりあえずsdt pat pmtを設定しなければいけない。
@@ -201,7 +201,7 @@ public class FlvToTest {
 	 */
 	@Test
 	public void mpegts_h264_aac() throws Exception {
-		logger.info("mpegtsに変換するテスト(h264 / aac)");
+		logger.info("from flv to mpegts test(h264 / aac)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_h264_aac.ts");
 		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
 		// とりあえずsdt pat pmtを設定しなければいけない。
@@ -232,11 +232,12 @@ public class FlvToTest {
 	}
 	/**
 	 * mpegtsのh264の変換テスト
+	 * iPhoneで取った複数sliceで成立するh264のデータ
 	 * @throws Exception
 	 */
 	@Test
 	public void mpegts_h264_aac_ex() throws Exception {
-		logger.info("mpegtsに変換するテスト(h264 / aac)");
+		logger.info("from flv to mpegts test(h264 / aac)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_h264_aac_ex.ts");
 		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
 		// とりあえずsdt pat pmtを設定しなければいけない。
@@ -272,7 +273,7 @@ public class FlvToTest {
 	 */
 	@Test
 	public void flv_mp3() throws Exception {
-		logger.info("flvに変換するテスト(mp3)");
+		logger.info("from flv to flv test(mp3)");
 		FlvTagWriter writer = new FlvTagWriter("output_mp3.flv");
 		writer.prepareHeader(CodecType.MP3);
 		convertTest(
@@ -291,7 +292,7 @@ public class FlvToTest {
 	 */
 	@Test
 	public void flv_aac() throws Exception {
-		logger.info("flvに変換するテスト(aac)");
+		logger.info("from flv to flv test(aac)");
 		FlvTagWriter writer = new FlvTagWriter("output_aac.flv");
 		writer.prepareHeader(CodecType.AAC);
 		convertTest(
@@ -310,7 +311,7 @@ public class FlvToTest {
 	 */
 	@Test
 	public void flv_flv1() throws Exception {
-		logger.info("flvに変換するテスト(flv1)");
+		logger.info("from flv to flv test(flv1)");
 		FlvTagWriter writer = new FlvTagWriter("output_flv1.flv");
 		writer.prepareHeader(CodecType.FLV1);
 		convertTest(
@@ -329,7 +330,7 @@ public class FlvToTest {
 	 */
 	@Test
 	public void flv_h264() throws Exception {
-		logger.info("flvに変換するテスト(h264)");
+		logger.info("from flv to flv test(h264)");
 		FlvTagWriter writer = new FlvTagWriter("output_h264.flv");
 		writer.prepareHeader(CodecType.H264);
 		convertTest(
@@ -367,7 +368,7 @@ public class FlvToTest {
 			writer.prepareTailer();
 		}
 		catch(Exception e) {
-			logger.error("例外発生", e);
+			logger.error(e);
 		}
 		finally {
 			if(source != null) {

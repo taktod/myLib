@@ -40,7 +40,7 @@ public class ProfileTierLevel {
 	private Bit1[] subLayerProfilePresentFlag = null;
 	private Bit1[] subLayerLevelPresentFlag = null;
 	public void minimumLoad(BitLoader loader, int maxSubLayersMinus1) throws Exception {
-		logger.info("profileTierLevelを読み込みます:" + maxSubLayersMinus1);
+		logger.info("profileTierLevel:" + maxSubLayersMinus1);
 		if(maxSubLayersMinus1 != 0) {
 			throw new RuntimeException("知らない形式のh265でした、開発者に問い合わせて実装してもらってください。");
 		}

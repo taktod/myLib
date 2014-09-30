@@ -25,7 +25,7 @@ public class RedisTest {
 	 */
 //	@Test
 	public void poolTest() throws Exception {
-		logger.info("jedisPoolテスト");
+		logger.info("jedisPool test");
 		JedisPoolConfig config = new JedisPoolConfig();
 		config.setMaxTotal(12);
 		JedisPool pool = new JedisPool(config, "localhost", 6379);
@@ -45,7 +45,7 @@ public class RedisTest {
 	 */
 //	@Test
 	public void singleTest() throws Exception {
-		logger.info("jedisテスト");
+		logger.info("jedis test");
 		Jedis jedis = null;
 		try {
 			jedis = new Jedis("localhost", 6379);

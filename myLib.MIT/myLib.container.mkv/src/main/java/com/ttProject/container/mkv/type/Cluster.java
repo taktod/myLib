@@ -27,7 +27,7 @@ import com.ttProject.unit.extra.EbmlValue;
  * @author taktod
  */
 public class Cluster extends MkvMasterTag {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Cluster.class);
 	/** このクラスタの時間上でのサイズ */
@@ -101,12 +101,12 @@ public class Cluster extends MkvMasterTag {
 			return null;
 		}
 		if(pts >= 0 && pts < duration) {
-//			logger.info("内部に入るデータだった:" + getPts() + " " + frame);
+//			logger.info("data for this cluster:" + getPts() + " " + frame);
 			// 内部に入るデータ
 			setupSimpleBlock(trackId, frame, pts);
 			return null;
 		}
-//		logger.info("除外データだった:" + getPts() + " " + frame);
+//		logger.info("not for this cluster:" + getPts() + " " + frame);
 		trackIdSet.remove((Integer)trackId);
 		return frame;
 	}

@@ -31,7 +31,7 @@ public class MultiMpegtsToTest {
 	 */
 	@Test
 	public void makeMultiFlvTest() throws Exception {
-		logger.info("複数トラックのmpegtsからflvを作ります。");
+		logger.info("make flv from multiple track mpegts test.");
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					"http://49.212.39.17/mario_3video_1audio.ts"
@@ -88,7 +88,7 @@ public class MultiMpegtsToTest {
 			}
 		}
 		catch(Exception e) {
-			logger.warn("例外発生", e);
+			logger.warn(e);
 		}
 		finally {
 			if(writer1 != null) {

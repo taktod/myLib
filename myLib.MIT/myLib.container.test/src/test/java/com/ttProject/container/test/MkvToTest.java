@@ -32,7 +32,7 @@ public class MkvToTest {
 	 */
 	@Test
 	public void flv_h264_aac_ex2() throws Exception {
-		logger.info("flvに変換するテスト(h264 / aac)");
+		logger.info("from mkv to flv test(h264 / aac)");
 		FlvTagWriter writer = new FlvTagWriter("output_mpegts_h264_aac_ex2.flv");
 		FlvHeaderTag flvHeader = new FlvHeaderTag();
 		flvHeader.setAudioFlag(true);
@@ -67,7 +67,7 @@ public class MkvToTest {
 			writer.prepareTailer();
 		}
 		catch(Exception e) {
-			logger.error("例外発生", e);
+			logger.error(e);
 		}
 		finally {
 			if(source != null) {

@@ -144,7 +144,7 @@ public class MpegtsPacketWriter implements IWriter {
 			}
 			catch(Exception e) {
 				// ここで例外がでるのがそもそもおかしいけど・・・
-				logger.error("例外がでた。", e);
+				logger.error(e);
 			}
 		}
 		if(outputStream != null) {

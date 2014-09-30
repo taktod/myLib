@@ -106,7 +106,6 @@ public class RangeCoder {
 				carryBuffer = 0x00;
 			}
  			low = low & 0x00FFFFFF;
-//			logger.info("桁上がり検出");
 		}
 		if(range < rangeBorder) {
 			// 繰り上がり用のbufferが0xffの場合は繰り上げを実施せずに、countを増やしておく。

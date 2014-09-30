@@ -20,7 +20,7 @@ public class Crc32Test {
 	private Logger logger = Logger.getLogger(Crc32Test.class);
 //	@Test
 	public void test() {
-		logger.info("crc32動作テスト:mpegtsのコピー");
+		logger.info("crc32 work test:copy from mpegts");
 		Crc32 crc32 = new Crc32();
 		// Patのサンプル474000100000B00D0001C100000001F0002AB104B2
 		// 000B00D0001C100000001F000の部分が計算して2AB104B2になればよい
@@ -28,7 +28,7 @@ public class Crc32Test {
 		while(buffer.remaining() != 0) {
 			crc32.update(buffer.get());
 		}
-		Assert.assertEquals("crc32の値確認", 0x2AB104B2, crc32.getValue());
+		Assert.assertEquals("result check", 0x2AB104B2, crc32.getValue());
 	}
 	@Test
 	public void test2() {

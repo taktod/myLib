@@ -32,7 +32,7 @@ public class ConvertTest {
 	 */
 	@Test
 	public void test() throws Exception {
-		logger.info("変換動作テスト");
+		logger.info("convert test");
 		IReadChannel source = FileReadChannel.openFileReadChannel(
 				"http://49.212.39.17/mario.flv"
 		);
@@ -51,6 +51,6 @@ public class ConvertTest {
 			}
 		}
 		writer.prepareTailer();
-		logger.info("処理おわり");
+		logger.info("end");
 	}
 }

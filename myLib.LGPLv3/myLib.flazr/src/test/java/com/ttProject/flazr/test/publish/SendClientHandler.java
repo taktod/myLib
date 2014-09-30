@@ -63,7 +63,7 @@ public class SendClientHandler extends ClientHandler {
 	 */
 	public void publish() {
 		if(options.getPublishType() != null) {
-			logger.info("publishを送信します。:" + streamId);
+			logger.info("send publish:" + streamId);
 			RtmpReader reader = options.getReaderToPublish();
 			publisher = new SendRtmpPublisher(reader, streamId, options.getBuffer(), false, false);
 			logger.info("channelHash2:" + channel.hashCode());
@@ -122,8 +122,8 @@ public class SendClientHandler extends ClientHandler {
 			return;
 		}
 		if(!(me.getMessage() instanceof RtmpMessage)) {
-			logger.warn("rtmpMessageではないメッセージが処理に回されそうになりました。");
-			logger.warn("クラス情報:{}", me.getMessage().getClass());
+			logger.warn("got non RtmpMessage.");
+			logger.warn("class information:{}", me.getMessage().getClass());
 			return;
 		}
 		final RtmpMessage message = (RtmpMessage) me.getMessage();

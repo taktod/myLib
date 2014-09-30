@@ -44,19 +44,19 @@ public class AdtsUnitWriter implements IWriter {
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
 		if(frame instanceof Frame) {
-			logger.info("frameを書き込む" + frame.toString());
+			logger.info("write frame:" + frame.toString());
 			outputChannel.write(frame.getData());
 		}
 	}
 
 	@Override
 	public void prepareHeader(CodecType... codecs) throws Exception {
-		logger.info("header準備");
+		logger.info("prepare header");
 	}
 
 	@Override
 	public void prepareTailer() throws Exception {
-		logger.info("tailer準備");
+		logger.info("prepare tailer");
 		if(outputStream != null) {
 			try {
 				outputStream.close();

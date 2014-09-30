@@ -55,7 +55,7 @@ public class FrameToPesConverter {
 	 * @throws Exception
 	 */
 	public Pes getPeses(int pid, Pmt pmt, IFrame frame) throws Exception {
-		logger.info("追加フレーム:" + frame);
+		logger.info("add frame:" + frame);
 		if(frame instanceof VideoFrame) {
 			return getVideoPes(pid, pmt, (VideoFrame)frame);
 		}
@@ -72,7 +72,7 @@ public class FrameToPesConverter {
 	 * @throws Exception
 	 */
 	private Pes makeNewPes(int pid, Pmt pmt) throws Exception {
-		logger.info("pesを作成します:" + Integer.toHexString(pid));
+		logger.info("make pes:" + Integer.toHexString(pid));
 		Pes pes = new Pes(pid, pmt.getPcrPid() == pid);
 		for(PmtElementaryField peField : pmt.getFields()) {
 			if(pid == peField.getPid()) {

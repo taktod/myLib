@@ -174,9 +174,8 @@ public class TrackEntry extends MkvMasterTag {
 			analyzer = dataNalAnalyzer;
 			break;
 		case V_MPEG_ISO_HEVC:
-			logger.info("h265の動作もあやしいけど・・・");
+			logger.info("h265 is not check yet.");
 			analyzer = new H265DataNalAnalyzer();
-			// ここでconfigDataの解析が必要っぽい。
 			com.ttProject.frame.h265.ConfigData h265ConfigData = new com.ttProject.frame.h265.ConfigData();
 			h265ConfigData.setSelector((H265FrameSelector)((H265DataNalAnalyzer)analyzer).getSelector());
 			h265ConfigData.analyze(new ByteReadChannel(codecPrivate.getMkvData()));
@@ -192,11 +191,11 @@ public class TrackEntry extends MkvMasterTag {
 			analyzer = new Vp8FrameAnalyzer();
 			break;
 		case V_VP9:
-			logger.info("vp9の動作は作成中です。");
+			logger.info("vp9 is not check yet.");
 			analyzer = new Vp9FrameAnalyzer();
 			break;
 		default:
-			throw new Exception("想定外のcodecでした。");
+			throw new Exception("unexpected codec.");
 		}
 		if(analyzer instanceof AudioAnalyzer) {
 			AudioSelector selector = ((AudioAnalyzer)analyzer).getSelector();
@@ -314,7 +313,7 @@ public class TrackEntry extends MkvMasterTag {
 				break;
 			case SPEEX:
 			case OPUS:
-				logger.error(aFrame.getCodecType() + "の処理はまだ未作成");
+				logger.error(aFrame.getCodecType() + " is under construction.");
 				break;
 			default:
 				break;
@@ -346,7 +345,7 @@ public class TrackEntry extends MkvMasterTag {
 				}
 				break;
 			case H265:
-				logger.error("h265はまだ未実装です。");
+				logger.error("h265 is under construction.");
 				break;
 			default:
 				break;

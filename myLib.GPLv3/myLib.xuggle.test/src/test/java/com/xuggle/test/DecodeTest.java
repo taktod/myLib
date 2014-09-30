@@ -111,13 +111,13 @@ public class DecodeTest {
 		// このフレームをデコードして、何サンプル取得できたか確認しておきたいところ。
 		decoder = packetizer.getDecoder(aFrame, decoder);
 		if(decoder == null) {
-			logger.warn("フレームのデコーダーが決定できませんでした。");
+			logger.warn("decoder is null");
 			return;
 		}
 		if(!decoder.isOpen()) {
-			logger.info("デコーダーを開きます。");
+			logger.info("open decoder");
 			if(decoder.open(null, null) < 0) {
-				throw new Exception("デコーダーが開けませんでした");
+				throw new Exception("failed to open decoder");
 			}
 		}
 		IPacket pkt = packetizer.getPacket(aFrame, decodedPacket);
@@ -130,7 +130,7 @@ public class DecodeTest {
 		while(offset < decodedPacket.getSize()) {
 			int bytesDecoded = decoder.decodeAudio(samples, decodedPacket, offset);
 			if(bytesDecoded < 0) {
-				throw new Exception("データのデコードに失敗しました。");
+				throw new Exception("failed decode packet");
 			}
 			offset += bytesDecoded;
 			if(samples.isComplete()) {
@@ -155,7 +155,7 @@ public class DecodeTest {
 				|| samples.getChannels()   != resampler.getInputChannels())) {
 				// リサンプラーがない、もしくは、リサンプラーの入力フォーマットと、現状の入力フォーマットが違う場合
 				// リサンプラーを作り直す
-				logger.info("resamplerを開きます。");
+				logger.info("open resampler");
 				logger.info(samples.getSampleRate());
 				logger.info(samples.getFormat());
 				logger.info(samples.getChannels());
@@ -186,12 +186,12 @@ public class DecodeTest {
 		while(sampleConsumed < samples.getNumSamples()) {
 			int retval = encoder.encodeAudio(packet, samples, sampleConsumed);
 			if(retval < 0) {
-				throw new Exception("変換失敗");
+				throw new Exception("failed to encode.");
 			}
 			sampleConsumed += retval;
 			if(packet.isComplete()) {
 				IFrame frame = depacketizer.getFrame(encoder, packet);
-				logger.info("frameできました:" + frame);
+				logger.info("made frame:" + frame);
 				writer.addFrame(0x08, frame);
 			}
 		}

@@ -15,6 +15,7 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
+import org.junit.Test;
 
 import com.ttProject.container.mkv.MkvBlockTag;
 import com.ttProject.container.mkv.MkvTagReader;
@@ -103,7 +104,7 @@ public class AdpcmPlayTest {
 			return predictor;
 		}
 	}
-//	@Test
+	@Test
 	public void test() throws Exception {
 		SourceDataLine audioLine = null;
 		int samplingRate = 44100; // 44.1 kHz
@@ -115,7 +116,7 @@ public class AdpcmPlayTest {
 		audioLine.open(format);
 		audioLine.start();
 		
-		logger.info("テスト開始");
+		logger.info("start test");
 		// あとはこの部分からデータを取り出して、adpcmのデコードして、再生にまわす。
 		IFileReadChannel source = FileReadChannel.openFileReadChannel(
 				"http://49.212.39.17/gc-25-1-3.h264_adpcmimawav44k.mkv"

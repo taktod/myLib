@@ -462,7 +462,6 @@ public class Pes extends MpegtsPacket {
 		else if(frame instanceof IVideoFrame) {
 			// 映像フレームの場合
 			if(frame instanceof H264Frame) {
-//				logger.info("こっちがくるはず");
 				// ここでフレームをつくる必要あり。
 				// やることは、audをつくることと、pesPacketFrameをつくることの２つ
 				List<ByteBuffer> bufferList = new ArrayList<ByteBuffer>();

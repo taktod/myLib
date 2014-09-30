@@ -115,7 +115,7 @@ public class SoundTest {
 		IFileReadChannel channel = FileReadChannel.openFileReadChannel(
 				Thread.currentThread().getContextClassLoader().getResource("test_mono.wav")
 		);
-		logger.info("テスト");
+		logger.info("test");
 		channel.position(0x5c);
 		BitLoader loader = new BitLoader(channel);
 		// データを読み込んでいきます。

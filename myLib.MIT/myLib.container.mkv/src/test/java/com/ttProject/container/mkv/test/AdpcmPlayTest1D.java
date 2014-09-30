@@ -115,7 +115,7 @@ public class AdpcmPlayTest1D {
 		audioLine.open(format);
 		audioLine.start();
 		
-		logger.info("テスト開始");
+		logger.info("start test");
 		// あとはこの部分からデータを取り出して、adpcmのデコードして、再生にまわす。
 		IFileReadChannel source = FileReadChannel.openFileReadChannel(
 				"http://49.212.39.17/gc-25-1-3.h264_adpcmimawav5k.mkv"

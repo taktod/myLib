@@ -39,8 +39,7 @@ public class MpegtsToTest {
 	 */
 	@Test
 	public void flv_h264_aac_ex() throws Exception {
-		logger.info("");
-		logger.info("flvに変換するテスト(h264)");
+		logger.info("from mpegts to flv test(h264)");
 		FlvTagWriter writer = new FlvTagWriter("output_mpegts_h264_aac_ex.flv");
 		FlvHeaderTag flvHeader = new FlvHeaderTag();
 		flvHeader.setAudioFlag(true);
@@ -61,7 +60,7 @@ public class MpegtsToTest {
 	 */
 	@Test
 	public void mpegts_h264_aac_ex() throws Exception {
-		logger.info("mpegtsに変換するテスト(h264 / aac)");
+		logger.info("from mpegts to mpegts test(h264 / aac)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_mpegts_h264_aac_ex.ts");
 		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
 		// とりあえずsdt pat pmtを設定しなければいけない。
@@ -115,7 +114,7 @@ public class MpegtsToTest {
 			writer.prepareTailer();
 		}
 		catch(Exception e) {
-			logger.error("例外発生", e);
+			logger.error(e);
 		}
 		finally {
 			if(source != null) {

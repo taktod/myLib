@@ -32,6 +32,7 @@ import com.ttProject.frame.extra.VideoMultiFrame;
  */
 public class FlvTagWriter implements IWriter {
 	/** ロガー */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(FlvTagWriter.class);
 	private final WritableByteChannel outputChannel;
 	private FileOutputStream outputStream = null;
@@ -50,7 +51,6 @@ public class FlvTagWriter implements IWriter {
 	}
 	@Override
 	public void addContainer(IContainer container) throws Exception {
-		logger.info("コンテナを受け取りました。:" + container);
 		outputChannel.write(container.getData());
 	}
 	@Override
@@ -85,7 +85,6 @@ public class FlvTagWriter implements IWriter {
 	}
 	@Override
 	public void prepareHeader(CodecType... codecs) throws Exception {
-		logger.info("headerを準備します。");
 		if(codecs.length == 0) {
 			return;
 		}
@@ -102,7 +101,6 @@ public class FlvTagWriter implements IWriter {
 	}
 	@Override
 	public void prepareTailer() throws Exception {
-		logger.info("tailerを準備します。");
 		AudioTag audioTag = frameConverter.getRemainAudioTag();
 		if(audioTag != null) {
 			outputChannel.write(audioTag.getData());

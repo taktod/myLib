@@ -22,7 +22,7 @@ public class MutedFrameTest {
 	private Logger logger = Logger.getLogger(MutedFrameTest.class);
 	@Test
 	public void test() throws Exception {
-		logger.info("無音frame動作テスト");
+		logger.info("mute frame test.");
 		Frame frame = NellymoserFrame.getMutedFrame(44100, 1, 16);
 		logger.info(HexUtil.toHex(frame.getData()));
 		frame = NellymoserFrame.getMutedFrame(22050, 1, 16);
