@@ -15,7 +15,6 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.SourceDataLine;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.container.mkv.MkvBlockTag;
 import com.ttProject.container.mkv.MkvTagReader;
@@ -104,7 +103,7 @@ public class AdpcmPlayTest {
 			return predictor;
 		}
 	}
-	@Test
+//	@Test
 	public void test() throws Exception {
 		SourceDataLine audioLine = null;
 		int samplingRate = 44100; // 44.1 kHz
