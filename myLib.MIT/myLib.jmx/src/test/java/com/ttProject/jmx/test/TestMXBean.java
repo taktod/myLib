@@ -9,7 +9,7 @@ package com.ttProject.jmx.test;
 import com.ttProject.jmx.bean.MXBeanBase;
 
 /**
- * jmxBeanの実体
+ * jmxBean body
  * @author taktod
  */
 public class TestMXBean extends MXBeanBase implements ITestMXBean {

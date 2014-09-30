@@ -17,28 +17,29 @@ import java.nio.channels.ReadableByteChannel;
 import org.apache.log4j.Logger;
 
 /**
- * http経由でのデータDL用のfileChannel
+ * file Channel for remote file via http.
+ * requires range request(206)
  * @author taktod
  */
 public class URLFileReadChannel implements IFileReadChannel {
-	/** ロガー */
+	/** logger */
 	private static final Logger logger = Logger.getLogger(URLFileReadChannel.class);
-	/** ターゲットURI */
+	/** target URI */
 	private final URL url;
-	/** 接続保持 */
+	/** connection */
 	private HttpURLConnection conn;
-	/** サイズ取得 */
+	/** size information */
 	private final int size;
-	/** rangeアクセスの開始位置保持 */
+	/** range request start position */
 	private int startPos;
-	/** 読み込み済みデータ量 */
+	/** read data size */
 	private int readSize;
-	/** アクセス中かどうか */
-	private boolean open;
-	/** 読み込みチャンネル */
+	/** open flag */
+	private boolean isOpen;
+	/** target channel */
 	private ReadableByteChannel channel;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param urlString
 	 * @throws IOException
 	 */
@@ -46,8 +47,8 @@ public class URLFileReadChannel implements IFileReadChannel {
 		this(urlString, 0);
 	}
 	/**
-	 * コンストラクタ with 位置
-	 * アクセス位置がrange範囲外の場合は例外になります
+	 * constructor with position
+	 * if position is out of range request, throws Exception
 	 * @param urlString
 	 * @param position
 	 * @throws IOException
@@ -55,10 +56,11 @@ public class URLFileReadChannel implements IFileReadChannel {
 	public URLFileReadChannel(String urlString, int position) throws IOException {
 		url = new URL(urlString);
 		openConnection(position);
-		// conn.getHeaderField("Content-Length")で取得すると正しい値がStringで取得できるらしい。
+		// try to take contentLength
 		int size = conn.getContentLength();
 		if(size < 0) {
-			// データがオーバーフローしている可能性があるので、調整しておく。
+			// in the case of over 2G file.
+			// try to take from header field.
 			long lsize = Long.parseLong(conn.getHeaderField("Content-Length"));
 			if(lsize > Integer.MAX_VALUE) {
 				size = Integer.MAX_VALUE;
@@ -67,57 +69,58 @@ public class URLFileReadChannel implements IFileReadChannel {
 		this.size = size;
 	}
 	/**
-	 * コネクションを開く処理
+	 * open connection
 	 * @param position
 	 * @throws IOException
 	 */
 	private void openConnection(int position) throws IOException {
 		if(size == 0 || position < size) {
-			// オブジェクトをつくった瞬間にデータを作成します。
 			URLConnection urlConn = url.openConnection();
 			if(!(urlConn instanceof HttpURLConnection)) {
-				logger.error("コネクションを開いたところhttpではありませんでした。");
+				logger.error("connection is not via http");
 				throw new IOException("connection is not http");
 			}
 			conn = (HttpURLConnection)urlConn;
 			conn.setRequestMethod("GET");
-			conn.setAllowUserInteraction(false); // ユーザーによるパスワードの入力とかを許可するかどうか?
-			conn.setInstanceFollowRedirects(true); // サーバーのリダイレクト指示に従うか(従う)
-			// iPhone4SのUser-Agentを名乗っておく。
+			conn.setAllowUserInteraction(false);
+			conn.setInstanceFollowRedirects(true);
+			// if position is not 0, use range request.
 			if(position != 0) {
 				conn.addRequestProperty("Range", "bytes=" + position + "-");
 			}
+			// access as iPhone
 //			conn.setRequestProperty("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 6_1 like Mac OS X; ja-jp) AppleWebKit/536.26 (KHTML, like Gecko) CriOS/23.0.1271.100 Mobile/10B142 Safari/8536.25");
+			// access as chrome
 			conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.63 Safari/537.36");
-			// proxyアクセスであることを名乗っておく。
+			// let the server know proxy access.
 			conn.setRequestProperty("Via", "1.1(jetty)");
-			conn.connect(); // つなぐ
-			open = true; // 開いたことにする。
+			conn.connect();
+			isOpen = true;
 			channel = Channels.newChannel(conn.getInputStream());
 		}
 		else {
-			open = false;
+			isOpen = false;
 			if(position > size) {
-				logger.error("httpのファイルのサイズを超過した部分の位置から開こうとしました。");
+				logger.error("out of range for http.");
 				throw new IOException("out of range for http");
 			}
 		}
-		// サイズだけはとりあえず保持しておく。
-		startPos = position; // 初期位置をいれておく。
-		readSize = 0; // 読み込み済みデータ量をいれておく。
+		// update information
+		startPos = position;
+		readSize = 0;
 	}
 	/**
-	 * 接続を閉じます
+	 * close connection
 	 */
 	private void closeConnection() {
 		conn.disconnect();
-		open = false;
+		isOpen = false;
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	public boolean isOpen() {
-		return open;
+		return isOpen;
 	}
 	/**
 	 * {@inheritDoc}
@@ -127,10 +130,10 @@ public class URLFileReadChannel implements IFileReadChannel {
 		channel.read(dst);
 		int readSize = dst.position() - startPos;
 		this.readSize += readSize;
-		return readSize; // 読み込めた量を応答しておく
+		return readSize;
 	}
 	/**
-	 * コンテンツタイプを応答します。
+	 * response contents type.
 	 * @return
 	 */
 	public String getContentType() {
@@ -155,23 +158,21 @@ public class URLFileReadChannel implements IFileReadChannel {
 		if(newPosition == size) {
 			readSize = newPosition - startPos;
 		}
-		if(!open) {
+		if(!isOpen) {
 			return this;
 		}
-		// 現在のinputStreamからの読み込み位置をしっておく必要あり。
+		// calcurate skip size.
 		long skipSize = newPosition - startPos - readSize;
-		// 先に進む場合は、10k以内ならそのまままった方がよさそう。(dl終了遅延より・・・という意味)
-		if(skipSize == 0) {
+		if(skipSize == 0) { // noskip
 			return this;
 		}
+		// skip size is already downloaded.
 		if(skipSize > 0 && conn.getInputStream().available() > skipSize) {
 			readSize += skipSize;
 			conn.getInputStream().skip(skipSize);
 		}
-		else {
-			logger.info("positionの変更を実行するために、コネクションをつなぎ直す必要がでました。");
-			// 巻き戻す場合は、接続し直す必要がある。(たとえ近くても無理)
-			// それ以上離れている場合は、接続し直した方がよさそう。
+		else { // skip size is not downloaded yet or rewind. use range connection to get data.
+			logger.info("to change position, need to re-connect http.");
 			closeConnection();
 			openConnection(newPosition);
 		}
@@ -179,8 +180,7 @@ public class URLFileReadChannel implements IFileReadChannel {
 	}
 	/**
 	 * {@inheritDoc}
-	 * memo このsizeの部分ですが、アクセス先のサイトがサイズを返さない可能性もあります。
-	 * その場合は、-1になってしまいます。
+	 * MEMO For dynamic connection(like php site.). there is no size response. in this case size is -1.  
 	 */
 	public int size() {
 		return size;

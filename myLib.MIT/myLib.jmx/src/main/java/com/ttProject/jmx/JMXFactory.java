@@ -18,22 +18,18 @@ import com.ttProject.jmx.bean.IMXBeanBase;
 import com.ttProject.jmx.bean.MXBeanBase;
 
 /**
- * JMXの登録等の実施
+ * control jmx task.
  * @author taktod
  */
 public class JMXFactory {
 	private static Logger logger = Logger.getLogger(JMXFactory.class);
-	/**
-	 * 動作ドメイン(jmxのmxBeanの欄の一覧の名称になります。)
-	 */
+	/** work domain */
 	private static String domain = "com.ttProject:type=";
-	/**
-	 * 動作対象beanServer
-	 */
+	/** bean server */
 	private static MBeanServer beanServer;
 	
 	/**
-	 * staticデータの初期化
+	 * static initialize
 	 */
 	static {
 		try {
@@ -44,35 +40,35 @@ public class JMXFactory {
 		}
 	}
 	/**
-	 * MBeanServerの登録
+	 * register MBeanServer
 	 * @param beanServer
 	 */
 	public static void setMBeanServer(MBeanServer beanServer) {
 		JMXFactory.beanServer = beanServer;
 	}
 	/**
-	 * MBeanServerの参照
+	 * MBeanServer
 	 * @return
 	 */
 	public static MBeanServer getMBeanServer() {
 		return JMXFactory.beanServer;
 	}
 	/**
-	 * ドメイン名の設定
+	 * register domain name
 	 * @param domain
 	 */
 	public static void setDomain(String domain) {
 		JMXFactory.domain = domain;
 	}
 	/**
-	 * ドメイン名の参照
+	 * domain name
 	 * @return
 	 */
 	public static String getDomain() {
 		return JMXFactory.domain;
 	}
 	/**
-	 * オブジェクトの登録
+	 * register jmx object
 	 * @param type
 	 * @param obj
 	 * @return
@@ -81,7 +77,7 @@ public class JMXFactory {
 		return registerMBean(type, obj, new String[]{});
 	}
 	/**
-	 * オブジェクトの登録
+	 * register jmx object
 	 * @param type
 	 * @param obj
 	 * @param paths
@@ -108,14 +104,14 @@ public class JMXFactory {
 		}
 	}
 	/**
-	 * オブジェクトの登録
+	 * register jmx object
 	 * @param obj
 	 * @param objectName
 	 * @return
 	 */
 	public static ObjectName registerMBean(IMXBeanBase obj, ObjectName objectName) {
 		try {
-			// 同名のデータがあった場合は強制的に再読み込みさせる。
+			// re-register for same name.
 			if(beanServer.isRegistered(objectName)) {
 				beanServer.unregisterMBean(objectName);
 			}
@@ -131,7 +127,7 @@ public class JMXFactory {
 		}
 	}
 	/**
-	 * オブジェクトの削除
+	 * unregister jmx object
 	 * @param type
 	 * @param paths
 	 */
@@ -154,7 +150,7 @@ public class JMXFactory {
 		}
 	}
 	/**
-	 * オブジェクトの削除
+	 * unregister jmx object
 	 * @param objectName
 	 */
 	public static void unregisterMBean(ObjectName objectName) {

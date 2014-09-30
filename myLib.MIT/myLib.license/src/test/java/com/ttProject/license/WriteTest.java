@@ -14,22 +14,22 @@ import java.io.FileReader;
 import org.apache.log4j.Logger;
 
 /**
- * ライセンス記述を記載するプログラム
+ * write license comment for programs
  * @author taktod
  */
 public class WriteTest {
 	/** ロガー */
 	private Logger logger = Logger.getLogger(WriteTest.class);
 	/**
-	 * javaファイルの先頭にライセンス記述を書き込むプログラム
+	 * write license comment for java program
 	 */
 //	@Test
 	public void javaDoc() {
-		logger.info("処理テスト開始");
-		// まずファイルをサーチする必要あり。
+		logger.info("start");
+		// try to get files.
 		File dir = new File("../../myLib.GPLv3");
 		searchDir(dir);
-		logger.info("処理テストおわり");
+		logger.info("end");
 	}
 	private void searchDir(File dir) {
 		if(!dir.isDirectory()) {
@@ -51,7 +51,6 @@ public class WriteTest {
 	}
 	@SuppressWarnings("unused")
 	private void writeLicense(File f) {
-		// ファイルを確認して、先頭がライセンスでなければライセンス条文を挿入する必要あり。
 		String license = "/*\n" + 
 " * myLib - https://github.com/taktod/myLib\n" + 
 " * Copyright (c) 2014 ttProject. All rights reserved.\n" + 
@@ -64,10 +63,10 @@ public class WriteTest {
 			br = new BufferedReader(new FileReader(f));
 			String firstLine = br.readLine();
 			if(firstLine.equals("/*")){
-				// すでにライセンスが入力済み
+				// already have license comment.
 				return;
 			}
-			// ライセンスがはいっていないので、いれる必要あり。
+			// try to insert license comment.
 			File ftmp = new File(f.getAbsolutePath() + "tmp");
 			fos = new FileOutputStream(f.getAbsolutePath() + "tmp");
 			fos.write(license.getBytes());

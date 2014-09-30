@@ -33,14 +33,14 @@ import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.util.HexUtil;
 
 /**
- * bitの読み込み動作テスト
+ * bit test
  * @author taktod
  */
 public class BitTest {
-	/** 動作ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(BitTest.class);
 	/**
-	 * 読み込み書き込みテスト
+	 * test for read write.
 	 * @throws Exception
 	 */
 	@Test
@@ -84,7 +84,7 @@ public class BitTest {
 		logger.info(HexUtil.toHex(buffer.array(), true));
 	}
 	/**
-	 * extGolomb付きの動作テスト
+	 * test for ext golomb(for h264)
 	 * @throws Exception
 	 */
 	@Test
@@ -106,6 +106,10 @@ public class BitTest {
 		logger.info(ueg);
 		logger.info(seg);
 	}
+	/**
+	 * test for extra bit read.
+	 * @throws Exception
+	 */
 	@Test
 	public void test3() throws Exception {
 		logger.info("test3");
@@ -123,6 +127,10 @@ public class BitTest {
 		logger.info(channel.position());
 		logger.info(channel.size());
 	}
+	/**
+	 * test for signed exp golomb
+	 * @throws Exception
+	 */
 	@Test
 	public void test4() throws Exception {
 		logger.info("test4");

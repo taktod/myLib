@@ -9,18 +9,18 @@ package com.ttProject.unit.extra.bit;
 import com.ttProject.unit.extra.Bit;
 
 /**
- * 1ビットを表現する型
+ * Bit1
  * @author taktod
  */
 public class Bit1 extends Bit {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Bit1() {
 		this(0);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param value
 	 */
 	public Bit1(int value) {

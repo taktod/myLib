@@ -24,15 +24,19 @@ import com.ttProject.unit.extra.bit.Bit6;
 import com.ttProject.unit.extra.bit.Bit7;
 import com.ttProject.unit.extra.bit.Bit8;
 
+/**
+ * get the ebml value
+ * @author taktod
+ */
 public class EbmlValue extends Bit {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(EbmlValue.class);
 	private byte zeroCount = 0;
 	private Bit numBit  = null;
 	private Bit dataBit = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param count
 	 */
 	public EbmlValue() {
@@ -48,12 +52,12 @@ public class EbmlValue extends Bit {
 	public int get() {
 		long data = getLong();
 		if(data > 0xFFFFFFFFL) {
-			throw new RuntimeException("getLongを利用してデータを取得してください。");
+			throw new RuntimeException("use getLong(), not get()");
 		}
 		return (int)data;
 	}
 	/**
-	 * 値を参照する
+	 * ref the data
 	 * @return
 	 */
 	public long getLong() {
@@ -65,14 +69,14 @@ public class EbmlValue extends Bit {
 		}
 	}
 	/**
-	 * ebmlの生データを参照する
+	 * get the raw ebml value.
 	 * @return
 	 */
 	public long getEbmlValue() {
 		return new BitN(numBit, dataBit).getLong();
 	}
 	/**
-	 * ebmlの生データを設定する
+	 * set the raw ebml value.
 	 * @param value
 	 */
 	public void setEbmlValue(long value) {
@@ -117,6 +121,9 @@ public class EbmlValue extends Bit {
 			dataBit = data;
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void set(int value) {
 		if(value >>> 7 == 0) {
@@ -182,11 +189,11 @@ public class EbmlValue extends Bit {
 			dataBit = data;
 		}
 		else {
-			throw new RuntimeException("overflowしました。格納できない値です。");
+			throw new RuntimeException("overflow. too big data.");
 		}
 	}
 	/**
-	 * 先頭の1bitを追記していって、データサイズを知りたい
+	 * add one bit, to know data size.
 	 * @param bit1
 	 * @return
 	 */
@@ -203,7 +210,7 @@ public class EbmlValue extends Bit {
 			case 6: numBit = new Bit7(1); break;
 			case 7: numBit = new Bit8(1); break;
 			default:
-				throw new RuntimeException("ebmlとして不正なデータです。");
+				throw new RuntimeException("invalid ebml value.");
 			}
 			return false;
 		}
@@ -213,8 +220,8 @@ public class EbmlValue extends Bit {
 		return true;
 	}
 	/**
-	 * データの基本bitを応答する
-	 * TODO ここも関数名変更したい候補
+	 * ref the basic data bit.
+	 * TODO rename?
 	 * @return
 	 */
 	public Bit getDataBit() {
@@ -228,19 +235,21 @@ public class EbmlValue extends Bit {
 		case 6: dataBit = new Bit49(); break;
 		case 7: dataBit = new Bit56(); break;
 		default:
-			throw new RuntimeException("ebmlとして不正なデータです。");
+			throw new RuntimeException("imvalid ebml value.");
 		}
 		return dataBit;
 	}
 	/**
-	 * こっちも関数名変更したい
+	 * ref the data bit.
+	 * TODO rename?
 	 * @return
 	 */
 	protected Bit getEbmlDataBit() {
 		return dataBit;
 	}
 	/**
-	 * TODO ここの関数名変更したい
+	 * ref the num bit.
+	 * TODO rename?
 	 * @return
 	 */
 	protected Bit getEbmlNumBit() {

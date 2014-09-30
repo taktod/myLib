@@ -7,13 +7,13 @@
 package com.ttProject.nio.channels;
 
 /**
- * ファイル読み込み
- * IFileReadChannelは、IReadChannelとほぼ同じだけど、positionで巻き戻ることが可能になっているものとします。
+ * interface for file read.
+ * file read channel allows to rewind.
  * @author taktod
  */
 public interface IFileReadChannel extends IReadChannel {
 	/**
-	 * アクセスパスの応答
+	 * access uri information
 	 * @return
 	 */
 	public String getUri();

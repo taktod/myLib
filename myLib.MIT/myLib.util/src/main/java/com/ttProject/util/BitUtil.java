@@ -7,8 +7,7 @@
 package com.ttProject.util;
 
 /**
- * bitのデータを確認するためのライブラリ
- * とりあえず1111 1111  1111 1111みたいな表示にしたいところ。
+ * dump bit status.
  * @author taktod
  */
 public class BitUtil {
@@ -19,7 +18,7 @@ public class BitUtil {
 			return data.substring(data.length() - length);
 		}
 		else if(data.length() < length) {
-			// 先頭に0を追加しておく。
+			// put 0 for front.
 			char[] buf = new char[length - data.length()];
 			for(int i = 0;i < buf.length;i ++) {
 				buf[i] = '0';

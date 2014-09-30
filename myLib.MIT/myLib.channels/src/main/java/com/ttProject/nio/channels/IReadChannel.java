@@ -11,46 +11,45 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 
 /**
- * ファイル読み込み
- * TODO 最近fileだけじゃなく、byteデータやstdinのデータとかもこのデータで扱いたくなってきたので、なんとかしておきたい。
+ * read channel
  * @author taktod
  */
 public interface IReadChannel extends ReadableByteChannel {
 	/**
-	 * 開いているか確認
-	 * @return true:アクセス可能 false:アクセス不能
+	 * check opened.
+	 * @return true:opened false:not opened
 	 */
 	@Override
 	public boolean isOpen();
 	/**
-	 * ファイルサイズ取得
-	 * @return ファイルサイズ
+	 * get size
+	 * @return size
 	 * @throws IOException
 	 */
 	public int size() throws IOException;
 	/**
-	 * 現在位置取得
-	 * @return 現在位置
+	 * get current position
+	 * @return current cursor position
 	 * @throws IOException
 	 */
 	public int position() throws IOException;
 	/**
-	 * 位置変更
-	 * @param newPosition 移動位置
-	 * @return 動作オブジェクト
+	 * change current position
+	 * @param newPosition 
+	 * @return read channel object
 	 * @throws IOException
 	 */
 	public IReadChannel position(int newPosition) throws IOException;
 	/**
-	 * 読み込み(確実に指定読み込み量が読めるわけではないです)
-	 * @param dst 読み込みバッファ
-	 * @return 読み込めたサイズ
+	 * read(read channel can be response shorter than expected.)
+	 * @param dst buffer for store.
+	 * @return the read size.
 	 * @throws IOException
 	 */
 	@Override
 	public int read(ByteBuffer dst) throws IOException;
 	/**
-	 * 閉じる処理
+	 * close
 	 * @throws IOException
 	 */
 	@Override

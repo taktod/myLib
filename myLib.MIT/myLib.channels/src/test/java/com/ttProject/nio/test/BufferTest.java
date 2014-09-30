@@ -18,11 +18,11 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * bufferの動作テスト
+ * test for buffer
  * @author taktod
  */
 public class BufferTest {
-	/** 動作ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(BufferTest.class);
 //	@Test
 	public void test() throws Exception {

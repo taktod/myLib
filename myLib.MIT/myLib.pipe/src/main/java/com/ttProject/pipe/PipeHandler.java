@@ -17,25 +17,26 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.nio.channels.ReadableByteReadChannel;
 
 /**
- * pipeの処理を実施するhandler
+ * use process with named pipe.
  * @author taktod
- *
  */
 public class PipeHandler {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(PipeHandler.class);
-	/** namedpipeで利用する名前 */
+	/** name for namedpipe */
 	private final String name;
-	/** pipeの位置 */
+	/** path for namedPipe */
 	private final String namedPipe;
-	/** 動作コマンド */
+	/** command */
 	private String processCommand;
-	/** 追加の環境変数 */
+	/** extra Env vals */
 	private Map<String, String> envExtra = null;
-	/** 実行プロセス */
+	/** process */
 	private Process process = null;
 	/**
-	 * コンストラクタ
+	 * constructor
+	 * @param name
+	 * @param pid
 	 */
 	public PipeHandler(String name, String pid) {
 		this.name = name;
@@ -46,42 +47,41 @@ public class PipeHandler {
 		this.namedPipe = tmpDir + "myLib.pipe/" + name + "_" + pid;
 	}
 	/**
-	 * 実行コマンド ${pipe}の部分にtargetが入ります。
+	 * command
+	 * ${pipe} is replaced with namedpipe file name.
 	 * @param command
 	 */
 	public void setCommand(String command) {
 		this.processCommand = command;
 	}
 	/**
-	 * 追加の環境変数設定
+	 * set extra env vals
 	 * @param envExtra
 	 */
 	public void setEnvExtra(Map<String, String> envExtra) {
 		this.envExtra = envExtra;
 	}
 	/**
-	 * 名前付きパイプのfileを応答する
+	 * ref for namedpipe file
 	 * @return
 	 */
 	public File getPipeTarget() {
 		return new File(namedPipe);
 	}
 	/**
-	 * pipeの名称を参照する
+	 * ref for name of pipe
 	 * @return
 	 */
 	public String getPipeName() {
 		return name;
 	}
 	/**
-	 * 実行動作
-	 * このexecuteProecssは直接呼ぶことにします。
-	 * これによってプロセスは別々のタイミングで好きなように呼び出すことができる形になります。(一部のpipeが死んでもそこだけ修理できるはず)
+	 * execute process
 	 */
 	public void executeProcess() throws Exception {
 		if(processCommand == null) {
-			logger.error("process動作用のコマンドが存在していないのに、動作させようとしました。");
-			throw new Exception("process用のコマンドが設定されていません。");
+			logger.error("process command is not found.");
+			throw new Exception("no process command.");
 		}
 		setupPipe();
 		
@@ -104,7 +104,7 @@ public class PipeHandler {
 		process = processBuilder.start();
 	}
 	/**
-	 * pipeを作成する。
+	 * make unix namedpipe.
 	 */
 	private void setupPipe() throws Exception {
 		File f = new File(namedPipe);
@@ -117,35 +117,35 @@ public class PipeHandler {
 		p.waitFor();
 	}
 	/**
-	 * 読み込みチャンネルを応答する
+	 * ref for IReadChannel for process inputStream.
 	 * @return
 	 */
 	public IReadChannel getReadChannel() throws Exception {
 		if(process == null) {
-			throw new Exception("プロセスが実行していません。");
+			throw new Exception("no process.");
 		}
 		return new ReadableByteReadChannel(Channels.newChannel(process.getInputStream()));
 	}
 	/**
-	 * 標準入力ストリームを参照する
+	 * ref for process inputStream.
 	 * @return
 	 * @throws Exception
 	 */
 	public InputStream getInputStream() throws Exception {
 		if(process == null) {
-			throw new Exception("プロセスが実行していません。");
+			throw new Exception("no process.");
 		}
 		return process.getInputStream();
 	}
 	/**
-	 * 終了処理
+	 * close
 	 */
 	public void close() {
-		// プロセスを殺しておく。
+		// destroy process
 		if(process != null) {
 			process.destroy();
 		}
-		// pipeを消しておく。
+		// delete namedpipe.
 		new File(namedPipe).delete();
 	}
 }

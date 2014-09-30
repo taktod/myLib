@@ -11,21 +11,20 @@ import java.nio.ByteBuffer;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * ファイル上のデータにより高速にアクセスするためのバッファ
- * なるべくbufferからデータを取り出すことで高速アクセスを実現してみる。
+ * buffer for access data.
  * @author taktod
  */
 public class CacheBuffer {
-	/** 動作用buffer */
+	/** buffer */
 	private ByteBuffer buffer = null;
-	/** 動作ターゲットチャンネル */
+	/** target channel */
 	private IReadChannel targetChannel;
-	/** 処理位置 */
+	/** position for process */
 	private int position;
-	/** 残り読み込みデータ量forChannel */
-	private int remaining; // 残り読み込みデータ量
+	/** remain data for channel */
+	private int remaining;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param source
 	 * @throws Exception
 	 */
@@ -33,7 +32,7 @@ public class CacheBuffer {
 		this(source, source.size() - source.position());
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param source
 	 * @param size
 	 * @throws Exception
@@ -43,38 +42,53 @@ public class CacheBuffer {
 		this.position = source.position();
 		this.remaining = size;
 	}
+	/**
+	 * get byte
+	 * @return
+	 * @throws Exception
+	 */
 	public byte get() throws Exception {
 		resetData(1);
 		return buffer.get();
 	}
+	/**
+	 * get short
+	 * @return
+	 * @throws Exception
+	 */
 	public short getShort() throws Exception {
 		resetData(2);
 		return buffer.getShort();
 	}
+	/**
+	 * get long
+	 * @return
+	 * @throws Exception
+	 */
 	public long getLong() throws Exception {
 		resetData(8);
 		return buffer.getLong();
 	}
 	/**
-	 * 整数の値のみ応答することにします。
+	 * get int
 	 * @return
+	 * @throws Exception
 	 */
 	public int getInt() throws Exception {
 		resetData(4);
 		return buffer.getInt();
 	}
 	/**
-	 * 3バイト読み込む
+	 * get midium (read 3byte integer)
 	 * @return
 	 * @throws Exception
 	 */
 	public int getMidiumInt() throws Exception {
-		// buffer内のデータがまにあっているか確認する。
 		resetData(3);
 		return (buffer.get() << 16) + buffer.getShort();
 	}
 	/**
-	 * 任意のデータ量読み込む
+	 * get buffer data for anysize.
 	 * @param size
 	 * @return
 	 * @throws Exception
@@ -86,17 +100,16 @@ public class CacheBuffer {
 		return ByteBuffer.wrap(data);
 	}
 	/**
-	 * データが足りない場合に、データの読み直しを実施してみる。
+	 * if cache is short, get more cache.
 	 * @throws Exception
 	 */
 	private void resetData(int bytesLoad) throws Exception {
-		// buffer内のデータがまにあっているか確認する。
+		// check the cache size
 		if(buffer == null || buffer.remaining() < bytesLoad) {
-			// 残りデータが0だったらもうデータなし
+			// check the remain data size
 			if(remaining == 0 && buffer.remaining() == 0) {
 				throw new Exception("eof already");
 			}
-			// bufferの中にあるデータ量を確認
 			int bufRemain;
 			if(buffer == null) {
 				bufRemain = 0;
@@ -104,16 +117,16 @@ public class CacheBuffer {
 			else {
 				bufRemain = buffer.remaining();
 			}
-			// bufferが足りないので読み込む必要がある。
+			// load data
 			int bufSize = (16777216 > remaining) ? remaining : 16777216;
 			ByteBuffer buf = ByteBuffer.allocate(bufSize);
-			targetChannel.position(position); // 処理位置から
-			targetChannel.read(buf); // 必要なデータを読み込む
+			targetChannel.position(position);
+			targetChannel.read(buf);
 			buf.flip();
-			// 位置情報と残りデータ量を更新しておく。
+			// update information.
 			position += buf.remaining();
 			remaining -= buf.remaining();
-			// bufferデータを更新しておく。
+			// update buffer data.
 			ByteBuffer buf2 = ByteBuffer.allocate(buf.remaining() + bufRemain);
 			if(bufRemain != 0) {
 				buf2.put(buffer);
@@ -123,11 +136,11 @@ public class CacheBuffer {
 			buffer = buf2;
 		}
 		if(buffer.remaining() < bytesLoad) {
-			throw new Exception("データがたりません。");
+			throw new Exception("data is too short.");
 		}
 	}
 	/**
-	 * 残りデータ量を応答する
+	 * size of remaining
 	 * @return
 	 */
 	public int remaining() {
@@ -137,7 +150,7 @@ public class CacheBuffer {
 		return remaining + buffer.remaining();
 	}
 	/**
-	 * 読み込み位置を応答する。
+	 * position
 	 * @return
 	 */
 	public int position() {

@@ -17,9 +17,8 @@ import com.ttProject.util.BufferUtil;
 import com.ttProject.util.HexUtil;
 
 /**
- * bufferに関する動作テスト
+ * test for buffer.
  * @author taktod
- *
  */
 public class BufferTest {
 	private Logger logger = Logger.getLogger(BufferTest.class);
@@ -35,7 +34,7 @@ public class BufferTest {
 		dst.put((byte)4);
 		dst.put((byte)5);
 		dst.flip();
-		// なぜかhashCodeが一致する
+		// hashcode is same.
 		logger.info(src.hashCode());
 		logger.info(dst.hashCode());
 		logger.info(src);
@@ -45,7 +44,7 @@ public class BufferTest {
 //	@Test
 	public void test2() throws Exception {
 		try {
-			// そもそもエラーを出すテストっぽい。
+			// test for overflow.
 			IReadChannel channel = new ByteReadChannel(HexUtil.makeBuffer("00010203040506"));
 			BufferUtil.safeRead(channel, 8);
 		}

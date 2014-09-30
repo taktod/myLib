@@ -11,29 +11,28 @@ import java.nio.ByteBuffer;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * 全データの基本インターフェイス
+ * interface for basic data.
  * @author taktod
  */
 public interface IData {
 	/**
-	 * 保持データを応答します。
-	 * (中身が全部はいっているものとします)
+	 * data
 	 * @return
 	 * @throws Exception
 	 */
 	public ByteBuffer getData() throws Exception;
 	/**
-	 * サイズを応答します。
+	 * size
 	 * @return
 	 */
 	public int getSize();
 	/**
-	 * データを最小限、読み込む動作
+	 * minimum for loading
 	 * @throws Exception
 	 */
 	public void minimumLoad(IReadChannel channel) throws Exception;
 	/**
-	 * データをすべて読み込む動作
+	 * complete for loading
 	 * @param channel
 	 * @throws Exception
 	 */

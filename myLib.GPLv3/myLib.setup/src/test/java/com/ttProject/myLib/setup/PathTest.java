@@ -11,11 +11,11 @@ import java.io.File;
 import org.apache.log4j.Logger;
 
 /**
- * テスト
+ * test for file make test
  * @author taktod
- *
  */
 public class PathTest {
+	/** logger */
 	private Logger logger = Logger.getLogger(PathTest.class);
 //	@Test
 	public void test() {

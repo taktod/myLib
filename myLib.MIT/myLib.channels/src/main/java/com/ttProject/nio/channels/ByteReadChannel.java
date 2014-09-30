@@ -10,21 +10,21 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 /**
- * Byteデータ、ByteBufferデータをIReadChannelと同じ勢いでデータ確認できるようにしてみた。
+ * read channel for byte memory data.
  * @author taktod
  */
 public class ByteReadChannel implements IReadChannel {
-	/** 保持データBuffer */
+	/** buffer */
 	private final ByteBuffer buffer;
 	/**
-	 * コンストラクタ(ByteBuffer)
+	 * constructor(ByteBuffer)
 	 * @param buffer
 	 */
 	public ByteReadChannel(ByteBuffer buffer) {
 		this.buffer = buffer.duplicate();
 	}
 	/**
-	 * コンストラクタ(byte[])
+	 * constructor(byte[])
 	 * @param data
 	 */
 	public ByteReadChannel(byte[] data) {

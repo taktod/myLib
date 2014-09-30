@@ -7,7 +7,7 @@
 package com.ttProject.unit.extra;
 
 /**
- * mpegtsやoggでcrc32動作があるので基本クラスをつくって、それの拡張で済ませたい
+ * base of crc32,(for mpegts, ogg,...)
  * @author taktod
  */
 public class Crc32 {
@@ -15,10 +15,10 @@ public class Crc32 {
 	private long[] crcTable = new long[256];
 	protected long crc;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Crc32() {
-		// テーブルをつくる。
+		// make table
 		long crc = 0;
 		for(int i = 0;i < 256;i ++) {
 			crc = i << 24;
@@ -27,24 +27,24 @@ public class Crc32 {
 			}
 			crcTable[i] = crc & 0xFFFFFFFFL;
 		}
-		// 初期値投入
+		// put the initial data.
 		reset();
 	}
 	/**
-	 * 初期化
+	 * reset
 	 */
 	public void reset() {
 		crc = 0;
 	}
 	/**
-	 * データを追加していきます。
+	 * put the data.
 	 * @param b
 	 */
 	public void update(byte b) {
 		crc = (crc << 8) ^ crcTable[(int)(((crc >> 24) ^ b) & 0xFF)];
 	}
 	/**
-	 * 計算済みのデータを取得します。
+	 * get the calcurated value.
 	 * @return
 	 */
 	public long getValue() {

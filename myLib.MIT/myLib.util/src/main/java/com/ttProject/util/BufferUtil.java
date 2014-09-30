@@ -15,7 +15,7 @@ import java.util.List;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * buffer用の便利関数
+ * util for byteBuffer
  * @author taktod
  */
 public class BufferUtil {
@@ -52,9 +52,8 @@ public class BufferUtil {
 	}
 	public static ByteBuffer safeRead(IReadChannel ch, int length, int timeout, int tryCount) throws Exception {
 		if(ch.size() - ch.position() < length) {
-			throw new Exception("読み込みチャンネルより大きなデータを取得しようとしました。");
+			throw new Exception("try to read larger data.");
 		}
-//		System.out.println(length);
 		ByteBuffer buffer = ByteBuffer.allocate(length);
 		int count = 0;
 		while(true) {
@@ -74,7 +73,7 @@ public class BufferUtil {
 		}
 	}
 	/**
-	 * 指定したサイズのデータをコピーする。
+	 * copy from source to target with the size.
 	 * @param source
 	 * @param target
 	 * @param size
@@ -89,7 +88,7 @@ public class BufferUtil {
 			source.read(buffer);
 			buffer.flip();
 			if(buffer.remaining() == 0) {
-				// ここで抜ける場合は例外にしておいた方が本当はよさそう。(中途で読み込みが完全にできなくなった場合になるため。)
+				// TODO this could be exception, because the reading is on the middle.
 				break;
 			}
 			Thread.sleep(10);
@@ -98,7 +97,7 @@ public class BufferUtil {
 		}
 	}
 	/**
-	 * 指定したサイズを速やかに捨てる
+	 * dispose the size of bytes
 	 * @param source
 	 * @param size
 	 * @throws Exception
@@ -112,7 +111,7 @@ public class BufferUtil {
 			source.read(buffer);
 			buffer.flip();
 			if(buffer.remaining() == 0) {
-				// ここで抜ける場合は例外にしておいた方が本当はよさそう。(中途で読み込みが完全にできなくなった場合になるため。)
+				// TODO this could be exception, because the reading is on the middle.
 				break;
 			}
 			Thread.sleep(10);
@@ -120,7 +119,8 @@ public class BufferUtil {
 		}
 	}
 	/**
-	 * read状態のbufferからタグ文字列を取得する
+	 * get tag string from 4bytes buffer.(with lower case)
+	 * for mp4 reading
 	 * @param buffer
 	 * @return
 	 */
@@ -130,7 +130,8 @@ public class BufferUtil {
 		return new String(data).toLowerCase();
 	}
 	/**
-	 * read状態のbufferからタグ文字列を取得する
+	 * get tag string from 4bytes buffer.
+	 * for mp4 reading
 	 * @param buffer
 	 * @return
 	 */
@@ -140,7 +141,7 @@ public class BufferUtil {
 		return new String(data);
 	}
 	/**
-	 * 数値データを書き込む
+	 * write int
 	 * @param target
 	 * @param data
 	 * @throws IOException
@@ -152,22 +153,26 @@ public class BufferUtil {
 		target.write(buffer);
 	}
 	/**
-	 * ２つのbufferが一致するか確認する。
+	 * check if the buffer is same.
+	 * (maybe hashCode compalision is enough, this func is no needed)
 	 * @param src
 	 * @param dst
-	 * @return true:一致する false:一致しない
+	 * @return true:same false:different
 	 */
 	public static boolean isSame(ByteBuffer src, ByteBuffer dst) {
-		// 長さが一致しなければ一致しない。
 		if(src.remaining() != dst.remaining()) {
 			return false;
 		}
-		// 一致したらループをまわしておく。
 		while(src.remaining() > 0 && src.get() == dst.get()) {
 			;
 		}
-		return src.remaining() == 0; // 最後まで読み込みできたなら一致
+		return src.remaining() == 0;
 	}
+	/**
+	 * make byte array from byteBuffer. 
+	 * @param src
+	 * @return
+	 */
 	public static byte[] toByteArray(ByteBuffer src) {
 		int size = src.remaining();
 		byte[] data = new byte[size];
@@ -175,7 +180,7 @@ public class BufferUtil {
 		return data;
 	}
 	/**
-	 * 複数のByteBufferを結合する
+	 * connect byteBuffers.
 	 * @param buffers
 	 * @return
 	 */
@@ -196,7 +201,7 @@ public class BufferUtil {
 		return result;
 	}
 	/**
-	 * 複数のByteBufferを結合する
+	 * connect byteBuffers.
 	 * @param buffers
 	 * @return
 	 */

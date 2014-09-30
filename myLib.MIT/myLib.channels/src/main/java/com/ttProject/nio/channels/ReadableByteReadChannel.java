@@ -12,17 +12,17 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
 /**
- * ReadableByteChannelのデータをwrapしてIReadChannelといて利用するためのクラス
- * とりあえず巻き戻し禁止、サイズはinfinite扱い
+ * make IReadChannel from ReadableByteChannel object.
+ * no rewind. size is taken as infinite.
  * @author taktod
  */
 public class ReadableByteReadChannel implements IReadChannel {
-	/** 扱うReadableByteChannel */
+	/** target ReadableByteChannel */
 	private final ReadableByteChannel channel;
-	/** 処理位置 */
+	/** position */
 	private int pos;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param channel
 	 */
 	public ReadableByteReadChannel(ReadableByteChannel channel) {
@@ -30,8 +30,8 @@ public class ReadableByteReadChannel implements IReadChannel {
 		pos = 0;
 	}
 	/**
-	 * コンストラクタ
-	 * デフォルトでは標準入力を扱います。
+	 * default constructor
+	 * for stdin
 	 */
 	public ReadableByteReadChannel() {
 		this(Channels.newChannel(System.in));
@@ -41,14 +41,12 @@ public class ReadableByteReadChannel implements IReadChannel {
 	 */
 	@Override
 	public void close() throws IOException {
-		// 閉じるという概念はない
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean isOpen() {
-		// 閉じているという概念はない
 		return true;
 	}
 	/**
@@ -63,11 +61,11 @@ public class ReadableByteReadChannel implements IReadChannel {
 	 */
 	@Override
 	public IReadChannel position(int newPosition) throws IOException {
-		// 位置変更はありませんが、先に進むのは許可します。
+		// back is not allowed, but forward is allowed.
 		if(newPosition > pos) {
 			try {
 				ByteBuffer buf = ByteBuffer.allocate(newPosition - pos);
-				// データを読み捨てる動作が必要
+				// dispose data.
 				while(newPosition > pos) {
 					read(buf);
 					Thread.sleep(10);
@@ -93,7 +91,7 @@ public class ReadableByteReadChannel implements IReadChannel {
 	}
 	/**
 	 * {@inheritDoc}
-	 * 数値の最大値まで読み込めるものとします
+	 * treat as maximum of integer.
 	 */
 	@Override
 	public int size() throws IOException {

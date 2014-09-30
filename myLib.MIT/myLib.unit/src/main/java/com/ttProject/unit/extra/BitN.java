@@ -10,16 +10,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 複数のbitを結合して使えるようにするbit
- * bit数は始めに定義したままとします。(入力数値によって可変ではありません)
- * TODO 32bit以上の場合のget,setはlongで扱うべき
+ * make bit from multiple bit.
+ * over 32bit, use getLong or setLong instead of get or set.
  * @author taktod
  */
 public class BitN extends Bit {
-	/** 表現用の内部bit */
+	/** bit list. */
 	protected final List<Bit> bits = new ArrayList<Bit>();
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param bits
 	 */
 	public BitN(Bit ... bits) {
@@ -47,7 +46,7 @@ public class BitN extends Bit {
 		return value;
 	}
 	/**
-	 * long値でデータを参照します
+	 * ref the data as long
 	 * @return
 	 */
 	public long getLong() {
@@ -76,7 +75,7 @@ public class BitN extends Bit {
 		}
 	}
 	/**
-	 * long値でデータを設定します
+	 * set the data as long
 	 * @param value
 	 */
 	public void setLong(long value) {

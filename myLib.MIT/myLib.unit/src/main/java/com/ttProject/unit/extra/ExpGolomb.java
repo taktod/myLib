@@ -21,24 +21,24 @@ import com.ttProject.unit.extra.bit.Bit7;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * h264のexpGolomb値を取得する動作
+ * to handle expGolomb
  * @see http://en.wikipedia.org/wiki/Exponential-Golomb_coding
  * @author taktod
  */
 public abstract class ExpGolomb extends Bit {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(ExpGolomb.class);
-	/** 保持データ */
+	/** value */
 	private int value = 0;
-	/** 先頭の0のカウント値 */
+	/** zeroCount */
 	private int zeroCount = 0;
-	/** 先頭の1を見つけたときのフラグ */
+	/** flag for found on bit1 */
 	private boolean find1Flg = false;
-	/** 保持bitデータ */
+	/** holding bit list */
 	protected final List<Bit> bits = new ArrayList<Bit>();
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public ExpGolomb() {
 		super(0);
@@ -46,14 +46,14 @@ public abstract class ExpGolomb extends Bit {
 		bits.add(new Bit1(1));
 	}
 	/**
-	 * 内部データ参照
+	 * ref the value
 	 * @return
 	 */
 	protected int getData() {
 		return value;
 	}
 	/**
-	 * 内部データ設定
+	 * set the value
 	 * @param value
 	 */
 	protected void setData(int value) {
@@ -99,22 +99,22 @@ public abstract class ExpGolomb extends Bit {
 		}
 	}
 	/**
-	 * bitを登録していく。
-	 * @param bit 登録bit1
-	 * @return false:登録がおわったとき true:まだ登録が必要なとき
+	 * add bit1
+	 * @param bit append bit1
+	 * @return false:no more true:need more
 	 */
 	public boolean addBit1(Bit1 bit) {
 		if(!find1Flg) {
-			// はじめの0をカウントアップする部分
+			// first zero part/
 			if(bit.get() == 0) {
 				zeroCount ++;
 			}
 			else {
-				// みつけた。
+				// found
 				find1Flg = true;
 //				bitCount = zeroCount * 2 + 1;
-				// ここから先は実データ
 				value = 1;
+				// after this data body.
 			}
 		}
 		else {
@@ -123,7 +123,6 @@ public abstract class ExpGolomb extends Bit {
 		}
 		boolean end = zeroCount == 0;
 		if(end) {
-			// bitCountについて、記録しておくべき
 			setData(value);
 		}
 		return !end;

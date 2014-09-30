@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 import javax.swing.text.Document;
 
 /**
- * placeHolder付きのtextField
+ * textField with placeHolder
  * @see http://stackoverflow.com/questions/16213836/java-swing-jtextfield-set-placeholder
  * @author taktod
  */

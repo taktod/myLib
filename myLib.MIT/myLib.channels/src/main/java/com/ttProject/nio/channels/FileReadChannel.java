@@ -14,23 +14,23 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 
 /**
- * ローカルファイル読み込み
+ * read channel for local file system.
  * @author taktod
  */
 public class FileReadChannel implements IFileReadChannel {
-	/** 動作パス */
+	/** path */
 	private final String path;
-	/** 動作ストリーム */
+	/** file stream */
 	private FileInputStream stream = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param target
 	 */
 	public FileReadChannel(String fileString) throws IOException {
 		this(fileString, 0);
 	}
 	/**
-	 * コンストラクタ with 位置情報
+	 * constructor with position
 	 * @param fileString
 	 * @param position
 	 * @throws Exception
@@ -42,7 +42,7 @@ public class FileReadChannel implements IFileReadChannel {
 		position(position);
 	}
 	/**
-	 * コンストラクタ with File
+	 * constructor with File
 	 * @param file
 	 * @throws Exception
 	 */
@@ -50,7 +50,7 @@ public class FileReadChannel implements IFileReadChannel {
 		this(file, 0);
 	}
 	/**
-	 * コンストラクタ width File & 位置情報
+	 * constructor width File and position
 	 * @param file
 	 * @param position
 	 * @throws FileNotFoundException 
@@ -115,7 +115,7 @@ public class FileReadChannel implements IFileReadChannel {
 		return path;
 	}
 	/**
-	 * オブジェクト取得
+	 * get read channel from uri string
 	 * @param uri
 	 * @return
 	 * @throws Exception
@@ -129,7 +129,7 @@ public class FileReadChannel implements IFileReadChannel {
 		}
 	}
 	/**
-	 * オブジェクト取得
+	 * get read channel from uri string and position
 	 * @param uri
 	 * @param position
 	 * @return
@@ -144,7 +144,7 @@ public class FileReadChannel implements IFileReadChannel {
 		}
 	}
 	/**
-	 * オブジェクト取得
+	 * get read channel from url object
 	 * @param url
 	 * @return
 	 * @throws Exception
@@ -155,12 +155,11 @@ public class FileReadChannel implements IFileReadChannel {
 			return new FileReadChannel(file);
 		}
 		catch(IllegalArgumentException e) {
-			// urlの場合
 			return new URLFileReadChannel(url.toString());
 		}
 	}
 	/**
-	 * オブジェクト取得
+	 * get read channel from url object and position
 	 * @param url
 	 * @param position
 	 * @return
@@ -172,7 +171,6 @@ public class FileReadChannel implements IFileReadChannel {
 			return new FileReadChannel(file, position);
 		}
 		catch(IllegalArgumentException e) {
-			// urlの場合
 			return new URLFileReadChannel(url.toString(), position);
 		}
 	}

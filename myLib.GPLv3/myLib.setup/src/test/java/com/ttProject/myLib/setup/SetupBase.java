@@ -28,23 +28,23 @@ import com.xuggle.xuggler.video.ConverterFactory;
 import com.xuggle.xuggler.video.IConverter;
 
 /**
- * データセットアップの基本的な動作
+ * basic task for setup.
  * @author taktod
  */
 public class SetupBase {
-	/** audioデータの動作カウンター */
+	/** counter for audioFrame */
 	private int audioCounter = 0;
-	/** videoデータの動作カウンター */
+	/** counter for videoFrame */
 	private int videoCounter = 0;
 	/**
-	 * 初期化
+	 * initialize
 	 */
 	protected void init() {
 		audioCounter = 0;
 		videoCounter = 0;
 	}
 	/**
-	 * 変換の基幹部分を実行する動作
+	 * process convert
 	 * @param container
 	 * @param videoEncoder
 	 * @param audioEncoder
@@ -54,9 +54,9 @@ public class SetupBase {
 		IAudioResampler audioResampler = null;
 		try {
 			if(videoEncoder != null) {
-				// 映像のpixelFormatを決定する。
 				ICodec codec = videoEncoder.getCodec();
-				// pixelFormatがYUV420Pに対応していなかったら別のを割り当てる。
+				// need to check pixel type.
+				// if YUV420P is accepted, use it.
 				IPixelFormat.Type findType = null;
 				for(IPixelFormat.Type type : codec.getSupportedVideoPixelFormats()) {
 					if(findType == null) {
@@ -68,18 +68,17 @@ public class SetupBase {
 					}
 				}
 				if(findType == null) {
-					throw new Exception("対応している映像のPixelFormatが不明です。");
+					throw new Exception("pixel format is unknown, error.");
 				}
 				videoEncoder.setPixelType(findType);
-				// coderを開く
 				if(videoEncoder.open(null, null) < 0) {
-					throw new Exception("映像エンコーダーが開けませんでした");
+					throw new Exception("cannot open videoEncoder.");
 				}
 			}
 			if(audioEncoder != null) {
-				// 音声のsampleFormatを決定する。
 				ICodec codec = audioEncoder.getCodec();
-				// AudioFormatはS16
+				// need to check audioFormat.
+				// if S16 is accepted, use it.
 				IAudioSamples.Format findFormat = null;
 				for(IAudioSamples.Format format : codec.getSupportedAudioSampleFormats()) {
 					if(findFormat == null) {
@@ -91,20 +90,19 @@ public class SetupBase {
 					}
 				}
 				if(findFormat == null) {
-					throw new Exception("対応している音声のSampleFormatが不明です。");
+					throw new Exception("audioSampleFormat is unknown, error.");
 				}
 				audioEncoder.setSampleFormat(findFormat);
-				// coderを開く
 				if(audioEncoder.open(null, null) < 0) {
-					throw new Exception("音声エンコーダーが開けませんでした。");
+					throw new Exception("cannot open audioEncoder.");
 				}
 			}
-			// containerのheaderを書く
+			// open container header.
 			if(container.writeHeader() < 0) {
-				throw new Exception("headerデータの書き込みが失敗しました。");
+				throw new Exception("failed to write header.");
 			}
 			IPacket packet = IPacket.make();
-			// packetの書き込み実行
+			// start packet writing.
 			while(true) {
 				IVideoPicture picture = null;
 				if(videoEncoder != null) {
@@ -120,18 +118,18 @@ public class SetupBase {
 						IVideoPicture pct = IVideoPicture.make(videoEncoder.getPixelType(), videoEncoder.getWidth(), videoEncoder.getHeight());
 						int retVal = videoResampler.resample(pct, picture);
 						if(retVal <= 0) {
-							throw new Exception("映像リサンプル失敗");
+							throw new Exception("failed to picture resample.");
 						}
 						picture = pct;
 					}
 					if(videoEncoder.encodeVideo(packet, picture, 0) < 0) {
-						throw new Exception("映像変換失敗");
+						throw new Exception("failed to picture encode.");
 					}
 					if(packet.isComplete()) {
 						if(container.writePacket(packet) < 0) {
 							System.out.println(packet);
 							packet.setDts(packet.getPts());
-							throw new Exception("コンテナ書き込み失敗");
+							throw new Exception("failed to write video track.");
 						}
 					}
 				}
@@ -142,7 +140,6 @@ public class SetupBase {
 						|| samples.getFormat() != audioEncoder.getSampleFormat()
 						|| samples.getChannels() != audioEncoder.getChannels()) {
 							if(audioResampler == null) {
-								// resamplerを作る必要あり。
 								audioResampler = IAudioResampler.make(
 										audioEncoder.getChannels(), samples.getChannels(),
 										audioEncoder.getSampleRate(), samples.getSampleRate(),
@@ -151,7 +148,7 @@ public class SetupBase {
 							IAudioSamples spl = IAudioSamples.make(1024, audioEncoder.getChannels());
 							int retVal = audioResampler.resample(spl, samples, samples.getNumSamples());
 							if(retVal <= 0) {
-								throw new Exception("音声サンプル失敗しました。");
+								throw new Exception("failed to audio resample.");
 							}
 							samples = spl;
 						}
@@ -159,13 +156,13 @@ public class SetupBase {
 						while(samplesConsumed < samples.getNumSamples()) {
 							int retval = audioEncoder.encodeAudio(packet, samples, samplesConsumed);
 							if(retval < 0) {
-								throw new Exception("変換失敗");
+								throw new Exception("failed to audio encode.");
 							}
 							samplesConsumed +=  retval;
 							if(packet.isComplete()) {
 								packet.setDts(packet.getPts());
 								if(container.writePacket(packet) < 0) {
-									throw new Exception("コンテナ書き込み失敗");
+									throw new Exception("failed to write audio track.");
 								}
 							}
 						}
@@ -179,17 +176,14 @@ public class SetupBase {
 					break;
 				}
 			}
-			// containerのtailer書き込み
 			if(container.writeTrailer() < 0) {
-				throw new Exception("tailerデータの書き込みが失敗しました。");
+				throw new Exception("failed to write container tailer.");
 			}
 		}
 		catch(Exception e) {
-//			logger.error("例外が発生しました。", e);
 			e.printStackTrace();
 		}
 		finally {
-			// おわり
 			if(videoEncoder != null) {
 				videoEncoder.close();
 			}
@@ -202,20 +196,20 @@ public class SetupBase {
 		}
 	}
 	/**
-	 * ラの音のaudioデータをつくって応答する。
+	 * make audio beep sound. 440Hz
 	 * @return
 	 */
 	private IAudioSamples samples() {
-		// とりあえずラの音で1024サンプル数つくることにする。
 		int samplingRate = 44100;
 		int tone = 440;
 		int bit = 16;
 		int channels = 2;
 		int samplesNum = 1024;
 		ByteBuffer buffer = ByteBuffer.allocate((int)samplesNum * bit * channels / 8);
-		double rad = tone * 2 * Math.PI / samplingRate; // 各deltaごとの回転数
-		double max = (1 << (bit - 2)) - 1; // 振幅の大きさ(音の大きさ)
-		buffer.order(ByteOrder.LITTLE_ENDIAN); // xuggleで利用するデータはlittleEndianなのでlittleEndianを使うようにする。
+		double rad = tone * 2 * Math.PI / samplingRate; // radian for each sample.
+		double max = (1 << (bit - 2)) - 1; // max of ampletude
+		// make buffer
+		buffer.order(ByteOrder.LITTLE_ENDIAN); // xuggle need little endian for this.
 		long startPos = 1000 * audioCounter / 44100 * 1000;
 		for(int i = 0;i < samplesNum / 8;i ++, audioCounter ++) {
 			short data = (short)(Math.sin(rad * audioCounter) * max);
@@ -225,21 +219,22 @@ public class SetupBase {
 		}
 		buffer.flip();
 		int snum = (int)(buffer.remaining() * 8/bit/channels);
+		// make audioSamples.
 		IAudioSamples samples = IAudioSamples.make(snum, channels, Format.FMT_S16);
 		samples.getData().put(buffer.array(), 0, 0, buffer.remaining());
 		samples.setComplete(true, snum, samplingRate, channels, Format.FMT_S16, 0);
-		// このtimestampの設定は必要っぽい
+		// timestamp is needed.
 		samples.setTimeStamp(startPos);
-		// こっちはいらないっぽい。ただし別の関数っぽいので、やっとくにこしたことはなさそうな・・・
+		// this seems not to be necessary, however, just do it.
 		samples.setPts(startPos);
 		return samples;
 	}
 	/**
-	 * 時間をベースにデータを応答してみる。
+	 * make picture data. with random number.
 	 * @return
 	 */
 	private IVideoPicture image() {
-		// とりあえずランダムな数値の表示されている画像をつくることにする。10fps
+		// for instance, make random image with 10 fps.
 		BufferedImage base = new BufferedImage(320, 240, BufferedImage.TYPE_3BYTE_BGR);
 		String message = Integer.toString((int)(Math.random() * 1000));
 		Graphics g = base.getGraphics();
@@ -247,15 +242,16 @@ public class SetupBase {
 		g.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 24));
 		g.drawString(message, 100, 100);
 		g.dispose();
+		// make xuggle picture.
 		IConverter converter = ConverterFactory.createConverter(base, IPixelFormat.Type.YUV420P);
 		IVideoPicture picture = converter.toPicture(base, 25000 * videoCounter);
-		// この時点ですでにtimestampは入力済みっぽいので、setPtsする必要はなさそう。
+		// setPts do setTimestamp inside.
 		picture.setPts(25000 * videoCounter);
 		videoCounter ++;
 		return picture;
 	}
 	/**
-	 * ファイルを作成する
+	 * make target file.
 	 * @param path
 	 * @param file
 	 * @return

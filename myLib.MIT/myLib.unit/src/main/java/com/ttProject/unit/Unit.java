@@ -7,17 +7,13 @@
 package com.ttProject.unit;
 
 /**
- * すべてのメディアunitの基本となるクラス
- * こういうクラスの参照データは、abstractクラスに持たせておいたほうが見通しがよくなりそう。
- * 内容構成bitデータは、絶対に入るものは、宣言時にbitを構築しておく。
- * 必要があれば入るものは、nullをいれておく。
- * コンストラクタで入るものは、finalをつけておく。
+ * base for all media unit.
  * @author taktod
  */
 public abstract class Unit extends Data implements IUnit {
-	/** pts値 */
+	/** pts */
 	private long pts = 0L;
-	/** timebase値*/
+	/** timebase */
 	private long timebase = 1000L;
 	/**
 	 * {@inheritDoc}
@@ -34,14 +30,14 @@ public abstract class Unit extends Data implements IUnit {
 		return timebase;
 	}
 	/**
-	 * pts値設定
+	 * setter for pts
 	 * @param pts
 	 */
 	protected void setPts(long pts) {
 		this.pts = pts;
 	}
 	/**
-	 * timebase設定(時間はpts / timebase秒になります。)
+	 * setter for timebase
 	 * @param timebase
 	 */
 	protected void setTimebase(long timebase) {

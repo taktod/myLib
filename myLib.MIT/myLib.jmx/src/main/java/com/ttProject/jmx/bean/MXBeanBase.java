@@ -12,13 +12,11 @@ import javax.management.ObjectName;
 import com.ttProject.jmx.JMXFactory;
 
 /**
- * MXBeanの実体ベース
+ * base of MXBean.
  * @author taktod
  */
 public abstract class MXBeanBase extends NotificationBroadcasterSupport implements IMXBeanBase {
-	/**
-	 * 自分の動作objectNameの保持
-	 */
+	/** object name */
 	private ObjectName objectName = null;
 	/**
 	 * {@inheritDoc}
@@ -28,7 +26,7 @@ public abstract class MXBeanBase extends NotificationBroadcasterSupport implemen
 		JMXFactory.unregisterMBean(objectName);
 	}
 	/**
-	 * ObjectNameの設定
+	 * object name
 	 * @param objectName
 	 */
 	public void setObjectName(ObjectName objectName) {

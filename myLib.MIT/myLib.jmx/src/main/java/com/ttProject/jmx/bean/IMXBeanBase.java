@@ -9,14 +9,13 @@ package com.ttProject.jmx.bean;
 import javax.management.MXBean;
 
 /**
- * MXBeanのインターフェイスベース
+ * interface of MXBean base
  * @author taktod
  */
 @MXBean
 public interface IMXBeanBase {
 	/**
-	 * 自分自身を登録解除する命令
-	 * (JMXそのものも１つの参照なので、なくさないとデータが永遠に残ってしまう。)
+	 * unregister myself.
 	 */
 	public void unregister();
 }

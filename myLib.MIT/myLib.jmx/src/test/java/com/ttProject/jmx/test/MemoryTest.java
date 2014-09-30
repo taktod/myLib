@@ -16,12 +16,12 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 /**
- * メモリーの動作についてしらべてみる
+ * memory test
  * @author taktod
  */
 public class MemoryTest {
 	private ByteBuffer buffer = null;
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(MemoryTest.class);
 	@Test
 	public void test() throws Exception {

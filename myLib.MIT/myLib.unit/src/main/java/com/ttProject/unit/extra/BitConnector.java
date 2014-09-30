@@ -13,39 +13,38 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 /**
- * bitデータのコネクト処理
- * TODO 現状では、固定データをByteBufferにするのは対応しているが、追記しながら様子見つつというのはできてないね。
+ * connect for bit data.
  * @author taktod
  */
 public class BitConnector {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(BitConnector.class);
-	/** feedしていくbitリスト */
+	/** bit list for feeding */
 	private List<Bit> bits = null;
-	/** エンディアンコントロール */
+	/** flag for little endian */
 	private boolean littleEndianFlg = false;
-	/** 内部処理用データ */
+	/** for data constructing */
 	private long data;
 	private int left;
 	private int size;
 	private ByteBuffer buffer = null;
 	/**
-	 * 動作エンディアンをlittleEndianに変更する
-	 * @param flg
+	 * set the endian flag
+	 * @param flg true:little endian false:big endian
 	 */
 	public void setLittleEndianFlg(boolean flg) {
 		littleEndianFlg = flg;
 	}
 	/**
-	 * littleEndianとして動作しているか確認
+	 * is little endian working?
 	 * @return
 	 */
 	public boolean isLittleEndian() {
 		return littleEndianFlg;
 	}
 	/**
-	 * 接続します。
+	 * connect
 	 * @param bits
 	 */
 	public ByteBuffer connect(Bit... bits) {
@@ -72,7 +71,6 @@ public class BitConnector {
 				EbmlValue ebml = (EbmlValue)bit;
 				appendBit(ebml.getEbmlNumBit());
 				Bit dataBit = ebml.getEbmlDataBit();
-				// TODO BitNの追記動作は別の関数にしたいですね。同じ処理があるし・・・
 				if(dataBit instanceof BitN) {
 					BitN bitN = (BitN)dataBit;
 					if(littleEndianFlg) {
@@ -122,10 +120,10 @@ public class BitConnector {
 		return buffer;
 	}
 	/**
-	 * データの書き込み処理
+	 * append next bit
 	 */
 	private void appendBit(Bit b) {
-		// ここにbitNがきてしまうことがあるんですね。
+		// if this bit is BitN, this must be trouble.
 		if(littleEndianFlg) {
 			data = data | (b.get() << left);
 			left += b.bitCount;
@@ -145,7 +143,7 @@ public class BitConnector {
 		}
 	}
 	/**
-	 * byteデータの書き込み
+	 * put the data into buffer.
 	 * @param shift
 	 */
 	private void writeBuffer(int shift) {
@@ -157,7 +155,7 @@ public class BitConnector {
 		}
 	}
 	/**
-	 * collectionFrameWorkの場合
+	 * connect with the data of java.util.List
 	 * @param bits
 	 * @return
 	 */
@@ -165,7 +163,7 @@ public class BitConnector {
 		return connect(bits.toArray(new Bit[]{}));
 	}
 	/**
-	 * 追記していくデータ
+	 * add feeding data
 	 * @param bits
 	 */
 	public void feed(List<Bit> bits) {
@@ -175,7 +173,7 @@ public class BitConnector {
 		this.bits.addAll(bits);
 	}
 	/**
-	 * 追記していくデータ
+	 * add feeding data
 	 * @param bits
 	 */
 	public void feed(Bit ... bits) {
@@ -187,7 +185,7 @@ public class BitConnector {
 		}
 	}
 	/**
-	 * 追記したデータ接続
+	 * connect for feeding data.
 	 * @return
 	 */
 	public ByteBuffer connect() {

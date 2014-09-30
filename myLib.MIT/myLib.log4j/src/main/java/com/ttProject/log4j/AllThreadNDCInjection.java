@@ -10,13 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 全threadのloggerにNDCを挿入します
+ * inject NDC for all loggers
  * @author taktod
  */
 public class AllThreadNDCInjection {
-	/** 登録したいデータ */
+	/** data for register */
 	protected static List<String> data = new ArrayList<String>();
-	/** 登録したいデータ設定 */
+	/** setup data. */
 	public static void setup(String ... list) {
 		data.clear();
 		for(String item : list) {

@@ -24,11 +24,11 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.HexUtil;
 
 /**
- * littleEndianの場合のbit操作動作テスト
+ * test for little endian system.
  * @author taktod
  */
 public class LittleEndianBitTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(LittleEndianBitTest.class);
 //	@Test
 	public void test1() throws Exception {

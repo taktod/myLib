@@ -7,19 +7,22 @@
 package com.ttProject.unit;
 
 /**
- * 各unitの最少単位(flvのtagとかh264のframeとか)
+ * interface for units.
+ * unit is part of data.
  * @author taktod
  */
 public interface IUnit extends IData {
 	/**
-	 * pts値(presentationTimestamp)
+	 * pts value.(presentationTimestamp)
 	 * @return
 	 */
 	public long getPts();
 	/**
-	 * unitのtimebase(時間の単位を記入しておきます。)
-	 * flvの場合は1ミリ秒ベースなので1000
-	 * mpegtsの場合は1/90000秒ベースなので90000といった感じ。(性格には、1/2400000?のもあるけど)
+	 * timebase for units.
+	 * 
+	 * ex flv is 1 millisec is base, so timebase = 1000.
+	 * 1sec = 1000ts.
+	 * ex mpegts is 1/90000 sec is base, so timebase = 90000.
 	 * @return
 	 */
 	public long getTimebase();

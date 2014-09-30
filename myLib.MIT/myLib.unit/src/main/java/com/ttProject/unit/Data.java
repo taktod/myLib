@@ -9,24 +9,24 @@ package com.ttProject.unit;
 import java.nio.ByteBuffer;
 
 /**
- * データのベースとなるクラス
+ * base for data
  * @author taktod
  */
 public abstract class Data implements IData {
-	/** データサイズ */
+	/** size */
 	private int size = 0;
-	/** 保持データ */
+	/** holding data */
 	private ByteBuffer data = null;
-	/** データの更新を実施したかフラグ */
+	/** flg for update */
 	private boolean update = false;
 	/**
-	 * なにか更新したときに印をつけておく
+	 * if something is changed, check the flag.
 	 */
 	protected final void update() {
 		update = true;
 	}
 	/**
-	 * データの更新がある場合にdataの中身の更新要求
+	 * if update is flaged, ask class to update data.
 	 * @throws Exception
 	 */
 	protected abstract void requestUpdate() throws Exception;
@@ -48,14 +48,14 @@ public abstract class Data implements IData {
 		return data.duplicate();
 	}
 	/**
-	 * サイズ設定
+	 * size
 	 * @param size
 	 */
 	protected void setSize(int size) {
 		this.size = size;
 	}
 	/**
-	 * データ設定
+	 * data
 	 * @param data
 	 */
 	protected void setData(ByteBuffer data) {

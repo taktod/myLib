@@ -18,23 +18,23 @@ import com.ttProject.pipe.PipeHandler;
 import com.ttProject.pipe.PipeManager;
 
 /**
- * 名前付きpipeでなにかする動作テスト
+ * namePipe work test.
  * @author taktod
  */
 public class PipeTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(PipeTest.class);
 	/**
-	 * 動作テスト
+	 * tail test
 	 * @throws Exception
 	 */
 //	@Test
 	public void test() throws Exception {
-		logger.info("動作テスト");
-		// とりあえず、managerをつくる。
+		logger.info("start");
 		PipeManager manager = new PipeManager();
 		final PipeHandler handler = manager.getPipeHandler("tail");
 		handler.setCommand("tail -f ${pipe}");
+		// execute process.
 		handler.executeProcess();
 		ExecutorService ex = Executors.newCachedThreadPool();
 		ex.execute(new Runnable() {
@@ -46,10 +46,10 @@ public class PipeTest {
 					while((line = reader.readLine()) != null) {
 						logger.info(line);
 					}
-					logger.info("おわった");
+					logger.info("end");
 				}
 				catch(Exception e) {
-					logger.error("データ取得スレッドで例外が発生しました。", e);
+					logger.error("get Exception for pipeline response", e);
 				}
 			}
 		});
@@ -60,7 +60,7 @@ public class PipeTest {
 		writer.flush();
 		writer.close();
 		Thread.sleep(1000);
-		logger.info("おしまい");
-		ex.shutdownNow();
+		logger.info("finish");
+		ex.shutdownNow(); // kill the execute threads.
 	}
 }

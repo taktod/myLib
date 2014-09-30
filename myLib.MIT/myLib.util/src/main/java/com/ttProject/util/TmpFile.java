@@ -9,17 +9,23 @@ package com.ttProject.util;
 import java.io.File;
 
 /**
- * 一時ファイル作成用のプログラム
+ * util for tmpFile.
  * @author taktod
  */
 public class TmpFile extends File {
 	private static final long serialVersionUID = -5496373580008414933L;
-	// 時間が経つと消す？
+	/** expire */
 	public final long expire = 3600;
+	/**
+	 * constructor
+	 * @param path
+	 */
 	public TmpFile(String path) {
-		// 一時ファイルを作成します。
+		// make on tmpdir.
 		super(System.getProperty("java.io.tmpdir") + path);
+		// make directories for path.
 		getParentFile().mkdirs();
-		deleteOnExit(); // プロセス完了時に消しておく。
+		// force delete on exit.
+		deleteOnExit();
 	}
 }

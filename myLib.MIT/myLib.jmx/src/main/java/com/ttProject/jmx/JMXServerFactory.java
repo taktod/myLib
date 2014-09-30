@@ -15,22 +15,22 @@ import javax.management.remote.JMXConnectorServerFactory;
 import javax.management.remote.JMXServiceURL;
 
 /**
- * JMX用のリモートサーバーをたてます。
+ * make jmx remote server
  * @author taktod
  */
 public class JMXServerFactory {
-	/** jmxサーバーとして利用しているポート */
+	/** port number */
 	private static int port = -1;
 	/**
-	 * 動作ポート番号参照
+	 * ref for port.
 	 * @return
 	 */
 	public static int getPort() {
 		return port;
 	}
 	/**
-	 * jmxのリモート用のサーバーをたてておきます
-	 * @param port たてるサーバーのポート番号
+	 * open jmx remote server(with port number)
+	 * @param port target port number.
 	 */
 	public static void openJMXRemoteServer(int port) throws Exception {
 		JMXServerFactory.port = port;
@@ -40,13 +40,12 @@ public class JMXServerFactory {
 		server.start();
 	}
 	/**
-	 * jmxのリモート用のサーバーをたてておきます。
-	 * ポート番号はpid + 1000xとしておきます。
+	 * make remote server
+	 * port number will be "pid + 1000 * x"
 	 * @throws Exception
 	 */
 	public static void openJMXRemoteServer() throws Exception {
 		if(JMXServerFactory.port != -1) {
-			// すでに決定済み
 			return;
 		}
 		RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
@@ -62,6 +61,6 @@ public class JMXServerFactory {
 			catch (Exception e) {
 			}
 		}
-		throw new Exception("jmx用のポート番号が決定できませんでした");
+		throw new Exception("cannot start jmx remote server.");
 	}
 }

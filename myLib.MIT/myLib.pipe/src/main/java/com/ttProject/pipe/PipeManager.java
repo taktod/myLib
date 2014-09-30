@@ -14,33 +14,32 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 /**
- * 名前付きpipeをlinuxやmacで利用するためのマネージャー
+ * namedpipe manager
  * @author taktod
  */
 public class PipeManager {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(PipeManager.class);
-	/** 動作対象プロセス */
+	/** processes */
 	private final Map<String, PipeHandler> handlers = new HashMap<String, PipeHandler>();
-	/** 実行プロセスID */
+	/** processId */
 	private static final String pid;
 	/**
-	 * 静的初期化
+	 * static initialize
 	 */
 	static {
 		RuntimeMXBean bean = ManagementFactory.getRuntimeMXBean();
 		pid = bean.getName().split("@")[0];
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public PipeManager() {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				// shutdown時の処理
-				// 動作させたプロセスはすべて殺しておく
+				// with shutdown kill all processes.
 				for(PipeHandler handler : handlers.values()) {
 					handler.close();
 				}
@@ -48,7 +47,8 @@ public class PipeManager {
 		});
 	}
 	/**
-	 * pipeHandlerを参照する
+	 * ref for pipeHandler
+	 * in the case of no handler, make one.
 	 * @param name
 	 * @return
 	 */

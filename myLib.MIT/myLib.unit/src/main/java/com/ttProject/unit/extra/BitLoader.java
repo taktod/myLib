@@ -20,64 +20,64 @@ import com.ttProject.unit.extra.bit.Bit7;
 import com.ttProject.util.BufferUtil;
 
 /**
- * bitデータを読み込む動作
+ * load bit data from ReadChannel
  * @author taktod
  */
 public class BitLoader {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(BitLoader.class);
-	/** 動作buffer */
+	/** targetChannel */
 	private final IReadChannel channel;
-	/** 中途処理バッファ */
-	private long floatData = 0;
-	/** 残っているbit数 */
+	/** tmpData */
+	private long tmpData = 0;
+	/** left bit count */
 	private int left = 0;
-	/** エンディアンコントロール */
+	/** little endian flag */
 	private boolean littleEndianFlg = false;
-	/** h264やh265のnal用の特殊処理を有効にするかフラグ */
+	/** for h264 or h265 flag */
 	private boolean emulationPreventionFlg = false;
-	/** h264やh265用の処理用byteデータ保持 */
+	/** for h264 or h265 byte data for 0x00 */
 	private byte firstByte = -1;
 	private byte secondByte = -1;
 	/**
-	 * 動作エンディアンをlittleEndianに変更する
+	 * set little endian flag
 	 * @param flg
 	 */
 	public void setLittleEndianFlg(boolean flg) {
 		littleEndianFlg = flg;
 	}
 	/**
-	 * littleEndianとして動作しているか確認
+	 * check mode is little endian.
 	 * @return
 	 */
 	public boolean isLittleEndian() {
 		return littleEndianFlg;
 	}
 	/**
-	 * h264やh265の読み込み用特殊フラグ変更
+	 * for h264 or h265 emulation prevention flg
 	 * @param flg
 	 */
 	public void setEmulationPreventionFlg(boolean flg) {
 		emulationPreventionFlg = flg;
 	}
 	/**
-	 * h264やh265の解析用フラグがたっているか確認
+	 * check mode is emulation prevention.
 	 * @return
 	 */
 	public boolean isEmulationPrevention() {
 		return emulationPreventionFlg;
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param channel
 	 */
 	public BitLoader(IReadChannel channel) throws Exception {
 		this.channel = channel;
 	}
 	/**
-	 * bitデータを読み込みます。
-	 * @param bit 一応8bitより大きなデータがきても大丈夫なはずですが、32bit超えるとoverflowします。
+	 * load the bit.
+	 * @param bit
 	 */
 	public void load(Bit bit) throws Exception {
 		if(bit instanceof EbmlValue) {
@@ -86,8 +86,8 @@ public class BitLoader {
 			do {
 				bit1 = new Bit1();
 				load(bit1);
-			} while(ebml.addBit1(bit1)); // 1bitずつ読み込んでいって、実際のデータサイズをしる。
-			load(ebml.getDataBit()); // 残りのデータbit数を読み込ませる
+			} while(ebml.addBit1(bit1)); // check the data size, by reading one by one.
+			load(ebml.getDataBit()); // load the left data.
 		}
 		else if(bit instanceof ExpGolomb) {
 			ExpGolomb golomb = (ExpGolomb) bit;
@@ -110,32 +110,32 @@ public class BitLoader {
 						firstByte = secondByte;
 						secondByte = currentByte;
 					}
-					floatData = (floatData | (currentByte & 0xFFL) << left);
+					tmpData = (tmpData | (currentByte & 0xFFL) << left);
 					left += 8;
 				}
 				int bitCount = bit.bitCount;
 				if(bit instanceof Bit64) {
-					((Bit64)bit).setLong(floatData);
+					((Bit64)bit).setLong(tmpData);
 				}
 				else if(bit instanceof BitN) {
-					((BitN) bit).setLong(floatData & ((1L << bitCount) - 1));
+					((BitN) bit).setLong(tmpData & ((1L << bitCount) - 1));
 				}
 				else {
-					bit.set((int)(floatData & ((1L << bitCount) - 1)));
+					bit.set((int)(tmpData & ((1L << bitCount) - 1)));
 				}
 				if(bitCount == 64) {
-					// 64bitのシフト動作はなにもしない動作になるみたいなので、32 x 2にしておく
-					floatData >>>= 32;
-					floatData >>>= 32;
+					// shift task for 64 bit is nothing. therefore, do 32bit shift twice.
+					tmpData >>>= 32;
+					tmpData >>>= 32;
 				}
 				else {
-					floatData >>>= bitCount;
+					tmpData >>>= bitCount;
 				}
 				left -= bitCount;
 			}
 			else {
 				// TODO BitNを分割して読み込む動作がなくなったことで64bit以上のBitNデータが読み込み不能になっている。(nellymoserの読み込みでこまるはず)
-				// とりあえずbigEndianだけ対応しておく。
+				// support only big endian now.
 				if(bit instanceof BitN && bit.bitCount > 64) {
 					for(Bit b : ((BitN)bit).bits) {
 						load(b);
@@ -153,15 +153,15 @@ public class BitLoader {
 							firstByte = secondByte;
 							secondByte = currentByte;
 						}
-						floatData = (floatData << 8 | (currentByte & 0xFFL));
+						tmpData = (tmpData << 8 | (currentByte & 0xFFL));
 						left += 8;
 					}
 					int bitCount = bit.bitCount;
 					if(bit instanceof BitN) {
-						((BitN) bit).setLong(floatData >>> (left - bitCount));
+						((BitN) bit).setLong(tmpData >>> (left - bitCount));
 					}
 					else {
-						bit.set((int)(floatData >>> (left - bitCount)));
+						bit.set((int)(tmpData >>> (left - bitCount)));
 					}
 					left -= bitCount;
 				}
@@ -169,7 +169,7 @@ public class BitLoader {
 		}
 	}
 	/**
-	 * 大量のデータを一気に読み込みます。
+	 * load multiple bits.
 	 * @param bits
 	 * @throws Exception
 	 */
@@ -179,7 +179,7 @@ public class BitLoader {
 		}
 	}
 	/**
-	 * 1byteに満たない端数を応答します
+	 * get the extra data(less than 1byte).
 	 * @return
 	 */
 	public Bit getExtraBit() throws Exception {

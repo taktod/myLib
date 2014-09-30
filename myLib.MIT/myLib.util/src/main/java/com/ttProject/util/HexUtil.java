@@ -9,15 +9,13 @@ package com.ttProject.util;
 import java.nio.ByteBuffer;
 
 /**
- * hexのデータを確認するためのライブラリ
- * とりあえずflazrにあったのが便利なんですが、他のライブラリとの競合もあるんで抜き出しておく。
- * 元ネタはflazr
+ * dump hex status.
+ * from flazr.
  * @author taktod
  */
 public class HexUtil {
 	private static final char[] HEX_DIGITS = {
-		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-		'A', 'B', 'C', 'D', 'E', 'F'
+		'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
 	};
 	
 	private static final char SEPARATOR = ' ';
@@ -64,7 +62,7 @@ public class HexUtil {
 		return toHex(data, offset, length, withSeparator);
 	}
 	/**
-	 * hexの文字列からbyteBufferデータを作成する。
+	 * make byteBuffer from hexstrings.
 	 * @return
 	 */
 	public static ByteBuffer makeBuffer(String hexString) {

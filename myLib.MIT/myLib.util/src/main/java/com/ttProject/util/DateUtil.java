@@ -12,26 +12,26 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * 日付関連の処理補助
+ * util for date
  * @author taktod
  */
 public class DateUtil {
 	/**
-	 * 日付文字列
+	 * date
 	 * @return
 	 */
 	public static String makeDate() {
 		return make(new SimpleDateFormat("yyyyMMdd"));
 	}
 	/**
-	 * 時刻文字列
+	 * time
 	 * @return
 	 */
 	public static String makeDateTime() {
 		return make(new SimpleDateFormat("yyyyMMdd_HHmmss"));
 	}
 	/**
-	 * 動作補助
+	 * common func.
 	 * @param dateFormat
 	 * @return
 	 */

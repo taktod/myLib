@@ -14,7 +14,7 @@ import com.xuggle.xuggler.IStreamCoder;
 import com.xuggle.xuggler.IStreamCoder.Flags;
 
 /**
- * エンコーダー設定支援
+ * setup helper for encoders.
  * @author taktod
  */
 public class Encoder {
@@ -54,7 +54,7 @@ public class Encoder {
 		IStreamCoder audioEncoder = stream.getStreamCoder();
 		audioEncoder.setSampleRate(44100);
 		audioEncoder.setChannels(2);
-//		audioEncoder.setBitRate(96000); // bitrateは設定する意味ないかも
+//		audioEncoder.setBitRate(96000); // nonsence for bitrate
 		return audioEncoder;
 	}
 	/**
@@ -144,7 +144,7 @@ public class Encoder {
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_H264);
 		IStreamCoder videoEncoder = stream.getStreamCoder();
 		IRational frameRate = IRational.make(15, 1); // 15fps
-		videoEncoder.setNumPicturesInGroupOfPictures(5); // gopを5にしておく。keyframeが5枚ごとになる。
+		videoEncoder.setNumPicturesInGroupOfPictures(5); // gop = 5
 		
 		videoEncoder.setBitRate(650000); // 650kbps
 		videoEncoder.setBitRateTolerance(9000);
@@ -152,7 +152,7 @@ public class Encoder {
 		videoEncoder.setHeight(240);
 		videoEncoder.setGlobalQuality(10);
 		videoEncoder.setFrameRate(frameRate);
-		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
+		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000
 		videoEncoder.setProperty("level", "30");
 		videoEncoder.setProperty("coder", "0");
 		videoEncoder.setProperty("qmin", "10");
@@ -186,14 +186,14 @@ public class Encoder {
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_VP8);
 		IStreamCoder videoEncoder = stream.getStreamCoder();
 		IRational frameRate = IRational.make(15, 1); // 15fps
-		videoEncoder.setNumPicturesInGroupOfPictures(5); // gopを5にしておく。keyframeが5枚ごとになる。
+		videoEncoder.setNumPicturesInGroupOfPictures(5); // gop=5
 		videoEncoder.setBitRate(650000); // 650kbps
 		videoEncoder.setBitRateTolerance(9000);
 		videoEncoder.setWidth(320);
 		videoEncoder.setHeight(240);
 		videoEncoder.setGlobalQuality(10);
 		videoEncoder.setFrameRate(frameRate);
-		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
+		videoEncoder.setTimeBase(IRational.make(1, 1000));
 		return videoEncoder;
 	}
 	/**
@@ -204,14 +204,14 @@ public class Encoder {
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_FLV1);
 		IStreamCoder videoEncoder = stream.getStreamCoder();
 		IRational frameRate = IRational.make(15, 1); // 15fps
-		videoEncoder.setNumPicturesInGroupOfPictures(5); // gopを5にしておく。keyframeが5枚ごとになる。
+		videoEncoder.setNumPicturesInGroupOfPictures(5); // gop=5
 		videoEncoder.setBitRate(650000); // 650kbps
 		videoEncoder.setBitRateTolerance(9000);
 		videoEncoder.setWidth(320);
 		videoEncoder.setHeight(240);
 		videoEncoder.setGlobalQuality(10);
 		videoEncoder.setFrameRate(frameRate);
-		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
+		videoEncoder.setTimeBase(IRational.make(1, 1000));
 		return videoEncoder;
 	}
 	/**
@@ -222,14 +222,14 @@ public class Encoder {
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_THEORA);
 		IStreamCoder videoEncoder = stream.getStreamCoder();
 		IRational frameRate = IRational.make(15, 1); // 15fps
-		videoEncoder.setNumPicturesInGroupOfPictures(5); // gopを5にしておく。keyframeが5枚ごとになる。
+		videoEncoder.setNumPicturesInGroupOfPictures(5); // gop=5
 		videoEncoder.setBitRate(650000); // 650kbps
 		videoEncoder.setBitRateTolerance(9000);
 		videoEncoder.setWidth(320);
 		videoEncoder.setHeight(240);
 		videoEncoder.setGlobalQuality(10);
 		videoEncoder.setFrameRate(frameRate);
-		videoEncoder.setTimeBase(IRational.make(1, 1000)); // 1/1000設定(flvはこうなるべき)
+		videoEncoder.setTimeBase(IRational.make(1, 1000));
 		return videoEncoder;
 	}
 	/**
@@ -241,7 +241,7 @@ public class Encoder {
 		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_MJPEG);
 		IStreamCoder videoEncoder = stream.getStreamCoder();
 		IRational frameRate = IRational.make(15, 1);
-		videoEncoder.setNumPicturesInGroupOfPictures(5); // mjpegにはkeyFrameしかないので、意味ない？
+		videoEncoder.setNumPicturesInGroupOfPictures(5); // all frame is key frame, no meaning for gop?
 		videoEncoder.setBitRate(650000);
 		videoEncoder.setBitRateTolerance(9000);
 		videoEncoder.setWidth(320);

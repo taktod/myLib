@@ -7,7 +7,7 @@
 package com.ttProject.util;
 
 /**
- * 数値系の便利関数
+ * util for int.
  * @author taktod
  */
 public class IntUtil {

@@ -9,7 +9,7 @@ package com.ttProject.jmx.test;
 import com.ttProject.jmx.bean.IMXBeanBase;
 
 /**
- * インターフェイス
+ * interface
  * @author taktod
  */
 public interface ITestMXBean extends IMXBeanBase {

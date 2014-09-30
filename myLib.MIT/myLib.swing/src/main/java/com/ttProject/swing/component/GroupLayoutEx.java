@@ -12,18 +12,18 @@ import javax.swing.GroupLayout;
 import javax.swing.JComponent;
 
 /**
- * groupLayoutの作成補助
+ * groupLayout helper
  */
 public class GroupLayoutEx extends GroupLayout {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param comp
 	 */
 	public GroupLayoutEx(Container comp) {
 		super(comp);
 	}
 	/**
-	 * オブジェクトの設定
+	 * set components
 	 * @param components
 	 */
 	public void addComponents(Object[][] components) {

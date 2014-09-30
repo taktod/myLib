@@ -15,16 +15,12 @@ import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * mkvやwebmのebmlのデータ読み込みテスト
+ * for ebml test
  * @author taktod
  */
 public class EbmlTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(EbmlTest.class);
-	/**
-	 * 読み込みテスト
-	 * @throws Exception
-	 */
 	@Test
 	public void test1() throws Exception {
 		logger.info("test1");

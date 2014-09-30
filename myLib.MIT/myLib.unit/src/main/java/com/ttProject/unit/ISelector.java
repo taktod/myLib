@@ -9,14 +9,14 @@ package com.ttProject.unit;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * どのUnitであるかを調べる動作
- * データの中身の構築は実行しませんが、対象データがなんであるかを調査します。
- * h264のどのNalであるかとかを判定する。
+ * selector for units
+ * minimum loading for units.
+ * (ex, selector decide the h264 frame is which nalu, slice? sliceIDR?, however, not load the data.)
  * @author taktod
  */
 public interface ISelector {
 	/**
-	 * 解析動作 minimumloadまで実施して、必要な情報は集めますが、内部の詳細はチェックしません。高速動作したいときとかに使う。
+	 * select the unit from channel, not load data body.
 	 * @param channel
 	 * @return
 	 * @throws Exception

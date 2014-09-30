@@ -9,44 +9,44 @@ package com.ttProject.unit.extra;
 import com.ttProject.util.BitUtil;
 
 /**
- * bit型の基本クラス
+ * base for bit.
  * @author taktod
  */
 public abstract class Bit {
-	/** 保持データ */
+	/** data */
 	private byte value;
-	/** 保持ビット数 */
+	/** num of bits */
 	protected int bitCount;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param count
 	 */
 	public Bit(int count) {
 		bitCount = count;
 	}
 	/**
-	 * 内部データ設定
+	 * set the value
 	 * @param value
 	 */
 	public void set(int value) {
 		this.value = (byte)value;
 	}
 	/**
-	 * 内部データ参照
+	 * ref the value
 	 * @return
 	 */
 	public int get() {
 		return value & 0xFF;
 	}
 	/**
-	 * bit深度を参照します。
+	 * ref the bit count。
 	 * @return
 	 */
 	public int getBitCount() {
 		return bitCount;
 	}
 	/**
-	 * データDump
+	 * dump the data.
 	 * @return 
 	 */
 	@Override

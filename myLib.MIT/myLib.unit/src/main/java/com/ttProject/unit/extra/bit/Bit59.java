@@ -8,11 +8,22 @@ package com.ttProject.unit.extra.bit;
 
 import com.ttProject.unit.extra.BitN;
 
+/**
+ * Bit59
+ * @author taktod
+ */
 public class Bit59 extends BitN {
+	/**
+	 * constructor
+	 * @param value
+	 */
 	public Bit59(int value) {
 		this();
 		set(value);
 	}
+	/**
+	 * constructor
+	 */
 	public Bit59() {
 		super(new Bit3(), new Bit8(), new Bit8(), new Bit8(), new Bit8(), new Bit8(), new Bit8(), new Bit8());
 	}

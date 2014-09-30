@@ -12,18 +12,18 @@ import org.junit.Assert;
 import com.ttProject.jmx.JMXFactory;
 
 /**
- * jmxの動作
+ * jmx test
  * @author taktod
  */
 public class JMXTest {
-	/** 動作ロガー */
+	/** logger */
 	private static Logger logger = Logger.getLogger(JMXTest.class);
 	/**
-	 * エントリー
+	 * entry
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		logger.info("動作開始");
+		logger.info("start");
 		TestMXBean mxBean = new TestMXBean();
 		JMXFactory.registerMBean("control", mxBean);
 		try {
@@ -35,7 +35,7 @@ public class JMXTest {
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			Assert.fail("例外が発生しました。");
+			Assert.fail("Exception occured");
 		}
 	}
 }
