@@ -63,13 +63,12 @@
   <distributionManagement>
     <repository>
       <id>mvn-repo</id>
-      <name>mvn-repo用のローカルgitリポジトリ</name>
+      <name>local repository for mvn-repo</name>
       <url>file://${project.basedir}/../mvn-repo</url>
     </repository>
   </distributionManagement>
   <name>myLib</name>
-  <description>taktodが個人的に利用しているjavaのライブラリ集
-いろいろなmavenモジュールにしてあるので、プログラムをつくるときに、つまみ食いをすればいろいろなプログラムがつくれます。</description>
+  <description>these are taktod's library projects.</description>
   <licenses>
     <license>
       <name>The MIT License</name>
@@ -86,6 +85,11 @@
       <url>https://www.gnu.org/licenses/gpl.txt</url>
       <distribution>repo</distribution>
     </license>
+    <license>
+      <name>GNU AFFERO GENERAL PUBLIC LICENSE</name>
+      <url>https://www.gnu.org/licenses/agpl.txt</url>
+      <distribution>repo</distribution>
+    </license>
   </licenses>
   <build>
     <plugins>
@@ -95,8 +99,8 @@
         <version>3.1</version>
         <configuration>
           <encoding>utf-8</encoding>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.7</source>
+          <target>1.7</target>
         </configuration>
       </plugin>
       <plugin>
