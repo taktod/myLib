@@ -32,21 +32,20 @@ import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * flazrのflvAtomからmyLib.container.flvのflvTagを取り出す動作
+ * messageManager
+ * to get flvTag on myLib.container.flv from flvAtom.
  * @author taktod
- * 
- * memo このプログラムでは、いちいちFlvTag用のByteStreamをつくってから、FlvTagを構築しています。
- * 直接frameを抜き出すこともできますが、FlvTag化しても対した違いはないと思うので、このままおいときます。
- * aggregateMessageとvideo、audioの違いを吸収するの面倒でもある。
+ * note this program try to make byteStream for flvTag.
+ * it is possible to get frame directly.
  */
 public class MessageManager {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = LoggerFactory.getLogger(MessageManager.class);
-	// flvTagの読み込みにする。
+	/** byteStream reader for flvTag */
 	private FlvTagReader flvTagReader = new FlvTagReader();
 	/**
-	 * rtmpメッセージからmyLib.container.flvのFlvTagを作成して応答します。
+	 * get flvTag from rtmpMessage.
 	 * @param message
 	 * @return
 	 */
@@ -70,7 +69,7 @@ public class MessageManager {
 		return null;
 	}
 	/**
-	 * aggregateMessageをFlvTag化します。
+	 * from aggregate message
 	 * @param message
 	 * @return
 	 * @throws Exception
@@ -116,7 +115,7 @@ public class MessageManager {
 		}
 	}
 	/**
-	 * 動画データに変換する。
+	 * get videoTag
 	 * @param video
 	 * @return
 	 * @throws Exception
@@ -125,7 +124,7 @@ public class MessageManager {
 		RtmpHeader header = video.getHeader();
 		ChannelBuffer data = video.encode();
 		if(data.capacity() < 3) {
-			// データがないので、そのままスキップする。
+			// data is empty, not to make flvTag.
 			return null;
 		}
 		ByteBuffer buffer = ByteBuffer.allocate(header.getSize() + 15);
@@ -144,7 +143,7 @@ public class MessageManager {
 		return tag;
 	}
 	/**
-	 * 音声データに変換する
+	 * get audioTag
 	 * @param audio
 	 * @return
 	 * @throws Exception
@@ -153,7 +152,7 @@ public class MessageManager {
 		RtmpHeader header = audio.getHeader();
 		ChannelBuffer data = audio.encode();
 		if(data.capacity() < 3) {
-			// データがないので、そのままスキップする。
+			// data is empty, not to make flvTag.
 			return null;
 		}
 		ByteBuffer buffer = ByteBuffer.allocate(header.getSize() + 15);
@@ -172,7 +171,7 @@ public class MessageManager {
 		return tag;
 	}
 	/**
-	 * メタデータを応答します
+	 * get metaTag
 	 * @param meta
 	 * @return
 	 */
@@ -184,7 +183,7 @@ public class MessageManager {
 		return metaTag;
 	}
 	/**
-	 * メタデータを応答します
+	 * get metaTag(amf3)
 	 * @param meta
 	 * @return
 	 */

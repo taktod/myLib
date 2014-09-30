@@ -24,20 +24,19 @@ import com.ttProject.flazr.rtmp.message.MetadataAmf3;
 import com.ttProject.util.HexUtil;
 
 /**
- * Rtmpのメッセージのデコーダー処理
- * amf3のmetaデータに対応した動作にしてあります
+ * extend rtmpDecoder to deal with amf3 messages.
  * @author taktod
  */
 public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
-	/** ロガー */
+	/** logger */
 	private static final Logger logger = LoggerFactory.getLogger(RtmpDecoderEx.class);
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public RtmpDecoderEx() {
 		super(DecoderState.GET_HEADER);
 	}
-	// 中途バッファ
+	// tmp data.
 	private RtmpHeader header;
 	private int channelId;
 	private ChannelBuffer payload;
@@ -68,11 +67,11 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 			in.readBytes(bytes);
 			payload.writeBytes(bytes);
 			checkpoint(DecoderState.GET_HEADER);
-			// chunkがまだあるか確認する。
+			// check more chunk?
 			if(payload.writable()) {
 				return null;
 			}
-			// もうchunkがない
+			// nomore
 			incompletePayloads[channelId] = null;
 			try {
 				if(header.getMessageType() == MessageType.SHARED_OBJECT_AMF3) {
@@ -81,6 +80,7 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 					return null;
 				}
 				final RtmpHeader prevHeader = completedHeaders[channelId];
+				// timestamp injection for the test of overflow for time.
 //				if(header.isLarge()) {
 //					header.setTime(header.getTime() + 16777000);
 //				}
@@ -106,7 +106,7 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 		}
 	}
 	/**
-	 * RtmpMessageをデコードします
+	 * decode rtmpmessages.
 	 * @param header
 	 * @param payload
 	 * @return
@@ -115,10 +115,10 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 		switch(header.getMessageType()) {
 		case METADATA_AMF3:
 			MetadataAmf3 metadata3 = new MetadataAmf3(header, payload);
-			return metadata3.transform();
+			return metadata3.transform(); // force to use amf0 for clientHandler
 		case COMMAND_AMF3:
 			CommandAmf3 command3 = new CommandAmf3(header, payload);
-			return command3.transform(); // 強制的にCommandAmf0として動作させます。
+			return command3.transform(); // force to use amf0 for clientHandler
 		default:
 			return MessageType.decode(header, payload);
 		}

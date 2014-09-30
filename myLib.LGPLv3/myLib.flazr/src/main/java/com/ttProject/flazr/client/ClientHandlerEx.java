@@ -17,17 +17,17 @@ import com.flazr.rtmp.message.MessageType;
 import com.ttProject.flazr.rtmp.message.MetadataAmf3;
 
 /**
- * metadataAmf3を理解させるために、ClientHandlerの拡張をつくりました。
- * このクラスはもう必要ないと思われます。
- * AMF3のクラスが同様の内容を持つAMF0のクラスを応答するようになったため
+ * this is the extend class for clientHandler to deal with metadataAmf3.
+ * however, this class is no more needed,
+ * because rtmpDecoderEx will reply metadataAmf0 instead of metadataAmf3 and commandAmf0 instead of commandAmf3.
  * @author taktod
  */
 @Deprecated
 public class ClientHandlerEx extends ClientHandler {
-	/** 動作オプション保持 */
+	/** hold options */
 	private final ClientOptions options;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param options
 	 */
 	public ClientHandlerEx(ClientOptions options) {
@@ -35,7 +35,7 @@ public class ClientHandlerEx extends ClientHandler {
 		this.options = options;
 	}
 	/**
-	 * メッセージの受信処理
+	 * in the case of message received
 	 */
 	@Override
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent event) {
@@ -45,7 +45,7 @@ public class ClientHandlerEx extends ClientHandler {
 		case METADATA_AMF3:
 			MetadataAmf3 metadata = (MetadataAmf3) message;
 			if(metadata.getName().equals("onMetaData")) {
-				// 毎回参照するようにしておく。(データがかわっていっているため)
+				// ref the option always, because rtmpWriter can be settled by other code.
 				RtmpWriter writer = options.getWriterToSave();
 				if(writer != null) {
 					writer.write(message);

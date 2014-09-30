@@ -20,10 +20,10 @@
     </dependency>
   </dependencies>
   <name>myLib.flazr</name>
-  <description>flazrのプログラムを使う上での動作補助
-
-myLib.media.flvのTag &lt;-&gt; flvAtom変換や
-wowzaでのamf3命令が混入するバグにも対応できるようになっています。</description>
+  <description>extends flazr programs.
+support myLig.container, myLib.frame.
+support AMF3 orders.
+</description>
   <licenses>
     <license>
       <name>GNU LESSER GENERAL PUBLIC LICENSE</name>

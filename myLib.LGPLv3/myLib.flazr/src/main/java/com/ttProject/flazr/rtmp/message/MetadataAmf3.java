@@ -23,21 +23,22 @@ import com.ttProject.util.BufferUtil;
 import com.ttProject.util.HexUtil;
 
 /**
- * FlazrがMetadataAmf3に対応していないので、対応してみた。
- * onMetaData, Data, Data...という形になっているのが常っぽいので、この実装は、初めのDataのみしか対象にしていないので、まずいかもしれない。
+ * MetadataAmf3
+ * TODO now this program deal with only one data for onMetaData order.
+ * I need the sample for multipleData.
  * @author taktod
  */
 public class MetadataAmf3 implements RtmpMessage {
-	/** ロガー */
+	/** logger */
 	private static final Logger logger = LoggerFactory.getLogger(MetadataAmf3.class);
 	/** rtmpHeader */
 	private final RtmpHeader header;
-	/** 保持データmap */
+	/** data map */
 	private Map<String, Object> data = null;
-	/** 設定名称(onMetaData固定) */
+	/** setting name(onMetaData) */
 	private String name;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param header
 	 * @param in
 	 */
@@ -46,7 +47,7 @@ public class MetadataAmf3 implements RtmpMessage {
 		decode(in);
 	}
 	/**
-	 * channelBufferからデータを復元します
+	 * rebuild the data from channelBuffer
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -55,32 +56,31 @@ public class MetadataAmf3 implements RtmpMessage {
 		byte[] bytes = new byte[length];
 		in.readBytes(bytes);
 		try {
-			// 処理しやすいようにするため、IReadChannelの形に変化させます。
 			IReadChannel channel = new ByteReadChannel(bytes);
 			
-			// 先頭のデータを確認して、どういうデータであるか確認する。
-			// 00 02 00 0A 6F 6E 4D 65 74 61 44 61 74 61であることを期待してあります。
+			// check the first several data.
+			// 00 02 00 0A 6F 6E 4D 65 74 61 44 61 74 61 is expected.
 			if(BufferUtil.safeRead(channel, 1).get() != 0x00) {
-				throw new Exception("先頭のデータはAMF0として転送されてきていることが期待されています。");
+				throw new Exception("first data is expected written as AMF0");
 			}
-			// AMF0としてデータを読み込む
+			// treat as amf0
 			String amf0Data = (String)Amf0Value.getValueObject(channel);
 			if(!"onMetaData".equals(amf0Data)) {
-				throw new Exception("metadataの指定文字列が取得できませんでした。");
+				throw new Exception("header string is not metadata.:" + amf0Data);
 			}
 			name = amf0Data;
-			// 11 Objectデータになっているはず
-			if(BufferUtil.safeRead(channel, 1).get() != 0x11) { // 0x00になっていて、AMF0の内容を保持している可能性もあるかも・・・
-				throw new Exception("中途のデータはAMF3のObjectデータとして転送されていることを期待しておきます。");
+			// 0x11 is expected(amf3)
+			if(BufferUtil.safeRead(channel, 1).get() != 0x11) { // can be 0x00 with data amf0?
+				throw new Exception("data is expected as AMF3");
 			}
-			// 内部データを解析しておく。
+			// analyze holding data.
 			data = (Map<String, Object>)Amf3Value.getValueObject(channel);
-			// まだデータがある場合は読み込んで次のObjectに配置した方がいいのかもしれない。
+			// TODO could have multiple data?
 		}
 		catch (Exception e) {
 			logger.error("", e);
 			logger.error("errorData: {}", HexUtil.toHex(bytes, true));
-			throw new RuntimeException("解析不能な例外が発生しました。");
+			throw new RuntimeException("faced unknown format.");
 		}
 	}
 	/**
@@ -88,25 +88,24 @@ public class MetadataAmf3 implements RtmpMessage {
 	 */
 	@Override
 	public ChannelBuffer encode() {
-		// AMF3として、メタデータを転送する用事がないので、サポートしません。
 		throw new RuntimeException("encode is not supported now.");
 	}
 	/**
-	 * header部取得
+	 * ref the header
 	 */
 	@Override
 	public RtmpHeader getHeader() {
 		return header;
 	}
 	/**
-	 * 名称取得(onMetaData)
+	 * name(onMetaData)
 	 * @return
 	 */
 	public String getName() {
 		return name;
 	}
 	/**
-	 * 内部データ取得
+	 * ref the data.
 	 * @return
 	 */
 	public Map<String, Object> getData() {

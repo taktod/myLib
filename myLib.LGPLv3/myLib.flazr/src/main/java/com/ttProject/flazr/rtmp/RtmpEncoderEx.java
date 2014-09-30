@@ -22,19 +22,22 @@ import com.flazr.rtmp.message.ChunkSize;
 import com.flazr.rtmp.message.Control;
 
 /**
- * flazrのrtmpEncoderにちょっとしたバグがあったので修正しました。
- * 同データ判定がpacketサイズのみになっているため、たとえば
- * 音声データ(171byte) 映像データ(171byte)みたいな連なりがある場合に
- * 送信した場合に
- * 音声データ(171byte) 音声データ(171byte)に誤送信されるバグがあるみたいです。
+ * fix the bug of rtmpEncoder on flazr.
+ * original one decide the same data is check size only.
+ * therefore, in the case of "same size" and "sequencial" video and audio data.
+ * they could make bug.
+ * 
+ * original flv.
+ * audio(171 byte) video(171byte)
+ * on rtmpserver.
+ * audio(171 byte) audio(171byte) <- make mistake.
  * @author taktod
- *
  */
 @ChannelPipelineCoverage("one")
 public class RtmpEncoderEx extends SimpleChannelDownstreamHandler {
-	/** 動作ロガー */
+	/** logger */
 	private static final Logger logger = LoggerFactory.getLogger(RtmpEncoderEx.class);
-	/** 動作chunkSize */
+	/** chunkSize */
 	private int chunkSize = 128;
 	private RtmpHeader[] channelPrevHeaders = new RtmpHeader[RtmpHeader.MAX_CHANNEL_ID];
 	private void clearPrevHeaders() {

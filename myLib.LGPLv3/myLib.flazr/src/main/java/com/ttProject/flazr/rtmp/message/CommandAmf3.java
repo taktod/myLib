@@ -24,21 +24,21 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
- * AMF3のコマンド動作
+ * CommandAmf3
  * 
  * @author taktod
  */
 public class CommandAmf3 implements RtmpMessage {
-	/** ロガー */
+	/** logger */
 	private static final Logger logger = LoggerFactory.getLogger(CommandAmf3.class);
-	/** 動作ヘッダ */
+	/** header */
 	private final RtmpHeader header;
 	private String name;
 	private Integer transactionId;
 	private Object object;
 	private Object[] args;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param header
 	 * @param in
 	 */
@@ -46,19 +46,19 @@ public class CommandAmf3 implements RtmpMessage {
 		this.header = header;
 		decode(in);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void decode(ChannelBuffer in) {
-		// ここをつくる必要あり。
-		// とりあえず、IReadChannelで処理したいので、そうする。
 		int length = in.readableBytes();
 		byte[] bytes = new byte[length];
 		in.readBytes(bytes);
 		try {
 			IReadChannel channel = new ByteReadChannel(bytes);
-			// まず1byte目を確認する。
+			// check the first byte, if 0x00 do amf0, if 0x11 do amf3.
 			switch(BufferUtil.safeRead(channel, 1).get()) {
 			case 0x00:
-				// 1byte目が0x00ならAMF0として処理する。
 				name = (String)Amf0Value.getValueObject(channel);
 				transactionId = ((Double)Amf0Value.getValueObject(channel)).intValue();
 				object = Amf0Value.getValueObject(channel);
@@ -69,8 +69,7 @@ public class CommandAmf3 implements RtmpMessage {
 				args = list.toArray();
 				break;
 			case 0x11:
-				// 1byte目が0x11ならAMF3として処理する。(たぶん)
-				throw new Exception("中身はAMF0であることを期待しておきます。");
+				throw new Exception("unexpect data is comming. taktod wanna sample for this case. please contact me.");
 			}
 		}
 		catch(Exception e) {
@@ -79,7 +78,6 @@ public class CommandAmf3 implements RtmpMessage {
 	}
 	@Override
 	public ChannelBuffer encode() {
-		// AMF3としてサーバーに命令を転送する動作はいまのところ実装しないでおきます。
 		throw new RuntimeException("encode is not supported now.");
 	}
 	@Override

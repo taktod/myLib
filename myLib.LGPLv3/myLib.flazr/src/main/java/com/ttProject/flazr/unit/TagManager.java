@@ -12,12 +12,12 @@ import com.flazr.io.flv.FlvAtom;
 import com.ttProject.container.flv.FlvTag;
 
 /**
- * flvTagからflazrのflvAtomを取得する動作
+ * make flvAtom from myLib.container.flv
  * @author taktod
  */
 public class TagManager {
 	/**
-	 * FlvTagからflazrのflvAtomを取り出します。
+	 * get flvAtom from FlvTag.
 	 * @param tag
 	 * @return
 	 * @throws Exception

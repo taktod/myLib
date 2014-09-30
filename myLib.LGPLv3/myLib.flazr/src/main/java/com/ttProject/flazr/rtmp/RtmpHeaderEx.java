@@ -15,9 +15,8 @@ import com.flazr.rtmp.message.MessageType;
 import com.flazr.util.Utils;
 
 /**
- * rtmpHeaderの処理を上書きする動作
+ * override rtmpHeader
  * @author taktod
- *
  */
 public class RtmpHeaderEx extends RtmpHeader {
 	@SuppressWarnings("unused")

@@ -29,7 +29,7 @@ import com.ttProject.flazr.rtmp.RtmpDecoderEx;
 import com.ttProject.flazr.rtmp.RtmpEncoderEx;
 
 /**
- * 本家のflazrのコピーエントリー
+ * copy of original rtmpClient(from flazr)
  * @author taktod
  */
 public class RtmpClient {

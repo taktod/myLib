@@ -9,18 +9,20 @@ package com.ttProject.flazr.client;
 import com.flazr.rtmp.client.ClientOptions;
 
 /**
- * clientOptionsの動作を再定義しておく
- * objectEncodingの部分だけ、値を文字列からNumberに変更しておきたい
+ * extends clientOptions.
+ * original clientOptions treat as string for data of objectEncoding.
+ * this must be number for wowza media server.
  * @author taktod
  */
 public class ClientOptionsEx extends ClientOptions {
 	/**
-	 * url解析動作をhookしておく
+	 * hool the url analyze command.
 	 */
+	@Override
 	public boolean parseCli(String[] args) {
-		// 普通に解析しておく
+		// do normal parse
 		boolean result = super.parseCli(args);
-		// objectEncodingの値だけ、数値である必要があるので(特にwowza)値を確認して数値化しておく。
+		// change the objectEncoding data from string into number.
 		if(getParams() != null) {
 			Object encoding = getParams().get("objectEncoding");
 			if("3".equals(encoding)) {
