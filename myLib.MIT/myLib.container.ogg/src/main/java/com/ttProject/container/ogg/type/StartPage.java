@@ -98,7 +98,7 @@ public class StartPage extends OggPage {
 					analyzer = new OpusFrameAnalyzer();
 					break;
 				default:
-					throw new Exception("知らないコーデックデータを検知しました。");
+					throw new Exception("unknown codec is found.");
 				}
 				buffer.position(0);
 			}

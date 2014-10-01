@@ -92,7 +92,7 @@ public class Fmt extends RiffUnit {
 			frameAnalyzer = new PcmmulawFrameAnalyzer();
 			break;
 		default:
-			throw new RuntimeException("不明なコーデックでした。");
+			throw new RuntimeException("codec is unknown:.");
 		}
 		if(frameAnalyzer instanceof AudioAnalyzer) {
 			AudioSelector selector = ((AudioAnalyzer)frameAnalyzer).getSelector();

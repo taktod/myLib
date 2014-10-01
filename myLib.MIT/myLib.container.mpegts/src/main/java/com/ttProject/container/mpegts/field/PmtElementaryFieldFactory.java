@@ -43,7 +43,7 @@ public class PmtElementaryFieldFactory {
 			elementField.setSuggestStreamId(nextVideoStreamId ++);
 			break;
 		default:
-			throw new Exception("作成が進んでいないcodecが選択されました。");
+			throw new Exception("unknown codecType found. I need sample.");
 		}
 		return elementField;
 	}

@@ -82,7 +82,7 @@ public class Tkhd extends Mp4Atom {
 			duration = new Bit64();
 		}
 		else {
-			throw new Exception("versionの値が不正です。");
+			throw new Exception("version is corrupted.");
 		}
 		trackId = new Bit32();
 		reserved1 = new Bit32();

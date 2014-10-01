@@ -42,7 +42,7 @@ public class RiffUnitSelector implements ISelector {
 		switch(type) {
 		case RIFF: // header
 			if(channel.position() != 4) {
-				throw new Exception("ヘッダの存在位置がおかしいです。");
+				throw new Exception("position of header is invalid.");
 			}
 			unit = new RiffHeaderUnit();
 			headerUnit = (RiffHeaderUnit)unit;
@@ -60,10 +60,10 @@ public class RiffUnitSelector implements ISelector {
 		case LIST: // なくてもいい
 			break;
 		default:
-			throw new RuntimeException("想定外のtypeデータを受け取りました:" + type);
+			throw new RuntimeException("unexpected frame type.:" + type);
 		}
 		if(unit == null) {
-			throw new Exception("未実装なデータがきました。:" + type);
+			throw new Exception("unit is undefined.maybe non-support type.:" + type);
 		}
 		if(!(unit instanceof RiffHeaderUnit)) {
 			unit.setHeaderUnit(headerUnit);

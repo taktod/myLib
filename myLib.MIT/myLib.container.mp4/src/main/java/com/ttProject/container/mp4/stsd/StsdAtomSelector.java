@@ -48,7 +48,7 @@ public class StsdAtomSelector implements ISelector {
 			atom = new Esds(size, name);
 		}
 		else {
-			throw new Exception("解析できない。mp4Atomでした。:" + nameString);
+			throw new Exception("unknwon mp4Atom found.:" + nameString);
 		}
 		atom.minimumLoad(channel);
 		return atom;

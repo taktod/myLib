@@ -54,8 +54,7 @@ public class Esds extends Mp4Atom {
 			esTag = new EsTag(tag);
 			break;
 		default:
-			logger.error(tag.get());
-			throw new Exception("知らない型のtagを取得しました。");
+			throw new Exception("unexpected tag type found.:" + TagType.getType(tag));
 		}
 		esTag.minimumLoad(channel);
 		logger.info(esTag);

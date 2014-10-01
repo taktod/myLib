@@ -178,10 +178,10 @@ public class SendReader implements RtmpReader {
 	private void parseAddress(ClientOptions options) throws Exception {
 		Matcher matcher = pattern.matcher(rtmpAddress);
 		if(!matcher.matches()) {
-			throw new Exception("rtmpアドレスがおかしいです。");
+			throw new Exception("rtmp address is invalid");
 		}
 		if(matcher.groupCount() != 4) {
-			throw new Exception("アドレス解析に失敗しました。");
+			throw new Exception("failed to rtmpAddress parse.");
 		}
 		options.setHost(matcher.group(1));
 		if(matcher.group(2) == null) {
@@ -249,7 +249,7 @@ public class SendReader implements RtmpReader {
 	@Override
 	@Deprecated
 	public long getTimePosition() {
-		throw new RuntimeException("ライブなのでseek系は禁止です。");
+		throw new RuntimeException("seek is not supported for live.");
 	}
 	/**
 	 * シーク動作
@@ -257,7 +257,7 @@ public class SendReader implements RtmpReader {
 	 */
 	@Override
 	public long seek(long timePosition) {
-		throw new RuntimeException("ライブなのでseek系は禁止です。");
+		throw new RuntimeException("seek is not supported for live.");
 	}
 	/**
 	 * 次のメッセージがくるかどうか
@@ -289,7 +289,7 @@ public class SendReader implements RtmpReader {
 			}
 		}
 		else {
-			throw new RuntimeException("aggregateによるchunk転送は未実装です。");
+			throw new RuntimeException("chunk for aggregate is not supported.");
 		}
 	}
 	/**

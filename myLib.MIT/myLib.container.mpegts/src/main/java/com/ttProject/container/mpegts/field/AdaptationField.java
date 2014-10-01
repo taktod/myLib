@@ -172,13 +172,13 @@ public class AdaptationField {
 			size -= 6;
 		}
 		if(splicingPointFlag.get() != 0x00) {
-			throw new Exception("splicingPointの解析は未実装です。");
+			throw new Exception("splicingPoint analyzation is not supported yet.");
 		}
 		if(transportPrivateDataFlag.get() != 0x00) {
-			throw new Exception("transportPrivateDataの解析は未実装です。");
+			throw new Exception("transportPrivateData analyzation is not supported yet.");
 		}
 		if(adaptationFieldExtensionFlag.get() != 0x00) {
-			throw new Exception("adaptationFieldExtensionの解析は未実装です。");
+			throw new Exception("adaptationFieldExtension analyzation is not supported yet.");
 		}
 		if(size != 0) {
 			// 何のフラグもなくてすべてffで埋められているっぽい。

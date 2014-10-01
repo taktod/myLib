@@ -50,7 +50,7 @@ public class ISO639LanguageDescriptor extends Descriptor {
 			loader.load(ISO639LanguageCode, audioType);
 		}
 		else {
-			throw new Exception("意図しないデータサイズを受け取りました");
+			throw new Exception("unexpected length is found.");
 		}
 	}
 	@Override

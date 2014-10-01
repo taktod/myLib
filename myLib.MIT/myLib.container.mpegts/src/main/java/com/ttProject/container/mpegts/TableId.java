@@ -86,6 +86,6 @@ public enum TableId {
 				return s;
 			}
 		}
-		throw new Exception("解析不能なsectionをうけとりました。");
+		throw new Exception("unknown section is found.");
 	}
 }

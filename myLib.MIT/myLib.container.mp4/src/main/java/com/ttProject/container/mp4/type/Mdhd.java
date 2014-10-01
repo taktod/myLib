@@ -77,7 +77,7 @@ public class Mdhd extends Mp4Atom {
 			duration = new Bit64();
 		}
 		else {
-			throw new Exception("versionの値が不正です。");
+			throw new Exception("version is corrupted.");
 		}
 		timeScale = new Bit32();
 		pad = new Bit1();

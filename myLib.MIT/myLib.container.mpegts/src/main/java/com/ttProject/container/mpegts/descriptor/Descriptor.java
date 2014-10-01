@@ -112,7 +112,7 @@ public abstract class Descriptor {
 			serviceDescriptor.load(channel);
 			return serviceDescriptor;
 		default: // 知らないデータは放置しておく
-			throw new Exception("未定義の型がきました。");
+			throw new Exception("unknown descriptor type is found. I need sample.");
 		}
 	}
 	public abstract void load(IReadChannel channel) throws Exception;

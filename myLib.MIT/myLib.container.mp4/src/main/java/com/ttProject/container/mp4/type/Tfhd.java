@@ -81,7 +81,7 @@ public class Tfhd extends Mp4Atom {
 		loader.load(trackId, baseDataOffset, sampleDescriptionIndex, defaultSampleDuration, defaultSampleSize);
 		if((flags.get() & 0x20) != 0x00) {
 			// defaultSampleFlagsを読み込む
-			throw new Exception("DefaultSampleFlags読み込みが実行されました。作者に連絡してください。");
+			throw new Exception("detect defaultSampleFlags. I need a sample.");
 		}
 		super.load(channel);
 	}

@@ -46,6 +46,6 @@ public enum MpegtsCodecType {
 				return t;
 			}
 		}
-		throw new Exception("知らないコーデックタイプを検知しました。:" + Integer.toHexString(value));
+		throw new Exception("unknown codec type is detected.:" + Integer.toHexString(value));
 	}
 }

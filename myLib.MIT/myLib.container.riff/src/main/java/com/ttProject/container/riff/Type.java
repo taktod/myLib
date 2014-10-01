@@ -29,6 +29,6 @@ public enum Type {
 				return t;
 			}
 		}
-		throw new RuntimeException("不明なタグを発見しました。:" + Integer.toHexString(num));
+		throw new RuntimeException("unknown tag is found.:" + Integer.toHexString(num));
 	}
 }

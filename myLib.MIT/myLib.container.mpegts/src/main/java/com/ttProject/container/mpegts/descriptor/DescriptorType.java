@@ -119,7 +119,7 @@ public enum DescriptorType {
 				return t;
 			}
 		}
-		throw new Exception("例外が発生しました。");
+		throw new Exception("no match for descriptor type.:" + value);
 	}
 
 }

@@ -26,7 +26,7 @@ public enum TagType {
 				return t;
 			}
 		}
-		throw new Exception("解析不能なデータでした。:" + Integer.toHexString(value));
+		throw new Exception("unknwon tagType.:" + Integer.toHexString(value));
 	}
 	public static TagType getType(Bit8 tag) throws Exception {
 		return getType(tag.get());

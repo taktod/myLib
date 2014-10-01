@@ -68,7 +68,7 @@ public class MpegtsPacketSelector implements ISelector {
 				transportPriority, pid, scramblingControl, adaptationFieldExist,
 				payloadFieldExist, continuityCounter);
 		if(syncByte.get() != 0x47) {
-			throw new Exception("syncBitが一致しません。");
+			throw new Exception("syncBit is invalid.");
 		}
 		MpegtsPacket packet = null;
 		if(pid.get() == sdtPid) {

@@ -50,7 +50,7 @@ public class EsTag extends Tag {
 				sTag = new SlConfig(tag);
 				break;
 			default:
-				throw new Exception("EsTagが保持しないと思われるデータが見つかりました。");
+				throw new Exception("found invalid type for EsTag.:" + TagType.getType(tag));
 			}
 			sTag.minimumLoad(channel);
 			logger.info(sTag);

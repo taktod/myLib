@@ -34,7 +34,7 @@ public class DtsField {
 		if(dtsFlag1.get() != 0x01
 		|| dtsFlag2.get() != 0x01
 		|| dtsFlag3.get() != 0x01) {
-			throw new Exception("セパレートフラグがおかしいです。");
+			throw new Exception("separate flag is corrupted.");
 		}
 		dts = (long)(((dts1.get() & 0xFFL) << 30) | (dts2.get() << 15) | (dts3.get()));
 	}

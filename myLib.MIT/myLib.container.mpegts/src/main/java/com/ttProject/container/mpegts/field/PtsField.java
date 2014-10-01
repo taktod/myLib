@@ -41,7 +41,7 @@ public class PtsField {
 		if(ptsFlag1.get() != 0x01
 		|| ptsFlag2.get() != 0x01
 		|| ptsFlag3.get() != 0x01) {
-			throw new Exception("セパレートフラグがおかしいです。");
+			throw new Exception("separate flag is invalid.");
 		}
 		pts = (long)(((pts1.get() & 0xFFL) << 30) | (pts2.get() << 15) | pts3.get());
 	}

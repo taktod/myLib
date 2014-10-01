@@ -214,7 +214,7 @@ public class Mp4AtomSelector implements ISelector {
 			atom = new Ilst(size, name);
 			break;
 		default:
-			throw new Exception("未定義:" + Type.getType(name.get()) + " name:" + IntUtil.makeHexString(name.get()));
+			throw new Exception("undefined:" + Type.getType(name.get()) + " name:" + IntUtil.makeHexString(name.get()));
 		}
 		atom.minimumLoad(channel);
 		return atom;

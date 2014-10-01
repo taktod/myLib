@@ -106,7 +106,7 @@ public class MpegtsPacketWriter implements IWriter {
 		if(!isWriteFirstMeta) {
 			// 初データなので、sdt pat pmtの書き込みが必要です。
 			if(sdt == null || pat == null || pmt == null) {
-				throw new Exception("必要な情報がありません。");
+				throw new Exception("sdt pat pmt is expected for writing.");
 			}
 			writeMpegtsPacket(sdt);
 			writeMpegtsPacket(pat);

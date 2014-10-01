@@ -44,7 +44,7 @@ public class OggPageSelector implements ISelector {
 		// 先頭データ4byteを取得して、OggSであるか確認
 		String pattern = new String(BufferUtil.safeRead(channel, 4).array());
 		if(!OggPage.capturePattern.equals(pattern)) {
-			throw new Exception("OggSが見つかりませんでした。");
+			throw new Exception("OggS is not found.");
 		}
 		// 次のbit8とbit5 bit1 bit1を取得する。
 		Bit8 version = new Bit8();

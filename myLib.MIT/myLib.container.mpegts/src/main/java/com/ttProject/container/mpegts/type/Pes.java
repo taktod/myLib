@@ -197,28 +197,28 @@ public class Pes extends MpegtsPacket {
 			case 0x00:
 				break;
 			default:
-				throw new Exception("ptsDtsIndicatorが不正です。");
+				throw new Exception("ptsDtsIndicator is invalid");
 			}
 			if(escrFlag.get() != 0x00) {
-				throw new Exception("escrFlagの解析は未実装です。");
+				throw new Exception("escrFlag analyzation is not suppoted yet.");
 			}
 			if(esRateFlag.get() != 0x00) {
-				throw new Exception("esRateFlagの解析は未実装です。");
+				throw new Exception("esRateFlag analyzation is not supported yet.");
 			}
 			if(DSMTrickModeFlag.get() != 0x00) {
-				throw new Exception("DSMTrickModeFlagの解析は未実装です。");
+				throw new Exception("DSMTrickModeFlag analyzation is not supported yet.");
 			}
 			if(additionalCopyInfoFlag.get() != 0x00) {
-				throw new Exception("additionalCopyInfoFlagの解析は未実装です。");
+				throw new Exception("additionalCopyInfoFlag analyzation is not supported yet.");
 			}
 			if(CRCFlag.get() != 0x00) {
-				throw new Exception("CRCFlagの解析は未実装です。");
+				throw new Exception("CRCFlag analyzation is not supported yet.");
 			}
 			if(extensionFlag.get() != 0x00) {
-				throw new Exception("extensionFlagの解析は未実装です。");
+				throw new Exception("extensionFlag analyzation is not supported yet.");
 			}
 			if(length != 0) {
-				throw new Exception("読み込みできていないデータがあるみたいです。");
+				throw new Exception("there are some unloaded data.");
 			}
 			unitStartPes = this;
 		}
@@ -279,13 +279,13 @@ public class Pes extends MpegtsPacket {
 		}
 		else if(frame instanceof AudioMultiFrame) {
 			if(!(tmpFrame instanceof IAudioFrame)) {
-				throw new Exception("audioFrameの追加バッファとしてaudioFrame以外を受け取りました");
+				throw new Exception("try to add non-audioFrame for audioMultiFrame.");
 			}
 			((AudioMultiFrame)frame).addFrame((IAudioFrame)tmpFrame);
 		}
 		else if(frame instanceof VideoMultiFrame) {
 			if(!(tmpFrame instanceof IVideoFrame)) {
-				throw new Exception("videoFrameの追加バッファとしてvideoFrame以外を受け取りました:" + tmpFrame);
+				throw new Exception("try to add non-videoFrame for videoMultiFrame.:" + tmpFrame);
 			}
 			((VideoMultiFrame)frame).addFrame((IVideoFrame)tmpFrame);
 		}
@@ -293,7 +293,7 @@ public class Pes extends MpegtsPacket {
 			AudioMultiFrame multiFrame = new AudioMultiFrame();
 			multiFrame.addFrame((IAudioFrame)frame);
 			if(!(tmpFrame instanceof IAudioFrame)) {
-				throw new Exception("audioFrameの追加バッファとしてaudioFrame以外を受け取りました");
+				throw new Exception("try to add non-audioFrame for audioFrame.");
 			}
 			multiFrame.addFrame((IAudioFrame)tmpFrame);
 			frame = multiFrame;
@@ -302,13 +302,13 @@ public class Pes extends MpegtsPacket {
 			VideoMultiFrame multiFrame = new VideoMultiFrame();
 			multiFrame.addFrame((IVideoFrame)frame);
 			if(!(tmpFrame instanceof IVideoFrame)) {
-				throw new Exception("videoFrameの追加バッファとしてvideoFrame以外を受け取りました");
+				throw new Exception("try to add non-videoFrame for videoFrame.");
 			}
 			multiFrame.addFrame((IVideoFrame)tmpFrame);
 			frame = multiFrame;
 		}
 		else {
-			throw new Exception("frameのデータに不明なデータがはいりました。");
+			throw new Exception("unexpected frame is found.");
 		}
 		// TODO このタイミングでupdateフラグを更新しておかないと、フレームを追加したときに、データがきちんととれないみたいです。
 		super.update();
@@ -316,11 +316,11 @@ public class Pes extends MpegtsPacket {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(frame == null) {
-			throw new Exception("frameデータがありません。");
+			throw new Exception("frame data is not defined.");
 		}
 		// unitStartPesのみ動作可能としたいとおもいます。
 		if(!isPayloadUnitStart()) {
-			throw new Exception("データの取得はunitStartのpesから実行してください。");
+			throw new Exception("data have to get from unitStart.");
 		}
 		// 時間に関する設定更新
 		setupTime();
@@ -472,14 +472,14 @@ public class Pes extends MpegtsPacket {
 				return BufferUtil.connect(bufferList);
 			}
 			else if(frame instanceof VideoMultiFrame) {
-				throw new Exception("複合フレームでくることはないと思われます。");
+				throw new Exception("multiFrame is unexpect here.。");
 			}
 			else {
-				throw new Exception("h264以外のframeが送信されてきました。未実装です。:" + frame);
+				throw new Exception("non-h264 data, under construction, I need sample.:" + frame);
 			}
 		}
 		else {
-			throw new Exception("pesが映像でも音声でもないデータを保持していました。:" + frame);
+			throw new Exception("pes have neither audio nor video.:" + frame);
 		}
 	}
 	/**
@@ -528,7 +528,7 @@ public class Pes extends MpegtsPacket {
 			}
 		}
 		else {
-			throw new Exception("frameに映像でも音声でもない情報がはいっていました。:" + frame);
+			throw new Exception("frame have neithor video nor audio.:" + frame);
 		}
 	}
 	private void setPts(long timestamp, long timebase) {

@@ -69,7 +69,7 @@ public class DecoderConfig extends Tag {
 					return t;
 				}
 			}
-			throw new Exception("未定義のtypeが応答されました。");
+			throw new Exception("undefined value is found.:" + tag.get());
 		}
 	}
 	/**
@@ -94,7 +94,7 @@ public class DecoderConfig extends Tag {
 			decoderSpecific = new DecoderSpecific(tag);
 			break;
 		default:
-			throw new Exception("DecoderConfigが保持しないと思われるデータが取得されました。");
+			throw new Exception("found invalid type for DecoderConfig Tag.:" + TagType.getType(tag));
 		}
 		decoderSpecific.minimumLoad(channel);
 		logger.info(decoderSpecific);

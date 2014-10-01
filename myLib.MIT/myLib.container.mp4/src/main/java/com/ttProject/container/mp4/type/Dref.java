@@ -74,7 +74,7 @@ public class Dref extends Mp4Atom {
 				entries[i].load(channel);
 			}
 			else {
-				throw new Exception("想定外のDataEntryBoxを検出しました。:" + nameString);
+				throw new Exception("unexpected DataEntryBox:" + nameString);
 			}
 		}
 		super.load(channel);

@@ -69,7 +69,7 @@ public class Tfdt extends Mp4Atom {
 			data = new Bit64();
 			break;
 		default:
-			throw new Exception("version定義がおかしいです。");
+			throw new Exception("version is corrupted.");
 		}
 		BitLoader loader = new BitLoader(channel);
 		loader.load(data);

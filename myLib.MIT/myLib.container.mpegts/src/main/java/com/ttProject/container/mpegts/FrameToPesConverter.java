@@ -62,7 +62,7 @@ public class FrameToPesConverter {
 		else if(frame instanceof AudioFrame) {
 			return getAudioPes(pid, pmt, (AudioFrame)frame);
 		}
-		throw new Exception("音声でも映像でもないフレームを検知しました。" + frame.toString());
+		throw new Exception("found neither video nor audio frame." + frame.toString());
 	}
 	/**
 	 * pesを新たに作成します
@@ -77,7 +77,7 @@ public class FrameToPesConverter {
 		for(PmtElementaryField peField : pmt.getFields()) {
 			if(pid == peField.getPid()) {
 				if(pes.getStreamId() != 0) {
-					throw new Exception("streamIdが始めから設定されることはないはずです。");
+					throw new Exception("unexpected stream Id, need to start from non-zero.");
 				}
 				else {
 					pes.setStreamId(peField.getSuggestStreamId());

@@ -41,6 +41,6 @@ public enum RiffCodecType {
 				return type;
 			}
 		}
-		throw new RuntimeException("不明なコーデックです:" + num);
+		throw new RuntimeException("codecId is unknown.:" + num);
 	}
 }
