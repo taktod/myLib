@@ -51,7 +51,7 @@ public class CodecTypeChecker {
 		case CODEC_ID_VP8:
 			return CodecType.VP8;
 		default:
-			throw new Exception("未定義のcodecTypeです");
+			throw new Exception("unknown codec type.:" + id);
 		}
 	}
 }

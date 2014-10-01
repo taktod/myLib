@@ -58,7 +58,7 @@ public class Depacketizer {
 			return getVideoFrame(encoder, packet, type);
 		}
 		else {
-			throw new Exception("データtypeが不正です。");
+			throw new Exception("invalid data type.");
 		}
 	}
 	/**
@@ -73,7 +73,7 @@ public class Depacketizer {
 		if(analyzer == null || analyzer.getCodecType() != type) {
 			analyzer = analyzerChecker.checkAnalyzer(type);
 			if(analyzer instanceof AudioAnalyzer) {
-				throw new Exception("映像codecのanalyzerが音声のものでした。");
+				throw new Exception("audioAnalyzer is applyed for videoFrame.");
 			}
 			VideoAnalyzer vAnalyzer = (VideoAnalyzer)analyzer;
 			VideoSelector selector = vAnalyzer.getSelector();
@@ -115,7 +115,7 @@ public class Depacketizer {
 		if(analyzer == null || analyzer.getCodecType() != type) {
 			analyzer = analyzerChecker.checkAnalyzer(type);
 			if(analyzer instanceof VideoAnalyzer) {
-				throw new Exception("音声codecのanalyzerが映像のものでした。");
+				throw new Exception("videoAnalyzer is applyed for audioFrame.");
 			}
 			AudioAnalyzer aAnalyzer = (AudioAnalyzer)analyzer;
 			AudioSelector selector = aAnalyzer.getSelector();

@@ -167,7 +167,7 @@ public class DecodeTest {
 			IAudioSamples spl = IAudioSamples.make(1024, encoder.getChannels());
 			int retval = resampler.resample(spl, samples, samples.getNumSamples());
 			if(retval <= 0) {
-				throw new Exception("音声のリサンプルに失敗しました。");
+				throw new Exception("failed to resample audio.");
 			}
 			spl.setPts(samples.getPts());
 			spl.setTimeBase(samples.getTimeBase());
@@ -220,11 +220,11 @@ public class DecodeTest {
 				}
 			}
 			if(findFormat == null) {
-				throw new Exception("対応しているAudioFormatが不明です。");
+				throw new Exception("supported audioFormat is undefined.");
 			}
 			encoder.setSampleFormat(findFormat);
 			if(encoder.open(null, null) < 0) {
-				throw new Exception("音声エンコーダーが開けませんでした");
+				throw new Exception("failed to open encoder.s");
 			}
 		}
 	}

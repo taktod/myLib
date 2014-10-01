@@ -76,7 +76,7 @@ public class FlvTest {
 			}
 		}
 		if(findFormat == null) {
-			throw new Exception("対応している音声formatが不明です");
+			throw new Exception("supported audioformat is unknown.");
 		}
 		audioEncoder.setSampleFormat(findFormat);
 		audioEncoder.open(null, null);
@@ -109,7 +109,7 @@ public class FlvTest {
 	 * @param frame
 	 */
 	private void decodeAudio(IAudioFrame frame) throws Exception {
-		logger.info("フレームのデコードします。");
+		logger.info("decode audio");
 		audioDecoder = packetizer.getDecoder(frame, audioDecoder);
 		MediaPacket packet = packetizer.getPacket(frame, null);
 		int offset = 0;
@@ -118,16 +118,16 @@ public class FlvTest {
 			MediaAudio samples = MediaAudio.make(frame.getSampleNum(), frame.getSampleRate(), frame.getChannel(), audioDecoder.getChannelLayout(), audioDecoder.getSampleFormat());
 			int bytesDecoded = audioDecoder.decodeAudio(samples, packet, offset);
 			if(bytesDecoded < 0) {
-				throw new Exception("データのデコードに失敗しました。");
+				throw new Exception("failed to decode data.");
 			}
 			offset += bytesDecoded;
 			if(samples.isComplete()) {
 				MediaAudio sampled = getResampled(samples);
-				logger.info("あとはエンコードすりゃOK");
+				logger.info("encode now.");
 				encodeSound(sampled);
 			}
 		}
-		logger.info("終了");
+		logger.info("end");
 	}
 	/**
 	 * リサンプル実行
@@ -164,7 +164,7 @@ public class FlvTest {
 			MediaAudio spl = MediaAudio.make(1024, audioEncoder.getSampleRate(), audioEncoder.getChannels(), audioEncoder.getChannelLayout(), audioEncoder.getSampleFormat());
 			int retval = audioResampler.resample(spl, samples);
 			if(retval <= 0) {
-				throw new Exception("音声のリサンプルに失敗しました。");
+				throw new Exception("failed to resample audio.");
 			}
 			spl.setTimeStamp(samples.getTimeStamp());
 			spl.setTimeBase(samples.getTimeBase());

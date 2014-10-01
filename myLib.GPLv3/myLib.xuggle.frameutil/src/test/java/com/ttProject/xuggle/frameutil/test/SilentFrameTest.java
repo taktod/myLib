@@ -57,11 +57,11 @@ public class SilentFrameTest {
 			}
 		}
 		if(findFormat == null) {
-			throw new Exception("対応しているAudioFormatが不明でした。");
+			throw new Exception("supported format is unknown.");
 		}
 		encoder.setSampleFormat(findFormat);
 		if(encoder.open(null, null) < 0) {
-			throw new Exception("音声エンコーダーが開けませんでした");
+			throw new Exception("failed to open audioEncoder.");
 		}
 		logger.info(encoder.getSampleRate());
 		logger.info(encoder.getChannels());
@@ -74,7 +74,7 @@ public class SilentFrameTest {
 		while(sampleConsumed < samples.getNumSamples()) {
 			int retval = encoder.encodeAudio(packet, samples, sampleConsumed);
 			if(retval < 0) {
-				throw new Exception("変換失敗");
+				throw new Exception("failed to encode.");
 			}
 			sampleConsumed += retval;
 			if(packet.isComplete()) {

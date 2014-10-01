@@ -33,35 +33,35 @@ public class NullFrame extends Frame {
 	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
-		throw new RuntimeException("NullFrameのpacket用bufferが要求されました。");
+		throw new RuntimeException("NullFrame doesn't support packBuffer.");
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public float getDuration() {
-		throw new RuntimeException("NullFrameのduration値が要求されました。");
+		throw new RuntimeException("NullFrame doesn't support duration.");
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		throw new RuntimeException("NullFrameのデータ読み込みが要求されました。");
+		throw new RuntimeException("NullFrame doesn't support minimumLoad.");
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		throw new RuntimeException("NullFrameのデータ読み込みが要求されました。");
+		throw new RuntimeException("NullFrame doesn't support load.");
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		throw new RuntimeException("NullFrameのデータ更新が要求されました。");
+		throw new RuntimeException("NullFrame doesn't support byte data response.");
 	}
 	/**
 	 * {@inheritDoc}

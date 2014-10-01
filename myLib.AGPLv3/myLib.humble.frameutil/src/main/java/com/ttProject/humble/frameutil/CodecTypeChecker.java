@@ -58,7 +58,7 @@ public class CodecTypeChecker {
 		case CODEC_ID_VP9:
 			return CodecType.VP9;
 		default:
-			throw new Exception("未定義のcodecTypeです");
+			throw new Exception("undefined codecType.:" + id);
 		}
 	}
 }

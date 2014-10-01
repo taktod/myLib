@@ -82,7 +82,7 @@ public enum CodecType {
 				return type;
 			}
 		}
-		throw new Exception("未対応のID番号です");
+		throw new Exception("invalid codecId is found.:" + num);
 	}
 	/**
 	 * frameからコーデックtypeを応答する

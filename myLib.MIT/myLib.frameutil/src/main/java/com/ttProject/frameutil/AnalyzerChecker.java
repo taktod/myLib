@@ -47,7 +47,7 @@ public class AnalyzerChecker {
 		case H264:
 			return new NalAnalyzer();
 		case H265:
-			throw new RuntimeException("あとで考えます。こっちもH265NalAnalyzerを使うと思う。");
+			throw new RuntimeException("think about this, later.");
 		case MJPEG:
 			return new MjpegFrameAnalyzer();
 		case MP3:
@@ -73,7 +73,7 @@ public class AnalyzerChecker {
 		case VP9:
 			return new Vp9FrameAnalyzer();
 		default:
-			throw new Exception("未定義のcodecTypeです");
+			throw new Exception("unknown codecType:" + codecType);
 		}
 	}
 }

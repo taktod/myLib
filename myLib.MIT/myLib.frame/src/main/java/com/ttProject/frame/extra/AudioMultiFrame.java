@@ -77,7 +77,7 @@ public class AudioMultiFrame extends AudioFrame {
 	@Deprecated
 	@Override
 	public ByteBuffer getPackBuffer() {
-		throw new RuntimeException("マルチフレームはpackBuffer未対応");
+		throw new RuntimeException("multiFrame is not support packBuffer.");
 	}
 	/**
 	 * frameリスト参照

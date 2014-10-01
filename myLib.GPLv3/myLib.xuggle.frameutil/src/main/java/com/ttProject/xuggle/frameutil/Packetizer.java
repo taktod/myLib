@@ -45,10 +45,10 @@ public class Packetizer {
 			packet = IPacket.make();
 		}
 		if(frame instanceof AudioMultiFrame) {
-			throw new Exception("マルチフレームは未対応です");
+			throw new Exception("multiFrame is not supported.");
 		}
 		else if(frame instanceof VideoMultiFrame) {
-			throw new Exception("マルチフレームは未対応です");
+			throw new Exception("multiFrame is not supported.");
 		}
 		else if(frame instanceof IAudioFrame) {
 			return getAudioPacket((IAudioFrame)frame, packet);
