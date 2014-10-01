@@ -129,7 +129,7 @@ public class TrackEntry extends MkvMasterTag {
 			}
 		}
 		if(trackNumber == null) {
-			throw new Exception("trackNumberが見つかりませんでした。");
+			throw new Exception("trackNumber is undefined.");
 		}
 		switch(codecId.getMkvCodecType()) {
 		case A_AAC:
@@ -254,7 +254,7 @@ public class TrackEntry extends MkvMasterTag {
 				return ((CodecID) tag).getCodecType();
 			}
 		}
-		throw new Exception("CodecIDが未定義です。");
+		throw new Exception("CodecID is undefined.");
 	}
 	/**
 	 * codecTypeを設定する

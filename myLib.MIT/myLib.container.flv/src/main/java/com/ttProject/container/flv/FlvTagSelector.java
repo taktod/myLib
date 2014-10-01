@@ -179,7 +179,7 @@ public class FlvTagSelector implements ISelector {
 				audioTag.setFrameAnalyzer(audioFrameAnalyzer);
 				return audioTag;
 			default:
-				throw new Exception("想定外のtagです。");
+				throw new Exception("unexpected tag.");
 			}
 		}
 	}

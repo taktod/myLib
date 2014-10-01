@@ -28,6 +28,6 @@ public enum Lacing {
 				return t;
 			}
 		}
-		throw new Exception("lacingデータが解析できませんでした。:" + value);
+		throw new Exception("lacing type is undefined.:" + value);
 	}
 }

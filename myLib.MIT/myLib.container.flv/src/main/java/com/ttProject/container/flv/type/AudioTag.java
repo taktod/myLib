@@ -97,7 +97,7 @@ public class AudioTag extends FlvTag {
 				case 3:
 					return 44100;
 				default:
-					throw new Exception("想定外の数値がでました。");
+					throw new Exception("unexpected sampleRate val:" + sampleRate.get());
 				}
 			}
 		}
@@ -156,7 +156,7 @@ public class AudioTag extends FlvTag {
 				frameBuffer = BufferUtil.safeRead(channel, getSize() - 13 - 4);
 				if(sequenceHeaderFlag.get() == 0) {
 					if(frameAnalyzer == null || !(frameAnalyzer instanceof AacDsiFrameAnalyzer)) {
-						throw new Exception("frameAnalyzerがaac(dsi)対応ではないみたいです。");
+						throw new Exception("frameAnalyzer is not suitable for aac.");
 					}
 					frameAnalyzer.setPrivateData(new ByteReadChannel(frameBuffer));
 				}
@@ -174,7 +174,7 @@ public class AudioTag extends FlvTag {
 		}
 		// prevTagSizeを確認しておく。
 		if(getPrevTagSize() != BufferUtil.safeRead(channel, 4).getInt()) {
-			throw new Exception("終端タグのデータ量がおかしいです。");
+			throw new Exception("the size of end tag is corrupted.");
 		}
 	}
 	/**
@@ -207,7 +207,7 @@ public class AudioTag extends FlvTag {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(frameBuffer == null && frame == null) {
-			throw new Exception("データ更新の要求がありましたが、内容データが決定していません。");
+			throw new Exception("data body is undefined.");
 		}
 		ByteBuffer frameBuffer = null;
 		if(frameAppendFlag) {
@@ -259,10 +259,10 @@ public class AudioTag extends FlvTag {
 				// 0xB6みたい。
 				codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.SPEEX));
 				if(frame.getSampleRate() != 16000) {
-					throw new Exception("speexのsampleRateは16kHzのみサポートします。");
+					throw new Exception("sampleRate of speex is 16kHz only.");
 				}
 				if(frame.getChannel() != 1) {
-					throw new Exception("speexはmonoralのみサポートします。");
+					throw new Exception("channel of speex is monoral only.");
 				}
 				sampleRate = new Bit2(1);
 				break;
@@ -278,7 +278,7 @@ public class AudioTag extends FlvTag {
 				sampleRate = new Bit2(0);
 				break;
 			default:
-				throw new Exception("未対応なaudioFrameでした:" + frame);
+				throw new Exception("frame type is invalid for flv.:" + frame);
 			}
 			// チャンネル対応
 			if(channels == null) {
@@ -291,7 +291,7 @@ public class AudioTag extends FlvTag {
 					channels.set(1);
 					break;
 				default:
-					throw new Exception("音声チャンネル数がflvに適合しないものでした。");
+					throw new Exception("audio channel is not suitable for flv.:" + frame.getChannel());
 				}
 			}
 			// bitCount
@@ -307,7 +307,6 @@ public class AudioTag extends FlvTag {
 				default:
 					// bit深度情報はもっていないコンテナもあるみたいです。(というか基本的に圧縮データにbit深度という情報はないみたい。(復元したらどうなるか・・・の問題っぽい。))
 					bitCount.set(1);
-//					throw new Exception("ビット深度が適合しないものでした。:" + frame.getBit());
 				}
 			}
 			// sampleRate
@@ -327,7 +326,7 @@ public class AudioTag extends FlvTag {
 					sampleRate.set(3);
 					break;
 				default:
-					throw new Exception("frameRateが適合しないものでした。");
+					throw new Exception("sampleRate is not suitable for flv.");
 				}
 			}
 			frameAppendFlag = false;
@@ -395,14 +394,14 @@ public class AudioTag extends FlvTag {
 	 */
 	private void analyzeFrame() throws Exception {
 		if(frameBuffer == null) {
-			throw new Exception("frameデータが読み込まれていません");
+			throw new Exception("target frame buffer is not loaded yet.");
 		}
 		if(getCodec() == FlvCodecType.AAC && sequenceHeaderFlag.get() != 1) {
 			// aacのmshも処理しません。
 			return;
 		}
 		if(frameAnalyzer == null) {
-			throw new Exception("frameの解析プログラムが設定されていません。");
+			throw new Exception("frameAnalyzer is unknown.");
 		}
 		IReadChannel channel = new ByteReadChannel(frameBuffer);
 		AudioSelector selector = frameAnalyzer.getSelector();
@@ -451,7 +450,7 @@ public class AudioTag extends FlvTag {
 			return;
 		}
 		if(!(tmpFrame instanceof IAudioFrame)) {
-			throw new Exception("audioTagの追加バッファとして、audioFrame以外を受けとりました。");
+			throw new Exception("try to add non-audioFrame for audioTag.");
 		}
 		frameAppendFlag = true;
 		if(frame == null) {
@@ -497,7 +496,7 @@ public class AudioTag extends FlvTag {
 			channels.set(1);
 			break;
 		default:
-			throw new Exception("音声チャンネル数がflvに適合しないものでした。");
+			throw new Exception("channel is not suitable for audioTag.:" + frame.getChannel());
 		}
 		switch(frame.getBit()) {
 		case 8:
@@ -524,7 +523,7 @@ public class AudioTag extends FlvTag {
 			sampleRate.set(3);
 			break;
 		default:
-			throw new Exception("frameRateが適合しないものでした。");
+			throw new Exception("frameRate is not suitable for flv.:" + frame.getSampleRate());
 		}
 		sequenceHeaderFlag = new Bit8(0);
 		frameBuffer = data;

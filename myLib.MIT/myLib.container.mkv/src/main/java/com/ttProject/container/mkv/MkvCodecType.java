@@ -53,7 +53,7 @@ public enum MkvCodecType {
 				return type;
 			}
 		}
-		throw new RuntimeException("対応するMkvCodecTypeがわかりませんでした。:" + codecType);
+		throw new RuntimeException("mkvCodecType is not decided.:" + codecType);
 	}
 	/**
 	 * CodecIDの文字列からCodecTypeを取得する
@@ -104,6 +104,6 @@ public enum MkvCodecType {
 /*		else if(data.startsWith("S_TEXT")) {
 			return S_TEXT;
 		}*/
-		throw new Exception("知らないCodec定義でした。:" + data);
+		throw new Exception("unexpected codec type string. I need a sample.:" + data);
 	}
 }

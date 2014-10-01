@@ -74,7 +74,7 @@ public class Amf0Value {
 					return t;
 				}
 			}
-			throw new RuntimeException("解析不能なデータでした。" + value);
+			throw new RuntimeException("unanalyzable data." + value);
 		}
 	}
 	/**
@@ -119,7 +119,7 @@ public class Amf0Value {
 					object.put(key, value);
 				}
 				if(Type.getType(BufferUtil.safeRead(source, 1).get()) != Type.ObjectEnd) {
-					throw new Exception("objectの終端がおかしかったです。");
+					throw new Exception("the end of object is corrupted.");
 				}
 				return object;
 			}
@@ -141,7 +141,7 @@ public class Amf0Value {
 					map.put(key, value);
 				}
 				if(Type.getType(BufferUtil.safeRead(source, 1).get()) != Type.ObjectEnd) {
-					throw new Exception("mapの終端がおかしかったです。");
+					throw new Exception("the end of map is corrupted.");
 				}
 				return map;
 			}
@@ -162,7 +162,7 @@ public class Amf0Value {
 				return date;
 			}
 		default:
-			throw new Exception("知らないデータがきました。:" + type);
+			throw new Exception("unknown data.:" + type);
 		}
 	}
 	/**

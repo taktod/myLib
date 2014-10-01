@@ -122,7 +122,7 @@ public class SimpleBlock extends MkvBlockTag {
 				buffer = BufferUtil.connect(buffer, sliceFrame.getDataPackBuffer());
 			}
 			else {
-				throw new Exception("slice以外のh264データについて、データ化しようとしました。");
+				throw new Exception("only sliceFrame is supported for h264 data.");
 			}
 			break;
 //		case H265:

@@ -40,7 +40,7 @@ public abstract class MkvDateTag extends MkvTag {
 			value = new Bit64();
 			break;
 		default:
-			throw new Exception("8以外の数値では、動作できません。");
+			throw new Exception("unexpected mkvSize:" + getMkvSize());
 		}
 		BitLoader loader = new BitLoader(channel);
 		loader.load(value);
@@ -50,7 +50,7 @@ public abstract class MkvDateTag extends MkvTag {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(value == null) {
-			throw new Exception("値が決定していないので、動作できません。");
+			throw new Exception("value is undefined");
 		}
 		BitConnector connector = new BitConnector();
 		ByteBuffer data = connector.connect(getTagId(), getTagSize(), value);

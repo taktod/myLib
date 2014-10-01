@@ -39,7 +39,7 @@ public class CodecID extends MkvStringTag {
 	public MkvCodecType getMkvCodecType() throws Exception {
 		String name = getValue();
 		if(name == null) {
-			throw new Exception("loadを実行して実体を取得してください。");
+			throw new Exception("load() is required, make body.");
 		}
 		return MkvCodecType.getCodecType(name);
 	}

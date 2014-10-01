@@ -52,7 +52,7 @@ public class ContentCompression extends MkvMasterTag {
 			}
 		}
 		if(algo == null) {
-			throw new Exception("圧縮方式があるメディアデータのはずなのに、設定がありませんでした。");
+			throw new Exception("algo setting is required, but not found.");
 		}
 	}
 	/**
@@ -84,16 +84,16 @@ public class ContentCompression extends MkvMasterTag {
 	}
 	public Algo getAlgoType() throws Exception {
 		if(algo == null) {
-			throw new Exception("algoが解析されていません");
+			throw new Exception("algo is undefined.");
 		}
 		return algo.getType();
 	}
 	public ByteBuffer getSettingData() throws Exception {
 		if(getAlgoType() != Algo.HeaderStripping) {
-			throw new Exception("settingsデータがないalgoでした。:" + getAlgoType());
+			throw new Exception("algoType is unexpected.:" + getAlgoType());
 		}
 		if(settings == null) {
-			throw new Exception("settingsデータが解析されていません");
+			throw new Exception("settings is undefined.");
 		}
 		return settings.getMkvData();
 	}

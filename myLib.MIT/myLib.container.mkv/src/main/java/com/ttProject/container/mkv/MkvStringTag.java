@@ -49,7 +49,7 @@ public abstract class MkvStringTag extends MkvTag{
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(value == null) {
-			throw new Exception("値が設定されていません。");
+			throw new Exception("value is not defined.");
 		}
 		BitConnector connector = new BitConnector();
 		ByteBuffer data = BufferUtil.connect(connector.connect(getTagId(), getTagSize()), ByteBuffer.wrap(value.getBytes()));

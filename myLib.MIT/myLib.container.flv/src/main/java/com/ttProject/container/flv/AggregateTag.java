@@ -31,7 +31,7 @@ public class AggregateTag extends FlvTag {
 	@Deprecated
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		throw new RuntimeException("未定義");
+		throw new RuntimeException("unsupported");
 	}
 	/**
 	 * {@inheritDoc}
@@ -39,7 +39,7 @@ public class AggregateTag extends FlvTag {
 	@Deprecated
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		throw new RuntimeException("未定義");
+		throw new RuntimeException("unsupported");
 	}
 	/**
 	 * {@inheritDoc}
@@ -48,7 +48,7 @@ public class AggregateTag extends FlvTag {
 	@Override
 	protected void requestUpdate() throws Exception {
 		// これは定義してもいいかもしれない
-		throw new RuntimeException("未定義");
+		throw new RuntimeException("unsupported");
 	}
 	/**
 	 * 集合タグ追加

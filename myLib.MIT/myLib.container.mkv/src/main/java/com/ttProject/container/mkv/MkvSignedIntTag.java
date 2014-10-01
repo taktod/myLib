@@ -53,7 +53,7 @@ public abstract class MkvSignedIntTag extends MkvTag {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(value == null) {
-			throw new Exception("値が決定していないので、動作不能です。");
+			throw new Exception("value is not defined.");
 		}
 		BitConnector connector = new BitConnector();
 		ByteBuffer data = connector.connect(getTagId(), getTagSize(), value);

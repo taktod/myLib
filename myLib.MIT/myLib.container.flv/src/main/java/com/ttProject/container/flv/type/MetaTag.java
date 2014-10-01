@@ -70,13 +70,13 @@ public class MetaTag extends FlvTag {
 		IReadChannel bufferChannel = new ByteReadChannel(rawBuffer.duplicate());
 		String tag = (String)Amf0Value.getValueObject(bufferChannel);
 		if(!title.equals(tag)) {
-			throw new Exception("先頭がonMetaDataになっていませんでした。");
+			throw new Exception("start code is not onMetaData");
 		}
 		// このタイミングでmetaDataの中身を確認しておきます
 		while(bufferChannel.position() < bufferChannel.size()) {
 			Object data = Amf0Value.getValueObject(bufferChannel);
 			if(!(data instanceof Map<?, ?>)) {
-				throw new Exception("内部データ構成がMapではないみたいです。知らない形式です。");
+				throw new Exception("data is not described by map. unexpected data.");
 			}
 			@SuppressWarnings("unchecked")
 			Map<String, Object> object = (Map<String, Object>) data;
@@ -86,7 +86,7 @@ public class MetaTag extends FlvTag {
 		}
 		// prevTagSizeを確認しておく。
 		if(getPrevTagSize() != BufferUtil.safeRead(channel, 4).getInt()) {
-			throw new Exception("終端タグのデータ量がおかしいです。");
+			throw new Exception("size data is corrupted.");
 		}
 	}
 	/**
@@ -103,7 +103,7 @@ public class MetaTag extends FlvTag {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(rawBuffer == null) {
-			throw new Exception("データ更新の要求がありましたが、内部データが決定していません");
+			throw new Exception("rawBuffer is undefined.");
 		}
 		ByteBuffer startBuffer = getStartBuffer();
 		// この部分は、rawBufferのポインターがずれてもかまわない。更新したときのみに作り直す形になっているため。

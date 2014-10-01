@@ -143,7 +143,7 @@ public abstract class MkvBlockTag extends MkvBinaryTag {
 				}
 				break;
 			default:
-				throw new Exception("不明な型です。");
+				throw new Exception("lacing type is corrupted.");
 			}
 			// frameデータを調整したい。
 			TrackEntry entry = getMkvTagReader().getTrackEntry(trackId.get());
@@ -206,7 +206,7 @@ public abstract class MkvBlockTag extends MkvBinaryTag {
 		do {
 			analyzedFrame = analyzer.analyze(channel);
 			if(analyzedFrame == null) {
-				throw new Exception("frameがありませんでした。");
+				throw new Exception("no frame is analyzed");
 			}
 			if(analyzedFrame instanceof NullFrame || !(analyzedFrame instanceof Frame)) {
 				continue;
@@ -239,13 +239,13 @@ public abstract class MkvBlockTag extends MkvBinaryTag {
 		}
 		else if(frame instanceof AudioMultiFrame) {
 			if(!(tmpFrame instanceof IAudioFrame)) {
-				throw new Exception("audioFrameの追加バッファとしてaudioFrame以外をうけとりました。");
+				throw new Exception("try to add non-audioFrame for audioMultiFrame.");
 			}
 			((AudioMultiFrame)frame).addFrame((IAudioFrame)tmpFrame);
 		}
 		else if(frame instanceof VideoMultiFrame) {
 			if(!(tmpFrame instanceof IVideoFrame)) {
-				throw new Exception("videoFrameの追加バッファとしてvideoFrame以外を受け取りました:" + tmpFrame);
+				throw new Exception("try to add non-videoFrame for videoMultiFrame:" + tmpFrame);
 			}
 			((VideoMultiFrame)frame).addFrame((IVideoFrame)tmpFrame);
 		}
@@ -253,7 +253,7 @@ public abstract class MkvBlockTag extends MkvBinaryTag {
 			AudioMultiFrame multiFrame = new AudioMultiFrame();
 			multiFrame.addFrame((IAudioFrame)frame);
 			if(!(tmpFrame instanceof IAudioFrame)) {
-				throw new Exception("audioFrameの追加バッファとしてaudioFrame以外を受け取りました");
+				throw new Exception("try to add non-audioFrame for audioFrame.");
 			}
 			multiFrame.addFrame((IAudioFrame)tmpFrame);
 			frame = multiFrame;
@@ -262,13 +262,13 @@ public abstract class MkvBlockTag extends MkvBinaryTag {
 			VideoMultiFrame multiFrame = new VideoMultiFrame();
 			multiFrame.addFrame((IVideoFrame)frame);
 			if(!(tmpFrame instanceof IVideoFrame)) {
-				throw new Exception("videoFrameの追加バッファとしてvideoFrame以外を受け取りました");
+				throw new Exception("try to add non-videoFrame for videoFrame.");
 			}
 			multiFrame.addFrame((IVideoFrame)tmpFrame);
 			frame = multiFrame;
 		}
 		else {
-			throw new Exception("frameのデータに不明なデータがはいりました。");
+			throw new Exception("unknown frame is detected.");
 		}
 	}
 	/**

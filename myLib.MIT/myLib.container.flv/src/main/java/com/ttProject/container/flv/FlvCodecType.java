@@ -70,7 +70,7 @@ public enum FlvCodecType {
 		case 12: // 不明
 		case 13: // 未定義
 		default:
-			throw new RuntimeException("判定不能なコーデック");
+			throw new RuntimeException("cannot decide the audioCodecType:" + codecId);
 		}
 	}
 	/**
@@ -90,7 +90,7 @@ public enum FlvCodecType {
 
 		case 0: // 不明
 		default:
-			throw new RuntimeException("判定不能なコーデック:" + codecId);
+			throw new RuntimeException("cannot decide the videoCodecType:" + codecId);
 		}
 	}
 	/**
@@ -110,7 +110,7 @@ public enum FlvCodecType {
 		case H264:         return 7;
 		case NONE:         return 0;
 		default:
-			throw new Exception("映像コーデックではありません。");
+			throw new Exception("non-videoCodec.");
 		}
 	}
 	/**
@@ -145,7 +145,7 @@ public enum FlvCodecType {
 		case MP3_8:           return 14;
 		case DEVICE_SPECIFIC: return 15;
 		default:
-			throw new RuntimeException("判定不能なコーデック");
+			throw new RuntimeException("non-audioCodec");
 		}
 	}
 }

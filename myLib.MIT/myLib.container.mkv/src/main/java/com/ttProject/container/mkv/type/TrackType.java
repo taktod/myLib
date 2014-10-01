@@ -61,7 +61,7 @@ public class TrackType extends MkvUnsignedIntTag {
 					return t;
 				}
 			}
-			throw new Exception("typeが決定しませんでした:" + value);
+			throw new Exception("type is unknown.:" + value);
 		}
 	}
 }

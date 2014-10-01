@@ -54,7 +54,7 @@ public class FrameToFlvTagConverter {
 			// 音声フレームの処理
 			return getAudioTags((AudioFrame)frame);
 		}
-		throw new Exception("音声でも映像でもないフレームを検知しました。" + frame.toString());
+		throw new Exception("neither audio nor video frame?:" + frame.toString());
 	}
 	/**
 	 * 音声フレームについて処理します

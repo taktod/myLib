@@ -131,7 +131,7 @@ public class MkvTagSelector implements ISelector {
 			}
 			return NullContainer.getInstance();
 			// ebmltagにするには数値が大きすぎます。
-//			throw new Exception("ebmlタグにするには数値がおおきすぎます。");
+//			throw new Exception("too large size for ebml value.");
 		}
 		loader.load(tag.getDataBit());
 		
@@ -383,7 +383,7 @@ public class MkvTagSelector implements ISelector {
 			mkvTag = new DisplayUnit(size);
 			break;
 		default:
-			throw new Exception("未実装のTypeデータが応答されました。" + Type.getType(tag.getEbmlValue()));
+			throw new Exception("undefined mkvTagType.:" + Type.getType(tag.getEbmlValue()));
 		}
 		mkvTag.minimumLoad(channel);
 		return mkvTag;

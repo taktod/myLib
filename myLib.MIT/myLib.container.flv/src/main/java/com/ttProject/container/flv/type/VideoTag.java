@@ -96,7 +96,7 @@ public class VideoTag extends FlvTag {
 				frameBuffer = BufferUtil.safeRead(channel, getSize() - 16 - 4);
 				if(packetType.get() == 0) {
 					if(frameAnalyzer == null || !(frameAnalyzer instanceof DataNalAnalyzer)) {
-						throw new Exception("h264解析用のNalAnalyzerが設定されていません。");
+						throw new Exception("frameAnalyzer is not suitable for h264 flv.");
 					}
 					DataNalAnalyzer dataNalAnalyzer = (DataNalAnalyzer)frameAnalyzer;
 					// mshの場合はconfigDataを構築しておく。
@@ -131,7 +131,7 @@ public class VideoTag extends FlvTag {
 		}
 		// prevTagSizeを確認しておく。
 		if(getPrevTagSize() != BufferUtil.safeRead(channel, 4).getInt()) {
-			throw new Exception("終端タグのデータ量がおかしいです。");
+			throw new Exception("end size data is incorrect.");
 		}
 	}
 	/**
@@ -168,7 +168,7 @@ public class VideoTag extends FlvTag {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(frameBuffer == null && frame == null) {
-			throw new Exception("データ更新の要求がありましたが、内容データが決定していません。");
+			throw new Exception("frame data is undefined.");
 		}
 		ByteBuffer frameBuffer = null;
 		if(frameAppendFlag) {
@@ -198,7 +198,7 @@ public class VideoTag extends FlvTag {
 				sizeEx = 4;
 			}
 			else {
-				throw new Exception("未対応なvideoFrameでした:" + frame);
+				throw new Exception("unsuitable frame for flv.:" + frame);
 			}
 			if(frame instanceof DisposableInterFrame) {
 				frameType.set(3);
@@ -255,12 +255,12 @@ public class VideoTag extends FlvTag {
 				}
 				else {
 					// マルチフレームがくることももうないはず
-					throw new Exception("h264でSliceFrame以外のフレームを保持することはないはずです。");
+					throw new Exception("unexpected frame for h264.:" + frame);
 				}
 			}
 			else {
 				if(frame instanceof VideoMultiFrame) {
-					throw new Exception("h264以外でマルチフレームの映像は許可されていません。");
+					throw new Exception("unexpected multiframe.:" + FlvCodecType.getVideoCodecType(codecId.get()));
 				}
 				else {
 					frameBuffer = frame.getData();
@@ -275,7 +275,7 @@ public class VideoTag extends FlvTag {
 	 */
 	private void analyzeFrame() throws Exception {
 		if(frameBuffer == null) {
-			throw new Exception("frameデータが読み込まれていません");
+			throw new Exception("frameBuffer is undefined.");
 		}
 		if(getCodec() == FlvCodecType.H264 && packetType.get() != 1) {
 			// h264でpacketTypeが0:mshや2:endOfSequenceの場合はframeがとれない。
@@ -283,7 +283,7 @@ public class VideoTag extends FlvTag {
 		}
 		ByteBuffer buffer = frameBuffer;
 		if(frameAnalyzer == null) {
-			throw new Exception("frameの解析プログラムが設定されていません。");
+			throw new Exception("frameAnalyzer is unknown.");
 		}
 		IReadChannel channel = new ByteReadChannel(buffer);
 		// video側はコンテナからwidthとheightの情報取得できないので、放置しておく。
@@ -375,7 +375,7 @@ public class VideoTag extends FlvTag {
 			return;
 		}
 		if(!(tmpFrame instanceof IVideoFrame)) {
-			throw new Exception("videoTagの追加バッファとして、videoFrame以外を受けとりました。");
+			throw new Exception("try to append non-videoFrame for videoTag.");
 		}
 		frameAppendFlag = true;
 		if(frame == null) {

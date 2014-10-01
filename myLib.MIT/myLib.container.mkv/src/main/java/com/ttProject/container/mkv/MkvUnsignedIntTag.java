@@ -59,7 +59,7 @@ public abstract class MkvUnsignedIntTag extends MkvTag {
 	protected void requestUpdate() throws Exception {
 		// 更新が要求された場合
 		if(value == null) {
-			throw new Exception("値が決定していないので、動作できません。");
+			throw new Exception("value is not defined.");
 		}
 		// まずTagIdとsizeを書き込む必要あり。
 		BitConnector connector = new BitConnector();
@@ -81,7 +81,7 @@ public abstract class MkvUnsignedIntTag extends MkvTag {
 	 */
 	public void setValue(long data) throws Exception {
 		if(data > 0xFFFFFFFFL) {
-			throw new Exception("データが大きすぎます。");
+			throw new Exception("data is too big.。");
 		}
 		if(data >>> 8 == 0) {
 			value = new BitN(new Bit8((int)data));

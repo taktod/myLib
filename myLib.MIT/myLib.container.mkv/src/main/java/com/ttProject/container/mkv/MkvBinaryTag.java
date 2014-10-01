@@ -70,7 +70,7 @@ public abstract class MkvBinaryTag extends MkvTag {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("値がありません。");
+			throw new Exception("buffer data is undefined.");
 		}
 		BitConnector connector = new BitConnector();
 		ByteBuffer data = BufferUtil.connect(

@@ -53,7 +53,7 @@ public class Amf3Value {
 					return t;
 				}
 			}
-			throw new RuntimeException("解析不能なデータでした。" + value);
+			throw new RuntimeException("unanalyzable data.:" + value);
 		}
 	}
 	/**
@@ -82,17 +82,17 @@ public class Amf3Value {
 				// 次のバイトは0x0Bであることを期待します。しらないデータがでた場合は、あとで解析してプログラムを合わせる予定
 				data = BufferUtil.safeRead(source, 2);
 				if(data.get() != 0x0B) {
-					throw new Exception("知らないコードがきました。");
+					throw new Exception("unknwon code for object.");
 				}
 				if(data.get() != 0x01) {
-					throw new Exception("objectの始点がおかしいです。");
+					throw new Exception("start code of object is unexpect value.");
 				}
 				Map<String, Object> result = new HashMap<String, Object>();
 				// dataを読み込む
 				byte b;
 				while((b = BufferUtil.safeRead(source, 1).get()) != 0x01) {
 					if((b & 0x01) == 0) {
-						throw new Exception("リファレンスベースの動作はまだ作成していません。");
+						throw new Exception("reference base object is not coded yet.");
 					}
 					data = BufferUtil.safeRead(source, b >>> 1);
 					String key = new String(data.array()).intern();
@@ -105,7 +105,7 @@ public class Amf3Value {
 			{
 				byte b = BufferUtil.safeRead(source, 1).get();
 				if((b & 0x01) != 0x01) {
-					throw new RuntimeException("参照値は未定義");
+					throw new RuntimeException("reference base object is not coded yet for string.");
 				}
 				data = BufferUtil.safeRead(source, b >>> 1);
 				return new String(data.array()).intern();
@@ -113,7 +113,7 @@ public class Amf3Value {
 		case Undefined:
 			break;
 		default:
-			throw new Exception("解析不能なデータ:" + type);
+			throw new Exception("unanalyzable data.:" + type);
 		}
 		// データを解析していく
 		return null;

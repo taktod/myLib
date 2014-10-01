@@ -143,7 +143,7 @@ public enum Type {
 				return t;
 			}
 		}
-		throw new Exception("未定義の値です。:" + Long.toHexString(value));
+		throw new Exception("unexpected value.:" + Long.toHexString(value));
 	}
 	/**
 	 * 数値をTypeから参照
@@ -157,6 +157,6 @@ public enum Type {
 			}
 		}
 		// ここ、未定義はありえない。
-		throw new RuntimeException("未定義の値です。");
+		throw new RuntimeException("undefined value.:" + type);
 	}
 }
