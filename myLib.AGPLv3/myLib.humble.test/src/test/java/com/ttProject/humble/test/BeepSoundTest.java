@@ -1,3 +1,9 @@
+/*
+ * myLib - https://github.com/taktod/myLib
+ * Copyright (c) 2014 ttProject. All rights reserved.
+ * 
+ * Licensed under GNU AFFERO GENERAL PUBLIC LICENSE Version 3.
+ */
 package com.ttProject.humble.test;
 
 import java.nio.ByteBuffer;
@@ -11,7 +17,13 @@ import javax.sound.sampled.SourceDataLine;
 import io.humble.ferry.Buffer;
 import io.humble.video.AudioChannel.Layout;
 import io.humble.video.AudioFormat.Type;
+import io.humble.video.Codec;
+import io.humble.video.Coder.Flag;
+import io.humble.video.Encoder;
 import io.humble.video.MediaAudio;
+import io.humble.video.MediaAudioResampler;
+import io.humble.video.MediaPacket;
+import io.humble.video.Muxer;
 import io.humble.video.Rational;
 
 import org.apache.log4j.Logger;
@@ -46,6 +58,56 @@ public class BeepSoundTest {
 		logger.info("beepend");
 		audioLine.close();
 		audioLine = null;
+	}
+	@Test
+	public void flvNellymoserTest() throws Exception {
+		logger.info("flvNellymoserTest");
+		Muxer muxer = Muxer.make("flv_nellymoser.flv", null, null);
+		Encoder encoder = Encoder.make(Codec.findEncodingCodec(Codec.ID.CODEC_ID_NELLYMOSER));
+		Type findType = null;
+		for(Type type : encoder.getCodec().getSupportedAudioFormats()) {
+			if(findType == null) {
+				findType = type;
+			}
+			if(type == Type.SAMPLE_FMT_S16) {
+				findType = type;
+				break;
+			}
+		}
+		logger.info(findType);
+		encoder.setSampleRate(44100);
+		encoder.setChannels(1);
+		encoder.setChannelLayout(Layout.CH_LAYOUT_MONO);
+		encoder.setSampleFormat(findType);
+		encoder.setFlag(Flag.FLAG_GLOBAL_HEADER, true);
+		encoder.open(null, null);
+		muxer.addNewStream(encoder);
+		processConvert(muxer, encoder);
+	}
+	private void processConvert(Muxer muxer, Encoder encoder) throws Exception {
+		muxer.open(null, null);
+		MediaPacket packet = MediaPacket.make();
+		MediaAudio samples = beepSamples();
+		if(samples.getSampleRate() != encoder.getSampleRate()
+		|| samples.getFormat() != encoder.getSampleFormat()
+		|| samples.getChannelLayout() != encoder.getChannelLayout()) {
+			MediaAudioResampler resampler = MediaAudioResampler.make(
+					encoder.getChannelLayout(), encoder.getSampleRate(), encoder.getSampleFormat(),
+					samples.getChannelLayout(), samples.getSampleRate(), samples.getFormat());
+			resampler.open();
+			MediaAudio spl = MediaAudio.make(samples.getNumSamples(), encoder.getSampleRate(), encoder.getChannels(), encoder.getChannelLayout(), encoder.getSampleFormat());
+			resampler.resample(spl, samples);
+			samples = spl;
+		}
+		while(true) {
+			// need to resample.
+			encoder.encodeAudio(packet, samples);
+			if(!packet.isComplete()) {
+				break;
+			}
+			muxer.write(packet, false);
+		}
+		muxer.close();
 	}
 	/**
 	 * make sine wave humble MediaAudio.
