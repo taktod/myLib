@@ -34,6 +34,11 @@
       <artifactId>myLib.humble.frameutil</artifactId>
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
+    <dependency>
+    	<groupId>org.slf4j</groupId>
+    	<artifactId>slf4j-log4j12</artifactId>
+    	<version>1.7.7</version>
+    </dependency>
   </dependencies>
   <name>myLib.humble.test</name>
   <description>humbleVideoの変換の動作テスト用プロジェクト</description>
