@@ -4,7 +4,7 @@
  * 
  * Licensed under GNU GENERAL PUBLIC LICENSE Version 3.
  */
-package com.xuggle.test;
+package com.ttProject.xuggle.test;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
