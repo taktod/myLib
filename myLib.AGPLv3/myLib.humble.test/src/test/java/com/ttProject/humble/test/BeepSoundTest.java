@@ -83,11 +83,65 @@ public class BeepSoundTest {
 		encoder.open(null, null);
 		muxer.addNewStream(encoder);
 		processConvert(muxer, encoder);
+		logger.info("done");
+	}
+	@Test
+	public void oggVorbisTest() throws Exception {
+		logger.info("oggVorbisTest");
+		Muxer muxer = Muxer.make("ogg_vorbis.ogg", null, null);
+		Encoder encoder = Encoder.make(Codec.findEncodingCodec(Codec.ID.CODEC_ID_VORBIS));
+		Type findType = null;
+		for(Type type : encoder.getCodec().getSupportedAudioFormats()) {
+			if(findType == null) {
+				findType = type;
+			}
+			if(type == Type.SAMPLE_FMT_S16) {
+				findType = type;
+				break;
+			}
+		}
+		logger.info(findType);
+		encoder.setSampleRate(44100);
+		encoder.setChannels(2);
+		encoder.setChannelLayout(Layout.CH_LAYOUT_STEREO);
+		encoder.setSampleFormat(findType);
+		encoder.setFlag(Flag.FLAG_GLOBAL_HEADER, true);
+		encoder.open(null, null);
+		muxer.addNewStream(encoder);
+		processConvert(muxer, encoder);
+		logger.info("done");
+	}
+	@Test
+	public void flvMp3Test() throws Exception {
+		logger.info("flvMp3Test");
+		Muxer muxer = Muxer.make("flvMp3.flv", null, null);
+		Encoder encoder = Encoder.make(Codec.findEncodingCodec(Codec.ID.CODEC_ID_MP3));
+		Type findType = null;
+		for(Type type : encoder.getCodec().getSupportedAudioFormats()) {
+			if(findType == null) {
+				findType = type;
+			}
+			if(type == Type.SAMPLE_FMT_S16) {
+				findType = type;
+				break;
+			}
+		}
+		logger.info(findType);
+		encoder.setSampleRate(44100);
+		encoder.setChannels(2);
+		encoder.setChannelLayout(Layout.CH_LAYOUT_STEREO);
+		encoder.setSampleFormat(findType);
+		encoder.setFlag(Flag.FLAG_GLOBAL_HEADER, true);
+		encoder.open(null, null);
+		muxer.addNewStream(encoder);
+		processConvert(muxer, encoder);
+		logger.info("done");
 	}
 	private void processConvert(Muxer muxer, Encoder encoder) throws Exception {
 		muxer.open(null, null);
 		MediaPacket packet = MediaPacket.make();
 		MediaAudio samples = beepSamples();
+		logger.info(samples);
 		if(samples.getSampleRate() != encoder.getSampleRate()
 		|| samples.getFormat() != encoder.getSampleFormat()
 		|| samples.getChannelLayout() != encoder.getChannelLayout()) {
@@ -97,14 +151,18 @@ public class BeepSoundTest {
 			resampler.open();
 			MediaAudio spl = MediaAudio.make(samples.getNumSamples(), encoder.getSampleRate(), encoder.getChannels(), encoder.getChannelLayout(), encoder.getSampleFormat());
 			resampler.resample(spl, samples);
+			logger.info(spl);
+			logger.info(spl.getNumSamples());
 			samples = spl;
 		}
+		logger.info(samples);
 		while(true) {
 			// need to resample.
 			encoder.encodeAudio(packet, samples);
 			if(!packet.isComplete()) {
 				break;
 			}
+			logger.info(packet);
 			muxer.write(packet, false);
 		}
 		muxer.close();

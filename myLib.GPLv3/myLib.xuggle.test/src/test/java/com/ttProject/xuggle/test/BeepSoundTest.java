@@ -74,6 +74,36 @@ public class BeepSoundTest {
 		processConvert(container, encoder);
 		logger.info("end");
 	}
+	@Test
+	public void oggVorbisTest() throws Exception {
+		logger.info("oggVorbisTest");
+		IContainer container = IContainer.make();
+		if(container.open("ogg_vorbis.ogg", IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("failed to open container.");
+		}
+		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_VORBIS);
+		IStreamCoder encoder = stream.getStreamCoder();
+		encoder.setSampleRate(44100);
+		encoder.setChannels(2);
+		encoder.setBitRate(96000);
+		processConvert(container, encoder);
+		logger.info("end");
+	}
+	@Test
+	public void flvMp3Test() throws Exception {
+		logger.info("flvMp3Test");
+		IContainer container = IContainer.make();
+		if(container.open("flv_mp3.flv", IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("failed to open container.");
+		}
+		IStream stream = container.addNewStream(ICodec.ID.CODEC_ID_MP3);
+		IStreamCoder encoder = stream.getStreamCoder();
+		encoder.setSampleRate(44100);
+		encoder.setChannels(2);
+		encoder.setBitRate(96000);
+		processConvert(container, encoder);
+		logger.info("end");
+	}
 	/**
 	 * process convertTask.
 	 * @param container
