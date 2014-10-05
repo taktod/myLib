@@ -12,16 +12,18 @@ import com.ttProject.frame.IAudioFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * adtsのファイルユニット
+ * adts file unit.
  * @author taktod
- * TODO これもmp3と同じくちょっとおかしい。
- * 普通はunitを読み込んでからaacのフレームを取り出す方がただしいけど逆になっている。
+ * 
+ * TODO adts works as, first load the frame. then make unit.
+ * others will, first load the unit. then get the frame.
+ * just same as mp3.
  */
 public class AdtsUnit extends Container {
-	/** 音声Frame(aacのみ) */
+	/** audioFrame */
 	private final IAudioFrame frame;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param frame
 	 * @param position
 	 * @param pts
@@ -56,7 +58,7 @@ public class AdtsUnit extends Container {
 		setData(frame.getData());
 	}
 	/**
-	 * 内包フレーム参照
+	 * ref the inner frame.
 	 * @return
 	 * @throws Exception
 	 */

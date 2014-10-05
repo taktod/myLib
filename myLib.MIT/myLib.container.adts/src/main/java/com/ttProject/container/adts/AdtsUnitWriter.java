@@ -17,13 +17,18 @@ import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IFrame;
 import com.ttProject.frame.aac.type.Frame;
 
+/**
+ * adts unit writer.
+ * @author taktod
+ */
 public class AdtsUnitWriter implements IWriter {
-	/** ロガー */
+	/** logger */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(AdtsUnitWriter.class);
 	private final WritableByteChannel outputChannel;
 	private FileOutputStream outputStream = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param fileName
 	 */
 	public AdtsUnitWriter(String fileName) throws Exception {
@@ -44,19 +49,16 @@ public class AdtsUnitWriter implements IWriter {
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
 		if(frame instanceof Frame) {
-			logger.info("write frame:" + frame.toString());
 			outputChannel.write(frame.getData());
 		}
 	}
 
 	@Override
 	public void prepareHeader(CodecType... codecs) throws Exception {
-		logger.info("prepare header");
 	}
 
 	@Override
 	public void prepareTailer() throws Exception {
-		logger.info("prepare tailer");
 		if(outputStream != null) {
 			try {
 				outputStream.close();
@@ -66,5 +68,4 @@ public class AdtsUnitWriter implements IWriter {
 			outputStream = null;
 		}
 	}
-
 }

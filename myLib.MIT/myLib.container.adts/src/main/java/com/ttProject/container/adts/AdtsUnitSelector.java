@@ -13,13 +13,13 @@ import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
 
 /**
- * adtsのコンテナからaacのunitを抜き出す動作
+ * selector for adts.
  * @author taktod
  */
 public class AdtsUnitSelector implements ISelector {
-	/** 経過サンプル数を保持 */
+	/** passed samplenum */
 	private long passedTic = 0;
-	/** aacFrameの解析用セレクター */
+	/** selector for aac frame. */
 	private ISelector aacFrameSelector = new AacFrameSelector();
 	/**
 	 * {@inheritDoc}

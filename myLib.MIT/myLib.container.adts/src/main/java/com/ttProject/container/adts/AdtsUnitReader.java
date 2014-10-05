@@ -9,10 +9,13 @@ package com.ttProject.container.adts;
 import com.ttProject.container.Reader;
 
 /**
- * unitのselector
+ * selector for adts
  * @author taktod
  */
 public class AdtsUnitReader extends Reader {
+	/**
+	 * constructor
+	 */
 	public AdtsUnitReader() {
 		super(new AdtsUnitSelector());
 	}

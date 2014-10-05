@@ -16,14 +16,14 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * adtsの読み込み動作テスト
+ * loading test for adts.
  * @author taktod
  */
 public class AdtsTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(AdtsTest.class);
 	/**
-	 * 解析動作テスト
+	 * analyzeTest
 	 */
 	@Test
 	public void analyzeTest() {
