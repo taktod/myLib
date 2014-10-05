@@ -12,6 +12,7 @@ import io.humble.ferry.Buffer;
 import io.humble.video.Codec;
 import io.humble.video.Decoder;
 import io.humble.video.MediaPacket;
+import io.humble.video.PixelFormat.Type;
 import io.humble.video.Rational;
 
 import org.apache.log4j.Logger;
@@ -178,7 +179,22 @@ public class Packetizer {
 			}
 			break;
 		case FLV1:
+			if(decoder == null || decoder.getCodecID() != Codec.ID.CODEC_ID_FLV1) {
+				Codec codec = Codec.findDecodingCodec(Codec.ID.CODEC_ID_FLV1);
+				decoder = Decoder.make(codec);
+				decoder.setTimeBase(Rational.make(1, (int)frame.getTimebase()));
+				decoder.open(null, null);
+			}
+			break;
 		case H264:
+			if(decoder == null || decoder.getCodecID() != Codec.ID.CODEC_ID_H264) {
+				Codec codec = Codec.findDecodingCodec(Codec.ID.CODEC_ID_H264);
+				decoder = Decoder.make(codec);
+				decoder.setTimeBase(Rational.make(1, (int)frame.getTimebase()));
+				decoder.open(null, null);
+				logger.info(decoder.getPixelFormat());
+			}
+			break;
 		case MJPEG:
 		case THEORA:
 		case VP6:

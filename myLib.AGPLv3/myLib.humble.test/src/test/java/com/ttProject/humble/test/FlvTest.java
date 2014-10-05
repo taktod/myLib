@@ -20,6 +20,9 @@ import io.humble.video.MediaAudioResampler;
 import io.humble.video.MediaPacket;
 //import io.humble.video.MediaPictureResampler;
 
+import io.humble.video.MediaPicture;
+import io.humble.video.MediaPictureResampler;
+
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
@@ -46,9 +49,9 @@ public class FlvTest {
 	private MediaAudioResampler audioResampler = null;
 	private Encoder audioEncoder = null;
 	// 映像
-//	private Decoder videoDecoder = null;
-//	private MediaPictureResampler videoResampler = null;
-//	private Encoder videoEncoder = null;
+	private Decoder videoDecoder = null;
+	private MediaPictureResampler videoResampler = null;
+	private Encoder videoEncoder = null;
 	/**
 	 * 動作テスト
 	 * @throws Exception
@@ -86,7 +89,7 @@ public class FlvTest {
 			if(container instanceof AudioTag) {
 				AudioTag aTag = (AudioTag)container;
 				if(aTag.getFrame() != null) {
-					decodeAudio(aTag.getFrame());
+//					decodeAudio(aTag.getFrame());
 				}
 			}
 			else if(container instanceof VideoTag) {
@@ -102,7 +105,24 @@ public class FlvTest {
 	 * @param frame
 	 */
 	private void decodeVideo(IVideoFrame frame) throws Exception {
-//		MediaPacket packet = packetizer.getPacket(frame, null);
+		logger.info("decode video");
+		videoDecoder = packetizer.getDecoder(frame, videoDecoder);
+		MediaPacket packet = packetizer.getPacket(frame, null);
+		int offset = 0;
+		while(offset < packet.getSize()) {
+			logger.info(frame.getWidth());
+			logger.info(frame.getHeight());
+			MediaPicture picture = MediaPicture.make(frame.getWidth(), frame.getHeight(), io.humble.video.PixelFormat.Type.PIX_FMT_YUV420P);
+			logger.info("here?");
+			int bytesDecoded = videoDecoder.decodeVideo(picture, packet, offset);
+			if(bytesDecoded < 0) {
+				throw new Exception("failed to decode data.");
+			}
+			offset += bytesDecoded;
+			if(picture.isComplete()) {
+				logger.info("decode OK:" + picture);
+			}
+		}
 	}
 	/**
 	 * 音声をデコードします
@@ -114,7 +134,6 @@ public class FlvTest {
 		MediaPacket packet = packetizer.getPacket(frame, null);
 		int offset = 0;
 		while(offset < packet.getSize()) {
-			logger.info("sampleをつくります。");
 			MediaAudio samples = MediaAudio.make(frame.getSampleNum(), frame.getSampleRate(), frame.getChannel(), audioDecoder.getChannelLayout(), audioDecoder.getSampleFormat());
 			int bytesDecoded = audioDecoder.decodeAudio(samples, packet, offset);
 			if(bytesDecoded < 0) {
