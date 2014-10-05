@@ -66,6 +66,7 @@ public class BeepSoundTest {
 		Encoder encoder = Encoder.make(Codec.findEncodingCodec(Codec.ID.CODEC_ID_NELLYMOSER));
 		Type findType = null;
 		for(Type type : encoder.getCodec().getSupportedAudioFormats()) {
+			logger.info(type);
 			if(findType == null) {
 				findType = type;
 			}
@@ -85,13 +86,14 @@ public class BeepSoundTest {
 		processConvert(muxer, encoder);
 		logger.info("done");
 	}
-	@Test
+//	@Test
 	public void oggVorbisTest() throws Exception {
 		logger.info("oggVorbisTest");
 		Muxer muxer = Muxer.make("ogg_vorbis.ogg", null, null);
 		Encoder encoder = Encoder.make(Codec.findEncodingCodec(Codec.ID.CODEC_ID_VORBIS));
 		Type findType = null;
 		for(Type type : encoder.getCodec().getSupportedAudioFormats()) {
+			logger.info(type);
 			if(findType == null) {
 				findType = type;
 			}
@@ -111,13 +113,14 @@ public class BeepSoundTest {
 		processConvert(muxer, encoder);
 		logger.info("done");
 	}
-	@Test
+//	@Test
 	public void flvMp3Test() throws Exception {
 		logger.info("flvMp3Test");
 		Muxer muxer = Muxer.make("flvMp3.flv", null, null);
 		Encoder encoder = Encoder.make(Codec.findEncodingCodec(Codec.ID.CODEC_ID_MP3));
 		Type findType = null;
 		for(Type type : encoder.getCodec().getSupportedAudioFormats()) {
+			logger.info(type);
 			if(findType == null) {
 				findType = type;
 			}
@@ -166,6 +169,15 @@ public class BeepSoundTest {
 			muxer.write(packet, false);
 		}
 		muxer.close();
+	}
+	/**
+	 * resample MediaAudio from non planed buffer to planed buffer.
+	 * (ex: S16 -> S16P)
+	 * @param input
+	 * @return
+	 */
+	public MediaAudio resample(MediaAudio input) {
+		return null;
 	}
 	/**
 	 * make sine wave humble MediaAudio.
