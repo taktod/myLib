@@ -9,12 +9,12 @@ package com.ttProject.container;
 import com.ttProject.unit.IUnit;
 
 /**
- * コンテナのベースとなるインターフェイス
+ * interface of container base.
  * @author taktod
  */
 public interface IContainer extends IUnit {
 	/**
-	 * IReadChannel上の位置情報参照(主にファイル上のデータの位置)
+	 * ref the container element position on the channel.
 	 * @return
 	 */
 	public int getPosition();

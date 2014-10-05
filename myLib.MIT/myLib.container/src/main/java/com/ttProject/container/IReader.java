@@ -11,19 +11,19 @@ import java.util.List;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * ファイル読み込み
+ * base of reader for media file.
  * @author taktod
  */
 public interface IReader {
 	/**
-	 * 読み込み動作
+	 * read
 	 * @param channel
 	 * @return
 	 * @throws Exception
 	 */
 	public IContainer read(IReadChannel channel) throws Exception;
 	/**
-	 * 残っているデータを取得する動作
+	 * ref the left data.
 	 * @return
 	 * @throws Exception
 	 */

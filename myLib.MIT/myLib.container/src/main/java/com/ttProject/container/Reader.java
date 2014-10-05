@@ -12,21 +12,21 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 
 /**
- * ファイルの読み込みを実行する動作
+ * base for reader.
  * @author taktod
  */
 public abstract class Reader implements IReader {
-	/** 動作selector */
+	/** related selector */
 	private final ISelector selector;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param selector
 	 */
 	public Reader(ISelector selector) {
 		this.selector = selector;
 	}
 	/**
-	 * selector参照
+	 * ref the related selector.
 	 * @return
 	 */
 	protected ISelector getSelector() {

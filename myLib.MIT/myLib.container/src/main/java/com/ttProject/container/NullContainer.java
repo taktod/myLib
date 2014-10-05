@@ -9,21 +9,21 @@ package com.ttProject.container;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * 空のコンテナ
+ * null container for dummy.
  * @author taktod
  */
 public class NullContainer extends Container {
-	/** インスタンス */
+	/** instance of dummy. share this. */
 	private static final NullContainer instance = new NullContainer();
 	/**
-	 * 応答として代表のインスタンスを応答します
+	 * ref the shared memory instance.
 	 * @return
 	 */
 	public static NullContainer getInstance() {
 		return instance;
 	}
 	/**
-	 * コンストラクタ(privateにして他では作成禁止)
+	 * constructor, prohibited by private.
 	 */
 	private NullContainer() {
 	}
@@ -32,20 +32,20 @@ public class NullContainer extends Container {
 	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		throw new RuntimeException("NullContainerのデータ読み込みが要求されました。");
+		throw new RuntimeException("call minimumLoad for nullContainer.");
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		throw new RuntimeException("NullContainerのデータ読み込みが要求されました。");
+		throw new RuntimeException("call load for nullContainer.");
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		throw new RuntimeException("NullContainerのデータ更新が要求されました。");
+		throw new RuntimeException("call requestUpdate for nullContainer.");
 	}
 }
