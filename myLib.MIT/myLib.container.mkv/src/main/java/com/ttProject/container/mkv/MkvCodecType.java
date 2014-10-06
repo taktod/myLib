@@ -8,6 +8,10 @@ package com.ttProject.container.mkv;
 
 import com.ttProject.frame.CodecType;
 
+/**
+ * mkvCodecType
+ * @author taktod
+ */
 public enum MkvCodecType {
 	V_MPEG4_ISO_AVC("V_MPEG4/ISO/AVC", CodecType.H264),
 	V_MPEG_ISO_HEVC("V_MPEG/ISO/HEVC", CodecType.H265),
@@ -15,15 +19,15 @@ public enum MkvCodecType {
 	V_VP9("V_VP9", CodecType.VP9),
 	V_MJPEG("V_MJPEG", CodecType.MJPEG),
 
-//	V_MS("V_MS/VFW/FOURCC"), // microsoft mpeg4 v2っぽい
+//	V_MS("V_MS/VFW/FOURCC"), // microsoft mpeg4 v2? same as A_MS/ACM?
 	V_THEORA("V_THEORA", CodecType.THEORA), // theora
 	A_AAC("A_AAC", CodecType.AAC),
 	A_MPEG_L3("A_MPEG/L3", CodecType.MP3),
 	A_VORBIS("A_VORBIS", CodecType.VORBIS),
 	A_OPUS("A_OPUS", CodecType.OPUS),
-	A_MS_ACM("A_MS/ACM", CodecType.UNKNOWN_AUDIO),
+	A_MS_ACM("A_MS/ACM", CodecType.UNKNOWN_AUDIO), // could have FMT for riff, FMT will decide the codecs.
 //	S_TEXT_UTF8("S_TEXT/UTF8"), // subtitle
-/*	D_WEBVTT_SUBTITLES("D_WEBVTT/SUBTITLES"), // webVtt用
+/*	D_WEBVTT_SUBTITLES("D_WEBVTT/SUBTITLES"), // webVtt
 	D_WEBVTT_CAPTIONS("D_WEBVTT/CAPTIONS"),
 	D_WEBVTT_DESCRIPTIONS("D_WEBVTT/DESCRIPTIONS"),
 	D_WEBVTT_METADATA("D_WEBVTT/METADATA"),*/
@@ -42,7 +46,7 @@ public enum MkvCodecType {
 		return name;
 	}
 	/**
-	 * CodecTypeからMkvCodecTypeを取得する
+	 * get mkvCodecType from CodecType
 	 * @param codecType
 	 * @return
 	 * @throws Exception
@@ -56,12 +60,12 @@ public enum MkvCodecType {
 		throw new RuntimeException("mkvCodecType is not decided.:" + codecType);
 	}
 	/**
-	 * CodecIDの文字列からCodecTypeを取得する
+	 * get MkvCodecType from CodecID string.
 	 * @param data
 	 * @return
 	 * @throws Exception
 	 */
-	public static MkvCodecType getCodecType(String data) throws Exception {
+	public static MkvCodecType getMkvCodecType(String data) throws Exception {
 		if(data.startsWith("V_MPEG")) {
 			if(data.contains("AVC")) {
 				return V_MPEG4_ISO_AVC;

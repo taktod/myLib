@@ -16,18 +16,18 @@ import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * mkvデータのTagの基本動作
+ * basic for mkvTag.
  * @author taktod
  */
 public abstract class MkvTag extends Container {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MkvTag.class);
 	private final EbmlValue id;
 	private final EbmlValue size;
 	private MkvTagReader reader = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param id
 	 * @param size
 	 */
@@ -55,21 +55,21 @@ public abstract class MkvTag extends Container {
 		super.update();
 	}
 	/**
-	 * mkv解析用Readerを外部から設定します。
+	 * hold the mkvTagReader
 	 * @param reader
 	 */
 	public void setMkvTagReader(MkvTagReader reader) {
 		this.reader = reader;
 	}
 	/**
-	 * mp4の解析用readerを参照します
+	 * ref the mkvTagReader
 	 * @return
 	 */
 	protected MkvTagReader getMkvTagReader() {
 		return reader;
 	}
 	/**
-	 * 先頭のbufferを応答します。
+	 * ref the headerBuffer(mkvTag + mkvSize)
 	 * @return
 	 */
 	protected ByteBuffer getHeaderBuffer() {
@@ -77,7 +77,7 @@ public abstract class MkvTag extends Container {
 		return connector.connect(id, size);
 	}
 	/**
-	 * 内容の大きさを応答
+	 * ref the mkvSize
 	 * @return
 	 */
 	protected int getMkvSize() {
@@ -90,8 +90,8 @@ public abstract class MkvTag extends Container {
 		return size;
 	}
 	/**
-	 * 内容dump用
-	 * @param space 子要素の場合に前に挿入するspaceデータ
+	 * for dump.
+	 * @param space indent space count.
 	 * @return
 	 */
 	public String toString(String space) {

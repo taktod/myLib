@@ -22,18 +22,18 @@ import com.ttProject.container.mkv.type.TrackEntry;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * mkvデータを解析します。(内容データもばっちり解析する予定)
+ * mkvTagReader
  * @author taktod
  */
 public class MkvTagReader extends Reader {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MkvTagReader.class);
 	private Map<Integer, TrackEntry> trackEntryMap = new ConcurrentHashMap<Integer, TrackEntry>();
 	private long defaultTimebase = 1000;
 	private long clusterTime = 0;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public MkvTagReader() {
 		super(new MkvTagSelector());

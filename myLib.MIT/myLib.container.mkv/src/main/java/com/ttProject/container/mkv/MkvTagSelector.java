@@ -98,11 +98,11 @@ import com.ttProject.unit.extra.EbmlValue;
 import com.ttProject.unit.extra.bit.Bit1;
 
 /**
- * mkvのelementを解析して取り出すselector
+ * mkvTagSelector
  * @author taktod
  */
 public class MkvTagSelector implements ISelector {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MkvTagSelector.class);
 	/**
@@ -111,10 +111,10 @@ public class MkvTagSelector implements ISelector {
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		if(channel.position() == channel.size()) {
-			// データがもうない
+			// no more.
 			return null;
 		}
-		// TODO test4より、このタイミングでtagのデータ量が4バイト以上になる場合は異常であるので、スキップしないとだめっぽい。
+		// TODO cause of test4 on mkv sample. need to skip in the case of tag size is more than 4bytes.
 		BitLoader loader = new BitLoader(channel);
 		EbmlValue tag  = new EbmlValue();
 		Bit1 bit1 = null;
@@ -130,8 +130,6 @@ public class MkvTagSelector implements ISelector {
 				loader.load(bit1);
 			}
 			return NullContainer.getInstance();
-			// ebmltagにするには数値が大きすぎます。
-//			throw new Exception("too large size for ebml value.");
 		}
 		loader.load(tag.getDataBit());
 		

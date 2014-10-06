@@ -21,14 +21,14 @@ import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * 数値を保持しているtagの動作
- * TODO signedIntなのに、負の数の扱いがおかしい。(復元したときに負の数にならない実データをみつけたら対処しておきたいところ)
+ * signed int data.
+ * TODO negative value doesn't work properly. I want to get the sample.
  * @author taktod
  */
 public abstract class MkvSignedIntTag extends MkvTag {
 	private BitN value;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param id
 	 * @param size
 	 */
@@ -61,14 +61,14 @@ public abstract class MkvSignedIntTag extends MkvTag {
 		super.setData(data);
 	}
 	/**
-	 * データ応答
+	 * ref value
 	 * @return
 	 */
 	public int getValue() {
 		return value.get();
 	}
 	/**
-	 * データ設定
+	 * set value
 	 * @param data
 	 * @throws Exception
 	 */

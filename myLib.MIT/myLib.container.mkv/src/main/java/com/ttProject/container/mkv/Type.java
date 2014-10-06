@@ -7,7 +7,7 @@
 package com.ttProject.container.mkv;
 
 /**
- * mkvのデータタイプ定義
+ * num for mkv data type.
  * @author taktod
  */
 public enum Type {
@@ -105,21 +105,21 @@ public enum Type {
 	CRC32(0xBF);
 	private final int value;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param value
 	 */
 	private Type(int value) {
 		this.value = value;
 	}
 	/**
-	 * データ応答
+	 * ebmlValue
 	 * @return
 	 */
 	public int intValue() {
 		return value;
 	}
 	/**
-	 * tagのサイズを応答(たぶんいらない)
+	 * ref the size of tag.
 	 * @return
 	 */
 	public int tagSize() {
@@ -132,7 +132,7 @@ public enum Type {
 		return 4;
 	}
 	/**
-	 * Typeを数値から参照
+	 * get the type from value.
 	 * @param value
 	 * @return
 	 * @throws Exception
@@ -146,7 +146,7 @@ public enum Type {
 		throw new Exception("unexpected value.:" + Long.toHexString(value));
 	}
 	/**
-	 * 数値をTypeから参照
+	 * ref the value from type.
 	 * @param type
 	 * @return
 	 */
@@ -156,7 +156,6 @@ public enum Type {
 				return type.intValue();
 			}
 		}
-		// ここ、未定義はありえない。
 		throw new RuntimeException("undefined value.:" + type);
 	}
 }

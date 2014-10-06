@@ -22,6 +22,7 @@ import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * mkvによるデータの書き込み動作テスト
+ * きちんと動作していない。(はじめの部分でデータを捨てているのがまずい)
  * @author taktod
  */
 public class MkvWriteTest {

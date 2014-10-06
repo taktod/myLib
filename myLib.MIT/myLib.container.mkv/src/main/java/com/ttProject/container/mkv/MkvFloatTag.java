@@ -19,16 +19,17 @@ import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit64;
 
 /**
- * floatを保持しているtagの動作(doubleもあるらしい)
+ * mkvFloatTag
+ * can have double, too.
  * @author taktod
  */
 public abstract class MkvFloatTag extends MkvTag {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MkvFloatTag.class);
 	private BitN value;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param id
 	 * @param size
 	 */

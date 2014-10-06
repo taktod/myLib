@@ -26,18 +26,18 @@ public class CodecTypeTest {
 	public void test() throws Exception {
 		// h264
 		String codecString = "V_MPEG4/ISO/AVC";
-		logger.info(MkvCodecType.getCodecType(codecString));
+		logger.info(MkvCodecType.getMkvCodecType(codecString));
 		// mp3
 		codecString = "A_MPEG/L3";
-		logger.info(MkvCodecType.getCodecType(codecString));
+		logger.info(MkvCodecType.getMkvCodecType(codecString));
 		// vp8
 		codecString = "V_VP8";
-		logger.info(MkvCodecType.getCodecType(codecString));
+		logger.info(MkvCodecType.getMkvCodecType(codecString));
 		// vorbis
 		codecString = "A_VORBIS";
-		logger.info(MkvCodecType.getCodecType(codecString));
+		logger.info(MkvCodecType.getMkvCodecType(codecString));
 		// AAc
 		codecString = "A_AAC";
-		logger.info(MkvCodecType.getCodecType(codecString));
+		logger.info(MkvCodecType.getMkvCodecType(codecString));
 	}
 }

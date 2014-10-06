@@ -16,14 +16,14 @@ import com.ttProject.unit.extra.EbmlValue;
 import com.ttProject.unit.extra.bit.Bit64;
 
 /**
- * dateを保持しているtagの動作
- * 2001/01/01からの経過ナノ秒らしい
+ * mkvDateTag
+ * this is nano sec from 01/01/2001
  * @author taktod
  */
 public abstract class MkvDateTag extends MkvTag {
 	private Bit64 value;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param id
 	 * @param size
 	 */

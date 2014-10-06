@@ -18,21 +18,18 @@ import com.ttProject.unit.extra.BitConnector;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * 他のTagを内包するTagの動作
+ * mkvMasterTag
+ * this tag have some tag inside.
  * @author taktod
- * 
- * TODO segmentのタグだけ別のものとなります。
- * 一番上の要素って中身の要素が決定しないとsizeがきまらない。
- * ebmlTag + sizeを書いて中身は中の要素に書き込みさせるという感じでしょうか・・・
  */
 public abstract class MkvMasterTag extends MkvTag {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MkvMasterTag.class);
-	/** 保持タグリスト */
+	/** holding tags. */
 	private List<MkvTag> childTags = new ArrayList<MkvTag>();
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param tag
 	 * @param size
 	 */
@@ -55,14 +52,14 @@ public abstract class MkvMasterTag extends MkvTag {
 		super.load(channel);
 	}
 	/**
-	 * 子要素を追加する
+	 * add child tag
 	 */
 	public void addChild(MkvTag tag) {
 		childTags.add(tag);
 		super.update();
 	}
 	/**
-	 * 子要素を撤去する
+	 * rev child tag.
 	 * @param i
 	 * @return
 	 */
@@ -72,15 +69,15 @@ public abstract class MkvMasterTag extends MkvTag {
 		return removedTag;
 	}
 	/**
-	 * 子要素を参照する
+	 * ref child tags.
 	 * @return
 	 */
 	public List<MkvTag> getChildList() {
 		return new ArrayList<MkvTag>(childTags);
 	}
 	/**
-	 * サイズを無限にする
-	 * @param set true:設定する false:解除する
+	 * set the size infinite(for live streaming)
+	 * @param set true:infinite false:not-infinite.
 	 */
 	public void setInfinite(boolean set) {
 		if(set) {
@@ -93,25 +90,23 @@ public abstract class MkvMasterTag extends MkvTag {
 	}
 	/**
 	 * {@inheritDoc}
+	 * note only reply ebml header and ebml size. child tags will report recursively.
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		// TODO 子要素に更新がかかったら親要素の更新をしなければいけない・・・どうすれば大丈夫にできるかね？
-		// ここで子要素のサイズについて、調査しておけばいいかな？
 		if(getTagSize().getLong() == 0xFFFFFFFFFFFFFFL) {
-			// とりあえず、headerとsizeの部分だけ応答として返したい
+			// reply only for ebml header and ebml size.(this is for segment only.)
+			// TODO same as getHeaderBuffer()?
 			BitConnector connector = new BitConnector();
 			super.setData(connector.connect(getTagId(), getTagSize()));
 			return;
 		}
 		int size = 0;
 		for(MkvTag tag : childTags) {
-			// masterTagをこれでやっちゃうと正しいサイズにならないわけか・・・
 			tag.getData();
 			size += tag.getSize();
 		}
 		getTagSize().set(size);
-		// とりあえず、headerとsizeの部分だけ応答として返したい
 		BitConnector connector = new BitConnector();
 		ByteBuffer data = connector.connect(getTagId(), getTagSize());
 		setSize(data.remaining() + size);

@@ -16,16 +16,16 @@ import com.ttProject.unit.extra.EbmlValue;
 import com.ttProject.util.BufferUtil;
 
 /**
- * Binaryデータを保持するTagの動作
+ * mkvBinaryTag
  * @author taktod
  */
 public abstract class MkvBinaryTag extends MkvTag {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MkvBinaryTag.class);
 	private ByteBuffer buffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param id
 	 * @param size
 	 */
@@ -41,22 +41,21 @@ public abstract class MkvBinaryTag extends MkvTag {
 		super.load(channel);
 	}
 	/**
-	 * loadで読み込むべき残りデータ量を応答
-	 * minimumLoadで継承先クラスがデータ量を変更している場合はここで調整する必要あり
+	 * ref the data size to read on load func.
 	 * @return
 	 */
 	protected int getRemainedSize() {
 		return getMkvSize();
 	}
 	/**
-	 * データ参照
+	 * ref the binary data.
 	 * @return
 	 */
 	public ByteBuffer getMkvData() {
 		return buffer.duplicate();
 	}
 	/**
-	 * データ登録
+	 * set the binary data.
 	 * @param data
 	 */
 	public void setValue(ByteBuffer data) {

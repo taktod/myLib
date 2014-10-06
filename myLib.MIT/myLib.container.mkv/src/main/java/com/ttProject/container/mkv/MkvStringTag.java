@@ -14,13 +14,14 @@ import com.ttProject.unit.extra.EbmlValue;
 import com.ttProject.util.BufferUtil;
 
 /**
- * 文字列を保持しているtagの動作
+ * mkvStringTag
+ * TODO now works with utf8. need to change?
  * @author taktod
  */
 public abstract class MkvStringTag extends MkvTag{
 	private String value = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param id
 	 * @param size
 	 */
@@ -36,16 +37,23 @@ public abstract class MkvStringTag extends MkvTag{
 		super.load(channel);
 	}
 	/**
-	 * 保持文字列参照
+	 * ref the value
 	 */
 	public String getValue() {
 		return value;
 	}
+	/**
+	 * set the value
+	 * @param data
+	 */
 	public void setValue(String data) {
 		value = data;
 		getTagSize().set(value.getBytes().length);
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(value == null) {

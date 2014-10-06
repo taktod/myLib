@@ -15,13 +15,13 @@ import com.ttProject.unit.extra.EbmlValue;
 import com.ttProject.util.BufferUtil;
 
 /**
- * 文字列を保持しているtagの動作
+ * mkvUtf8Tag
  * @author taktod
  */
 public abstract class MkvUtf8Tag extends MkvTag{
 	private String value;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param id
 	 * @param size
 	 */

@@ -23,17 +23,16 @@ import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * unsignedIntを保持しているtagの動作
+ * mkvUnsignedIntTag
  * @author taktod
- * TODO とりあえずunsignedIntからgetDataの実装をつくってみよう。
  */
 public abstract class MkvUnsignedIntTag extends MkvTag {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MkvUnsignedIntTag.class);
 	private BitN value = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param id
 	 * @param size
 	 */

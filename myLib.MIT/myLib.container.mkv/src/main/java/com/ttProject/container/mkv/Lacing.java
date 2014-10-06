@@ -7,7 +7,7 @@
 package com.ttProject.container.mkv;
 
 /**
- * lacingのデータ用enum
+ * enum for lacing
  * @author taktod
  */
 public enum Lacing {

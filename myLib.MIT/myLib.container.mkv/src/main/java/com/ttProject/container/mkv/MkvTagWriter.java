@@ -39,6 +39,8 @@ import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 
 /**
+ * mkvTagWriter
+ * 
  * mkvを作成するためのwriter
  * とりあえず、headerの部分はできたつもり、次はCluster
  * Clusterはまとまり分できたら一気に出力するという形にしないとだめっぽいですね。
@@ -71,7 +73,7 @@ import com.ttProject.frame.extra.VideoMultiFrame;
  * @author taktod
  */
 public class MkvTagWriter implements IWriter {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(MkvTagWriter.class);
 	/** segmentの位置からの位置(cuesやseekHeadで利用する) */
 	@SuppressWarnings("unused")
@@ -271,7 +273,7 @@ public class MkvTagWriter implements IWriter {
 06:25:14,190 [main] INFO [MkvTagReader] -    CueClusterPosition size:2 uint:19042
 	 */
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param fileName
 	 * @throws Exception
 	 */
@@ -280,14 +282,14 @@ public class MkvTagWriter implements IWriter {
 		this.outputChannel = outputStream.getChannel();
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param fileOutputStream
 	 */
 	public MkvTagWriter(FileOutputStream fileOutputStream) {
 		this(fileOutputStream.getChannel());
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param outputChannel
 	 */
 	public MkvTagWriter(WritableByteChannel outputChannel) {
