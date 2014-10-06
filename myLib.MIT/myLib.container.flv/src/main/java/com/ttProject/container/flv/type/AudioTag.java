@@ -32,13 +32,13 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * 音声用のtag
+ * audiotag
  * @author taktod
- * nellymoserの16や8の場合はsampleRate 0 bitCount 1 channels 0になるっぽいです。
- * speexは16khzのはずだけど、sampleRate 1 bitCount 1 channels 0になるっぽいです。
+ * nellymoser 16 or 8, sampleRate 0 bitCount 1 channels 0
+ * speex 16Khz       , sampleRate 1 bitCount 1 channels 0
  */
 public class AudioTag extends FlvTag {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(AudioTag.class);
 	private Bit4 codecId            = new Bit4();
 	private Bit2 sampleRate         = new Bit2();
@@ -51,27 +51,27 @@ public class AudioTag extends FlvTag {
 	private AudioAnalyzer frameAnalyzer = null;
 	private boolean       frameAppendFlag = false; // フレームが追加されたことを検知するフラグ
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param tagType
 	 */
 	public AudioTag(Bit8 tagType) {
 		super(tagType);
 	}
 	/**
-	 * デフォルトコンストラクタ
+	 * constructor
 	 */
 	public AudioTag() {
 		this(new Bit8(0x08));
 	}
 	/**
-	 * フレーム解析オブジェクト保持
+	 * hold the analyzer object.
 	 * @param analyzer
 	 */
 	public void setFrameAnalyzer(AudioAnalyzer analyzer) {
 		this.frameAnalyzer = analyzer;
 	}
 	/**
-	 * サンプルレート参照
+	 * ref sampleRate.
 	 * @return
 	 * @throws Exception
 	 */
@@ -104,18 +104,18 @@ public class AudioTag extends FlvTag {
 		return frame.getSampleRate();
 	}
 	/**
-	 * サンプル数参照(frame依存)
+	 * ref sampleNum(depends on frame.)
 	 * @return
 	 * @throws Exception
 	 */
 	public int getSampleNum() throws Exception {
 		if(frame == null) {
-			analyzeFrame(); // 解析させる
+			analyzeFrame(); // analyze
 		}
 		return frame.getSampleNum();
 	}
 	/**
-	 * チャンネル数
+	 * ref channels
 	 * @return
 	 */
 	public int getChannels() {
@@ -130,7 +130,7 @@ public class AudioTag extends FlvTag {
 		return frame.getChannel();
 	}
 	/**
-	 * ビット数
+	 * bitCount
 	 * @return
 	 */
 	public int getBitCount() {
@@ -172,13 +172,13 @@ public class AudioTag extends FlvTag {
 				break;
 			}
 		}
-		// prevTagSizeを確認しておく。
+		// check prevTagSize
 		if(getPrevTagSize() != BufferUtil.safeRead(channel, 4).getInt()) {
 			throw new Exception("the size of end tag is corrupted.");
 		}
 	}
 	/**
-	 * コーデック参照
+	 * ref Codec
 	 * @return
 	 */
 	public FlvCodecType getCodec() {
@@ -211,14 +211,13 @@ public class AudioTag extends FlvTag {
 		}
 		ByteBuffer frameBuffer = null;
 		if(frameAppendFlag) {
-			// TODO このframe解析の部分は邪魔なので、別の関数にしたいですね。
-			// codecId, sampleRate, bitCount, channelsをframeから解析する必要があります。
+			// TODO this frame analyze is other task, so it could be other func.
+			// codecId, sampleRate, bitCount, channels will be analyzed from frame.
 			IAudioFrame codecCheckFrame = frame;
 			if(frame instanceof AudioMultiFrame) {
-				// コーデック判定用の一番はじめのframeを参照しなければならない。
-				codecCheckFrame = ((AudioMultiFrame) frame).getFrameList().get(0); // 先頭のフレームがあればそれでよい
+				// for codec check, need to ref first frame.
+				codecCheckFrame = ((AudioMultiFrame) frame).getFrameList().get(0);
 			}
-			// 以下のデータはコーデック情報取得時に決定される可能性がある
 			sampleRate   = null;
 			bitCount     = null;
 			channels     = null;
@@ -231,8 +230,7 @@ public class AudioTag extends FlvTag {
 				break;
 			case MP3:
 				if(frame.getSampleRate() == 8000) {
-					// mp3 8はデータが手元にないので、どうなるかわからない。
-					// とりあえず0xD2にでもしておくか・・・
+					// no example for mp3_8, I need a sample.
 					codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.MP3_8));
 					sampleRate = new Bit2();
 				}
@@ -247,7 +245,7 @@ public class AudioTag extends FlvTag {
 					sampleRate = new Bit2();
 				}
 				else if(frame.getSampleRate() == 8000) {
-					// nelly8の場合0x52になる。
+					// nelly8 0x52
 					codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.NELLY_8));
 					sampleRate = new Bit2();
 				}
@@ -256,7 +254,7 @@ public class AudioTag extends FlvTag {
 				}
 				break;
 			case SPEEX:
-				// 0xB6みたい。
+				// 0xB6
 				codecId.set(FlvCodecType.getAudioCodecNum(FlvCodecType.SPEEX));
 				if(frame.getSampleRate() != 16000) {
 					throw new Exception("sampleRate of speex is 16kHz only.");
@@ -280,7 +278,7 @@ public class AudioTag extends FlvTag {
 			default:
 				throw new Exception("frame type is invalid for flv.:" + frame);
 			}
-			// チャンネル対応
+			// channels
 			if(channels == null) {
 				channels = new Bit1();
 				switch(frame.getChannel()) {
@@ -305,7 +303,7 @@ public class AudioTag extends FlvTag {
 					bitCount.set(1);
 					break;
 				default:
-					// bit深度情報はもっていないコンテナもあるみたいです。(というか基本的に圧縮データにbit深度という情報はないみたい。(復元したらどうなるか・・・の問題っぽい。))
+					// some frame doesn't have bit depth information.
 					bitCount.set(1);
 				}
 			}
@@ -330,8 +328,8 @@ public class AudioTag extends FlvTag {
 				}
 			}
 			frameAppendFlag = false;
-			// データの再構成はgetFrameBufferで実行すればよいと思います。
-			// sizeとかの調整も必要です。
+			// reorganize data, do on getFrameBuffer
+			// need to check size.
 			frameBuffer = getFrameBuffer();
 			setPts((long)(1.0D * frame.getPts() / frame.getTimebase() * 1000));
 			setTimebase(1000);
@@ -355,12 +353,12 @@ public class AudioTag extends FlvTag {
 		));
 	}
 	/**
-	 * frameBuffer参照
+	 * ref frameBuffer
 	 * @return
 	 */
 	private ByteBuffer getFrameBuffer() throws Exception {
 		if(frameBuffer == null) {
-			// frameから復元する必要あり
+			// make frame buffer from frame.
 			if(frame != null) {
 				// TODO nellymoserでaudioMultiFrameになっている可能性があるので、その場合は単純連結する必要あり
 				// multiFrameになっている場合は結合する必要あり。
