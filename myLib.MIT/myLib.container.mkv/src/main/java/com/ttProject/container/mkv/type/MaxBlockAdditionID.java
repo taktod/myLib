@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * MaxBlockAdditionIDタグ
+ * MaxBlockAdditionID
  * @author taktod
  */
 public class MaxBlockAdditionID extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public MaxBlockAdditionID(EbmlValue size) {
 		super(Type.MaxBlockAdditionID, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public MaxBlockAdditionID() {
 		this(new EbmlValue());

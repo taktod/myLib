@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * FlagLacingタグ
+ * FlagLacing
  * @author taktod
  */
 public class FlagLacing extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public FlagLacing(EbmlValue size) {
 		super(Type.FlagLacing, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public FlagLacing() {
 		this(new EbmlValue());

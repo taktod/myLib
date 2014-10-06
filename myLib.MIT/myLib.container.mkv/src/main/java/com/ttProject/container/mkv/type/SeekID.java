@@ -14,26 +14,26 @@ import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * SeekIDタグ
+ * SeekID
  * @author taktod
  */
 public class SeekID extends MkvBinaryTag {
 	private Type targetTag = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public SeekID(EbmlValue size) {
 		super(Type.SeekID, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public SeekID() {
 		this(new EbmlValue());
 	}
 	/**
-	 * seek先のIdを参照したい。
+	 * ref the ebmlId for the seek target.
 	 * @return
 	 * @throws Exception
 	 */

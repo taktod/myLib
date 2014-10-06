@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * ContentCompSettingsタグ
+ * ContentCompSettings
  * @author taktod
  */
 public class ContentCompSettings extends MkvBinaryTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public ContentCompSettings(EbmlValue size) {
 		super(Type.ContentCompSettings, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public ContentCompSettings() {
 		this(new EbmlValue());

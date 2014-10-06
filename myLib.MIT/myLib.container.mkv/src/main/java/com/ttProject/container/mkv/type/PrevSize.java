@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * PrevSizeタグ
+ * PrevSize
  * @author taktod
  */
 public class PrevSize extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public PrevSize(EbmlValue size) {
 		super(Type.PrevSize, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public PrevSize() {
 		this(new EbmlValue());

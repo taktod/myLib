@@ -11,25 +11,25 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * EBMLタグ
+ * EBML
  * @author taktod
  */
 public class EBML extends MkvMasterTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public EBML(EbmlValue size) {
 		super(Type.EBML, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public EBML() {
 		super(Type.EBML, new EbmlValue());
 	}
 	/**
-	 * 書き込み用のセットアップ処理
+	 * setup for write
 	 * @param version
 	 * @param readVersion
 	 * @param docType

@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * FlagDefaultタグ
+ * FlagDefault
  * @author taktod
  */
 public class FlagDefault extends MkvUtf8Tag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public FlagDefault(EbmlValue size) {
 		super(Type.FlagDefault, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public FlagDefault() {
 		this(new EbmlValue());

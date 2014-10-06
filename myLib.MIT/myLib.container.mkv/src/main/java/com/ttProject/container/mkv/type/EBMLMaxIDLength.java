@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * EBMLMaxIDLengthタグ
+ * EBMLMaxIDLength
  * @author taktod
  */
 public class EBMLMaxIDLength extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public EBMLMaxIDLength(EbmlValue size) {
 		super(Type.EBMLMaxIDLength, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public EBMLMaxIDLength() {
 		this(new EbmlValue());

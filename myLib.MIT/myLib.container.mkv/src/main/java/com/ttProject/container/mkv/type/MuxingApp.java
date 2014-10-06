@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * MuxingAppタグ
+ * MuxingApp
  * @author taktod
  */
 public class MuxingApp extends MkvUtf8Tag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public MuxingApp(EbmlValue size) {
 		super(Type.MuxingApp, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public MuxingApp() {
 		this(new EbmlValue());

@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * Channelsタグ
+ * Channels
  * @author taktod
  */
 public class Channels extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public Channels(EbmlValue size) {
 		super(Type.Channels, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Channels() {
 		this(new EbmlValue());

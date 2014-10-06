@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * Segmentタグ
+ * Segment
  * @author taktod
  */
 public class Segment extends MkvMasterTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public Segment(EbmlValue size) {
 		super(Type.Segment, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Segment() {
 		this(new EbmlValue());

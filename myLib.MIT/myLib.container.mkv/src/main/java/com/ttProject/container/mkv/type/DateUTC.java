@@ -12,19 +12,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * DateUTCタグ
+ * DateUTC
  * @author taktod
  */
 public class DateUTC extends MkvDateTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public DateUTC(EbmlValue size) {
 		super(Type.DateUTC, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public DateUTC() {
 		this(new EbmlValue());

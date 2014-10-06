@@ -19,11 +19,11 @@ import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit4;
 
 /**
- * Blockタグ
+ * Block
  * @author taktod
  */
 public class Block extends MkvBlockTag {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Block.class);
 	private Bit4 reserved1          = new Bit4();
@@ -31,7 +31,7 @@ public class Block extends MkvBlockTag {
 	private Bit2 lacing             = new Bit2();
 	private Bit1 reserved2          = new Bit1();
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public Block(EbmlValue size) {

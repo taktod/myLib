@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * CuePointタグ
+ * CuePoint
  * @author taktod
  */
 public class CuePoint extends MkvMasterTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public CuePoint(EbmlValue size) {
 		super(Type.CuePoint, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public CuePoint() {
 		this(new EbmlValue());

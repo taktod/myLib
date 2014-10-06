@@ -11,25 +11,25 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * Infoタグ
+ * Info
  * @author taktod
  */
 public class Info extends MkvMasterTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public Info(EbmlValue size) {
 		super(Type.Info, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Info() {
 		this(new EbmlValue());
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param position
 	 */
 	public Info(long position) {
@@ -37,14 +37,14 @@ public class Info extends MkvMasterTag {
 		setPosition((int)position);
 	}
 	/**
-	 * 位置を設定する
+	 * set position
 	 * @param position
 	 */
 	public void setPosition(long position) {
 		super.setPosition((int)position);
 	}
 	/**
-	 * セットアップ動作
+	 * setup information.
 	 * @param timecodeScale 1000000L(ナノ秒単位で指定、この値だと1ミリ秒刻みになります)
 	 * @param muxApp
 	 * @param writeApp
@@ -63,7 +63,7 @@ public class Info extends MkvMasterTag {
 		writingApp.setValue(writeApp);
 		addChild(writingApp);
 		
-		// あとでdurationをいれる場所となる、void値(doubleのタグをいれる予定なのでこのサイズ)
+		// TODO in prepareTailer for writer. here is the position to pt duration(doubleTag)
 		Void voidTag = new Void();
 		voidTag.setTagSize(9);
 		addChild(voidTag);

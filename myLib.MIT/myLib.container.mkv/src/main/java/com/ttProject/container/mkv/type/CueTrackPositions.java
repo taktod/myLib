@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * CueTrackPositionsタグ
+ * CueTrackPositions
  * @author taktod
  */
 public class CueTrackPositions extends MkvMasterTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public CueTrackPositions(EbmlValue size) {
 		super(Type.CueTrackPositions, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public CueTrackPositions() {
 		this(new EbmlValue());

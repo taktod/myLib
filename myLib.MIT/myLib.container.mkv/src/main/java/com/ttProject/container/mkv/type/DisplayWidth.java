@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * DisplayWidthタグ
+ * DisplayWidth
  * @author taktod
  */
 public class DisplayWidth extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public DisplayWidth(EbmlValue size) {
 		super(Type.DisplayWidth, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public DisplayWidth() {
 		this(new EbmlValue());

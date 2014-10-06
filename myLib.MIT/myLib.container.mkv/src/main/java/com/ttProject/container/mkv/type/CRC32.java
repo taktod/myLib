@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * CRC32タグ
+ * CRC32
  * @author taktod
  */
 public class CRC32 extends MkvBinaryTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public CRC32(EbmlValue size) {
 		super(Type.CRC32, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public CRC32() {
 		this(new EbmlValue());

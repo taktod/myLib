@@ -12,25 +12,25 @@ import com.ttProject.frame.IAudioFrame;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * Audioタグ
+ * Audio
  * @author taktod
  */
 public class Audio extends MkvMasterTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public Audio(EbmlValue size) {
 		super(Type.Audio, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Audio() {
 		this(new EbmlValue());
 	}
 	/**
-	 * 内容データをセットアップする動作
+	 * setup the information
 	 * @param frame
 	 * @throws Exception
 	 */

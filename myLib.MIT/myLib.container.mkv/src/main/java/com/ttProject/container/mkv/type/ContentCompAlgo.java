@@ -11,31 +11,35 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * ContentCompAlgoタグ
+ * ContentCompAlgo
  * @author taktod
  */
 public class ContentCompAlgo extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public ContentCompAlgo(EbmlValue size) {
 		super(Type.ContentCompAlgo, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public ContentCompAlgo() {
 		this(new EbmlValue());
 	}
 	/**
-	 * 動作タイプを設定
+	 * ref the algotype.
 	 * @return
 	 * @throws Exception
 	 */
 	public Algo getType() throws Exception {
 		return Algo.getType((int)getValue());
 	}
+	/**
+	 * enum of algo
+	 * @author taktod
+	 */
 	public static enum Algo {
 		Zlib(0),
 		@Deprecated

@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * SegmentUIDタグ
+ * SegmentUID
  * @author taktod
  */
 public class SegmentUID extends MkvBinaryTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public SegmentUID(EbmlValue size) {
 		super(Type.SegmentUID, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public SegmentUID() {
 		this(new EbmlValue());

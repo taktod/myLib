@@ -13,25 +13,25 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * Seekタグ
+ * Seek
  * @author taktod
  */
 public class Seek extends MkvMasterTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public Seek(EbmlValue size) {
 		super(Type.Seek, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Seek() {
 		this(new EbmlValue());
 	}
 	/**
-	 * seek情報を作り上げておく
+	 * setup seek information.
 	 * @param type
 	 * @param pos
 	 * @throws Exception

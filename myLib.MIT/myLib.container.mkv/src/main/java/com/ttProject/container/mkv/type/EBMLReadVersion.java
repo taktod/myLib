@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * EBMLReadVersionタグ
+ * EBMLReadVersion
  * @author taktod
  */
 public class EBMLReadVersion extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public EBMLReadVersion(EbmlValue size) {
 		super(Type.EBMLReadVersion, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public EBMLReadVersion() {
 		this(new EbmlValue());

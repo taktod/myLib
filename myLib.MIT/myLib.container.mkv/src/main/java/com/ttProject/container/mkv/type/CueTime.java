@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * CueTimeタグ
+ * CueTime
  * @author taktod
  */
 public class CueTime extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public CueTime(EbmlValue size) {
 		super(Type.CueTime, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public CueTime() {
 		this(new EbmlValue());

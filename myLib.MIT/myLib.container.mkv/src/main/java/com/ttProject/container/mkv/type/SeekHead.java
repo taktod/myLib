@@ -11,25 +11,25 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * SeekHeadタグ
+ * SeekHead
  * @author taktod
  */
 public class SeekHead extends MkvMasterTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public SeekHead(EbmlValue size) {
 		super(Type.SeekHead, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public SeekHead() {
 		this(new EbmlValue());
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param position
 	 */
 	public SeekHead(long position) {
@@ -37,7 +37,7 @@ public class SeekHead extends MkvMasterTag {
 		setPosition((int)position);
 	}
 	/**
-	 * 位置を設定する
+	 * set position
 	 * @param position
 	 */
 	public void setPosition(long position) {

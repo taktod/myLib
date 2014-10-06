@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * DocTypeタグ
+ * DocType
  * @author taktod
  */
 public class DocType extends MkvStringTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public DocType(EbmlValue size) {
 		super(Type.DocType, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public DocType() {
 		this(new EbmlValue());

@@ -31,6 +31,7 @@ import com.ttProject.util.BufferUtil;
 
 /**
  * SimpleBlockタグ
+ * TODO ここからEnglish化していきたい。
  * データは次のようになっています。
  * A3 44 B4 81 00 00 80 00 00 02 6C ...
  *  A3[SimpleBlockタグ]

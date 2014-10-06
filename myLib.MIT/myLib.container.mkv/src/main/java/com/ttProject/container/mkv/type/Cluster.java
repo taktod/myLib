@@ -23,36 +23,36 @@ import com.ttProject.unit.UnitComparator;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * Clusterタグ
+ * Cluster
  * @author taktod
  */
 public class Cluster extends MkvMasterTag {
 	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Cluster.class);
-	/** このクラスタの時間上でのサイズ */
+	/** duration of this cluster */
 	private long duration;
-	/** 処理中のtrackIdのリスト */
+	/** trackIds on process. */
 	private Set<Integer> trackIdSet = new HashSet<Integer>();
-	/** 保持しているblockリスト */
+	/** list of blocks. */
 	private List<SimpleBlock> blockList = new ArrayList<SimpleBlock>();
-	/** ソート用のクラス */
+	/** for sort. */
 	private static UnitComparator comparator = new UnitComparator();
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public Cluster(EbmlValue size) {
 		super(Type.Cluster, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Cluster() {
 		this(new EbmlValue());
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param position
 	 */
 	public Cluster(long position) {
@@ -60,14 +60,14 @@ public class Cluster extends MkvMasterTag {
 		setPosition((int)position);
 	}
 	/**
-	 * 位置を設定する
+	 * set the position.
 	 * @param position
 	 */
 	public void setPosition(long position) {
 		super.setPosition((int)position);
 	}
 	/**
-	 * 時間に関するデータをセットアップする
+	 * setup timeinformation.
 	 * @param pts
 	 * @param timebase
 	 * @param duration
@@ -81,37 +81,36 @@ public class Cluster extends MkvMasterTag {
 		timecode.setValue(pts);
 		addChild(timecode);
 	}
+	/**
+	 * check trackId(sign as progress trackId)
+	 * @param trackId
+	 */
 	public void checkTrackId(int trackId) {
 		trackIdSet.add(trackId);
 	}
 	/**
-	 * 保持するフレームを追加します
+	 * add frame.
 	 * @param trackId
 	 * @param frame
-	 * @return IFrame 追加されなかったらframeを応答します。追加されたらnullを応答します。
+	 * @return IFrame If not added, return frame. if added, return null.
 	 */
 	public IFrame addFrame(int trackId, IFrame frame) throws Exception {
-		// TODO 登録されるであろうトラックがくる前にコンプリート扱いになることがあるみたいです。これはこまりますね。
-//		trackIdSet.add(trackId);
-		// このデータがcluster内のsimpleBlockになります。
-		// 追加していくけど、次のclusterが来たときに、実は次のclusterにいれるべきデータがでてくるかもしれないので注意が必要
+		// TODO can be complete before all track passed.
+		// check the pts, in cluster or not.
 		int pts = (int)(getTimebase() * frame.getPts() / frame.getTimebase() - getPts());
-//		logger.info(pts);
 		if(pts <= 0) {
 			return null;
 		}
 		if(pts >= 0 && pts < duration) {
-//			logger.info("data for this cluster:" + getPts() + " " + frame);
-			// 内部に入るデータ
+			// inside.
 			setupSimpleBlock(trackId, frame, pts);
 			return null;
 		}
-//		logger.info("not for this cluster:" + getPts() + " " + frame);
 		trackIdSet.remove((Integer)trackId);
 		return frame;
 	}
 	/**
-	 * ブロック化して保持しておく
+	 * hold data as simpleBlock.
 	 * @param trackId
 	 * @param frame
 	 * @throws Exception
@@ -119,7 +118,7 @@ public class Cluster extends MkvMasterTag {
 	private void setupSimpleBlock(int trackId, IFrame frame, int clusterPts) throws Exception {
 		switch(frame.getCodecType()) {
 		case H264:
-			// h264の場合はsliceFrameのみ扱う
+			// h264 deal with only sliceFrame.(need to deal with sei?)
 			if(!(frame instanceof SliceFrame)) {
 				return;
 			}
@@ -132,17 +131,16 @@ public class Cluster extends MkvMasterTag {
 		blockList.add(simpleBlock);
 	}
 	/**
-	 * リストが空であるか判定する
+	 * check the exist of progress trackIds.
 	 * @return
 	 */
 	public boolean isCompleteCluster() {
 		return trackIdSet.isEmpty();
 	}
 	/**
-	 * 完了したclusterのデータを構築しておく。
+	 * setup complete the cluster.
 	 */
 	public void setupComplete() {
-		// ソートする
 		Collections.sort(blockList, comparator);
 		for(MkvBlockTag blockTag : blockList) {
 			addChild(blockTag);

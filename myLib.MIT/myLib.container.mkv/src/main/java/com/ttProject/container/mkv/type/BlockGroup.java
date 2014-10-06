@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * BlockGroupタグ
+ * BlockGroup
  * @author taktod
  */
 public class BlockGroup extends MkvMasterTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public BlockGroup(EbmlValue size) {
 		super(Type.BlockGroup, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public BlockGroup() {
 		this(new EbmlValue());

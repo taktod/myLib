@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * CodecNameタグ
+ * CodecName
  * @author taktod
  */
 public class CodecName extends MkvUtf8Tag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public CodecName(EbmlValue size) {
 		super(Type.CodecName, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public CodecName() {
 		this(new EbmlValue());

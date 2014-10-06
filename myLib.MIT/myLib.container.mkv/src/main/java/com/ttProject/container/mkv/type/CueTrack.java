@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * CueTrackタグ
+ * CueTrack
  * @author taktod
  */
 public class CueTrack extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public CueTrack(EbmlValue size) {
 		super(Type.CueTrack, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public CueTrack() {
 		this(new EbmlValue());

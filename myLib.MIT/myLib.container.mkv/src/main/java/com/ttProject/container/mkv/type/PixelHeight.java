@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * PixelHeightタグ
+ * PixelHeight
  * @author taktod
  */
 public class PixelHeight extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public PixelHeight(EbmlValue size) {
 		super(Type.PixelHeight, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public PixelHeight() {
 		this(new EbmlValue());

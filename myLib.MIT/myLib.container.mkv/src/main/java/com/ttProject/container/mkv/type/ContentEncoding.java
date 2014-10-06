@@ -11,20 +11,20 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * ContentEncodingタグ
+ * ContentEncoding
  * @author taktod
  */
 public class ContentEncoding extends MkvMasterTag {
-	// compressionかencryptionのどちらかを１つだけもってるっぽい。
+	// this class seems to have only compression or encryption.
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public ContentEncoding(EbmlValue size) {
 		super(Type.ContentEncoding, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public ContentEncoding() {
 		this(new EbmlValue());

@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * SamplingFrequencyタグ
+ * SamplingFrequency
  * @author taktod
  */
 public class SamplingFrequency extends MkvFloatTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public SamplingFrequency(EbmlValue size) {
 		super(Type.SamplingFrequency, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public SamplingFrequency() {
 		this(new EbmlValue());

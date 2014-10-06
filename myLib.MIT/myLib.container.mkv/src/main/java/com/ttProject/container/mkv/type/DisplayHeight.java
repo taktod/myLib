@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * DisplayHeightタグ
+ * DisplayHeight
  * @author taktod
  */
 public class DisplayHeight extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public DisplayHeight(EbmlValue size) {
 		super(Type.DisplayHeight, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public DisplayHeight() {
 		this(new EbmlValue());

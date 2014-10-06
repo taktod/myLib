@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * CodecDecodeAllタグ
+ * CodecDecodeAll
  * @author taktod
  */
 public class CodecDecodeAll extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public CodecDecodeAll(EbmlValue size) {
 		super(Type.CodecDecodeAll, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public CodecDecodeAll() {
 		this(new EbmlValue());

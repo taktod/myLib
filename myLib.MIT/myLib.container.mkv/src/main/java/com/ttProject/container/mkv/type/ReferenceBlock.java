@@ -12,19 +12,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * ReferenceBlockタグ
+ * ReferenceBlock
  * @author taktod
  */
 public class ReferenceBlock extends MkvSignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public ReferenceBlock(EbmlValue size) {
 		super(Type.ReferenceBlock, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public ReferenceBlock() {
 		this(new EbmlValue());

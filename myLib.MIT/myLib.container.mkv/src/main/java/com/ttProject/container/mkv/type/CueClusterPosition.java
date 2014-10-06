@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * CueClusterPositionタグ
+ * CueClusterPosition
  * @author taktod
  */
 public class CueClusterPosition extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public CueClusterPosition(EbmlValue size) {
 		super(Type.CueClusterPosition, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public CueClusterPosition() {
 		this(new EbmlValue());

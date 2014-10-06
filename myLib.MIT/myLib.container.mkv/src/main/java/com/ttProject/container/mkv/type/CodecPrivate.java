@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * CodecPrivateタグ
+ * CodecPrivate
  * @author taktod
  */
 public class CodecPrivate extends MkvBinaryTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public CodecPrivate(EbmlValue size) {
 		super(Type.CodecPrivate, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public CodecPrivate() {
 		this(new EbmlValue());

@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * BitDepthタグ
+ * BitDepth
  * @author taktod
  */
 public class BitDepth extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public BitDepth(EbmlValue size) {
 		super(Type.BitDepth, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public BitDepth() {
 		this(new EbmlValue());

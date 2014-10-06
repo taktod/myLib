@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * DefaultDurationタグ
+ * DefaultDuration
  * @author taktod
  */
 public class DefaultDuration extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public DefaultDuration(EbmlValue size) {
 		super(Type.DefaultDuration, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public DefaultDuration() {
 		this(new EbmlValue());

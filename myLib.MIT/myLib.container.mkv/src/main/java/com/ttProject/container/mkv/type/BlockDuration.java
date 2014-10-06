@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * BlockDurationタグ
+ * BlockDuration
  * @author taktod
  */
 public class BlockDuration extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public BlockDuration(EbmlValue size) {
 		super(Type.BlockDuration, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public BlockDuration() {
 		this(new EbmlValue());

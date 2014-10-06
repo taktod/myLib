@@ -13,26 +13,26 @@ import com.ttProject.frame.CodecType;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * CodecIDタグ
+ * CodecID
  * @author taktod
  */
 public class CodecID extends MkvStringTag {
 	private CodecType extraCodecType = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public CodecID(EbmlValue size) {
 		super(Type.CodecID, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public CodecID() {
 		this(new EbmlValue());
 	}
 	/**
-	 * mkvCodecTypeを参照
+	 * ref mkvCodecType
 	 * @return
 	 * @throws Exception
 	 */
@@ -44,7 +44,7 @@ public class CodecID extends MkvStringTag {
 		return MkvCodecType.getMkvCodecType(name);
 	}
 	/**
-	 * codecTypeを参照
+	 * ref codecType
 	 * @return
 	 * @throws Exception
 	 */
@@ -55,7 +55,7 @@ public class CodecID extends MkvStringTag {
 		return extraCodecType;
 	}
 	/**
-	 * CodecIDを設定する
+	 * set MkvCodecType
 	 * @param mkvCodecType
 	 * @throws Exception
 	 */
@@ -63,7 +63,7 @@ public class CodecID extends MkvStringTag {
 		setValue(mkvCodecType.toString());
 	}
 	/**
-	 * CodecIDを設定する
+	 * set CodecType
 	 * @param codecType
 	 * @throws Exception
 	 */

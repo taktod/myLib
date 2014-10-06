@@ -16,22 +16,21 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * ContentEncodingタグ
- * TODO こいつにデータを持たせておいてどういう圧縮がかかっているか参照できるようにしないと、SimpleBlockが動作できない。
+ * ContentEncoding
  * @author taktod
  */
 public class ContentCompression extends MkvMasterTag {
 	private ContentCompAlgo     algo = null;
 	private ContentCompSettings settings = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public ContentCompression(EbmlValue size) {
 		super(Type.ContentEncoding, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public ContentCompression() {
 		this(new EbmlValue());
@@ -42,7 +41,7 @@ public class ContentCompression extends MkvMasterTag {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		super.load(channel);
-		// このタイミングでデータができているはずなので、algoとsettingsをいれておく
+		// now we can get the algo and settings.
 		for(MkvTag tag : getChildList()) {
 			if(tag instanceof ContentCompAlgo) {
 				algo = (ContentCompAlgo)tag;
