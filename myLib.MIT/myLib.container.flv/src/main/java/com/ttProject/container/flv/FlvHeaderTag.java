@@ -20,11 +20,12 @@ import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * flvのheader情報のtag
+ * flv header tag.
+ * first 13 bytes for flv file.
  * @author taktod
  */
 public class FlvHeaderTag extends Container implements IContainer {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(FlvHeaderTag.class);
 
@@ -37,7 +38,7 @@ public class FlvHeaderTag extends Container implements IContainer {
 	private       Bit32 length    = new Bit32(9);
 	private       Bit32 reserved3 = new Bit32();
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param signature
 	 */
 	public FlvHeaderTag(Bit24 signature) {
@@ -48,7 +49,7 @@ public class FlvHeaderTag extends Container implements IContainer {
 		super.update();
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public FlvHeaderTag() {
 		this(new Bit24('F' << 16 | 'L' << 8 | 'V'));
@@ -59,7 +60,7 @@ public class FlvHeaderTag extends Container implements IContainer {
 	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		// 全データを読み込んでしまう。
+		// read all data here.
 		BitLoader loader = new BitLoader(channel);
 		loader.load(version, reserved1, audioFlag, reserved2, videoFlag,
 				length, reserved3);
@@ -71,14 +72,10 @@ public class FlvHeaderTag extends Container implements IContainer {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-//		if(reserved3 == null) {
-//			minimumLoad(channel);
-//		}
-		// 追加読み込みデータは存在しません。
 		super.update();
 	}
 	/**
-	 * 映像があるか設定
+	 * set video track.
 	 * @param flag
 	 */
 	public void setVideoFlag(boolean flag) {
@@ -86,7 +83,7 @@ public class FlvHeaderTag extends Container implements IContainer {
 		super.update();
 	}
 	/**
-	 * 音声があるか設定
+	 * set audio track.
 	 * @param flag
 	 */
 	public void setAudioFlag(boolean flag) {

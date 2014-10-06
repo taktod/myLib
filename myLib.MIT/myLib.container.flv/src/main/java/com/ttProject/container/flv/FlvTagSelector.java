@@ -35,16 +35,16 @@ import com.ttProject.unit.extra.bit.Bit24;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * flvのtagを解析して取り出すselector
+ * flvTagSelector
  * @author taktod
  */
 public class FlvTagSelector implements ISelector {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(FlvTagSelector.class);
-	/** 動画フレームの解析 */
+	/** videoFrameAnalyzer */
 	private VideoAnalyzer videoFrameAnalyzer = null;
-	/** 映像フレームの解析 */
+	/** audioFrameAnalyzer */
 	private AudioAnalyzer audioFrameAnalyzer = null;
 	/**
 	 * {@inheritDoc}
@@ -52,16 +52,16 @@ public class FlvTagSelector implements ISelector {
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		if(channel.position() == channel.size()) {
-			// もうおわり
+			// no more.
 			return null;
 		}
-		// 始めの8bitを見ればなんのデータか一応わかる。
+		// first 8 bit decide the data type.
 		Bit8 firstByte = new Bit8();
 		BitLoader loader = new BitLoader(channel);
 		loader.load(firstByte);
 		IUnit unit;
 		if(firstByte.get() == 'F') {
-			// headerデータ
+			// header
 			Bit16 restSignature = new Bit16();
 			loader.load(restSignature);
 			Bit24 signature = new Bit24(firstByte.get() << 16 | restSignature.get());
@@ -70,7 +70,6 @@ public class FlvTagSelector implements ISelector {
 			return unit;
 		}
 		else {
-			// その他のtagであると思われる。
 			switch(firstByte.get()) {
 			case 0x12:
 				MetaTag metaTag = new MetaTag(firstByte);
@@ -81,7 +80,7 @@ public class FlvTagSelector implements ISelector {
 				videoTag.minimumLoad(channel);
 				switch(videoTag.getCodec()) {
 				case JPEG:
-					// flvのjpegフォーマットはもう利用されていないらしい。
+					// JPEG for flv is not used anymore.
 					break;
 				case FLV1:
 					if(videoFrameAnalyzer == null || !(videoFrameAnalyzer instanceof Flv1FrameAnalyzer)) {
@@ -103,9 +102,8 @@ public class FlvTagSelector implements ISelector {
 				case SCREEN_V2:
 					break;
 				case H264:
-					// h264のときのための特殊な読み込みanalyzerをつくっておくべきっぽいですね。
 					if(videoFrameAnalyzer == null || !(videoFrameAnalyzer instanceof DataNalAnalyzer)) {
-						videoFrameAnalyzer = new DataNalAnalyzer(); // これはminimumLoadの時点でいれなきゃだめなのか・・・そりゃむりだ
+						videoFrameAnalyzer = new DataNalAnalyzer();
 					}
 					break;
 				default:

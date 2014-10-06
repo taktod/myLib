@@ -14,12 +14,12 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
- * amf3のデータを扱うクラス
+ * amf3
  * @author taktod
  */
 public class Amf3Value {
 	/**
-	 * データタイプ
+	 * type
 	 */
 	public enum Type {
 		Undefined(0x00),
@@ -57,14 +57,13 @@ public class Amf3Value {
 		}
 	}
 	/**
-	 * ファイルからデータを呼び出してオブジェクト化していく
+	 * get object from IReadChannel
 	 * @param source
 	 * @return
 	 * @throws Exception
 	 */
 	public static Object getValueObject(IReadChannel source) throws Exception {
 		ByteBuffer data = null;
-		// 先頭のデータを読み込みます。
 		Type type = Type.getType(BufferUtil.safeRead(source, 1).get());
 		switch(type) {
 		case Null:
@@ -79,7 +78,6 @@ public class Amf3Value {
 			return Double.longBitsToDouble(BufferUtil.safeRead(source, 8).getLong());
 		case Object:
 			{
-				// 次のバイトは0x0Bであることを期待します。しらないデータがでた場合は、あとで解析してプログラムを合わせる予定
 				data = BufferUtil.safeRead(source, 2);
 				if(data.get() != 0x0B) {
 					throw new Exception("unknwon code for object.");
@@ -88,7 +86,7 @@ public class Amf3Value {
 					throw new Exception("start code of object is unexpect value.");
 				}
 				Map<String, Object> result = new HashMap<String, Object>();
-				// dataを読み込む
+				// load data.
 				byte b;
 				while((b = BufferUtil.safeRead(source, 1).get()) != 0x01) {
 					if((b & 0x01) == 0) {
@@ -96,7 +94,6 @@ public class Amf3Value {
 					}
 					data = BufferUtil.safeRead(source, b >>> 1);
 					String key = new String(data.array()).intern();
-					// AMF3のデータではいっているので、取得する。
 					result.put(key, getValueObject(source));
 				}
 				return result;
@@ -115,11 +112,10 @@ public class Amf3Value {
 		default:
 			throw new Exception("unanalyzable data.:" + type);
 		}
-		// データを解析していく
 		return null;
 	}
 	/**
-	 * U29のデータを解析します
+	 * get u29 integer.
 	 * @param source
 	 * @return
 	 * @throws Exception
@@ -135,13 +131,3 @@ public class Amf3Value {
 		return data;
 	}
 }
-
-/*
- * 11 0A 0B 01(クラス名:なし)
- * 03(参照なしの文字列１) 63(A) 
- * 0A(object) 01(クラス名なし？) [03 41 文字Aのキー] [04 01(int 1)] 01 03 62 06 05 31 34 03 61 04 0D 01 
- * 
- * 00 02 00 0A 6F 6E 4D 65 74 61 44 61 74 61 
- * 11 0A 0B 01 03 63 
- * 0A 03 01 03 62 06 05 31 34 03 61 04 0D 01
- */

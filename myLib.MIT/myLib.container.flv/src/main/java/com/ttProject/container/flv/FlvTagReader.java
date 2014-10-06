@@ -9,7 +9,7 @@ package com.ttProject.container.flv;
 import com.ttProject.container.Reader;
 
 /**
- * flvデータを解析します。(内容データもばっちり解析します)
+ * flvTagReader
  * @author taktod
  */
 public class FlvTagReader extends Reader {

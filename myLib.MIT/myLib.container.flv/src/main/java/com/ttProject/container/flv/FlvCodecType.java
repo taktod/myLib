@@ -9,7 +9,7 @@ package com.ttProject.container.flv;
 import com.ttProject.frame.CodecType;
 
 /**
- * コーデック処理
+ * flv codec type
  * @author taktod
  * 
 h263の場合のサイズをとる方法の部分、先頭の部分にデータがはいっているみたい・・・
@@ -34,9 +34,9 @@ http://blog-imgs-18-origin.fc2.com/n/a/n/nanncyatte/aacfileheader.png
  */
 public enum FlvCodecType {
 	NONE(CodecType.NONE),
-	// 映像用コーデック
+	// video codecs
 	JPEG(CodecType.UNKNOWN_VIDEO),FLV1(CodecType.FLV1),SCREEN(CodecType.UNKNOWN_VIDEO),ON2VP6(CodecType.VP6),ON2VP6_ALPHA(CodecType.UNKNOWN_VIDEO),SCREEN_V2(CodecType.UNKNOWN_VIDEO),H264(CodecType.H264),
-	// 音声用コーデック
+	// audio codecs
 	PCM(CodecType.UNKNOWN_AUDIO),ADPCM(CodecType.ADPCM_SWF),MP3(CodecType.MP3),LPCM(CodecType.UNKNOWN_AUDIO),NELLY_16(CodecType.NELLYMOSER),NELLY_8(CodecType.NELLYMOSER),NELLY(CodecType.NELLYMOSER),G711_A(CodecType.PCM_ALAW),G711_U(CodecType.PCM_MULAW),RESERVED(CodecType.UNKNOWN_AUDIO),AAC(CodecType.AAC),SPEEX(CodecType.SPEEX),MP3_8(CodecType.MP3),DEVICE_SPECIFIC(CodecType.UNKNOWN_AUDIO);
 	private final CodecType codecType;
 	private FlvCodecType(CodecType codecType) {
@@ -46,7 +46,7 @@ public enum FlvCodecType {
 		return codecType;
 	}
 	/**
-	 * 音声用コーデック判定
+	 * audioCodec check.
 	 * @param tagByte
 	 * @return
 	 */
@@ -67,14 +67,14 @@ public enum FlvCodecType {
 		case 14: return MP3_8;
 		case 15: return DEVICE_SPECIFIC;
 
-		case 12: // 不明
-		case 13: // 未定義
+		case 12: // unknown
+		case 13: // undefined
 		default:
 			throw new RuntimeException("cannot decide the audioCodecType:" + codecId);
 		}
 	}
 	/**
-	 * 映像用コーデック判定
+	 * videoCodec check.
 	 * @param tagByte
 	 * @return
 	 */
@@ -88,18 +88,18 @@ public enum FlvCodecType {
 		case 6: return SCREEN_V2;
 		case 7: return H264;
 
-		case 0: // 不明
+		case 0: // unknown
 		default:
 			throw new RuntimeException("cannot decide the videoCodecType:" + codecId);
 		}
 	}
 	/**
-	 * コーデックデータから映像のtagByte用の数値を応答します。
+	 * get the id for flvCodecType for video
 	 * @param codec
 	 * @return
 	 * @throws Exception
 	 */
-	public static byte getVideoByte(FlvCodecType codec) throws Exception {
+	public static byte getVideoCodecNum(FlvCodecType codec) throws Exception {
 		switch(codec) {
 		case JPEG:         return 1;
 		case FLV1:         return 2;
@@ -114,16 +114,7 @@ public enum FlvCodecType {
 		}
 	}
 	/**
-	 * コーデックtypeから数値を参照する。
-	 * @param codec
-	 * @return
-	 * @throws Exception
-	 */
-	public static byte getVideoCodecNum(FlvCodecType codec) throws Exception {
-		return getVideoByte(codec);
-	}
-	/**
-	 * コーデックtypeから数値を参照する。
+	 * get the id from flvCodecType for audio.
 	 * @param codec
 	 * @return
 	 * @throws Exception

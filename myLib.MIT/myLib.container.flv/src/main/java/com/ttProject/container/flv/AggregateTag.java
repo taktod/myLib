@@ -13,17 +13,17 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * flvの集合タグ(rtmpででてくるデータ)
+ * aggregated flv tag(this tag is in rtmp message.)
  * @author taktod
  */
 public class AggregateTag extends FlvTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public AggregateTag() {
 		super(new Bit8(0xFF));
 	}
-	/** 集合タグの内部リスト */
+	/** list of tags */
 	private List<FlvTag> tagList = new ArrayList<FlvTag>();
 	/**
 	 * {@inheritDoc}
@@ -51,21 +51,21 @@ public class AggregateTag extends FlvTag {
 		throw new RuntimeException("unsupported");
 	}
 	/**
-	 * 集合タグ追加
+	 * add new tag for aggregate
 	 * @param tag
 	 */
 	public void add(FlvTag tag) {
 		tagList.add(tag);
 	}
 	/**
-	 * 保持タグリスト参照
+	 * ref the tags
 	 * @return
 	 */
 	public List<FlvTag> getList() {
 		return new ArrayList<FlvTag>(tagList);
 	}
 	/**
-	 * 保持タグ数参照
+	 * count of the tags.
 	 * @return
 	 */
 	public int count() {

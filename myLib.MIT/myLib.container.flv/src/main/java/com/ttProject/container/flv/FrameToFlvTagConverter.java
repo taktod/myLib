@@ -27,43 +27,42 @@ import com.ttProject.frame.h264.type.SliceIDR;
 import com.ttProject.frame.h264.type.SupplementalEnhancementInformation;
 
 /**
- * frameデータからflvTagを生成して応答する変換動作
+ * make flvTag from frame.
  * @author taktod
  */
 public class FrameToFlvTagConverter {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(FrameToFlvTagConverter.class);
 	private ByteBuffer aacPrivateData = null;
 	private SequenceParameterSet sps = null;
 	private PictureParameterSet  pps = null;
-	/** 前回の音声タグデータ */
+	/** last audioTag */
 	private AudioTag audioTag = null;
-	/** 前回の映像タグデータ */
+	/** last videoTag */
 	private VideoTag videoTag = null;
 	/**
+	 * get the tags from frame.
 	 * FlvTagリストを取得します。
 	 * @return
 	 */
 	public List<FlvTag> getTags(IFrame frame) throws Exception {
 		if(frame instanceof VideoFrame) {
-			// 映像フレームの処理
 			return getVideoTags((VideoFrame)frame);
 		}
 		else if(frame instanceof AudioFrame) {
-			// 音声フレームの処理
 			return getAudioTags((AudioFrame)frame);
 		}
 		throw new Exception("neither audio nor video frame?:" + frame.toString());
 	}
 	/**
-	 * 音声フレームについて処理します
+	 * audioFrame.
 	 * @param frame
 	 * @return
 	 */
 	private List<FlvTag> getAudioTags(AudioFrame frame) throws Exception {
 		List<FlvTag> result = new ArrayList<FlvTag>();
-		// aacの場合はmshチェックをしておく
+		// for aac we need to check msh.
 		if(frame instanceof AacFrame) {
 			Frame aacFrame = (Frame) frame;
 			ByteBuffer privateData = aacFrame.getPrivateData();
@@ -74,31 +73,31 @@ public class FrameToFlvTagConverter {
 				result.add(audioTag);
 			}
 		}
-		// audioTagをつくっておく
+		// make audioTag.
 		AudioTag audioTag = new AudioTag();
 		audioTag.addFrame(frame);
 		result.add(audioTag);
 		return result;
 	}
 	/**
-	 * 映像フレームについて処理します
+	 * videoframe.
 	 * @param frame
 	 * @return
 	 */
 	private List<FlvTag> getVideoTags(VideoFrame frame) throws Exception {
-		// h264の場合はmshのチェックを実施する
+		// for h264, use other way.
 		if(frame instanceof H264Frame) {
 			return getH264Tags(frame);
 		}
 		List<FlvTag> result = new ArrayList<FlvTag>();
-		// videoTagをつくっておく
+		// make videoTag.
 		videoTag = new VideoTag();
 		videoTag.addFrame(frame);
 		result.add(videoTag);
 		return result;
 	}
 	/**
-	 * h264フレームについて処理しておく
+	 * h264Frame
 	 * @param frame
 	 * @return
 	 * @throws Exception
@@ -106,10 +105,10 @@ public class FrameToFlvTagConverter {
 	private List<FlvTag> getH264Tags(VideoFrame frame) throws Exception {
 		List<FlvTag> result = new ArrayList<FlvTag>();
 		if(frame instanceof SupplementalEnhancementInformation) {
-			// ヌルポの原因になるので、いらない
+			// sei will be the cause of nullpointerexception.
 			return result;
 		}
-		// mshについて調整
+		// check msh.
 		if(frame instanceof SliceIDR) {
 			SliceIDR sliceIDR = (SliceIDR)frame;
 			if(sps == null || pps == null
@@ -123,7 +122,7 @@ public class FrameToFlvTagConverter {
 			}
 		}
 		if(sps == null || pps == null) {
-			// sps ppsが存在しない場合は処理しない。
+			// neither sps nor pps exists, no more task.
 			return result;
 		}
 		if(frame instanceof Slice) {

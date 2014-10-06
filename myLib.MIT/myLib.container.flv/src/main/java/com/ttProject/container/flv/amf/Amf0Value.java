@@ -18,30 +18,30 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
- * amf0のデータを扱うクラス
+ * amf0
  * @author taktod
  * @see http://download.macromedia.com/pub/labs/amf/amf0_spec_121207.pdf
- * Number		0x00 8バイト doublebits
- * Boolean		0x01 1バイト 0x01:true 0x00:false
- * String		0x02 2バイト(サイズ) データ
- * Object		0x03 [2バイト(サイズ) データ 型タイプ 型データ] x 要素数分 00 00 09(eof)
- * MovieClip	0x04 ;予約済みで未サポート
+ * Number		0x00 8byte doublebits
+ * Boolean		0x01 1byte 0x01:true 0x00:false
+ * String		0x02 2byte(size) data
+ * Object		0x03 ([2byte(size) datatype data] x num) 00 00 09(eof)
+ * MovieClip	0x04 ;reserved(unsupported.)
  * Null			0x05 
  * Undefined	0x06
- * Reference	0x07 2バイト(参照値)
- * Map			0x08 4バイト(intデータ(要素数？)) [2バイト(サイズ) データ 型タイプ 型データ] x 要素数分 [00 00 2バイト(サイズ0)] 09(eof)
+ * Reference	0x07 2byte(ref value.)
+ * Map			0x08 4byte(int(num?)) ([2byte(size) dataType data] x num) [00 00 2byte(size0)] 09(eof)
  * ObjectEnd	0x09
- * Array		0x0A [型タイプ 型データ] x 要素数分 [00 00 2バイト(サイズ0)] 09(eof)
- * Date			0x0B 8バイト(doubleBits(unixtime)) 2バイト(timezone?)
- * LongString	0x0C 4バイト(サイズ) データ
+ * Array		0x0A ([type data] x num) [00 00 2byte(size0)] 09(eof)
+ * Date			0x0B 8byte(doubleBits(unixtime)) 2byte(timezone?)
+ * LongString	0x0C 4byte(size) data
  * Unsupported	0x0D
- * RecordSet	0x0E ;予約済みで未サポート
+ * RecordSet	0x0E ;reserved(unsupported.)
  * XmlDocument	0x0F
  * TypedObject	0x10
  */
 public class Amf0Value {
 	/**
-	 * データタイプ
+	 * data type
 	 */
 	public enum Type {
 		Number(0x00),
@@ -53,7 +53,7 @@ public class Amf0Value {
 		Undefined(0x06),
 		Reference(0x07),
 		Map(0x08),
-		ObjectEnd(0x09), // これ先頭にこないっぽい。
+		ObjectEnd(0x09), // impossible on the beginning.
 		Array(0x0A),
 		Date(0x0B),
 		LongString(0x0C),
@@ -78,14 +78,14 @@ public class Amf0Value {
 		}
 	}
 	/**
-	 * ファイルからデータを呼び出してオブジェクト化していく。
+	 * get object from readChannel
 	 * @param source
 	 * @return
 	 */
 	public static Object getValueObject(IReadChannel source) throws Exception {
 		ByteBuffer data = null;
+		// first byte decide the type.
 		Type type = Type.getType(BufferUtil.safeRead(source, 1).get());
-		// 先頭の１バイトを読み込む
 		switch(type) {
 		case Number:
 			{
@@ -166,14 +166,13 @@ public class Amf0Value {
 		}
 	}
 	/**
-	 * 任意のオブジェクトをAMF0用のbyteBufferにする
+	 * get amf0Buffer from object.
 	 * @param data
 	 * @return
 	 * @throws Exception
 	 */
 	@SuppressWarnings("unchecked")
 	public static ByteBuffer getValueBuffer(Object data) throws Exception {
-		// 入力データに対応したバイトデータをAMF0オブジェクトとして応答する。
 		if(data instanceof String) {
 			return getStringBuffer((String)data);
 		}
@@ -198,63 +197,68 @@ public class Amf0Value {
 		throw new Exception("unknown amf0Data");
 	}
 	/**
-	 * 文字列用の処理
+	 * string
 	 * @param data
 	 * @return
 	 */
 	private static ByteBuffer getStringBuffer(String data) {
 		byte[] dat = data.getBytes();
 		ByteBuffer buffer = ByteBuffer.allocate(dat.length + 3);
-		// フラグ
+		// flg
 		buffer.put((byte)0x02);
-		// 長さ
+		// length
 		buffer.putShort((short)dat.length);
-		// データ
+		// data
 		buffer.put(dat);
 		buffer.flip();
 		return buffer;
 	}
 	/**
-	 * boolean用の処理
+	 * boolean
 	 * @param data
 	 * @return
 	 */
 	private static ByteBuffer getBooleanBuffer(Boolean data) {
 		ByteBuffer buffer = ByteBuffer.allocate(2);
-		// フラグ
+		// flg
 		buffer.put((byte)0x01);
-		// データ
+		// data
 		buffer.put((byte)(data ? 1 : 0));
 		buffer.flip();
 		return buffer;
 	}
 	/**
-	 * 数値用の処理
+	 * number
 	 * @param num
 	 * @return
 	 */
 	private static ByteBuffer getNumberBuffer(Number num) {
 		ByteBuffer buffer = ByteBuffer.allocate(9);
-		// フラグ
+		// flg
 		buffer.put((byte)0x00);
-		// データ
+		// data
 		buffer.putLong(Double.doubleToLongBits(num.doubleValue()));
 		buffer.flip();
 		return buffer;
 	}
-	private static ByteBuffer getDateBuffer(Date data) {
+	/**
+	 * date
+	 * @param date
+	 * @return
+	 */
+	private static ByteBuffer getDateBuffer(Date date) {
 		ByteBuffer buffer = ByteBuffer.allocate(11);
-		// フラグ
+		// flg
 		buffer.put((byte)0x0B);
 		// unixtime
-		buffer.putLong(Double.doubleToLongBits(data.getTime()));
-		// timezone(とりあえず0でうめとく。)
+		buffer.putLong(Double.doubleToLongBits(date.getTime()));
+		// timezone(fill with 0 for temp.)
 		buffer.putShort((short)0);
 		buffer.flip();
 		return buffer;
 	}
 	/**
-	 * 配列データ用の処理
+	 * array
 	 * @param data
 	 * @return
 	 * @throws Exception
@@ -277,13 +281,12 @@ public class Amf0Value {
 		return buffer;
 	}
 	/**
-	 * ActionScriptのObject(map)用のBufferを取得
+	 * object(map)
 	 * @param data
 	 * @return
 	 * @throws Exception
 	 */
 	private static ByteBuffer getObjectBuffer(Amf0Object<String, Object> data) throws Exception {
-		// 中身の準備
 		List<ByteBuffer> amfDataList = new ArrayList<ByteBuffer>();
 		int length = 0;
 		for(Entry<String, Object> entry : data.entrySet()) {
@@ -291,11 +294,11 @@ public class Amf0Value {
 			length += amfData.remaining();
 			amfDataList.add(amfData);
 		}
-		// 子要素を足していって、必要なサイズをみつける必要あり。
+		// find the byte, by calcurating elements.
 		ByteBuffer buffer = ByteBuffer.allocate(length + 1 + 3);
-		// フラグ
+		// flg
 		buffer.put((byte)0x03);
-		// 中身書き込み
+		// data.
 		for(ByteBuffer amfData : amfDataList) {
 			buffer.put(amfData);
 		}
@@ -307,13 +310,13 @@ public class Amf0Value {
 		return buffer;
 	}
 	/**
-	 * Map用の処理
+	 * Map
 	 * @param data
 	 * @return
 	 * @throws Exception
 	 */
 	private static ByteBuffer getMapBuffer(Map<String, Object> data) throws Exception {
-		// 中身の準備
+		// inside
 		List<ByteBuffer> amfDataList = new ArrayList<ByteBuffer>();
 		int length = 0;
 		for(Entry<String, Object> entry : data.entrySet()) {
@@ -321,13 +324,13 @@ public class Amf0Value {
 			length += amfData.remaining();
 			amfDataList.add(amfData);
 		}
-		// 子要素を足していって、必要なサイズをみつける必要あり。
+		// get the size, by calcurating elements.
 		ByteBuffer buffer = ByteBuffer.allocate(length + 5 + 3);
-		// フラグ
+		// flg
 		buffer.put((byte)0x08);
-		// サイズ
+		// size
 		buffer.putInt(amfDataList.size());
-		// 中身書き込み
+		// body
 		for(ByteBuffer amfData : amfDataList) {
 			buffer.put(amfData);
 		}
@@ -339,7 +342,7 @@ public class Amf0Value {
 		return buffer;
 	}
 	/**
-	 * マップの内部データ用の処理
+	 * map element private func.
 	 * @param name
 	 * @param data
 	 * @return

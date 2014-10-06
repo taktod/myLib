@@ -9,8 +9,7 @@ package com.ttProject.container.flv.amf;
 import java.util.LinkedHashMap;
 
 /**
- * AMF0のオブジェクト用のデータ
- * 内容はマップと同じだけど、Amf0Valueに通したときにAMF0のオブジェクトとしてのデータをかえす。
+ * amf0 object data.
  * @author taktod
  *
  * @param <K>

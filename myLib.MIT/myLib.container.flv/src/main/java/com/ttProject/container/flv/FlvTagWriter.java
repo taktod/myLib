@@ -24,20 +24,17 @@ import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 
 /**
- * flvの書き込み動作
+ * flv Tag Writer
  * @author taktod
- * 
- * ここですが、面倒なので、一旦frameからflvTag用のbyteBufferをつくってから、selectorで読み込ませるという形にしたいと思います。
- * flazrでやっているのと同じ、これだったら既存の処理の使い回しで済む
  */
 public class FlvTagWriter implements IWriter {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(FlvTagWriter.class);
 	private final WritableByteChannel outputChannel;
 	private FileOutputStream outputStream = null;
 
-	/** frameをflvTagに変換するコンバーター */
+	/** convert frame to flvTag */
 	private FrameToFlvTagConverter frameConverter = new FrameToFlvTagConverter();
 	public FlvTagWriter(String fileName) throws Exception {
 		outputStream = new FileOutputStream(fileName);
@@ -65,9 +62,8 @@ public class FlvTagWriter implements IWriter {
 			}
 			return;
 		}
-		// nellymoserの場合はmultiFrameの場合はそのままmultiFrameとしていれてしまった方が楽かもしれません。
-		// とはいえ、mpegtsからコンバートするときみたいに、mp3もmultiFrameでくる可能性があるわけで、その場合は、分割してaudioTag化しないとだめ
-		// 面倒な・・・
+		// nellymoser can have multiAudioFrame.
+		// however, for mp3, we need to devide for each mp3 frame for audioTag.
 		if(frame instanceof AudioMultiFrame) {
 			AudioMultiFrame multiFrame = (AudioMultiFrame)frame;
 			for(IAudioFrame aFrame : multiFrame.getFrameList()) {
@@ -75,7 +71,7 @@ public class FlvTagWriter implements IWriter {
 			}
 			return;
 		}
-		// TODO h264の場合は複数のフレームで1つになることがあるらしい。
+		// TODO for h264, videoTag can have multiVideoFrame.
 		List<FlvTag> tagList = frameConverter.getTags(frame);
 		if(tagList != null) {
 			for(FlvTag tag : tagList) {
@@ -109,7 +105,7 @@ public class FlvTagWriter implements IWriter {
 		if(videoTag != null) {
 			outputChannel.write(videoTag.getData());
 		}
-		// h264の場合はend tagをいれた方がよい。
+		// for h264, it is better to put h264 end videoTag.
 		if(outputStream != null) {
 			try {
 				outputStream.close();

@@ -17,37 +17,32 @@ import com.ttProject.unit.extra.bit.Bit32;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
+ * base of flvtag.
  * flvデータのタグ
  * @author taktod
- * メモ：bitDataの取り扱いについて
- * コンストラクタにて設定されるものはfinalをつける。
- * minimumloadにて設定されるものは先にデフォルトのbitで初期化する
- * データのフラグによって追加されるかもしれないものはnullを代入しておく
  */
 public abstract class FlvTag extends Container {
-	private final Bit8  tagType; // 8 9 12以外にもありえるのか？
+	private final Bit8  tagType; // 0x8 0x9 0x12 only?
 	private       Bit24 dataSize     = new Bit24();
 	private       Bit24 timestamp    = new Bit24();
 	private       Bit8  timestampExt = new Bit8();
 	private       Bit24 streamId     = new Bit24();
 	private       Bit32 prevTagSize  = new Bit32();
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public FlvTag(Bit8 tagType) {
 		this.tagType = tagType;
-		super.setTimebase(1000); // flvはtimebaseがかならず1000になります。
+		super.setTimebase(1000); // timebase must be 1/1000
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		// 先頭の11バイト読み込みます。
-		// コンストラクタを読み込んだときに、すでに1バイト読み込み済みなので、残りの10バイトとりあえず読んでおきたい。
-		// 1つ前の位置を保持しておく。
+		// first 11 byte will be read.
+		// hold the position.
 		super.setPosition(channel.position() - 1);
-		// データの読み込みを進める
 		BitLoader loader = new BitLoader(channel);
 		loader.load(dataSize, timestamp, timestampExt, streamId);
 		prevTagSize = new Bit32(dataSize.get() + 11);
@@ -56,7 +51,7 @@ public abstract class FlvTag extends Container {
 		super.update();
 	}
 	/**
-	 * 開始時に存在するデータ参照
+	 * get first 11 bytes.(named startBuffer)
 	 * @return
 	 */
 	protected ByteBuffer getStartBuffer() {
@@ -64,7 +59,7 @@ public abstract class FlvTag extends Container {
 		return connector.connect(tagType, dataSize, timestamp, timestampExt, streamId);
 	}
 	/**
-	 * 終端に追加するデータ参照
+	 * get last 4 bytes.(named tailBuffer)
 	 * @return
 	 */
 	protected ByteBuffer getTailBuffer() {
@@ -72,7 +67,8 @@ public abstract class FlvTag extends Container {
 		return connector.connect(prevTagSize);
 	}
 	/**
-	 * 終端に追加されるデータ量情報(全体のデータ量 - 4)
+	 * get the size data in tail buffer.
+	 * (datasize - 4);
 	 * @return
 	 */
 	protected int getPrevTagSize() {
@@ -98,6 +94,7 @@ public abstract class FlvTag extends Container {
 		super.setPts(pts);
 		super.update();
 	}
+	@Override
 	protected void setSize(int size) {
 		dataSize.set(size - 15);
 		prevTagSize.set(size - 4);
