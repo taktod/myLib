@@ -21,10 +21,8 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * metaデータ
- * 12 xx xx xx tt tt tt tt 00 00 00 [AMF0でonMetaData(文字列)] [AMF0でObjectMapデータ] xx xx xx xx
- * xxの部分はサイズ、先頭のサイズと終端のサイズと２つある。
- * ttの部分はtimestamp
+ * metaTag
+ * 12 xx xx xx tt tt tt tt 00 00 00 [AMF0(onMetaData(string))] [AMF0ObjectMapData] xx xx xx xx
  * 
  * TODO このタグは、前のプログラムでは動作が微妙だったので・・・(sizeがふらふらかわって使いにくい)
  * 今回はもっとしっかり動作するようにしたいところ。
@@ -35,24 +33,24 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class MetaTag extends FlvTag {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MetaTag.class);
-	/** 先頭に入る文字列(固定) */
+	/** string(fixed) */
 	private final String title = "onMetaData";
-	/** メタデータの中身 */
+	/** metaData */
 	private final Map<String, Object> data = new LinkedHashMap<String, Object>();
-	/** 生データ部分 */
+	/** correspond buffer. */
 	private ByteBuffer rawBuffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param tagType
 	 */
 	public MetaTag(Bit8 tagType) {
 		super(tagType);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public MetaTag() {
 		this(new Bit8(0x12));
@@ -62,17 +60,16 @@ public class MetaTag extends FlvTag {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// こちらのloadで、ファイル上にあるデータで上書きすることにする。
 		channel.position(getPosition() + 11);
-		// 読み込みを実施する。
-		// 先に必要なデータを読み込んでDataに登録してから活動開始としたい。
+		// load the all Data on rawBuffer first.
 		rawBuffer = BufferUtil.safeRead(channel, getSize() - 15);
+		// analyzeData.
 		IReadChannel bufferChannel = new ByteReadChannel(rawBuffer.duplicate());
 		String tag = (String)Amf0Value.getValueObject(bufferChannel);
 		if(!title.equals(tag)) {
 			throw new Exception("start code is not onMetaData");
 		}
-		// このタイミングでmetaDataの中身を確認しておきます
+		// check the data.
 		while(bufferChannel.position() < bufferChannel.size()) {
 			Object data = Amf0Value.getValueObject(bufferChannel);
 			if(!(data instanceof Map<?, ?>)) {
@@ -84,7 +81,7 @@ public class MetaTag extends FlvTag {
 				this.data.put(entry.getKey(), entry.getValue());
 			}
 		}
-		// prevTagSizeを確認しておく。
+		// check prevTagSize.
 		if(getPrevTagSize() != BufferUtil.safeRead(channel, 4).getInt()) {
 			throw new Exception("size data is corrupted.");
 		}
@@ -94,7 +91,6 @@ public class MetaTag extends FlvTag {
 	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		// metaデータのminimumLoadではなにもしない。
 		super.minimumLoad(channel);
 	}
 	/**
@@ -106,9 +102,8 @@ public class MetaTag extends FlvTag {
 			throw new Exception("rawBuffer is undefined.");
 		}
 		ByteBuffer startBuffer = getStartBuffer();
-		// この部分は、rawBufferのポインターがずれてもかまわない。更新したときのみに作り直す形になっているため。
-//		ByteBuffer rawBuffer = this.rawBuffer.duplicate();
 		ByteBuffer tailBuffer = getTailBuffer();
+		// rawBuffer is ref only once(if changed, make rawBuffer again.)
 		setData(BufferUtil.connect(
 				startBuffer,
 				rawBuffer,
@@ -116,7 +111,7 @@ public class MetaTag extends FlvTag {
 		));
 	}
 	/**
-	 * データ追加
+	 * add data.
 	 * @param key
 	 * @param value
 	 * @throws Exception
@@ -126,7 +121,7 @@ public class MetaTag extends FlvTag {
 		updateData();
 	}
 	/**
-	 * データ削除
+	 * remove data
 	 * @param key
 	 * @throws Exception
 	 */
@@ -135,8 +130,8 @@ public class MetaTag extends FlvTag {
 		updateData();
 	}
 	/**
-	 * metaDataのデータが変更した場合には、dataの変更とsizeの変更が発生します。
-	 * なお、後ろにあるタグはすべてずれるので、positionの意味がなくなります。
+	 * data and size are changed by metaData update.
+	 * the position of all flvTag is changed. so, position of file is nonsence now.
 	 * @throws Exception
 	 */
 	private void updateData() throws Exception {
@@ -147,7 +142,7 @@ public class MetaTag extends FlvTag {
 		update();
 	}
 	/**
-	 * データ参照
+	 * ref the data.
 	 * @param key
 	 * @return
 	 */

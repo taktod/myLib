@@ -342,7 +342,7 @@ public class AudioTag extends FlvTag {
 		ByteBuffer startBuffer = getStartBuffer();
 		ByteBuffer audioInfoBuffer = connector.connect(
 				codecId, sampleRate, bitCount, channels,
-				sequenceHeaderFlag /* aac用の追加データ */
+				sequenceHeaderFlag /* extra data for aac */
 		);
 		ByteBuffer tailBuffer = getTailBuffer();
 		setData(BufferUtil.connect(
@@ -360,8 +360,7 @@ public class AudioTag extends FlvTag {
 		if(frameBuffer == null) {
 			// make frame buffer from frame.
 			if(frame != null) {
-				// TODO nellymoserでaudioMultiFrameになっている可能性があるので、その場合は単純連結する必要あり
-				// multiFrameになっている場合は結合する必要あり。
+				// TODO for nellymoser this frame can be audioMultiFrame, in this case need to connect.
 				if(frame instanceof AudioMultiFrame) {
 					List<ByteBuffer> buffers = new ArrayList<ByteBuffer>();
 					for(IAudioFrame aFrame : ((AudioMultiFrame) frame).getFrameList()) {
@@ -370,7 +369,7 @@ public class AudioTag extends FlvTag {
 					frameBuffer = BufferUtil.connect(buffers);
 				}
 				else if(frame instanceof AacFrame) {
-					// aacの場合は先頭の7byteをドロップする必要あり。(mshでglobalHeaderがあるので、header部分を落とします)
+					// for aac, get the buffer only. header is from msh.
 					AacFrame aacFrame = (AacFrame)frame;
 					frameBuffer = aacFrame.getBuffer();
 				}
@@ -387,7 +386,7 @@ public class AudioTag extends FlvTag {
 		}
 	}
 	/**
-	 * フレーム解析
+	 * analyzeFrame
 	 * @throws Exception
 	 */
 	private void analyzeFrame() throws Exception {
@@ -405,14 +404,14 @@ public class AudioTag extends FlvTag {
 		AudioSelector selector = frameAnalyzer.getSelector();
 		selector.setBit(getBitCount());
 		selector.setChannel(getChannels());
-//		selector.setSampleNum(getSampleNum()); // sampleNumは無限ループになるのでやらない
+//		selector.setSampleNum(getSampleNum()); // getSampleNum cause infinite loop.
 		selector.setSampleRate(getSampleRate());
 		double pts = getPts();
 		do {
 			AudioFrame audioFrame = (AudioFrame)frameAnalyzer.analyze(channel);
 			audioFrame.setPts((long)pts);
 			audioFrame.setTimebase(getTimebase());
-			// sampleNumをplusしていってより正確な数値をださないとだめっぽいね
+			// need to get more collect data from sampleNum.
 			pts += 1.0D * audioFrame.getSampleNum() * getTimebase() / audioFrame.getSampleRate();
 			if(frame != null) {
 				if(!(frame instanceof AudioMultiFrame)) {
@@ -428,7 +427,7 @@ public class AudioTag extends FlvTag {
 		} while(channel.size() != channel.position());
 	}
 	/**
-	 * フレーム参照
+	 * ref frame.
 	 * @return
 	 * @throws Exception
 	 */
@@ -439,12 +438,12 @@ public class AudioTag extends FlvTag {
 		return frame;
 	}
 	/**
-	 * frameを追加する
+	 * add frame.
 	 * @param frame
 	 */
 	public void addFrame(IAudioFrame tmpFrame) throws Exception {
 		if(tmpFrame == null) {
-			// 追加データがないなら、放置
+			// addedFrame is null, nothing.
 			return;
 		}
 		if(!(tmpFrame instanceof IAudioFrame)) {
@@ -452,7 +451,6 @@ public class AudioTag extends FlvTag {
 		}
 		frameAppendFlag = true;
 		if(frame == null) {
-			// 空だったらそのまま追加
 			frame = tmpFrame;
 		}
 		else if(frame instanceof AudioMultiFrame) {
@@ -474,14 +472,14 @@ public class AudioTag extends FlvTag {
 		super.update();
 	}
 	/**
-	 * mshであるかの確認
+	 * check msh.
 	 * @return
 	 */
 	public boolean isSequenceHeader() {
 		return getCodec() == FlvCodecType.AAC && sequenceHeaderFlag.get() == 0;
 	}
 	/**
-	 * aacのmediaSequenceHeaderとして初期化します
+	 * initialize as aac msh.
 	 * @param dsi
 	 */
 	public void setAacMediaSequenceHeader(AacFrame frame, ByteBuffer data) throws Exception {
@@ -501,11 +499,9 @@ public class AudioTag extends FlvTag {
 			bitCount.set(0);
 			break;
 		case 16:
+		default:
 			bitCount.set(1);
 			break;
-		default:
-			// bit深度情報はもっていないコンテナもあるみたいです。(というか基本的に圧縮データにbit深度という情報はないみたい。(復元したらどうなるか・・・の問題っぽい。))
-			bitCount.set(1);
 		}
 		switch((int)(frame.getSampleRate() / 100)) {
 		case 55:
@@ -525,7 +521,7 @@ public class AudioTag extends FlvTag {
 		}
 		sequenceHeaderFlag = new Bit8(0);
 		frameBuffer = data;
-		// サイズの計算が必要
+		// calcurate pts.
 		setPts((long)(1.0D * frame.getPts() / frame.getTimebase() * 1000));
 		setTimebase(1000);
 		setSize(11 + 1 + 1 + frameBuffer.remaining() + 4);
@@ -533,7 +529,7 @@ public class AudioTag extends FlvTag {
 	}
 	@Override
 	public void setPts(long pts) {
-		// ptsを設定する前にframeのptsを更新しておく。
+		// update frame pts before container pts.
 		if(frame != null && frame instanceof AudioFrame) {
 			AudioFrame aFrame = (AudioFrame)frame;
 			aFrame.setPts(pts * aFrame.getTimebase() / 1000);

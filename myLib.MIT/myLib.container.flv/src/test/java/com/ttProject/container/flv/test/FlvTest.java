@@ -16,14 +16,14 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * flvの動作テスト
+ * flv test
  * @author taktod
  */
 public class FlvTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(FlvTest.class);
 	/**
-	 * analyzerの動作テスト
+	 * analyzer test
 	 */
 	@Test
 	public void analyzerTest() {

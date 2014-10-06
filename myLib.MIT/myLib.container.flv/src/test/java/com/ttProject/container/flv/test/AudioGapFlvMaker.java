@@ -16,15 +16,14 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * エラーのあるflvをつくってどうなるか試してみる
+ * make errored flv.
  * @author taktod
  */
 @SuppressWarnings("resource")
 public class AudioGapFlvMaker {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(AudioGapFlvMaker.class);
 	/**
-	 * 音声の変なファイル作成
 	 * @throws Exception
 	 */
 //	@Test

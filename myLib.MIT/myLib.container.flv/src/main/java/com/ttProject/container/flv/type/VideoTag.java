@@ -39,44 +39,41 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * 映像用のtag
+ * videoTag
  * @author taktod
- * このtagがvideoAnalyzerを保持しているのは、flvTagはあとからflame化ができるため。
- * mpegtsもIAnalyzerを保持しておいて、あとからframe化できるようになってますね。
- * 勘違いしてました。
  */
 public class VideoTag extends FlvTag {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(VideoTag.class);
 	private Bit4 frameType = new Bit4();
 	private Bit4 codecId   = new Bit4();
 	
-	private Bit4  horizontalAdjustment = null; // vp6のみ
-	private Bit4  verticalAdjustment   = null; // vp6のみ
-	private Bit32 offsetToAlpha        = null; // vp6aのみ
-	private Bit8  packetType           = null; // avcのみ
-	private Bit24 dts                  = null; // avcのみ
+	private Bit4  horizontalAdjustment = null; // vp6 only
+	private Bit4  verticalAdjustment   = null; // vp6 only
+	private Bit32 offsetToAlpha        = null; // vp6a only
+	private Bit8  packetType           = null; // avc only
+	private Bit24 dts                  = null; // avc only
 
-	private ByteBuffer frameBuffer = null; // フレームデータ
-	private ByteBuffer alphaData   = null; // vp6a用のalphaデータ
-	private IVideoFrame   frame         = null; // 動作対象フレーム
+	private ByteBuffer frameBuffer = null; // frameBuffer
+	private ByteBuffer alphaData   = null; // alphaData for vp6a
+	private IVideoFrame   frame         = null; // targetFrame.
 	private VideoAnalyzer frameAnalyzer = null;
-	private boolean frameAppendFlag     = false; // フレームが追加されたことを検知するフラグ
+	private boolean frameAppendFlag     = false; // flg for frame append.
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param tagType
 	 */
 	public VideoTag(Bit8 tagType) {
 		super(tagType);
 	}
 	/**
-	 * デフォルトコンストラクタ
+	 * constructor
 	 */
 	public VideoTag() {
 		this(new Bit8(0x09));
 	}
 	/**
-	 * フレーム解析Analyzer設定
+	 * set frameAnalyzer
 	 * @param analyzer
 	 */
 	public void setFrameAnalyzer(VideoAnalyzer analyzer) {
@@ -87,7 +84,6 @@ public class VideoTag extends FlvTag {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// こちら側のloadが実行された場合は、読み込みデータをとりにいく。
 		if(codecId != null) {
 			BitLoader loader = null;
 			switch(getCodec()) {
@@ -99,12 +95,9 @@ public class VideoTag extends FlvTag {
 						throw new Exception("frameAnalyzer is not suitable for h264 flv.");
 					}
 					DataNalAnalyzer dataNalAnalyzer = (DataNalAnalyzer)frameAnalyzer;
-					// mshの場合はconfigDataを構築しておく。
 					ConfigData configData = new ConfigData();
 					configData.setSelector((H264FrameSelector)frameAnalyzer.getSelector());
 					configData.analyzeData(new ByteReadChannel(frameBuffer));
-					// TODO frameがnullになってもいいのだろうか・・・→よさそう。
-//					frame = configData.getNalsFrame(new ByteReadChannel(frameBuffer));
 					dataNalAnalyzer.setConfigData(configData);
 				}
 				break;
@@ -129,13 +122,13 @@ public class VideoTag extends FlvTag {
 				break;
 			}
 		}
-		// prevTagSizeを確認しておく。
+		// check the prevTagSize.
 		if(getPrevTagSize() != BufferUtil.safeRead(channel, 4).getInt()) {
 			throw new Exception("end size data is incorrect.");
 		}
 	}
 	/**
-	 * コーデック参照
+	 * ref the codec
 	 * @return
 	 */
 	public FlvCodecType getCodec() {
@@ -148,15 +141,14 @@ public class VideoTag extends FlvTag {
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
 		if(getSize() == 15) {
-			// データの内部サイズが0の場合もありえます。
+			// data size can be 0.(h264 end tag and so on...)
 			logger.warn("get the no data tag.");
 			return;
 		}
-		// コーデック情報等を取得する必要あり
 		BitLoader loader = new BitLoader(channel);
 		loader.load(frameType, codecId);
 		if(getCodec() == FlvCodecType.H264) {
-			// h264用の特殊データも読み込んでおく。
+			// load the h264 extra data.
 			packetType = new Bit8();
 			dts = new Bit24();
 			loader.load(packetType, dts);
@@ -172,7 +164,7 @@ public class VideoTag extends FlvTag {
 		}
 		ByteBuffer frameBuffer = null;
 		if(frameAppendFlag) {
-			// フレームの追加があったとき(frameデータの再構築が必要です。)
+			// in the case of frame append.(re-establish the data.)
 			IVideoFrame codecCheckFrame = frame;
 			if(frame instanceof VideoMultiFrame) {
 				codecCheckFrame = ((VideoMultiFrame) frame).getFrameList().get(0);
@@ -185,7 +177,7 @@ public class VideoTag extends FlvTag {
 				sizeEx = 0;
 			}
 			else if(codecCheckFrame instanceof Vp6Frame) {
-				// vp6aは対応しないことにします。
+				// TODO need to think about vp6a
 				horizontalAdjustment = new Bit4();
 				verticalAdjustment = new Bit4();
 				codecId.set(FlvCodecType.getVideoCodecNum(FlvCodecType.ON2VP6));
@@ -212,13 +204,13 @@ public class VideoTag extends FlvTag {
 				}
 			}
 			frameBuffer = getFrameBuffer();
-			// pts timebase sizeの更新が必要
+			// need to update pts, timebase, and size
 			setPts((long)(1.0D * frame.getPts() / frame.getTimebase() * 1000));
 			setTimebase(1000);
 			setSize(11 + 1 + sizeEx + frameBuffer.remaining() + 4);
 		}
 		else {
-			// フレームの追加がなかったとき
+			// no frame append.
 			frameBuffer = getFrameBuffer();
 		}
 		BitConnector connector = new BitConnector();
@@ -239,22 +231,17 @@ public class VideoTag extends FlvTag {
 		));
 	}
 	/**
-	 * frame用buffer参照
+	 * ref the frameBuffer
 	 * @return
 	 */
 	private ByteBuffer getFrameBuffer() throws Exception {
 		if(frameBuffer == null) {
-			// frameから復元する必要あり。
-			// この部分注意が必要
-			// vp6やflv1はそのまま戻せばよいが
-			// h264の場合は、sizeNalにしないとだめ。
 			if(FlvCodecType.getVideoCodecType(codecId.get()) == FlvCodecType.H264) {
-				// h264のフレームの場合は、調整することがあるので、やらないとだめ。
 				if(frame instanceof SliceFrame) {
 					frameBuffer = ((SliceFrame) frame).getDataPackBuffer();
 				}
 				else {
-					// マルチフレームがくることももうないはず
+					// can be h264 multiframe(in the case of sei + sliceIDR.)
 					throw new Exception("unexpected frame for h264.:" + frame);
 				}
 			}
@@ -270,7 +257,7 @@ public class VideoTag extends FlvTag {
 		return frameBuffer.duplicate();
 	}
 	/**
-	 * フレーム解析実行
+	 * analyze frame.0
 	 * @throws Exception
 	 */
 	private void analyzeFrame() throws Exception {
@@ -278,7 +265,7 @@ public class VideoTag extends FlvTag {
 			throw new Exception("frameBuffer is undefined.");
 		}
 		if(getCodec() == FlvCodecType.H264 && packetType.get() != 1) {
-			// h264でpacketTypeが0:mshや2:endOfSequenceの場合はframeがとれない。
+			// in the case of h264 msh or h264 endOfSequence. no frame.
 			return;
 		}
 		ByteBuffer buffer = frameBuffer;
@@ -286,7 +273,7 @@ public class VideoTag extends FlvTag {
 			throw new Exception("frameAnalyzer is unknown.");
 		}
 		IReadChannel channel = new ByteReadChannel(buffer);
-		// video側はコンテナからwidthとheightの情報取得できないので、放置しておく。
+		// for video, container doesn't have information of width, height.
 		do {
 			IFrame analyzedFrame = frameAnalyzer.analyze(channel);
 			if(analyzedFrame instanceof NullFrame) {
@@ -310,7 +297,7 @@ public class VideoTag extends FlvTag {
 				frame = (IVideoFrame)videoFrame;
 			}
 		} while(channel.size() != channel.position());
-		// frameAnalyzerにデータがのこっている場合はそのデータを取得する。
+		// remainFrame from frameAnalyzer
 		IFrame lastFrame = frameAnalyzer.getRemainFrame();
 		if(lastFrame != null && !(lastFrame instanceof NullFrame)) {
 			VideoFrame videoFrame = (VideoFrame)lastFrame;
@@ -333,7 +320,7 @@ public class VideoTag extends FlvTag {
 		}
 	}
 	/**
-	 * フレーム参照
+	 * ref the frame.
 	 * @return
 	 * @throws Exception
 	 */
@@ -344,7 +331,7 @@ public class VideoTag extends FlvTag {
 		return frame;
 	}
 	/**
-	 * 横幅
+	 * width
 	 * @return
 	 * @throws Exception
 	 */
@@ -355,7 +342,7 @@ public class VideoTag extends FlvTag {
 		return frame.getWidth();
 	}
 	/**
-	 * 高さ
+	 * height
 	 * @return
 	 * @throws Exception
 	 */
@@ -366,12 +353,11 @@ public class VideoTag extends FlvTag {
 		return frame.getHeight();
 	}
 	/**
-	 * frameを追加する
+	 * add the frame.
 	 * @param frame
 	 */
 	public void addFrame(IVideoFrame tmpFrame) throws Exception {
 		if(tmpFrame == null) {
-			// 追加データがないなら、処理しない
 			return;
 		}
 		if(!(tmpFrame instanceof IVideoFrame)) {
@@ -401,24 +387,28 @@ public class VideoTag extends FlvTag {
 		super.update();
 	}
 	/**
-	 * mshであるかどうか応答
+	 * check is msh?
 	 * @return
 	 */
 	public boolean isSequenceHeader() {
 		return getCodec() == FlvCodecType.H264 && packetType.get() == 0;
 	}
 	/**
-	 * キーフレームであるかの判定
+	 * is key?
 	 * @return
 	 */
 	public boolean isKeyFrame() {
 		return frameType.get() == 1;
 	}
+	/**
+	 * is disposableInner(flv1)
+	 * @return
+	 */
 	public boolean isDisposableInner() {
 		return frameType.get() == 3;
 	}
 	/**
-	 * h264のmediaSequenceHeaderとして初期化します
+	 * initialize as h264 msh.
 	 * @param frame
 	 * @param sps
 	 * @param pps
@@ -426,7 +416,7 @@ public class VideoTag extends FlvTag {
 	 */
 	public void setH264MediaSequenceHeader(H264Frame frame, SequenceParameterSet sps, PictureParameterSet pps) throws Exception {
 		codecId.set(FlvCodecType.getVideoCodecNum(FlvCodecType.H264));
-		frameType.set(1); // keyFrame指定
+		frameType.set(1); // keyFrame
 		packetType = new Bit8(0);
 		dts = new Bit24(0);
 		ConfigData configData = new ConfigData();

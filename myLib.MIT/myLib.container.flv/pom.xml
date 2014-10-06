@@ -72,5 +72,5 @@
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
-  <description>flvコンテナの内容を扱うライブラリ</description>
+  <description>library for flvTag</description>
 </project>
