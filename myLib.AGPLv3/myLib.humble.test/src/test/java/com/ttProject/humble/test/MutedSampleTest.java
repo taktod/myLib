@@ -7,7 +7,6 @@ import io.humble.video.MediaAudioResampler;
 import io.humble.video.Rational;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 /**
  * @author taktod
@@ -15,13 +14,13 @@ import org.junit.Test;
 public class MutedSampleTest {
 	/** logger */
 	private Logger logger = Logger.getLogger(MutedSampleTest.class);
-	@Test
+//	@Test
 	public void DBL() throws Exception {
 		Type sourceType = Type.SAMPLE_FMT_DBL;
 		logger.info("DBL -> DBLP");
 		resampleTest(sourceType, Type.SAMPLE_FMT_DBLP);
 	}
-	@Test
+//	@Test
 	public void S16() throws Exception {
 		Type sourceType = Type.SAMPLE_FMT_S16;
 		logger.info("S16 -> S16P");

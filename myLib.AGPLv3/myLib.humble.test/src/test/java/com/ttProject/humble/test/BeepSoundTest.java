@@ -27,7 +27,6 @@ import io.humble.video.Muxer;
 import io.humble.video.Rational;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 /**
  * make beep sound.
@@ -59,7 +58,7 @@ public class BeepSoundTest {
 		audioLine.close();
 		audioLine = null;
 	}
-	@Test
+//	@Test
 	public void flvNellymoserTest() throws Exception {
 		logger.info("flvNellymoserTest");
 		Muxer muxer = Muxer.make("flv_nellymoser.flv", null, null);
