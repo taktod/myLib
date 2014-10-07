@@ -7,7 +7,7 @@
 package com.ttProject.container.ogg;
 
 /**
- * oggのcrc32の計算動作
+ * crc32 for ogg
  * @author taktod
  */
 public class Crc32 extends com.ttProject.unit.extra.Crc32{

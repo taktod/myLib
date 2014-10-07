@@ -15,15 +15,19 @@ import org.junit.Test;
 import com.ttProject.container.ogg.Crc32;
 import com.ttProject.util.HexUtil;
 
+/**
+ * crc32 test
+ * @author taktod
+ */
 public class Crc32Test {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(Crc32Test.class);
 //	@Test
 	public void test() {
 		logger.info("crc32 work test:copy from mpegts");
 		Crc32 crc32 = new Crc32();
-		// Patのサンプル474000100000B00D0001C100000001F0002AB104B2
-		// 000B00D0001C100000001F000の部分が計算して2AB104B2になればよい
+		// Pat sample. 474000100000B00D0001C100000001F0002AB104B2
+		// 000B00D0001C100000001F000 -> 2AB104B2
 		ByteBuffer buffer = HexUtil.makeBuffer("00B00D0001C100000001F000");
 		while(buffer.remaining() != 0) {
 			crc32.update(buffer.get());

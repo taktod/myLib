@@ -16,14 +16,14 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * oggファイルの読み込み動作テスト
+ * ogg load test for opus
  * @author taktod
  */
 public class OpusOggTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(OpusOggTest.class);
 	/**
-	 * 解析動作テスト
+	 * analyze test
 	 */
 	@Test
 	public void analyzerTest() {

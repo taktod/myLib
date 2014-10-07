@@ -27,21 +27,21 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * startPage(speexとかのheader情報がはいっているっぽい。)
+ * startPage(will have header data.)
  * @author taktod
  * 
  * TODO Out of Memoryが発生する可能性があるので、frameListをpageごとに保持するように変更したほうがよい。
  * crc32の計算が微妙・・・どうすりゃいいんだ。
  */
 public class StartPage extends OggPage {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(StartPage.class);
-	/** 解析プログラム */
+	/** frame Analyzer */
 	private IAnalyzer analyzer = null;
-	/** 経過tic情報 */
+	/** passedTic(for audio only.) */
 	private long passedTic = 0;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param version
 	 * @param zeroFill
 	 * @param logicEndFlag
@@ -78,7 +78,7 @@ public class StartPage extends OggPage {
 			targetSize += size.get();
 			ByteBuffer buffer = BufferUtil.safeRead(channel, targetSize);
 			if(isFirstData) {
-				// はじめのデータの場合はコーデックheaderがあると思われるので、なんのコーデックか判定する必要あり。
+				// firstData will have codecInformation on header.
 				switch(buffer.get()) {
 				case 0x01:
 					logger.info("vorbis?");
@@ -88,7 +88,6 @@ public class StartPage extends OggPage {
 					logger.info("speex?");
 					analyzer = new SpeexFrameAnalyzer();
 					break;
-					// Theoraは？
 				case (byte)0x80:
 					logger.info("theora?");
 					analyzer = new TheoraFrameAnalyzer();
@@ -105,13 +104,8 @@ public class StartPage extends OggPage {
 			isFirstData = false;
 			IReadChannel bufferChannel = new ByteReadChannel(buffer);
 			getFrameList().add((IFrame)analyzer.analyze(bufferChannel));
-			// bufferChannelの中身がなくなるまで読み込ませる必要あり。
+			// need to read all of bufferChannel
 		}
-		// データを1byte読み込んで調べてみる。
-		// vorbisなら0x01がくるはず 0x01 [vorbis]...
-		// speexなら'S'がくるはず [Speex   ]
-		// あたりをつけて残りのデータを読み込んで決定したい。
-		// 次の位置に強制割り当てしている
 		channel.position(getPosition() + getSize());
 		super.update();
 	}
@@ -120,48 +114,46 @@ public class StartPage extends OggPage {
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		// データをupdateしなければいけない。
-		// ここでするべきことは、bufferをつくること。
-		// headerBufferを書き込み
+		// here is the position to make buffer.
+		// write header buffer.
 		ByteBuffer headerBuffer = getHeaderBuffer();
 		ByteBuffer buffer = ByteBuffer.allocate(getSize());
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		buffer.put(headerBuffer);
-		// frameを書き込み
+		// write frame
 		for(IFrame frame : getFrameList()) {
 			buffer.put(frame.getData());
 		}
 		ByteBuffer tmpBuffer = buffer.duplicate();
 		tmpBuffer.flip();
-		// crc32を作成して
+		// make crc32
 		Crc32 crc32 = new Crc32();
 		while(tmpBuffer.remaining() > 0) {
 			crc32.update(tmpBuffer.get());
 		}
-		// crc32を更新する。
+		// write crc32
 		buffer.position(22);
 		buffer.putInt((int)crc32.getValue());
 		buffer.position(tmpBuffer.position());
 		buffer.flip();
-		// おわり
 		setData(buffer);
 	}
 	/**
-	 * 解析analyzer参照
+	 * ref the frame analyzer
 	 * @return
 	 */
 	public IAnalyzer getAnalyzer() {
 		return analyzer;
 	}
 	/**
-	 * 経過ticを設定する
+	 * set the passedTic(sampleNum)
 	 * @param passedTic
 	 */
 	public void setPassedTic(long passedTic) {
 		this.passedTic = passedTic;
 	}
 	/**
-	 * 経過ticを参照する
+	 * ref the passedTic(sampleNum)
 	 * @return
 	 */
 	public long getPassedTic() {

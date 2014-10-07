@@ -9,10 +9,13 @@ package com.ttProject.container.ogg;
 import com.ttProject.container.Reader;
 
 /**
- * oggのデータを解析する動作
+ * reader for ogg container.
  * @author taktod
  */
 public class OggPageReader extends Reader {
+	/**
+	 * constructor
+	 */
 	public OggPageReader() {
 		super(new OggPageSelector());
 	}

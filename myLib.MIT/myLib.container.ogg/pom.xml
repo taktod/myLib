@@ -42,5 +42,5 @@
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
-  <description>oggコンテナの解析</description>
+  <description>ogg container work.</description>
 </project>

@@ -25,13 +25,14 @@ import com.ttProject.unit.extra.bit.Bit64;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * oggはoggPageというものができているらしい。
+ * basic of oggPage
  * @author taktod
+ * TODO theora is not tested yet.
  */
 public abstract class OggPage extends Container {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(OggPage.class);
-	public static final String capturePattern = "OggS"; // 固定のはず
+	public static final String capturePattern = "OggS"; // fixed?
 
 //	private final Bit32 syncString;
 	private final Bit1  packetContinurousFlag;
@@ -40,8 +41,6 @@ public abstract class OggPage extends Container {
 	private final Bit5  zeroFill;
 	private final Bit8  version;
 
-	// ここから先はminimumLoadで実行すればよい bit数に書き直したいけど、littleEndianの取り扱いが微妙
-	// でもこの部分はbyteが逆向きではいっているので、Bit動作としては、ただしくない動作になってしまう。
 	private Bit64 absoluteGranulePosition = new Bit64();
 	private Bit32 streamSerialNumber      = new Bit32();
 	private Bit32 pageSequenceNo          = new Bit32();
@@ -50,10 +49,10 @@ public abstract class OggPage extends Container {
 
 	private List<Bit8> segmentSizeList = new ArrayList<Bit8>();
 	private List<ByteBuffer> bufferList = new ArrayList<ByteBuffer>();
-	private List<IFrame> frameList = new ArrayList<IFrame>(); // ここ、あとでmultiFrameを使う方がいいとわかったら変更したいところ。
+	private List<IFrame> frameList = new ArrayList<IFrame>(); // TODO should I use multiFrame?
 	private StartPage startPage = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param version
 	 * @param zeroFill
 	 * @param logicEndFlag
@@ -82,7 +81,6 @@ public abstract class OggPage extends Container {
 		logger.info(logicEndFlag);
 		logger.info(logicStartFlag);
 		logger.info(packetContinurousFlag);
-		// データを読み込む
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
 		loader.load(absoluteGranulePosition, streamSerialNumber, pageSequenceNo, pageChecksum, segmentCount);
@@ -96,12 +94,11 @@ public abstract class OggPage extends Container {
 		super.setSize(size + channel.position() - getPosition());
 	}
 	/**
-	 * headerにあるデータbufferを応答します。
+	 * ref the header buffer
 	 * @return
 	 */
 	protected ByteBuffer getHeaderBuffer() {
 //		logger.info(frameList);
-		// ここのデータはframeListから作る必要があるわけか・・・
 		segmentCount.set(frameList.size());
 		logger.info("defList:" + segmentSizeList.size());
 		logger.info(frameList.size());
@@ -109,7 +106,6 @@ public abstract class OggPage extends Container {
 			segmentSizeList.add(new Bit8(frame.getSize()));
 		}
 		logger.info("headerSize:" + (27 + segmentCount.get()));
-		// こっちのコネクターもlittleEndian化しておきたい。
 		BitConnector connector = new BitConnector();
 		connector.setLittleEndianFlg(true);
 		connector.feed(new Bit8('O'), new Bit8('g'), new Bit8('g'), new Bit8('S'), version, packetContinurousFlag, logicStartFlag, logicEndFlag, zeroFill, 
@@ -150,35 +146,35 @@ public abstract class OggPage extends Container {
 		return result;// */
 	}
 	/**
-	 * 内部保持segmentSizeリストの参照
+	 * ref of segment size list.
 	 * @return
 	 */
 	protected List<Bit8> getSegmentSizeList() {
 		return segmentSizeList;
 	}
 	/**
-	 * 内部保持bufferリスト参照
+	 * ref of buffers
 	 * @return
 	 */
 	protected List<ByteBuffer> getBufferList() {
 		return bufferList;
 	}
 	/**
-	 * 解析済みフレームリスト参照
+	 * ref analyzed frame list.
 	 * @return
 	 */
 	public List<IFrame> getFrameList() {
 		return frameList;
 	}
 	/**
-	 * シリアル番号を応答する
+	 * ref stream serial number.
 	 * @return
 	 */
 	public Integer getStreamSerialNumber() {
 		return streamSerialNumber.get();
 	}
 	/**
-	 * startPageを保持設定しておく。
+	 * set startPage object.
 	 * @param startPage
 	 */
 	public void setStartPage(StartPage startPage) {
@@ -186,14 +182,14 @@ public abstract class OggPage extends Container {
 		this.startPage = startPage;
 	}
 	/**
-	 * startPageを参照
+	 * ref startPage
 	 * @return
 	 */
 	protected StartPage getStartPage() {
 		return startPage;
 	}
 	/**
-	 * pageの番号を参照する
+	 * ref page sequence num.
 	 * @return
 	 */
 	public int getPageSequenceNo() {

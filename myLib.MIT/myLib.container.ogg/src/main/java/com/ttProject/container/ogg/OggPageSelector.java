@@ -23,11 +23,11 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * oggのpageについて調べる
+ * analyze ogg pages.
  * @author taktod
  */
 public class OggPageSelector implements ISelector {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(OggPageSelector.class);
 	/** startPageMap */
 	private Map<Integer, StartPage> startPageMap = new HashMap<Integer, StartPage>();
@@ -37,16 +37,15 @@ public class OggPageSelector implements ISelector {
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		if(channel.size() == channel.position()) {
-			// もうデータがない
+			// no more data.
 			return null;
 		}
 		logger.info("position:" + Integer.toHexString(channel.position()));
-		// 先頭データ4byteを取得して、OggSであるか確認
+		// read first 4 byte check string(OggS)
 		String pattern = new String(BufferUtil.safeRead(channel, 4).array());
 		if(!OggPage.capturePattern.equals(pattern)) {
 			throw new Exception("OggS is not found.");
 		}
-		// 次のbit8とbit5 bit1 bit1を取得する。
 		Bit8 version = new Bit8();
 		Bit1 packetContinurousFlag = new Bit1();
 		Bit1 logicStartFlag = new Bit1();
@@ -56,8 +55,8 @@ public class OggPageSelector implements ISelector {
 		loader.setLittleEndianFlg(true);
 		loader.load(version, packetContinurousFlag,
 				logicStartFlag, logicEndFlag, zeroFill
-				);
-		// 必要なpage作成
+		);
+		// make page
 		OggPage page = null;
 		if(logicStartFlag.get() == 1) {
 			page = new StartPage(version, packetContinurousFlag, logicStartFlag, logicEndFlag, zeroFill);

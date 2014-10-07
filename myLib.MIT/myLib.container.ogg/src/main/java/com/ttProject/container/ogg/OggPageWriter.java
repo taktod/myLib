@@ -25,17 +25,14 @@ import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * oggの書き込み動作
- * とりあえず、speexに対応するなら、startPageにspeexのコーデック情報(headerFrame)を、次のpageにメタデータ(commentFrame)をいれないとだめ。
- * 他のデータとまじってもいやなので、次のようにする必要がある。
- * 
+ * ogg page writer.
  * @author taktod
  * 
  * こちらの動作としては、つぎつぎにframeデータをいれていくが、frameデータがいっぱいになったら次のoggPageに移動しないとだめ。
  * 現在のページにつぎつぎとデータをいれていく。
  */
 public class OggPageWriter implements IWriter {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(OggPageWriter.class);
 	/**  */
 	private Map<Integer, OggPage> pageMap = new HashMap<Integer, OggPage>();
@@ -44,7 +41,7 @@ public class OggPageWriter implements IWriter {
 	/** speexのsample数を足していく(この動作はvorbisやtheoraの場合にかわってくるので、本来はここにあるべきではない。またマルチチャンネルの場合もこまったことになります。) */
 	private long addedSampleNum = 0;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param fileName
 	 * @throws Exception
 	 */
@@ -69,7 +66,6 @@ public class OggPageWriter implements IWriter {
 	 */
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
-		// audioFrameの場合
 		if(frame instanceof IAudioFrame) {
 			IAudioFrame aFrame = (IAudioFrame)frame;
 			addedSampleNum += aFrame.getSampleNum();
@@ -84,8 +80,8 @@ public class OggPageWriter implements IWriter {
 				targetPage = pageMap.get(trackId);
 			}
 			logger.info("targetPage:" + targetPage);
-			// pageにデータを設定します。
-			targetPage.getFrameList().add(frame); // frameListを追加したら、内部でsizeを更新する必要あり
+			// set the data on page.
+			targetPage.getFrameList().add(frame); // after add frame, need to update size.
 			if(targetPage.getFrameList().size() >= 255) {
 				completePage(trackId);
 			}
@@ -104,17 +100,18 @@ public class OggPageWriter implements IWriter {
 	 */
 	@Override
 	public void prepareTailer() throws Exception {
-		// 残っているpageはすべて停止します
+		// set end the remain page.
 		for(Integer key : pageMap.keySet()) {
 			logger.info("target:" + key);
 			OggPage page = pageMap.get(key);
-			// absoluteGranulePositionを更新する
+			// update absoluteGranulePosition
 			page.setAbsoluteGranulePosition(addedSampleNum);
-			// 残っているpageMapのendFlagを1にたてて止める必要がある。
+			// set logic end flg
 			page.setLogicEndFlag(true);
-			// このタイミングでoutputChannelを止めてしまう。
+			// write pages.
 			outputChannel.write(page.getData());
 		}
+		// close stream.
 		if(outputStream != null) {
 			try {
 				outputStream.close();
@@ -125,19 +122,18 @@ public class OggPageWriter implements IWriter {
 		}
 	}
 	/**
-	 * 現在扱っているページが完了したとする
+	 * set the current page complete.
 	 */
 	public void completePage(int trackId) throws Exception {
 		logger.info("force pageComplete");
 		OggPage page = pageMap.get(trackId);
 		logger.info(page.getClass());
-		// このタイミングでgranulePositionを書き込まないとだめ
-		// frameの合計位置を計算して加えないとだめ
+		// update granulePosition(time position)
 		page.setAbsoluteGranulePosition(addedSampleNum);
-		// このタイミングでoutputChannelに必要な情報を書き込む
+		// update output channel.
 		outputChannel.write(page.getData());
 		int lastSequenceNo = page.getPageSequenceNo();
-		// 次のpageMapを設定しておく。
+		// prepare for next page.
 		page = new Page(new Bit8(), new Bit1(), new Bit1(), new Bit1(), new Bit5());
 		page.setStreamSerialNumber(trackId);
 		page.setPageSequenceNo(lastSequenceNo + 1);

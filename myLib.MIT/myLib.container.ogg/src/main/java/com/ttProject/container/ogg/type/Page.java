@@ -24,9 +24,10 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * oggの基本単位のpage
+ * basic unit of ogg, "page"
  * @see http://www.xiph.org/vorbis/doc/framing.html
  * @see http://ja.wikipedia.org/wiki/Ogg%E3%83%9A%E3%83%BC%E3%82%B8
+ * 
  * 内容は次のような感じ
  * pageの開始
  * 4バイト:OggS
@@ -50,10 +51,10 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Page extends OggPage {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(Page.class);
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param version
 	 * @param zeroFill
 	 * @param logicEndFlag
@@ -94,8 +95,8 @@ public class Page extends OggPage {
 			targetSize = 0;
 			// 解析したい。
 			IReadChannel bufferChannel = new ByteReadChannel(buffer);
-			// TODO 他のコンテナでは、このタイミングでflame化していません。byteデータを保持しているだけ
-			// なので、あとからやった方がいいかもしれません。frameを取り出すときとか
+			// TODO for other container, load is not the timing for making frame.
+			// should I obey them?
 			IFrame frame = (IFrame)getStartPage().getAnalyzer().analyze(bufferChannel);
 			if(frame instanceof AudioFrame) {
 				AudioFrame audioFrame = (AudioFrame) frame;
@@ -103,13 +104,11 @@ public class Page extends OggPage {
 				audioFrame.setPts(getStartPage().getPassedTic());
 				getStartPage().setPassedTic(audioFrame.getPts() + audioFrame.getSampleNum());
 			}
-			// frameのhashCodeをみて、同一だったら同じフレームであると考える。(とりあえず一致したら放置でいってみる。)
+			// check frame hashCode, if same, just egnore.(already wrote.)
 			if(frameList.size() == 0 || frameList.get(frameList.size() - 1).hashCode() != frame.hashCode()) {
-				// 一致しなければ追加する
 				frameList.add(frame);
 			}
 		}
-		// analyzerをつかって開く
 		channel.position(getPosition() + getSize());
 	}
 	/**
@@ -126,17 +125,16 @@ public class Page extends OggPage {
 		}
 		ByteBuffer tmpBuffer = buffer.duplicate();
 		tmpBuffer.flip();
-		// crc32を作成して
+		// make crc32
 		Crc32 crc32 = new Crc32();
 		while(tmpBuffer.remaining() > 0) {
 			crc32.update(tmpBuffer.get());
 		}
-		// crc32を更新する。
+		// write crc32
 		buffer.position(22);
 		buffer.putInt((int)crc32.getValue());
 		buffer.position(tmpBuffer.position());
 		buffer.flip();
-		// おわり
 		setData(buffer);
 	}
 }

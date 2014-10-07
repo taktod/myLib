@@ -16,14 +16,14 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * oggファイルの読み込み動作テスト
+ * ogg load test.
  * @author taktod
  */
 public class OggTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(OggTest.class);
 	/**
-	 * 解析動作テスト
+	 * analyze test
 	 */
 	@Test
 	public void analyzerTest() {
@@ -55,7 +55,8 @@ public class OggTest {
 		}
 	}
 	/**
-	 * speexのmetaデータが非常にながい場合にどうなるか・・・というテストとしてつくったもの。あとでサーバー上のoggファイルは撤去する予定。
+	 * this is the test for loooong speex.
+	 * this test data will be terminated.
 	 */
 //	@Test
 	public void analyzeTest2() {
