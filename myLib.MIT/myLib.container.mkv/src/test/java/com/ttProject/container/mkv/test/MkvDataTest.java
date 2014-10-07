@@ -20,11 +20,11 @@ import com.ttProject.container.mkv.type.ReferenceBlock;
 import com.ttProject.util.HexUtil;
 
 /**
- * mkv用のデータの構築動作テストをしたい。
+ * test for establish data.
  * @author taktod
  */
 public class MkvDataTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(MkvDataTest.class);
 	/**
 	 * 
@@ -51,7 +51,7 @@ public class MkvDataTest {
 //	@Test
 	public void utf8Tag() throws Exception {
 		CodecName codecName = new CodecName();
-		codecName.setValue("あいうえお");
+		codecName.setValue("あいうえお"); // japanese letter for unicode test.
 		logger.info(HexUtil.toHex(codecName.getData()));
 	}
 //	@Test

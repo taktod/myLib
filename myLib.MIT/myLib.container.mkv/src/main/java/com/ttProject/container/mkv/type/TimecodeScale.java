@@ -11,27 +11,27 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * TimecodeScaleタグ
- * こっちは全体のtimescale値になるっぽい
- * これとは別にTrackTimecodeScaleというのもある(非推奨になってるけど)
+ * TimecodeScale
+ * this seems to be timescale for entire file.
+ * there is another which named TrackTimecodeScale.(deprecated)
  * @author taktod
  */
 public class TimecodeScale extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public TimecodeScale(EbmlValue size) {
 		super(Type.TimecodeScale, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public TimecodeScale() {
 		this(new EbmlValue());
 	}
 	/**
-	 * timebaseとして利用する値を応答します。
+	 * ref the data of timebase.
 	 * @return
 	 */
 	public long getTimebaseValue() {

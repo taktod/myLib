@@ -21,15 +21,15 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * mkvによるデータの書き込み動作テスト
- * きちんと動作していない。(はじめの部分でデータを捨てているのがまずい)
+ * mkv data write test.
+ * this doesn't work properly.
  * @author taktod
  */
 public class MkvWriteTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(MkvWriteTest.class);
 	/**
-	 * 動作テスト
+	 * work test
 	 * @throws Exception
 	 */
 	@Test
@@ -41,16 +41,11 @@ public class MkvWriteTest {
 		IReader reader = new MkvTagReader();
 		IWriter writer = new MkvTagWriter("output.mkv");
 		writer.prepareHeader(CodecType.H264, CodecType.AAC);
-		// mpegtsとかでもあらかじめ書き込みを実行することで対処しているので、mkvもそうすればいいかな・・・
-		// ある程度どうなるかわかっているとだいぶ助かるけど・・・
-		// frameが着てから解析するというのはやらないでおこうというのがいいのか？
-		// ただしmpegtsと違ってサイズやサンプルレートといった情報も必要になるので、そのあたりもきちんと調整しておいた方がよさそうですね。
 		IContainer container = null;
 		while((container = reader.read(source)) != null) {
 			if(container instanceof MkvBlockTag) {
 				MkvBlockTag blockTag = (MkvBlockTag) container;
 				IFrame frame = blockTag.getFrame();
-//				logger.info(frame);
 				writer.addFrame(blockTag.getTrackId().get(), frame);
 			}
 		}

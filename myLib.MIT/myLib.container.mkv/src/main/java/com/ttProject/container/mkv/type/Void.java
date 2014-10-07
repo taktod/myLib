@@ -15,25 +15,25 @@ import com.ttProject.unit.extra.EbmlValue;
 import com.ttProject.util.BufferUtil;
 
 /**
- * Voidタグ
+ * Void
  * @author taktod
  */
 public class Void extends MkvTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public Void(EbmlValue size) {
 		super(Type.Void, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Void() {
 		this(new EbmlValue());
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param position
 	 */
 	public Void(long position) {
@@ -41,14 +41,14 @@ public class Void extends MkvTag {
 		setPosition((int)position);
 	}
 	/**
-	 * 位置を設定する
+	 * set position
 	 * @param position
 	 */
 	public void setPosition(long position) {
 		super.setPosition((int)position);
 	}
 	/**
-	 * tagのサイズを設定する
+	 * set size
 	 * @param size
 	 */
 	public void setTagSize(int size) {
@@ -59,7 +59,6 @@ public class Void extends MkvTag {
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		// ここつくっておかないとだめ
 		byte[] empty = new byte[getTagSize().get()];
 		BitConnector connector = new BitConnector();
 		ByteBuffer data = BufferUtil.connect(

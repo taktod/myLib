@@ -11,20 +11,20 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * TrackTimecodeScaleタグ
- * このタグは非推奨です。
+ * TrackTimecodeScale
+ * this tag is deprected.
  * @author taktod
  */
 public class TrackTimecodeScale extends MkvFloatTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public TrackTimecodeScale(EbmlValue size) {
 		super(Type.TrackTimecodeScale, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public TrackTimecodeScale() {
 		this(new EbmlValue());

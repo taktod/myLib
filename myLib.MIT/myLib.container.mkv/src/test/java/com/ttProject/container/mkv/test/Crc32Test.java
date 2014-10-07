@@ -15,11 +15,11 @@ import com.ttProject.unit.extra.Crc32;
 import com.ttProject.util.HexUtil;
 
 /**
- * matroskaにもcrc32があるので対応しようとおもったんだが、計算方法がわからないですね・・・
+ * matroska has crc32, like ogg and mpegts. however, I don't know how...
  * @author taktod
  */
 public class Crc32Test {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(Crc32Test.class);
 	@Test
 	public void test() throws Exception {
@@ -37,7 +37,7 @@ public class Crc32Test {
 	}
 	public static class C32 extends Crc32 {
 		/**
-		 * 初期化(設定によると0xFFFFFFFFにしていないとだめっぽい)
+		 * initialize(must be 0xFFFFFFFF?)
 		 */
 		public void reset() {
 			crc = 0xFFFFFFFFL;

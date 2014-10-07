@@ -11,25 +11,25 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * SimpleTagタグ
+ * SimpleTag
  * @author taktod
  */
 public class SimpleTag extends MkvMasterTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public SimpleTag(EbmlValue size) {
 		super(Type.SimpleTag, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public SimpleTag() {
 		this(new EbmlValue());
 	}
 	/**
-	 * 構築する
+	 * setup the tag.
 	 * @param name
 	 * @param value
 	 * @throws Exception

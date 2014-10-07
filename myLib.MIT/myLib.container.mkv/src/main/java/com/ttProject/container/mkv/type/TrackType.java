@@ -11,25 +11,25 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * TrackTypeタグ
+ * TrackType
  * @author taktod
  */
 public class TrackType extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public TrackType(EbmlValue size) {
 		super(Type.TrackType, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public TrackType() {
 		this(new EbmlValue());
 	}
 	/**
-	 * タイプ情報を参照する
+	 * ref the type
 	 * @return
 	 * @throws Exception
 	 */
@@ -37,7 +37,7 @@ public class TrackType extends MkvUnsignedIntTag {
 		return Media.getType((int)super.getValue());
 	}
 	/**
-	 * タイプ情報を設定する
+	 * set the type
 	 * @param media
 	 * @throws Exception
 	 */

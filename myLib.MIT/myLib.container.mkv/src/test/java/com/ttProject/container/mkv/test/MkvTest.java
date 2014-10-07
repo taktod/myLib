@@ -21,14 +21,14 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * mkvの動作テスト
+ * mkv test
  * @author taktod
  */
 public class MkvTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(MkvTest.class);
 	/**
-	 * analyzerの動作テスト
+	 * analyzer
 	 */
 	@Test
 	public void analyzerTest() {
@@ -42,12 +42,12 @@ public class MkvTest {
 			source = FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("test.theoravorbis.mkv")
 //					Thread.currentThread().getContextClassLoader().getResource("test.mkv")
-//					Thread.currentThread().getContextClassLoader().getResource("test1.mkv") // msmpeg4v2なのでframeがいまのところない
+//					Thread.currentThread().getContextClassLoader().getResource("test1.mkv") // myLib doesn't support msmpeg4v2.
 //					Thread.currentThread().getContextClassLoader().getResource("test2.mkv")
 //					Thread.currentThread().getContextClassLoader().getResource("test3.mkv")
-//					Thread.currentThread().getContextClassLoader().getResource("test4.mkv") // theoraらしい
-//					Thread.currentThread().getContextClassLoader().getResource("test5.mkv") // subtitleがはいっていて動作しない。S_TEXT/UTF8
-//					Thread.currentThread().getContextClassLoader().getResource("test6.mkv") // msmpeg4v2なのでframeがいまのところない
+//					Thread.currentThread().getContextClassLoader().getResource("test4.mkv") // theora
+//					Thread.currentThread().getContextClassLoader().getResource("test5.mkv") // myLib doesn't support subtitle S_TEXT/UTF8
+//					Thread.currentThread().getContextClassLoader().getResource("test6.mkv") // myLib doesn't support msmpeg4v2.
 //					Thread.currentThread().getContextClassLoader().getResource("test7.mkv")
 //					Thread.currentThread().getContextClassLoader().getResource("test8.mkv")
 			);

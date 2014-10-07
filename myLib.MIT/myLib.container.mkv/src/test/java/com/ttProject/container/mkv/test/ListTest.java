@@ -13,11 +13,11 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 /**
- * integerのlistの動作テスト
+ * integer list test.
  * @author taktod
  */
 public class ListTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(ListTest.class);
 	@Test
 	public void test() throws Exception {

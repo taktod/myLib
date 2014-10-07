@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * TagTrackUIDタグ
+ * TagTrackUID
  * @author taktod
  */
 public class TagTrackUID extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public TagTrackUID(EbmlValue size) {
 		super(Type.TagTrackUID, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public TagTrackUID() {
 		this(new EbmlValue());

@@ -11,25 +11,25 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * Tracksタグ
+ * Tracks
  * @author taktod
  */
 public class Tracks extends MkvMasterTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public Tracks(EbmlValue size) {
 		super(Type.Tracks, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Tracks() {
 		this(new EbmlValue());
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param position
 	 */
 	public Tracks(long position) {
@@ -37,7 +37,7 @@ public class Tracks extends MkvMasterTag {
 		setPosition((int)position);
 	}
 	/**
-	 * 位置を設定する
+	 * set the position.
 	 * @param position
 	 */
 	public void setPosition(long position) {

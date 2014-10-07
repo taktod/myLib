@@ -12,12 +12,12 @@ import org.junit.Test;
 import com.ttProject.util.HexUtil;
 
 /**
- * 文字列に関する動作チェック
+ * string test
  * @author taktod
  *
  */
 public class StringTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(StringTest.class);
 	@Test
 	public void test() throws Exception {

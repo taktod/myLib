@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * Titleタグ
+ * Title
  * @author taktod
  */
 public class Title extends MkvUtf8Tag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public Title(EbmlValue size) {
 		super(Type.Title, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Title() {
 		this(new EbmlValue());

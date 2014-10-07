@@ -12,25 +12,25 @@ import com.ttProject.frame.IVideoFrame;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * Videoタグ
+ * Video
  * @author taktod
  */
 public class Video extends MkvMasterTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public Video(EbmlValue size) {
 		super(Type.Video, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Video() {
 		this(new EbmlValue());
 	}
 	/**
-	 * 内容データをセットアップする動作
+	 * setup the information.
 	 * @param frame
 	 * @throws Exception
 	 */

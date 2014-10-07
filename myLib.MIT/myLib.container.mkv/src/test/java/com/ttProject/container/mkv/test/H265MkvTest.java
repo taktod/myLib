@@ -18,14 +18,14 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * h265(mkv)の動作テスト
+ * h265(mkv)
  * @author taktod
  */
 public class H265MkvTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(H265MkvTest.class);
 	/**
-	 * analyzerの動作テスト
+	 * analyzer
 	 */
 //	@Test
 	public void analyzerTest() {
@@ -33,7 +33,7 @@ public class H265MkvTest {
 		int lastPosition = 0;
 		try {
 			source = FileReadChannel.openFileReadChannel(
-					""
+					"" // need some sample data.
 			);
 			IReader reader = new MkvTagReader();
 			IContainer container = null;

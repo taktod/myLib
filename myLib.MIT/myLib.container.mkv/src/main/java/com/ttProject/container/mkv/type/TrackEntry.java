@@ -46,36 +46,37 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * TrackEntryタグ
+ * TrackEntry
  * @author taktod
  */
 public class TrackEntry extends MkvMasterTag {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(TrackEntry.class);
-	private long  timebase; // timebaseは他から設定されるもの(これはinfoの情報)
-	private int   lacingFlag = 0; // 子要素由来
+	private long  timebase; // timebase is settled by others(come from Info)
+	private int   lacingFlag = 0; // global lacing type.
 	@SuppressWarnings("unused")
-	private Media type = null; // 子要素由来
+	private Media type = null; // type depend on child elements.(frames)
 
-	/** frame解析用のオブジェクト */
+	/** frame analyzer */
 	private IAnalyzer analyzer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public TrackEntry(EbmlValue size) {
 		super(Type.TrackEntry, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public TrackEntry() {
 		this(new EbmlValue());
 	}
 	/**
-	 * load後に、扱いやすいようにデータを設定しておきます。
-	 * @param defaultTimebase (frameでつかっているtimebaseと同じ 通常1000がはいっているミリ秒指定)
-	 * @return trackIdを応答します。(uintですが、そこまで大きな数字になることはほぼないと思うのでintegerにまるめます。)
+	 * setup entry
+	 * make it easy to use after loading.
+	 * @param defaultTimebase (meaning is same as frame and container. 1000 means 1milisec. 44100 means 1/44100 sec)
+	 * @return trackId
 	 */
 	public int setupEntry(long defaultTimebase) throws Exception {
 		timebase = defaultTimebase;
@@ -88,7 +89,7 @@ public class TrackEntry extends MkvMasterTag {
 		int channels = 0;
 		int samplingRate = 0;
 		for(MkvTag tag : getChildList()) {
-			// trackUIDをつかわずにtrackNumberをつかった方がいいっぽい。
+			// seems to better to use trackNumber instead of trackId
 			if(tag instanceof TrackNumber) {
 				trackNumber = (TrackNumber)tag;
 			}
@@ -155,18 +156,18 @@ public class TrackEntry extends MkvMasterTag {
 			fmt.minimumLoad(channel);
 			fmt.load(channel);
 			codecId.setCodecType(fmt.getCodecType());
-			// fmt の中身が入ってるのか
+			// check the information of fmt.
 			switch(codecId.getCodecType()) {
 			case ADPCM_IMA_WAV:
 				analyzer = new AdpcmImaWavFrameAnalyzer();
 				break;
 			default:
-				throw new RuntimeException(codecId.getCodecType() + "の解析はまだ不明です。");
+				throw new RuntimeException(codecId.getCodecType() + " is under construct for mkv.");
 			}
 			break;
 		case V_MPEG4_ISO_AVC:
 			DataNalAnalyzer dataNalAnalyzer = new DataNalAnalyzer();
-			// h264の場合はConfigDataからsps ppsを取り出す必要あり。
+			// for h264, load sps and pps from CodecPrivate information.
 			ConfigData configData = new ConfigData();
 			configData.setSelector((H264FrameSelector)dataNalAnalyzer.getSelector());
 			configData.analyzeData(new ByteReadChannel(codecPrivate.getMkvData()));
@@ -211,28 +212,28 @@ public class TrackEntry extends MkvMasterTag {
 		return (int)trackNumber.getValue();
 	}
 	/**
-	 * analyzer参照
+	 * ref analyzer
 	 * @return
 	 */
 	public IAnalyzer getAnalyzer() {
 		return analyzer;
 	}
 	/**
-	 * timebaseを応答する
+	 * ref timebase
 	 */
 	@Override
 	public long getTimebase() {
 		return timebase;
 	}
 	/**
-	 * 該当trackIdのlacing状態を応答する
+	 * ref the lacing flag.
 	 * @return
 	 */
 	public int getLacingFlag() {
 		return lacingFlag;
 	}
 	/**
-	 * encoding情報を応答します。
+	 * ref encoding
 	 * @return
 	 */
 	public ContentEncodings getEncodings() {
@@ -244,7 +245,7 @@ public class TrackEntry extends MkvMasterTag {
 		return null;
 	}
 	/**
-	 * codecTypeを参照する
+	 * ref codecType
 	 * @return
 	 * @throws Exception
 	 */
@@ -257,7 +258,7 @@ public class TrackEntry extends MkvMasterTag {
 		throw new Exception("CodecID is undefined.");
 	}
 	/**
-	 * codecTypeを設定する
+	 * set the codecType.
 	 * @param codecType
 	 */
 	public void setCodecType(CodecType codecType) throws Exception {
@@ -266,7 +267,7 @@ public class TrackEntry extends MkvMasterTag {
 		addChild(codecId);
 	}
 	/**
-	 * 
+	 * setup frame.
 	 * @param trackId
 	 * @param frame
 	 * @throws Exception
@@ -332,7 +333,7 @@ public class TrackEntry extends MkvMasterTag {
 			Video video = new Video();
 			video.setup(vFrame);
 			addChild(video);
-			// あとはh264やh265ならcodecPrivateを設定する必要あり
+			// h264 and h265 we need to makeup CodecPrivate.
 			switch(vFrame.getCodecType()) {
 			case H264:
 				{

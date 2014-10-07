@@ -30,27 +30,26 @@ import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.util.BufferUtil;
 
 /**
- * SimpleBlockタグ
- * TODO ここからEnglish化していきたい。
- * データは次のようになっています。
+ * SimpleBlock
+ * data sample.
  * A3 44 B4 81 00 00 80 00 00 02 6C ...
- *  A3[SimpleBlockタグ]
- *  44 B4[このTagのサイズデータ]
- * ここまでは読み込み動作実装済み
- *  81[EbmlValue] 動作トラックデータ
- *  00 00[16bit固定]このCluster上でのtimestamp差分量
+ *  A3[SimpleBlock]
+ *  44 B4[tag size(ebml)]
+ * -- already programmed in mkvTag.
+ *  81[trackId(ebml)]
+ *  00 00[timestamp diff(16bit)]
  *  1000 0000
- *  . keyFrameであるか指定
- *   ... reserved0設定
- *       . 非表示フレームであるか？ 1なら非表示
- *        .. lacing設定(データが複数のフレームの塊の場合にどのようにわかれるかの指定がはいっている*1)
- *          . discardable:なんだろう？
- * *1:h264のnalはフレームの塊ではあるけど、lacingではなくnal構造で分かれるようになっています。
+ *  . keyFrame flag
+ *   ... reserved0
+ *       . is invisible frame? 1:invisible
+ *        .. lacing(for frame dividing.*1)
+ *          . discardable:what?
+ * *1:for h264, detailed data is separated by h264 nal(sizeNal)
  * @see http://matroska.org/technical/specs/index.html#simpleblock_structure
  * @author taktod
  */
 public class SimpleBlock extends MkvBlockTag {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(SimpleBlock.class);
 	private Bit1 keyFrameFlag       = new Bit1();
@@ -59,14 +58,14 @@ public class SimpleBlock extends MkvBlockTag {
 	private Bit2 lacing             = new Bit2();
 	private Bit1 discardableFlag    = new Bit1();
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public SimpleBlock(EbmlValue size) {
 		super(Type.SimpleBlock, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public SimpleBlock() {
 		this(new EbmlValue());
@@ -105,11 +104,11 @@ public class SimpleBlock extends MkvBlockTag {
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		// ここでframeを参照しながら必要な形にくみ上げ直すことができたらそれでOK
+		// here we need to make up the file.
 		BitConnector connector = new BitConnector();
 		ByteBuffer buffer = connector.connect(getTrackId(), getTimestampDiff(),
 				keyFrameFlag, reserved, invisibleFrameFlag, lacing, discardableFlag);
-		// このあとはframeの実データがはいっている。// h264の場合はdataNalの形ではいっている
+		// from here, frame body.
 		IFrame frame = getFrame();
 		switch(frame.getCodecType()) {
 		case AAC:
@@ -117,7 +116,7 @@ public class SimpleBlock extends MkvBlockTag {
 			buffer = BufferUtil.connect(buffer, aacFrame.getBuffer());
 			break;
 		case H264:
-			// dataNalの形で応答しないとだめ
+			// use data nal.
 			if(frame instanceof SliceFrame) {
 				SliceFrame sliceFrame = (SliceFrame) frame;
 				buffer = BufferUtil.connect(buffer, sliceFrame.getDataPackBuffer());
@@ -137,50 +136,44 @@ public class SimpleBlock extends MkvBlockTag {
 		setData(buffer);
 	}
 	/**
-	 * フレームを追加する
+	 * add frame
 	 * @param trackId
 	 * @param frame
 	 */
 	public void addFrame(int trackId, IFrame frame, int timestampDiff) throws Exception {
-		// とりあえずつくるか・・・
 		super.setPts(timestampDiff);
-		super.setTimebase(1000); // ここのtimebaseは変更した方がいいかも
+		super.setTimebase(1000); // TODO this timebase is depend on the trackEntry setting.
 		super.getTrackId().set(trackId);
 		super.addFrame(frame);
-		// trackIdとframeをいれた。
-		// trackEntryの開始位置のtimediffについて、参照する必要あり。
-		// mkvはいまのところtimebase = 1000で動作しているものとするので、ptsを変換しておく
 		getTimestampDiff().set(timestampDiff);
-		// 音声はkeyFrame扱いっぽい。
+		// audio is treated as KeyFrame.
 		if(frame instanceof IAudioFrame) {
 			keyFrameFlag.set(1);
 		}
 		else if(frame instanceof IVideoFrame) {
 			IVideoFrame vFrame = (IVideoFrame)frame;
-			// 映像はframeによってかわるっぽい
 			if(vFrame.isKeyFrame()) {
 				keyFrameFlag.set(1);
 			}
 			else {
 				keyFrameFlag.set(0);
 			}
-			// vp8やvp9の場合はinvisible判定をとっておかないとこまったことになるかもしれない。(BlockTagに設定項目があるため。)
+			// TODO vp8 and vp9 need to put invisible for invisible frames.
+			// block tag do have invisible setting.
 			switch(frame.getCodecType()) {
 			case VP8:
 				@SuppressWarnings("unused")
 				Vp8Frame vp8Frame = (Vp8Frame)frame;
-				// invisibleであるか判定
 				break;
 			case VP9:
 				@SuppressWarnings("unused")
 				Vp9Frame vp9Frame = (Vp9Frame)frame;
-				// invisibleであるか判定
 				break;
 			default:
 				break;
 			}
 		}
-		// lacingについては、サンプルのデータでmp3の複数フレームを混入したものがあったが、別に単体でも問題ないことがわかったので、とりあえず、lacingは考えないことにする
+		// for the lacing, I got a sample with laced mp3, however, nolaced mp3 also works. so later fix to use lacing if necessary.
 		super.update();
 	}
 }

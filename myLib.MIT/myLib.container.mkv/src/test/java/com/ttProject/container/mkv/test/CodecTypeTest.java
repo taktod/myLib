@@ -12,14 +12,14 @@ import org.junit.Test;
 import com.ttProject.container.mkv.MkvCodecType;
 
 /**
- * matroskaのコーデック情報判定動作用のテストコード
+ * check the codecType.
  * @author taktod
  */
 public class CodecTypeTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(CodecTypeTest.class);
 	/**
-	 * テスト
+	 * test
 	 * @throws Exception
 	 */
 	@Test
@@ -36,7 +36,7 @@ public class CodecTypeTest {
 		// vorbis
 		codecString = "A_VORBIS";
 		logger.info(MkvCodecType.getMkvCodecType(codecString));
-		// AAc
+		// aac
 		codecString = "A_AAC";
 		logger.info(MkvCodecType.getMkvCodecType(codecString));
 	}

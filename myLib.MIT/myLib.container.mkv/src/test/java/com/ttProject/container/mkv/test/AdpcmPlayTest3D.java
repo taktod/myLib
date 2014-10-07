@@ -31,13 +31,11 @@ import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * adpcm_ima_wavのデータを再生する動作テスト(コンテナはmkvとする)
+ * test to play adpcm_ima_wav(container is mkv.)
  * @author taktod
- * TODO そこそこまともな変換になったはなったみたいです。
- * adpcmのframe間の補完を実施していないので、再生するとぷちぷちいうのがたまに傷なところ。
  */
 public class AdpcmPlayTest3D {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(AdpcmPlayTest3D.class);
 	private int imaIndexTable[] = {
 		-1, -1, -1, -1, 2, 4, 6, 8,
@@ -55,7 +53,7 @@ public class AdpcmPlayTest3D {
 		15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767
 	};
 	/**
-	 * 次のindex値を計算します。
+	 * calcurate the index.
 	 * @param index
 	 * @param nibble
 	 * @return
@@ -73,7 +71,7 @@ public class AdpcmPlayTest3D {
 		}
 	}
 	/**
-	 * 次の振幅を計算します。
+	 * calcurate next predictor
 	 */
 	private int nextPredictor(int index, int nibble, int predictor, int step) throws Exception {
 		boolean sign = (nibble & 0x08) == 0x08;
@@ -111,14 +109,14 @@ public class AdpcmPlayTest3D {
 		int samplingRate = 44100; // 44.1 kHz
 		int bit = 16; // 16bit
 		AudioFormat format = new AudioFormat((float)samplingRate, bit, 1, true, false);
-		// モノラルだけ考慮してある
+		// only for monoral here...
 		DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
 		audioLine = (SourceDataLine)AudioSystem.getLine(info);
 		audioLine.open(format);
 		audioLine.start();
 		
 		logger.info("start test");
-		// あとはこの部分からデータを取り出して、adpcmのデコードして、再生にまわす。
+		// now, try to get data. decode adpcm, play.
 		IFileReadChannel source = FileReadChannel.openFileReadChannel(
 				"http://49.212.39.17/gc-25-1-3.h264_adpcmimawav5k.mkv"
 		);
@@ -133,12 +131,10 @@ public class AdpcmPlayTest3D {
 				IFrame frame = blockTag.getFrame();
 				if(frame instanceof AdpcmImaWavFrame) {
 					AdpcmImaWavFrame aFrame = (AdpcmImaWavFrame)frame;
-					// この部分でadpcmをデコードして、wavにしてbyteBufferにいれていく。
-					// byteArrayの形にして、audioLineに渡してしまう。
-					// データの読み込み側は、bitLoaderにしてやっておくと、順繰りにデータを取得できるので、良い感じにできそうだね。
+					// frame is available.
 					IReadChannel frameData = new ByteReadChannel(aFrame.getData());
 					BitLoader loader = new BitLoader(frameData);
-					loader.setLittleEndianFlg(true); // リトルエンディアンとして処理しておく。(predictorあたりの読み込みだけこまったことになる。)
+					loader.setLittleEndianFlg(true); // treat as little endian.
 					Bit16 predictorData = new Bit16();
 					Bit8 indexData = new Bit8();
 					Bit8 reservedData = new Bit8();
@@ -146,7 +142,7 @@ public class AdpcmPlayTest3D {
 					int predictor = (short)predictorData.get();
 					int index = indexData.get();;
 					int step = imaStepTable[index];
-					// できあがったデータを挿入する部分
+					// put the data on the buffer.
 					ByteBuffer buffer = ByteBuffer.allocate(aFrame.getSampleNum() * 2);
 					buffer.order(ByteOrder.LITTLE_ENDIAN);
 					buffer.putShort((short)predictor);
@@ -162,7 +158,6 @@ public class AdpcmPlayTest3D {
 						buffer.putShort((short)predictor);
 					}
 					buffer.flip();
-					// データを作り直す必要あり。
 					ByteBuffer completeBuffer = ByteBuffer.allocate(buffer.remaining() * 8);
 					completeBuffer.order(ByteOrder.LITTLE_ENDIAN);
 					while(buffer.remaining() > 0) {

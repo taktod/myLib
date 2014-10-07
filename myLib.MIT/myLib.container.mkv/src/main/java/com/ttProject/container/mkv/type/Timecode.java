@@ -11,19 +11,19 @@ import com.ttProject.container.mkv.Type;
 import com.ttProject.unit.extra.EbmlValue;
 
 /**
- * Timecodeタグ
+ * Timecode
  * @author taktod
  */
 public class Timecode extends MkvUnsignedIntTag {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param size
 	 */
 	public Timecode(EbmlValue size) {
 		super(Type.Timecode, size);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Timecode() {
 		this(new EbmlValue());

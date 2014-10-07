@@ -31,14 +31,14 @@ import com.ttProject.frame.aac.AacFrame;
 import com.ttProject.util.HexUtil;
 
 /**
- * それぞれのtagについて、byteStream化したときにどうなるかのテスト
+ * test for to create each tag.
  * @author taktod
  */
 public class EachTagTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(EachTagTest.class);
 	/**
-	 * 無限に続くデータをつくるための動作テストs
+	 * to make infinite segment element.
 	 * @throws Exception
 	 */
 	@Test
@@ -50,7 +50,7 @@ public class EachTagTest {
 		logger.info("size:" + segment.getSize());
 	}
 	/**
-	 * VoidTagの動作テスト
+	 * VoidTag
 	 * @throws Exception
 	 */
 	@Test
@@ -62,7 +62,7 @@ public class EachTagTest {
 		logger.info("size:" + voidTag.getSize());
 	}
 	/**
-	 * MkvBinaryTagの動作テスト
+	 * MkvBinaryTag
 	 * @throws Exception
 	 */
 	@Test
@@ -75,7 +75,7 @@ public class EachTagTest {
 		// 53 AB 84 14 39 A9 66 
 	}
 	/**
-	 * MkvDateTagの動作テスト
+	 * MkvDateTag
 	 * @throws Exception
 	 */
 	@Test
@@ -90,7 +90,7 @@ public class EachTagTest {
 		// 44 61 88 03 AF FA 97 5A 4A B6 00 
 	}
 	/**
-	 * MkvFloatTagの動作テスト
+	 * MkvFloatTag
 	 * @throws Exception
 	 */
 	@Test
@@ -112,7 +112,7 @@ public class EachTagTest {
 		logger.info(HexUtil.toHex(voidTag.getData(), true));
 	}
 	/**
-	 * MkvMasterTagの動作テスト
+	 * MkvMasterTag
 	 * @throws Exception
 	 */
 	@Test
@@ -138,8 +138,8 @@ public class EachTagTest {
 		// 1A 45 DF A3 93 42 82 88 6D 61 74 72 6F 73 6B 61 42 87 81 01 42 85 81 01
 	}
 	/**
-	 * MkvSignedIntTagの動作テスト
-	 * 負の数の動作がおかしい
+	 * MkvSignedIntTag
+	 * negative value will cause trouble.
 	 * @throws Exception
 	 */
 	@Test
@@ -149,10 +149,10 @@ public class EachTagTest {
 		referenceBlock.setValue(5);
 		logger.info(HexUtil.toHex(referenceBlock.getData(), true));
 		logger.info("size:" + referenceBlock.getSize());
-		// FB 81 05(このデータは実データベースではないです。)
+		// FB 81 05(this test value is not come from actual data.)
 	}
 	/**
-	 * MkvStringTagの動作テスト
+	 * MkvStringTag
 	 * @throws Exception
 	 */
 	@Test
@@ -165,7 +165,7 @@ public class EachTagTest {
 		// 42 82 88 6D 61 74 72 6F 73 6B 61
 	}
 	/**
-	 * MkvUnsignedIntTagの動作テスト
+	 * MkvUnsignedIntTag
 	 * @throws Exception
 	 */
 	@Test
@@ -178,7 +178,7 @@ public class EachTagTest {
 		// 42 87 81 01
 	}
 	/**
-	 * MkvUtf8Tagの動作テスト
+	 * MkvUtf8Tag
 	 * @throws Exception
 	 */
 	@Test
@@ -191,7 +191,7 @@ public class EachTagTest {
 		// 4D 80 A3 6C 69 62 65 62 6D 6C 20 76 30 2E 37 2E 37 20 2B 20 6C 69 62 6D 61 74 72 6F 73 6B 61 20 76 30 2E 38 2E 31
 	}
 	/**
-	 * SimpleBlockの動作テスト
+	 * SimpleBlock
 	 * @throws Exception
 	 */
 	@Test
