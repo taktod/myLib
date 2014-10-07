@@ -27,4 +27,5 @@
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
+  <description>mp3 unit loader.</description>
 </project>

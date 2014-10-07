@@ -9,10 +9,13 @@ package com.ttProject.container.mp3;
 import com.ttProject.container.Reader;
 
 /**
- * unitのselector
+ * unit reader.
  * @author taktod
  */
 public class Mp3UnitReader extends Reader {
+	/**
+	 * constructor
+	 */
 	public Mp3UnitReader() {
 		super(new Mp3UnitSelector());
 	}

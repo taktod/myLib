@@ -12,18 +12,14 @@ import com.ttProject.frame.IAudioFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * mp3のファイルユニット
+ * mp3 container
  * @author taktod
- * TODO これちょっとおかしい。
- * 普通はunitを読み込んだあとにそこからframeを取り出すが、mp3の場合はframeありきになっている。
  */
 public class Mp3Unit extends Container {
-	/**
-	 * mp3のframe
-	 */
+	/** frame */
 	private final IAudioFrame frame;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param frame
 	 * @param position
 	 * @param pts
@@ -58,7 +54,7 @@ public class Mp3Unit extends Container {
 		setData(frame.getData());
 	}
 	/**
-	 * 保持フレーム参照
+	 * ref frame.
 	 * @return
 	 * @throws Exception
 	 */

@@ -18,16 +18,17 @@ import com.ttProject.frame.IFrame;
 import com.ttProject.frame.mp3.type.Frame;
 
 /**
- * mp3の書き込み動作
+ * mp3 writer
  * @author taktod
  */
 public class Mp3UnitWriter implements IWriter {
-	/** ロガー */
+	/** logger */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Mp3UnitWriter.class);
 	private final WritableByteChannel outputChannel;
 	private FileOutputStream outputStream = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param fileName
 	 */
 	public Mp3UnitWriter(String fileName) throws Exception {
@@ -46,7 +47,6 @@ public class Mp3UnitWriter implements IWriter {
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
 		if(frame instanceof Frame) {
-			logger.info("write frame:" + frame.toString());
 			outputChannel.write(frame.getData());
 		}
 	}

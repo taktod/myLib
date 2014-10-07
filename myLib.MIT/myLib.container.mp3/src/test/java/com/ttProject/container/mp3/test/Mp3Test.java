@@ -16,11 +16,11 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * mp3データの読み込み動作テスト
+ * mp3unit load test.
  * @author taktod
  */
 public class Mp3Test {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(Mp3Test.class);
 	@Test
 	public void analyzeTest() {
