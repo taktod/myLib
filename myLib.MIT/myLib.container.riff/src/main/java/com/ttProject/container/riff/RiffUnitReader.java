@@ -9,12 +9,12 @@ package com.ttProject.container.riff;
 import com.ttProject.container.Reader;
 
 /**
- * riffのunit読み込み動作
+ * riff unit reader
  * @author taktod
  */
 public class RiffUnitReader extends Reader {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public RiffUnitReader() {
 		super(new RiffUnitSelector());

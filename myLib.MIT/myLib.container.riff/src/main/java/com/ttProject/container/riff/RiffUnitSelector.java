@@ -17,16 +17,16 @@ import com.ttProject.unit.IUnit;
 import com.ttProject.util.BufferUtil;
 
 /**
- * riffのunit解析動作
+ * riff unit selector
  * @author taktod
  */
 public class RiffUnitSelector implements ISelector {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(RiffUnitSelector.class);
 	/** headerUnit */
 	private RiffHeaderUnit headerUnit = null;
-	/** format情報 */
+	/** format information */
 	private Fmt fmt = null;
 	/**
 	 * {@inheritDoc}
@@ -36,7 +36,7 @@ public class RiffUnitSelector implements ISelector {
 		if(channel.position() == channel.size()) {
 			return null;
 		}
-		// はじめの4byteを確認する。(RIFFになっていて)
+		// check first 4byte
 		Type type = Type.getType(BufferUtil.safeRead(channel, 4).getInt());
 		RiffUnit unit = null;
 		switch(type) {
@@ -47,17 +47,17 @@ public class RiffUnitSelector implements ISelector {
 			unit = new RiffHeaderUnit();
 			headerUnit = (RiffHeaderUnit)unit;
 			break;
-		case FMT: // フォーマット情報必須
+		case FMT: // format information(must)
 			unit = new Fmt();
 			fmt = (Fmt)unit;
 			break;
-		case FACT: // サンプル数等、なくてもいい
+		case FACT: // sampleNum and so on...
 			unit = new Fact();
 			break;
-		case DATA: // データ本体
-			unit = new Data(); // データはでかいので、このままおいとく。
+		case DATA: // data body.(must)
+			unit = new Data();
 			break;
-		case LIST: // なくてもいい
+		case LIST: // ?
 			break;
 		default:
 			throw new RuntimeException("unexpected frame type.:" + type);

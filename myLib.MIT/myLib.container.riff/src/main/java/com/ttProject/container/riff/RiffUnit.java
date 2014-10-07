@@ -13,13 +13,13 @@ import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit32;
 
 /**
- * riffの最小データunit
+ * riff unit
  * @author taktod
  */
 public abstract class RiffUnit extends Container {
-	/** headerUnit参照 */
+	/** headerUnit object */
 	private RiffHeaderUnit headerUnit = null;
-	/** フォーマット情報参照 */
+	/** format information */
 	private Fmt fmt = null;
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {

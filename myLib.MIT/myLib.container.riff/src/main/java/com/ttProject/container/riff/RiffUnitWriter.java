@@ -12,7 +12,7 @@ import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IFrame;
 
 /**
- * riff形式によるunitの書き込み動作
+ * riff unit writer.
  * @author taktod
  */
 public class RiffUnitWriter implements IWriter {

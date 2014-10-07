@@ -14,14 +14,17 @@ import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit32;
 
 /**
- * fact情報
+ * fact info
  * @author taktod
  */
 public class Fact extends RiffUnit {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Fact.class);
 	private Bit32 totalSampleNum = new Bit32();
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
@@ -29,9 +32,15 @@ public class Fact extends RiffUnit {
 		loader.setLittleEndianFlg(true);
 		loader.load(totalSampleNum);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 	}

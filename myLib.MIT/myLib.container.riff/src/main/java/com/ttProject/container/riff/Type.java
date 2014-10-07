@@ -7,7 +7,7 @@
 package com.ttProject.container.riff;
 
 /**
- * riffのunitタイプ
+ * riff unit type
  * @author taktod
  */
 public enum Type {

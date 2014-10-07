@@ -27,24 +27,26 @@ import com.ttProject.util.BufferUtil;
 
 /**
  * fmt
- * フォーマット情報
  * @author taktod
  */
 public class Fmt extends RiffUnit {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Fmt.class);
 	private Bit16 pcmType       = new Bit16();
 	private Bit16 channels      = new Bit16();
 	private Bit32 sampleRate    = new Bit32();
-	private Bit32 dataSpeed     = new Bit32(); // データの転送速度らしい byte / sec
+	private Bit32 dataSpeed     = new Bit32(); // byteRate byte / sec
 	private Bit16 blockSize     = new Bit16();
 	private Bit16 bitNum        = new Bit16();
 	private Bit16 extraInfoSize = new Bit16();
 	@SuppressWarnings("unused")
 	private ByteBuffer extraInfo = null;
-	/** フレーム解析用のanalyzer */
+	/** frame Analyzer */
 	private IAnalyzer frameAnalyzer = null;
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
@@ -52,29 +54,35 @@ public class Fmt extends RiffUnit {
 		loader.setLittleEndianFlg(true);
 		loader.load(pcmType, channels, sampleRate, dataSpeed, blockSize, bitNum, extraInfoSize);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		extraInfo = BufferUtil.safeRead(channel, extraInfoSize.get());
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 	}
 	/**
-	 * コーデックタイプを参照する
+	 * ref RiffCodecType
 	 * @return
 	 */
 	public RiffCodecType getRiffCodecType() {
 		return RiffCodecType.getCodec(pcmType.get());
 	}
 	/**
-	 * コーデックタイプを参照する
+	 * ref codecType
 	 * @return
 	 */
 	public CodecType getCodecType() {
 		return RiffCodecType.getCodec(pcmType.get()).getCodecType();
 	}
 	/**
-	 * フレームの解析プログラムを参照します。
+	 * ref analyzer
 	 * @return
 	 */
 	public IAnalyzer getFrameAnalyzer() {
@@ -96,7 +104,7 @@ public class Fmt extends RiffUnit {
 		}
 		if(frameAnalyzer instanceof AudioAnalyzer) {
 			AudioSelector selector = ((AudioAnalyzer)frameAnalyzer).getSelector();
-			selector.setBit(bitNum.get()); // 4bitになる(adpcmの１サンプルあたりの設定が4bitなため モノラルでも同じ)
+			selector.setBit(bitNum.get());
 			selector.setChannel(channels.get());
 			selector.setSampleRate(sampleRate.get());
 		}

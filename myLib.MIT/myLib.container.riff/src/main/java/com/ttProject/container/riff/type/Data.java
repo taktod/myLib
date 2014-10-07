@@ -18,33 +18,38 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
- * ステレオの場合はLRLRの順番らしい。
- * モノラルなら----そのまま並んでる
+ * data
+ * ex: stereo L R L R L R...
  * @author taktod
  */
 public class Data extends RiffUnit {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Data.class);
-	// 経過時間はこっちで調整する必要あり。
-	/** 音声用の経過時刻保持 */
+	/** passedTic passedSampleNum */
 	private long passedTic = 0;
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 	}
 	public void analyzeFrame(IReadChannel channel, IFrameEventListener listener) throws Exception {
 		Fmt fmt = getFmt();
 		while(channel.position() < channel.size()) {
-			// ここのfmt.getBlockSizeの値がpcm_alawとpcm_mulawの場合に１になって、いやな感じのデータになってしまう。
+			// for pcm_alaw or pcm_mulaw, data size 1, one byte = 1 sample.
 			int blockSize = 0;
 			switch(fmt.getRiffCodecType()) {
 			case A_LAW:
 			case U_LAW:
-				blockSize = 0x0100;
+				blockSize = 0x0100; // force 256 for 1 chunk.
 				if(channel.size() - channel.position() < 0x0100) {
 					blockSize = channel.size() - channel.position();
 				}
@@ -66,6 +71,9 @@ public class Data extends RiffUnit {
 			}
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 	}
