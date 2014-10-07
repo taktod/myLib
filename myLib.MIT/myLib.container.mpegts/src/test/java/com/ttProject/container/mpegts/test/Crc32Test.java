@@ -15,11 +15,11 @@ import com.ttProject.container.mpegts.Crc32;
 import com.ttProject.util.HexUtil;
 
 /**
- * crc32について確認するテスト
+ * crc32 check test for mpegts
  * @author taktod
  */
 public class Crc32Test {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(Crc32Test.class);
 	@Test
 	public void test() throws Exception {

@@ -14,19 +14,18 @@ import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * pmtのelementaryFieldを作成します。(fieldPidをうまく処置してくれる便利なやつ。)
+ * factory of elementaryField.(control field Pid.)
  * @author taktod
- *
  */
 public class PmtElementaryFieldFactory {
-	/** あたらしいtrackのpid候補 */
+	/** next track pid */
 	private short nextTrackPid = 0x0100;
-	/** あたらしい音声データのstreamId候補 */
+	/** next audio streamId */
 	private short nextAudioStreamId = 0xC0;
-	/** あたらしい映像データのstreamId候補 */
+	/** next video streamId */
 	private short nextVideoStreamId = 0xE0;
 	/**
-	 * あたらしいfieldを作成する
+	 * make new field.
 	 * @param codec
 	 * @return
 	 * @throws Exception

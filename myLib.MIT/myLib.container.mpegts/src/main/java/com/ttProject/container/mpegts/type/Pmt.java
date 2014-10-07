@@ -76,7 +76,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Pmt extends ProgramPacket {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Pmt.class);
 	private Bit3  reserved1         = null;
@@ -86,7 +86,7 @@ public class Pmt extends ProgramPacket {
 	private List<PmtElementaryField> fields = new ArrayList<PmtElementaryField>();
 	private Bit32 crc32 = new Bit32();
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param syncByte
 	 * @param transportErrorIndicator
 	 * @param payloadUnitStartIndicator
@@ -107,7 +107,7 @@ public class Pmt extends ProgramPacket {
 		super.update();
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param pmtPid
 	 */
 	public Pmt(int pmtPid) {
@@ -164,7 +164,7 @@ public class Pmt extends ProgramPacket {
 		for(PmtElementaryField elementaryField : fields) {
 			connector.feed(elementaryField.getBits());
 		}
-		// headerと結合する
+		// connect with header
 		ByteBuffer tmpBuffer = BufferUtil.connect(
 				getHeaderBuffer(),
 				connector.connect()
@@ -174,7 +174,7 @@ public class Pmt extends ProgramPacket {
 		ByteBuffer buffer = ByteBuffer.allocate(188);
 		buffer.put(tmpBuffer);
 		buffer.putInt(crc32);
-		// 埋め
+		// fill to make 188 byte.
 		while(buffer.position() < 188) {
 			buffer.put((byte)0xFF);
 		}

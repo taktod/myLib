@@ -15,16 +15,15 @@ import com.ttProject.unit.extra.bit.Bit8;
 public class ISO639LanguageDescriptor extends Descriptor {
 	private Bit24 ISO639LanguageCode;
 	private Bit8 audioType;
-	// legendってあるけど・・・
 	/**
-	 * コンストラクタ(解析用)
+	 * constructor
 	 * @param descriptorLength
 	 */
 	public ISO639LanguageDescriptor(Bit8 descriptorLength, IDescriptorHolder holder) {
 		super(new Bit8(DescriptorType.ISO_639_language_descriptor.intValue()), descriptorLength, holder);
 	}
 	/**
-	 * コンストラクタ(書き込み用)
+	 * constructor
 	 */
 	public ISO639LanguageDescriptor(IDescriptorHolder holder) {
 		super(new Bit8(DescriptorType.ISO_639_language_descriptor.intValue()), holder);
@@ -36,7 +35,7 @@ public class ISO639LanguageDescriptor extends Descriptor {
 		return audioType;
 	}
 	/**
-	 * 解析動作
+	 * {@inheritDoc}
 	 * @param channel
 	 * @throws Exception
 	 */

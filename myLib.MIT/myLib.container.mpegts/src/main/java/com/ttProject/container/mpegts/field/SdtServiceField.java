@@ -20,7 +20,7 @@ import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit6;
 
 /**
- * sdtの中にあるデータfield部
+ * data field in sdt.
  * @author taktod
  */
 public class SdtServiceField implements IDescriptorHolder {
@@ -42,14 +42,14 @@ public class SdtServiceField implements IDescriptorHolder {
 		return (short)serviceId.get();
 	}
 	/**
-	 * 保持descriptorを応答する。
+	 * ref the descriptors.
 	 * @return
 	 */
 	public List<Descriptor> getDescriptors() {
 		return new ArrayList<Descriptor>(descriptors);
 	}
 	public void addDescriptor(Descriptor descriptor) {
-		// すでに保持済みのオブジェクトなら多重で保持しない。
+		// no duplicate.
 		if(!descriptors.contains(descriptor)) {
 			descriptors.add(descriptor);
 		}
@@ -73,14 +73,14 @@ public class SdtServiceField implements IDescriptorHolder {
 		}
 	}
 	/**
-	 * 保持データサイズを応答しておく
+	 * ref the size
 	 * @return
 	 */
 	public int getSize() {
 		return descriptorsLoopLength.get() + 5;
 	}
 	/**
-	 * 解析しておきます。
+	 * analyze data.
 	 * @param ch
 	 * @throws Exception
 	 */
@@ -91,9 +91,9 @@ public class SdtServiceField implements IDescriptorHolder {
 				freeCAMode, descriptorsLoopLength);
 		int size = descriptorsLoopLength.get();
 		while(size > 0) {
-			// Descriptorを読み込む必要あり。
+			// need to load descriptor
 			Descriptor descriptor = Descriptor.getDescriptor(ch, this);
-			size -= descriptor.getDescriptorLength().get() + 2; // データ長 + データtype&length定義分
+			size -= descriptor.getDescriptorLength().get() + 2; // dataType, lengthByte, Length
 			descriptors.add(descriptor);
 		}
 	}

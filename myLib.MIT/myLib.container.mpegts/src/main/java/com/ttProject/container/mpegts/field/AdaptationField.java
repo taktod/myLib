@@ -25,20 +25,20 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.unit.extra.bit.Bit9;
 
 /**
- * adaptationFieldの内容保持
+ * adaptationField
  * @author taktod
  */
 public class AdaptationField {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(AdaptationField.class);
-	private Bit8 adaptationFieldLength  = new Bit8(); // lengthのみも成立しうる
+	private Bit8 adaptationFieldLength  = new Bit8(); // it is possible to have only length.
 
 	private Bit1 discontinuityIndicator = null; // 0
-	private Bit1 randomAccessIndicator  = null; // aacの先頭だけ、たってる？ (aacのみでも同様)(h264のキーフレームもたってるっぽい)
+	private Bit1 randomAccessIndicator  = null; // keyFrame flag? aac mp3 pes and keyFrame of h264 will be 1
 	private Bit1 elementaryStreamPriorityIndicator = null; // 0
 	private Bit1 pcrFlag                           = null;
-	private Bit1 opcrFlag                          = null; // originalPcr(コピーするときにつかうらしい。) // 0
+	private Bit1 opcrFlag                          = null; // originalPcr(in the case of copy use??) // 0
 	private Bit1 splicingPointFlag                 = null; // 0
 	private Bit1 transportPrivateDataFlag          = null; // 0
 	private Bit1 adaptationFieldExtensionFlag      = null; // 0
@@ -51,7 +51,7 @@ public class AdaptationField {
 	private Bit6  opcrPadding   = null;
 	private Bit9  opcrExtension = null;
 	/**
-	 * 通常あるheaderFlag用のbyteデータを準備する
+	 * prepare headerFlag for byte data.
 	 */
 	private void initElement() {
 		if(discontinuityIndicator == null) {
@@ -80,7 +80,7 @@ public class AdaptationField {
 		}
 	}
 	/**
-	 * データの長さを更新する
+	 * update length
 	 */
 	private void checkLength() {
 		int length = 0;
@@ -134,7 +134,6 @@ public class AdaptationField {
 	}
 	// pcr opcr spliceCountdown stuffingBytes等々・・・
 	public void load(IReadChannel channel) throws Exception {
-		// とりあえずlengthをみておく。
 		BitLoader bitLoader = new BitLoader(channel);
 		bitLoader.load(adaptationFieldLength);
 		if(adaptationFieldLength.get() == 0x00) {
@@ -147,14 +146,13 @@ public class AdaptationField {
 				elementaryStreamPriorityIndicator, pcrFlag, opcrFlag, splicingPointFlag,
 				transportPrivateDataFlag, adaptationFieldExtensionFlag);
 		size --;
-		// 他のデータがある場合は読み込んでいく必要あり。
+		// load extra data.
 		if(pcrFlag.get() != 0x00) {
-			// pcrがある場合
-			// とりあえず、つづく、33bit + 6Bit + 9Bitからデータがなるみたいです。
-			// 33bitの部分を90000で割るとおよそのデータ長がとれるみたい。
-			// はじめの33bitは90kHzでの表示、最終の9bitは27MHzでの表示となるみたいです。
-			// 中間の6bitはpaddingBit
-			// とりあえずおおよそのデータがわかればよろしい感じなので、データはとっておきますが、33bitの部分からだけでデータを取得しておきます。
+			// pcr
+			// next 33bit 6bit 9bit is the data.
+			// 33bit will be duration(timebase = 90000)
+			// 6bit is padding bit filled with zero.
+			// 9bit is duration(timebase 27M)
 			pcrBase = new Bit33();
 			pcrPadding = new Bit6();
 			pcrExtension = new Bit9();
@@ -163,7 +161,7 @@ public class AdaptationField {
 			size -= 6;
 		}
 		if(opcrFlag.get() != 0x00) {
-			// pcrと同じっぽいので実装しとく。
+			// looks like pcr. just do the same.
 			opcrBase = new Bit33();
 			opcrPadding = new Bit6();
 			opcrExtension = new Bit9();
@@ -181,13 +179,12 @@ public class AdaptationField {
 			throw new Exception("adaptationFieldExtension analyzation is not supported yet.");
 		}
 		if(size != 0) {
-			// 何のフラグもなくてすべてffで埋められているっぽい。
-			// とりあえずスルーする必要があるっぽいが
-			channel.position(channel.position() + size); // あいている部分はスキップしてやる必要あり。
+			// fill with empty data(0xff)
+			channel.position(channel.position() + size); // skip the data.
 		}
 	}
 	/**
-	 * 長さを変更する。
+	 * change length
 	 * @param length
 	 */
 	public void setLength(int length) {
@@ -195,7 +192,7 @@ public class AdaptationField {
 		initElement();
 	}
 	/**
-	 * 長さを参照する。
+	 * ref length
 	 * @return
 	 */
 	public int getLength() {

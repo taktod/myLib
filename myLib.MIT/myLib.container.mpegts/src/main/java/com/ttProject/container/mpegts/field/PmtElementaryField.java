@@ -21,18 +21,18 @@ import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * pmtのelementaryStreamのデータ記述部
+ * pmtELementaryStream information.
  * @author taktod
  */
 public class PmtElementaryField implements IDescriptorHolder {
-	// あたらしくトラックをつくった場合の次のpid(TODO この部分を使い回せないおかげで、ちょっとした例外がでてしまった。staticをはずした方がよさそう。)
 	private Bit8  streamType   = new Bit8();
 	private Bit3  reserved1    = new Bit3();
-	private Bit13 pid          = new Bit13(); // 13bit
+	private Bit13 pid          = new Bit13();
 	private Bit4  reserved2    = new Bit4();
-	private Bit12 esInfoLength = new Bit12(); // 12bit
+	private Bit12 esInfoLength = new Bit12();
 	// ESDescriptor
 	/*
+	 * 
 	 * vlcで作成したmpegtsのデータにこのdescriptorの定義がありましたが、情報がみつからない・・・
 	 * とりあえず・・・
 	 * type:0x05 4 AC-3と書いてあった
@@ -42,9 +42,9 @@ public class PmtElementaryField implements IDescriptorHolder {
 	 * 情報めっけ
 	 */
 	private List<Descriptor> descriptors = new ArrayList<Descriptor>();
-//	private Descriptor esDescriptor; // 形式がわからないので、とりあえず放置
+//	private Descriptor esDescriptor; // format is unknown, temporary leave.
 	
-	// このtrackが名乗ったらいいのでは？と思われる推奨streamId値
+	// suggested streamId.
 	private int suggestStreamId;
 	public int getSuggestStreamId() {
 		return suggestStreamId;
@@ -53,7 +53,7 @@ public class PmtElementaryField implements IDescriptorHolder {
 		this.suggestStreamId = suggestStreamId;
 	}
 	/**
-	 * デフォルトコンストラクタ
+	 * constructor
 	 */
 	public PmtElementaryField() {
 	}
@@ -69,14 +69,14 @@ public class PmtElementaryField implements IDescriptorHolder {
 		return 5 + esInfoLength.get();
 	}
 	/**
-	 * 対象pidを取得
+	 * ref the pid
 	 * @return
 	 */
 	public short getPid() {
 		return (short)pid.get();
 	}
 	/**
-	 * 対象コーデックタイプを取得
+	 * ref the codecType
 	 * @return
 	 * @throws Exception
 	 */
@@ -96,13 +96,13 @@ public class PmtElementaryField implements IDescriptorHolder {
 		return list;
 	}
 	/**
-	 * 保持descriptorを応答する
+	 * ref the descriptor
 	 */
 	public List<Descriptor> getDescriptors() {
 		return new ArrayList<Descriptor>(descriptors);
 	}
 	/**
-	 * 解析しておく。
+	 * {@inheritDoc}
 	 * @param ch
 	 * @throws Exception
 	 */
@@ -112,12 +112,12 @@ public class PmtElementaryField implements IDescriptorHolder {
 		int size = esInfoLength.get();
 		while(size > 0) {
 			Descriptor descriptor = Descriptor.getDescriptor(ch, this);
-			size -= descriptor.getDescriptorLength().get() + 2; // データ長 + データtype&length定義分
+			size -= descriptor.getDescriptorLength().get() + 2; // dataType, dataLengthByte, length
 			descriptors.add(descriptor);
 		}
 	}
 	/**
-	 * サイズを更新すべき場合の処理
+	 * in the case of update size.
 	 */
 	@Override
 	public void updateSize() {

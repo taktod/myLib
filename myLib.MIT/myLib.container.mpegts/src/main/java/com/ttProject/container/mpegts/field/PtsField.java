@@ -19,15 +19,19 @@ import com.ttProject.unit.extra.bit.Bit15;
 import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit4;
 
+/**
+ * ptsField
+ * @author taktod
+ */
 public class PtsField {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(PtsField.class);
 	// 0010 XXX1 XXXX XXXX XXXX XXX1 XXXX XXXX XXXX XXX1
 	// 0011 XXX1 XXXX XXXX XXXX XXX1 XXXX XXXX XXXX XXX1
-	// xの部分をつなぎ合わせたらptsデータとなります。
+	// connect X will be pts.
 	private Bit4 signature = new Bit4(2);
-	private long pts; // 90.0fで割り算したら、ミリ秒データになる。
+	private long pts; // if devided by 90.0f, mili sec data.
 	public void load(IReadChannel ch) throws Exception {
 		signature = new Bit4();
 		Bit3 pts1 = new Bit3();

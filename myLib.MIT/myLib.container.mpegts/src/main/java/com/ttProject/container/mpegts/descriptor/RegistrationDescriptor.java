@@ -12,18 +12,17 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 public class RegistrationDescriptor extends Descriptor {
-	private String formatIdentifier; // 4バイト
-	private String additionalIdentificationInfo = ""; // 任意サイズ(0でもいい)
-	// legendってあるけど・・・
+	private String formatIdentifier; // 4byte
+	private String additionalIdentificationInfo = "";
 	/**
-	 * コンストラクタ(解析系で利用する予定)
+	 * constructor
 	 * @param descriptorLength
 	 */
 	public RegistrationDescriptor(Bit8 descriptorLength, IDescriptorHolder holder) {
 		super(new Bit8(DescriptorType.registration_descriptor.intValue()), descriptorLength, holder);
 	}
 	/**
-	 * コンストラクタ(書き込み系で利用)
+	 * constructor
 	 */
 	public RegistrationDescriptor(IDescriptorHolder holder) {
 		super(new Bit8(DescriptorType.registration_descriptor.intValue()), holder);
@@ -35,14 +34,12 @@ public class RegistrationDescriptor extends Descriptor {
 		return additionalIdentificationInfo;
 	}
 	/**
-	 * 解析動作
-	 * @param channel
-	 * @throws Exception
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		int length = getDescriptorLength().get();
-		// 4バイト読み込む
+		// 4byte load
 		formatIdentifier = new String(BufferUtil.safeRead(channel, 4).array());
 		length -= 4;
 		if(length != 0) {

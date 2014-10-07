@@ -7,12 +7,12 @@
 package com.ttProject.container.mpegts.field;
 
 /**
- * descriptorを保持しているfieldのinterface
+ * interface of descriptor field object.
  * @author taktod
  */
 public interface IDescriptorHolder {
 	/**
-	 * descriptorのデータが変更されたときに呼び出される動作
+	 * call in the case of data changed.
 	 */
 	public void updateSize();
 }

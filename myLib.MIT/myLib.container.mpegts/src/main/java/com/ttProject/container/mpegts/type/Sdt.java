@@ -31,7 +31,7 @@ import com.ttProject.util.BufferUtil;
 
 /**
  * Sdt(Service Description Table)
- * サンプル
+ * sample.
  * 474011100042F0240001C100000001FF 0001FC8013481101054C696261760953657276696365303168C5DB49
  * 47 40 11 10  mpegtsPacketHeader
  * 00 42 F0 24 00 01 C1 00 00  programPacket
@@ -47,7 +47,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Sdt extends ProgramPacket {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Sdt.class);
 	private Bit16 originalNetworkId  = null;
@@ -55,7 +55,7 @@ public class Sdt extends ProgramPacket {
 	private List<SdtServiceField> serviceFields = new ArrayList<SdtServiceField>();
 	private Bit32 crc32 = new Bit32();
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param syncByte
 	 * @param transportErrorIndicator
 	 * @param payloadUnitStartIndicator
@@ -76,14 +76,14 @@ public class Sdt extends ProgramPacket {
 		super.update();
 	}
 	/**
-	 * デフォルトコンストラクタ
+	 * constructor
 	 */
 	public Sdt() {
 		this(new Bit8(0x47), new Bit1(),
 				new Bit1(1), new Bit1(),
 				new Bit13(0x11), new Bit2(), new Bit1(),
 				new Bit1(1), new Bit4());
-		// デフォルトのminimumLoadをここで発動する必要あり
+		// need to load here.
 		try {
 			super.load(new ByteReadChannel(new byte[]{
 				0x00, 0x42, (byte)0xF0, 0x24, 0x00, 0x01, (byte)0xC1, 0x00, 0x00,
@@ -95,6 +95,9 @@ public class Sdt extends ProgramPacket {
 		}
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
@@ -102,12 +105,14 @@ public class Sdt extends ProgramPacket {
 		loader.load(crc32);
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		if(isLoaded()) {
 			return;
 		}
-		// とりあえず残りのデータ数分skipさせとくか・・・
 		IReadChannel holdChannel = new ByteReadChannel(getBuffer());
 		super.load(holdChannel);
 		BitLoader loader = new BitLoader(holdChannel);
@@ -123,10 +128,11 @@ public class Sdt extends ProgramPacket {
 		}
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		// 修正実行
-		// このbufferの部分取得
 		BitConnector connector = new BitConnector();
 		connector.feed(originalNetworkId, reservedFutureUse2);
 		for(SdtServiceField ssField : serviceFields) {
@@ -136,13 +142,13 @@ public class Sdt extends ProgramPacket {
 				getHeaderBuffer(),
 				connector.connect()
 		);
-		// crc32を加えないとだめ
+		// crc32 is required.
 		int crc32 = calculateCrc(tmpBuffer);
 		this.crc32.set(crc32);
 		ByteBuffer buffer = ByteBuffer.allocate(188);
 		buffer.put(tmpBuffer);
 		buffer.putInt(crc32);
-		// 埋め
+		// fill til 188 bytes
 		while(buffer.position() < 188) {
 			buffer.put((byte)0xFF);
 		}
@@ -150,12 +156,12 @@ public class Sdt extends ProgramPacket {
 		super.setData(buffer);
 	}
 	/**
-	 * 基本providerデータを書き込む
+	 * write default provider.
 	 * @param provider
 	 * @param name
 	 */
 	public void writeDefaultProvider(String provider, String name) {
-		// すでに別のserviceFieldがあるか確認
+		// check other service field.
 		SdtServiceField targetField = null;
 		for(SdtServiceField ssField : serviceFields) {
 			if(ssField.getServiceId() == 1) {
@@ -163,12 +169,12 @@ public class Sdt extends ProgramPacket {
 				break;
 			}
 		}
-		// なければ新設
+		// if none, add
 		if(targetField == null) {
 			targetField = new SdtServiceField();
 			serviceFields.add(targetField);
 		}
-		// すでにdescriptorがあるか確認
+		// check descriptor
 		ServiceDescriptor targetDescriptor = null;
 		for(Descriptor descriptor : targetField.getDescriptors()) {
 			if(descriptor instanceof ServiceDescriptor) {
@@ -176,25 +182,26 @@ public class Sdt extends ProgramPacket {
 				break;
 			}
 		}
+		// if none, add.
 		if(targetDescriptor == null) {
 			targetDescriptor = new ServiceDescriptor(targetField);
 			targetField.addDescriptor(targetDescriptor);
 		}
 		targetDescriptor.setName(provider, name);
-		// sectionlengthが変更になるので、更新しておく。
+		// update length
 		short length = 0;
-		// sectionlength以降とprogramPacketのデータ
+		// sectionlength ... and programPacket
 		length += 5;
-		// sdtのデータ
+		// sdt
 		length += 3;
-		// sdtServiceFieldのデータ
+		// sdtServiceField
 		for(SdtServiceField ssField : serviceFields) {
 			length += ssField.getSize();
 		}
-		// crc32のデータ
+		// crc32
 		length += 4;
 		setSectionLength(length);
-		// 更新したので、修正依頼をしておく
+		// update flag.
 		super.update();
 	}
 	/**

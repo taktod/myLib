@@ -20,14 +20,14 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * mpegtsの動作テスト
+ * mpegts work test.
  * @author taktod
  */
 public class MpegtsTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(MpegtsTest.class);
 	/**
-	 * 通常のフレームの動作テスト
+	 * normal test
 	 * @throws Exception
 	 */
 	@Test
@@ -40,8 +40,7 @@ public class MpegtsTest {
 		);
 	}
 	/**
-	 * iphone5Sで録画したnalの非常におおきなデータ
-	 * 動作はするけど、遅すぎます
+	 * recorded by iphone5S, this data have multi nal units.(two slice nal consist one slice data.)
 	 * @throws Exception
 	 */
 	@Test
@@ -60,7 +59,6 @@ public class MpegtsTest {
 			while((container = reader.read(source)) != null) {
 				if(container instanceof Pes) {
 					Pes pes = (Pes) container;
-					// 再終端まできていないとデータがきません。
 					IFrame frame = pes.getFrame();
 					if(frame != null && frame instanceof IVideoFrame) {
 						logger.info("pesFrame");

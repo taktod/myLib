@@ -37,4 +37,5 @@
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
+  <description>container for mpegts.</description>
 </project>

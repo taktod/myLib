@@ -16,18 +16,18 @@ import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * 各descriptorのベースになる部分
+ * basic for descriptor
  * @author taktod
  */
 public abstract class Descriptor {
-	/** 設定タグ(descriptorによってまちまち) */
-	private final Bit8 descriptorTag; // これは固定
-	/** 保持データ量 */
-	private Bit8 descriptorLength = new Bit8(); // これは可変っていうか、設定データによって変わる。
-	/** descriptorを保持しているオブジェクト */
+	/** tag id */
+	private final Bit8 descriptorTag;
+	/** data size */
+	private Bit8 descriptorLength = new Bit8();
+	/** object for descriptor */
 	private IDescriptorHolder holder = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param tag
 	 * @param length
 	 */
@@ -36,7 +36,7 @@ public abstract class Descriptor {
 		descriptorLength = length;
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param tag
 	 * @param holder
 	 */
@@ -45,35 +45,35 @@ public abstract class Descriptor {
 		this.holder = holder;
 	}
 	/**
-	 * タグ参照
+	 * ref tag id
 	 * @return
 	 */
 	public Bit8 getDescriptorTag() {
 		return descriptorTag;
 	}
 	/**
-	 * 設定長さ参照
+	 * ref size
 	 * @return
 	 */
 	public Bit8 getDescriptorLength() {
 		return descriptorLength;
 	}
 	/**
-	 * 設定長さ設定
+	 * set size
 	 * @param length
 	 */
 	public void setDescriptorLength(Bit8 length) {
 		descriptorLength = length;
 	}
 	/**
-	 * 実データサイズ参照
+	 * ref the data size.
 	 * @return
 	 */
 	public int getSize() {
-		return descriptorLength.get() + 2; // タグの設定長さ + tag&lengthBit
+		return descriptorLength.get() + 2; // tag + tag length byte + length
 	}
 	/**
-	 * サイズの更新を実施します
+	 * update size
 	 */
 	public void updateSize() {
 		if(holder != null) {
@@ -87,13 +87,12 @@ public abstract class Descriptor {
 		return list;
 	}
 	/**
-	 * descriptorを取り出す動作
+	 * get the information of descriptor
 	 * @param channel
 	 * @return
 	 * @throws Exception
 	 */
 	public static Descriptor getDescriptor(IReadChannel channel, IDescriptorHolder holder) throws Exception {
-		// 先頭のデータを読み込んでTagがなんであるかみておく。
 		Bit8 descriptorTag = new Bit8();
 		Bit8 descriptorLength = new Bit8();
 		BitLoader bitLoader = new BitLoader(channel);
@@ -111,7 +110,7 @@ public abstract class Descriptor {
 			ServiceDescriptor serviceDescriptor = new ServiceDescriptor(descriptorLength, holder);
 			serviceDescriptor.load(channel);
 			return serviceDescriptor;
-		default: // 知らないデータは放置しておく
+		default: // unknown descriptor
 			throw new Exception("unknown descriptor type is found. I need sample.");
 		}
 	}

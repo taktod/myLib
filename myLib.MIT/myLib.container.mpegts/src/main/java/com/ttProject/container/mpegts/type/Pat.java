@@ -31,7 +31,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Pat extends ProgramPacket {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Pat.class);
 	private Bit16 programNum = null;
@@ -39,7 +39,7 @@ public class Pat extends ProgramPacket {
 	private Bit13 pmtPid     = null;
 	private Bit32 crc32      = new Bit32();
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param syncByte
 	 * @param transportErrorIndicator
 	 * @param payloadUnitStartIndicator
@@ -60,7 +60,7 @@ public class Pat extends ProgramPacket {
 		super.update();
 	}
 	/**
-	 * デフォルトコンストラクタ
+	 * constructor
 	 */
 	public Pat() {
 		this(new Bit8(0x47), new Bit1(), new Bit1(1), new Bit1(),

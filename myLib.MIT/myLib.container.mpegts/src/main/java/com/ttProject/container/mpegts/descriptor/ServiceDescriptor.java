@@ -17,9 +17,8 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * SDT等に乗っているserviceDescriptorの定義
+ * service desriptor definition(on sdt).
  * @author taktod
- *
  */
 public class ServiceDescriptor extends Descriptor {
 	private Bit8 serviceType; // 00000001
@@ -28,7 +27,7 @@ public class ServiceDescriptor extends Descriptor {
 	private Bit8 serviceNameLength;
 	private String serviceName;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param descriptorLength
 	 */
 	public ServiceDescriptor(Bit8 descriptorLength, IDescriptorHolder holder) {
@@ -37,14 +36,14 @@ public class ServiceDescriptor extends Descriptor {
 		serviceType = new Bit8(1);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public ServiceDescriptor(IDescriptorHolder holder) {
 		super(new Bit8(DescriptorType.service_descriptor.intValue()), holder);
 		serviceType = new Bit8(1);
 	}
 	/**
-	 * 名称を追加
+	 * set the name
 	 * @param providerName
 	 * @param name
 	 */
@@ -67,7 +66,6 @@ public class ServiceDescriptor extends Descriptor {
 		List<Bit> list = super.getBits();
 		list.add(serviceType);
 		list.add(serviceProviderNameLength);
-		// stringの値をbitに変換して投入する必要あり。
 		ByteBuffer buffer;
 		buffer = ByteBuffer.wrap(serviceProviderName.getBytes());
 		while(buffer.remaining() > 0) {
@@ -81,9 +79,7 @@ public class ServiceDescriptor extends Descriptor {
 		return list;
 	}
 	/**
-	 * 解析動作
-	 * @param channel
-	 * @throws Exception
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {

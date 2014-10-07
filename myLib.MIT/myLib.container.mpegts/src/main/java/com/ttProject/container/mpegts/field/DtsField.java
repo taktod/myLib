@@ -17,6 +17,10 @@ import com.ttProject.unit.extra.bit.Bit15;
 import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit4;
 
+/**
+ * dts field
+ * @author taktod
+ */
 public class DtsField {
 	// 0010 XXX1 XXXX XXXX XXXX XXX1 XXXX XXXX XXXX XXX1
 	private Bit4 signature = new Bit4(2);

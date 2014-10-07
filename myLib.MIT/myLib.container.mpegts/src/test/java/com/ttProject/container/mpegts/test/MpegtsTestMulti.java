@@ -24,18 +24,18 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * mpegtsの動作テスト
+ * mpegts (multi track test)
  * @author taktod
  */
 public class MpegtsTestMulti {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(MpegtsTestMulti.class);
 	@Test
 	public void test() throws Exception {
 		logger.info("test start");
 		analyzerTest(
 			FileReadChannel.openFileReadChannel(
-					"http://49.212.39.17/mario_3video_1audio.ts" // ソースとして、3つのvideoトラック 1つのaudioトラックをもつmpegtsのデータをあてておく
+					"http://49.212.39.17/mario_3video_1audio.ts"
 			)
 		);
 	}
