@@ -27,15 +27,15 @@ import com.ttProject.util.BufferUtil;
  * programPacket
  * @author taktod
  * 
- * TODO programPacketの場合は、crc32を確認して同じだったら読み込みを実施しないという動作が必要となるとおもいます。
- * 読み込みをスキップすると動作が軽くなる。
+ * TODO for program packet, if the crc32 is same, no need to write.
+ * this will help to reduce the media size.
  */
 public abstract class ProgramPacket extends MpegtsPacket {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(ProgramPacket.class);
 	private Bit8  pointerField           = null; // 0000 0000
-	private Bit8  tableId                = null; // packet固定値
+	private Bit8  tableId                = null; // packet fixed value
 	private Bit1  sectionSyntaxIndicator = null; // 1
 	private Bit1  reservedFutureUse1     = null; // 0
 	private Bit2  reserved1              = null; // 11
@@ -47,11 +47,11 @@ public abstract class ProgramPacket extends MpegtsPacket {
 	private Bit8  sectionNumber          = null; // 00000000
 	private Bit8  lastSectionNumber      = null; // 00000000
 	
-	/** minimumLoadで保持しておくデータ */
+	/** original data */
 	private ByteBuffer buffer = null;
 	private boolean isLoaded = false;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param syncByte
 	 * @param transportErrorIndicator
 	 * @param payloadUnitStartIndicator
@@ -76,14 +76,15 @@ public abstract class ProgramPacket extends MpegtsPacket {
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
-		// ここでは、今後読み込むであろうデータを担保しておきます
-		// adaptationFieldから取得すべきデータ量を計算して、bufferにいれておきたいとおもいます。
-		int bufferLength = 180; // 終端の4byteはcrc32値なので、はずしておきます。
+		int bufferLength = 180; // last 4byte(crc32) is not consider here.(lastly, we add crc32.)
 		if(isAdaptationFieldExist()) {
 			bufferLength -= (1 + getAdaptationField().getLength());
 		}
 		buffer = BufferUtil.safeRead(channel, bufferLength);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		BitLoader loader = new BitLoader(channel);
@@ -112,30 +113,30 @@ public abstract class ProgramPacket extends MpegtsPacket {
 		isLoaded = true;
 	}
 	/**
-	 * sectionLengthの変更
+	 * set sectionLength
 	 * @param length
 	 */
 	protected void setSectionLength(int length) {
-		// sectionLengthは後天的に変わることがあるので、設定できるようにしなければならない
+		// sectionLength will be changed later, need to set.
 		sectionLength.set(length);
 		super.setSize(8 + sectionLength.get());
 	}
 	/**
-	 * sectionLengthの参照
+	 * ref sectionLength
 	 * @return
 	 */
 	protected int getSectionLength() {
 		return sectionLength.get();
 	}
 	/**
-	 * 動作buffer参照
+	 * ref buffer
 	 * @return
 	 */
 	protected ByteBuffer getBuffer() {
 		return buffer;
 	}
 	/**
-	 * 読み込み済みか判定
+	 * loaded?
 	 * @return
 	 */
 	public boolean isLoaded() {
@@ -157,22 +158,21 @@ public abstract class ProgramPacket extends MpegtsPacket {
 		);
 	}
 	/**
-	 * crcの値を参照します
+	 * ref the crc.
 	 * @return
 	 */
 	public abstract int getCrc();
 	/**
-	 * crcの値を算出します
+	 * calculate crc
 	 * @param buffer
 	 * @return
 	 */
 	protected int calculateCrc(ByteBuffer buffer) {
-		// TODO この計算の仕方は正確にはただしくない。
-		// 先頭にadaptationFieldがあって位置がずれている場合にきちんと動作しません。
-		// 本当はpointerFieldを抜いたデータから計算すべき
+		// TODO this calcuration will be work but not correct.
+		// in the case of adaptation Field is exist on the top, won't work.
 		Crc32 crc32 = new Crc32();
 		ByteBuffer tmpBuffer = buffer.duplicate();
-		tmpBuffer.position(5);
+		tmpBuffer.position(5); // consider no adaptation field.
 		while(tmpBuffer.remaining() > 0) {
 			crc32.update(tmpBuffer.get());
 		}

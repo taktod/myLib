@@ -22,11 +22,11 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * mpegtsのpacket
+ * mpegtsPacket unit.
  * @author taktod
  */
 public abstract class MpegtsPacket extends Container {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MpegtsPacket.class);
 	private final Bit8 syncByte;

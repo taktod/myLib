@@ -22,33 +22,33 @@ import com.ttProject.frame.h264.H264Frame;
 import com.ttProject.frame.h264.SliceFrame;
 
 /**
- * frameデータからPesを作成するコンバーター
- * 音声のpesは設定したdurationごとにする。
- * 映像のpesはkeyFrameごとにする。
+ * make pes from frame.
+ * audioPes will be devided by set duration.
+ * videoPes will be devided by keyFrame.
  * @author taktod
  */
 public class FrameToPesConverter {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(FrameToPesConverter.class);
-	/** いままでの中途処理データ保持 */
+	/** processed Pes holder map */
 	private final Map<Integer, Pes> pesMap = new ConcurrentHashMap<Integer, Pes>();
-	/** audioデータのpesごとの長さ設定 */
+	/** duration for audioPes. */
 	private final float audioPesDuration;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public FrameToPesConverter() {
 		this(0.3f);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param audioDuration
 	 */
 	public FrameToPesConverter(float audioDuration) {
 		audioPesDuration = audioDuration;
 	}
 	/**
-	 * frameからpesを作成して応答します
+	 * make pes from frame.
 	 * @param pid
 	 * @param frame
 	 * @return
@@ -65,7 +65,7 @@ public class FrameToPesConverter {
 		throw new Exception("found neither video nor audio frame." + frame.toString());
 	}
 	/**
-	 * pesを新たに作成します
+	 * make new pes.
 	 * @param pid
 	 * @param pmt
 	 * @return
@@ -89,7 +89,7 @@ public class FrameToPesConverter {
 		return pes;
 	}
 	/**
-	 * pesを取得します。
+	 * get pes.
 	 * @param pid
 	 * @param pmt
 	 * @return
@@ -103,7 +103,7 @@ public class FrameToPesConverter {
 		return pes;
 	}
 	/**
-	 * 音声フレームについて処理します
+	 * getAudioPes
 	 * @param frame
 	 * @return
 	 * @throws Exception
@@ -112,16 +112,16 @@ public class FrameToPesConverter {
 		Pes pes = getPes(pid, pmt);
 		pes.addFrame(frame);
 		IAudioFrame audioFrame = (IAudioFrame)pes.getFrame();
-		// 保持しているsample数からデータの長さを割り出します。
+		// get duration from holding audioFrame sampleNum.
 		if(1.0f * audioFrame.getSampleNum() / audioFrame.getSampleRate() > audioPesDuration) {
-			// 新たなpesを作成して登録しておきます。
+			// make new pes and register.
 			makeNewPes(pid, pmt);
 			return pes;
 		}
 		return null;
 	}
 	/**
-	 * 映像フレームについて処理します
+	 * getVideoPes
 	 * @param pid
 	 * @param pmt
 	 * @param frame
@@ -135,7 +135,7 @@ public class FrameToPesConverter {
 		return null;
 	}
 	/**
-	 * h264のフレームについて処理します
+	 * getH264Pes
 	 * @param pid
 	 * @param pmt
 	 * @param frame
@@ -143,15 +143,15 @@ public class FrameToPesConverter {
 	 * @throws Exception
 	 */
 	private Pes getH264Pes(int pid, Pmt pmt, H264Frame frame) throws Exception {
-		// h264FrameはsliceFrame以外必要ない。
+		// for h264, deal with sliceFrame only.
 		if(!(frame instanceof SliceFrame)) {
 			return null;
 		}
 		Pes pes = pesMap.get(pid);
-		// 始めのデータがsliceIdrでない場合は処理しない
+		// first data should be sliceIDR.
 		pes = makeNewPes(pid, pmt);
-		pes.addFrame(frame); // sliceFrameを１ついれればそれで完了するはず。
-		pesMap.remove(pid); // 使い回すことはないので、mapから外しておく。
+		pes.addFrame(frame); // complete with only one slice frame.
+		pesMap.remove(pid); // no more reuse, remove from map.
 		return pes;
 	}
 	public Map<Integer, Pes> getPesMap() {

@@ -28,36 +28,36 @@ import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
 
 /**
- * mpegtsのpacketを書き込む動作
- * とりあえずsdt pat pmtは保持しておく。
- * 上記データはkeyFrameがくるもしくは、音声packetの一定秒数ごとに書き出すことにする(もちろんccコントロールも実行しないとだめ)
+ * mpegts packet writer.
+ * hold the sdt pat pmt.
+ * these three type of packet will be written with keyFrame or (non video data) fixed time interval.
  * 
- * 音声のみと動画ありとで動作を変更する必要がある。
- * 音声のみの場合は１秒ごとにpes化する形にする。
- * 映像のみの場合は各フレームごとにpes化することになる。
- * それぞれが独立して動作してよいと思う(chunkの場合は合わせる必要があるけど・・・)
+ * think about 2 type. audioOnly and audio + video.
+ * audioOnly -> 1sec for each pes.
+ * videoOnly -> each frame is each pes.
+ * need to setup invidually.
  * @author taktod
  */
 public class MpegtsPacketWriter implements IWriter {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(MpegtsPacketWriter.class);
 	private final WritableByteChannel outputChannel;
 	private FileOutputStream outputStream = null;
 	
-	/** 巡回カウンターマップ */
+	/** continuityCounterMap */
 	private Map<Integer, Integer> continuityCounterMap = new HashMap<Integer, Integer>();
-	/** sdtデータ */
+	/** sdt */
 	private Sdt sdt = null;
-	/** patデータ */
+	/** pat */
 	private Pat pat = null;
-	/** pmtデータ */
+	/** pmt */
 	private Pmt pmt = null;
-	/** frameからpesを作成 */
+	/** make pes from frame. */
 	private FrameToPesConverter converter = new FrameToPesConverter();
-	/** 初データの処理を実施したかフラグ */
+	/** flag for written first metadata. */
 	private boolean isWriteFirstMeta = false;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param fileName
 	 * @throws Exception
 	 */
@@ -73,7 +73,6 @@ public class MpegtsPacketWriter implements IWriter {
 	}
 	@Override
 	public void addContainer(IContainer container) throws Exception {
-		// Containerがはじめて役にたつのかw
 		if(container instanceof Sdt) {
 			sdt = (Sdt)container;
 		}
@@ -104,7 +103,7 @@ public class MpegtsPacketWriter implements IWriter {
 			return;
 		}
 		if(!isWriteFirstMeta) {
-			// 初データなので、sdt pat pmtの書き込みが必要です。
+			// first written, write sdt pat pmt.
 			if(sdt == null || pat == null || pmt == null) {
 				throw new Exception("sdt pat pmt is expected for writing.");
 			}
@@ -135,15 +134,13 @@ public class MpegtsPacketWriter implements IWriter {
 	@Override
 	public void prepareTailer() throws Exception {
 		Map<Integer, Pes> remainMap = converter.getPesMap();
-		// のこっているpesデータはすべて書き込む
+		// remained all pes will be written.
 		for(Entry<Integer, Pes> entry : remainMap.entrySet()) {
-			// 書き込みしないといけないpesデータ
 			Pes pes = entry.getValue();
 			try {
 				writeMpegtsPacket(pes);
 			}
 			catch(Exception e) {
-				// ここで例外がでるのがそもそもおかしいけど・・・
 				logger.error(e);
 			}
 		}

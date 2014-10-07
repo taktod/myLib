@@ -31,11 +31,11 @@ import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * mpegtsのpacketを解析します
+ * selector for mpegtsPacket
  * @author taktod
  */
 public class MpegtsPacketSelector implements ISelector {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(MpegtsPacketSelector.class);
 	private final int patPid = 0x0000;
 	private final int sdtPid = 0x0011;
@@ -49,11 +49,11 @@ public class MpegtsPacketSelector implements ISelector {
 	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
-		// headerの4byteを読み込めばどのtypeか解析ができるので、その4byteを読み込むようにする。
 		if(channel.size() == channel.position()) {
-			// データが最後まできているので処理することができない。
+			// no more information.
 			return null;
 		}
+		// read first 4 byte.(mpegts packet header.)
 		Bit8 syncByte = new Bit8();
 		Bit1 transportErrorIndicator = new Bit1();
 		Bit1 payloadUnitStartIndicator = new Bit1();
@@ -75,13 +75,13 @@ public class MpegtsPacketSelector implements ISelector {
 			Sdt tmpSdt = new Sdt(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
 			tmpSdt.minimumLoad(channel);
 			if(sdt == null || sdt.getCrc() != tmpSdt.getCrc()) {
-				// sdtがない場合とcrc32が一致しない場合は、上書きしてそちらをloadにまわす。
+				// is sdt is null or crc is different, update with new sdt.
 				sdt = tmpSdt;
 			}
 			return sdt;
 		}
 		else if(pid.get() == patPid) {
-			// patを保持しておく
+			// hold pat information.
 			Pat tmpPat = new Pat(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter);
 			tmpPat.minimumLoad(channel);
 			if(pat == null || pat.getCrc() != tmpPat.getCrc()) {
@@ -98,9 +98,9 @@ public class MpegtsPacketSelector implements ISelector {
 			else {
 				return pmt;
 			}
-			// elementaryFieldを初期化するために、先にloadを実施してしまいます。
+			// in order to initialize elementaryField, need to load first.
 			pmt.load(channel);
-			// analyzerをつくっておく。
+			// make analyzer.
 			for(PmtElementaryField elementaryField : pmt.getFields()) {
 				logger.info(elementaryField.getCodecType());
 				switch(elementaryField.getCodecType()) {
@@ -122,21 +122,17 @@ public class MpegtsPacketSelector implements ISelector {
 		else if(pmt != null && pmt.isPesPid(pid.get())) {
 			Pes pes = new Pes(syncByte, transportErrorIndicator, payloadUnitStartIndicator, transportPriority, pid, scramblingControl, adaptationFieldExist, payloadFieldExist, continuityCounter, pmt.getPcrPid() == pid.get());
 			if(payloadUnitStartIndicator.get() == 1) {
-				// 前のデータがある場合はそれを応答しなければならない
-				// unitの開始位置なので、pesを記録しておく。
+				// if unit is start again. commit the previous one.
 				pesMap.put(pid.get(), pes);
 				pes.setFrameAnalyzer(analyzerMap.get(pid.get()));
 			}
 			else {
 				pes.setUnitStartPes(pesMap.get(pid.get()));
-				// 中途データの場合は、NullUnitを応答しておく必要がある。
 			}
 			packet = pes;
 		}
 		else {
 			logger.info("other data." + Integer.toHexString(pid.get()));
-			// esPidであるか確認
-			// その他(よくわからないのでスルーする)
 			return null;
 		}
 		packet.minimumLoad(channel);

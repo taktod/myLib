@@ -9,7 +9,7 @@ package com.ttProject.container.mpegts;
 import com.ttProject.frame.CodecType;
 
 /**
- * mpegtsの内部にあるコーデック情報
+ * codecInformation of mpegts
  * @author taktod
  */
 public enum MpegtsCodecType {

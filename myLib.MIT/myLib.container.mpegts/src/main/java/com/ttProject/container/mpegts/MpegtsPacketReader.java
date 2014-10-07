@@ -22,17 +22,17 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IUnit;
 
 /**
- * mpegtsPacketを解析します。
+ * mpegtsPacketReader
  * @author taktod
  */
 public class MpegtsPacketReader extends Reader {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MpegtsPacketReader.class);
-	/** 過去に処理したunitStartのPesデータ保持 */
+	/** hold the unitStart Pes object for reference. */
 	private Map<Integer, Pes> pesMap = new ConcurrentHashMap<Integer, Pes>();
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public MpegtsPacketReader() {
 		super(new MpegtsPacketSelector());
@@ -47,7 +47,7 @@ public class MpegtsPacketReader extends Reader {
 			unit.load(channel);
 		}
 		/*
-		 * 未完了pesの場合はNullContainerを応答します。
+		 * if pes is not completed yet. reply nullContainer.
 		 */
 		if(unit instanceof Pes) {
 			Pes pes = (Pes) unit;

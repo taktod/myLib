@@ -7,14 +7,13 @@
 package com.ttProject.container.mpegts;
 
 /**
- * mpegtsのtableIDの指定データ(tableSignatureともいっていた。)
+ * enum of tableId (can be called tableSignature)
  * @see http://pda.etsi.org/exchangefolder/en_300468v011301p.pdf
  * @author taktod
  */
 public enum TableId {
 	/*
 	 * @see http://pda.etsi.org/exchangefolder/en_300468v011301p.pdf
-	 * テーブルシグネチャのメモ(table_idとなっている)
 	 * 0x00:ProgramAssociationSection
 	 * 0x01:ConditionalAccessSection
 	 * 0x02:ProgramMapSection
