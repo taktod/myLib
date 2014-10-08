@@ -14,7 +14,7 @@ import com.ttProject.frame.aac.type.Frame;
 import com.ttProject.util.HexUtil;
 
 /**
- * 無音frameについての動作テスト
+ * muted frame test.
  * @author taktod
  */
 public class MutedFrameTest {

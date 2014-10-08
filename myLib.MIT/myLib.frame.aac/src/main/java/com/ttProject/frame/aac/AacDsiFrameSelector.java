@@ -14,30 +14,21 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IUnit;
 
 /**
- * dsiベースのaacのframeを選択する動作
+ * selector for dsi based aac.
  * @author taktod
  */
 public class AacDsiFrameSelector extends AudioSelector {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(AacDsiFrameSelector.class);
-	/** 処理のdsi */
+	/** global dsi */
 	private DecoderSpecificInfo dsi = null;
 	/**
-	 * dsiのデータsetter
-	 * @param data
-	 * /
-	public void setDecoderSpecificInfo(ByteBuffer data) throws Exception {
-		DecoderSpecificInfo dsi = new DecoderSpecificInfo();
-		dsi.minimumLoad(new ByteReadChannel(data));
-		this.dsi = dsi;
-	}
-	/**
-	 * decoderSpecificInfoを設定する
+	 * set decoderSpecificInfo
 	 * @param dsi
 	 */
 	protected void setDecoderSpecificInfo(DecoderSpecificInfo dsi) {
-		this.dsi = dsi;;
+		this.dsi = dsi;
 	}
 	/**
 	 * {@inheritDoc}
@@ -45,7 +36,7 @@ public class AacDsiFrameSelector extends AudioSelector {
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		if(dsi == null) {
-			throw new Exception("dsiが未定義なので処理を進めることができません");
+			throw new Exception("dsi is undefined.");
 		}
 		Frame frame = new Frame();
 		setup(frame);

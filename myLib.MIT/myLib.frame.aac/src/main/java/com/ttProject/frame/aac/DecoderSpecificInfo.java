@@ -23,22 +23,22 @@ import com.ttProject.unit.extra.bit.Bit6;
 import com.ttProject.unit.extra.bit.Bit7;
 
 /**
- * aacのdecode specific infoのデータから
+ * aac decoderSpecificInfo
  * @see http://wiki.multimedia.cx/index.php?title=MPEG-4_Audio
- * これ・・・扱い的にはglobalHeaderらしい
+ * NOTE this is kind of global header.
  * @author taktod
  */
 public class DecoderSpecificInfo extends Data {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(DecoderSpecificInfo.class);
-	private Bit5  objectType1          = new Bit5(); // profileの事
-	private Bit6  objectType2          = null; // objectTypeが31の場合
-	private Bit4  frequencyIndex       = new Bit4(); // samplingFrequenceIndexと同じ
-	private Bit24 frequency            = null; // indexが15の場合
+	private Bit5  objectType1          = new Bit5(); // profile
+	private Bit6  objectType2          = null; // in the case of objectType1 = 31
+	private Bit4  frequencyIndex       = new Bit4(); // samplingFrequenceIndex
+	private Bit24 frequency            = null; // index is more than 15.
 	private Bit4  channelConfiguration = new Bit4();
 	private Bit   fillBit              = null;
-	// こいつらいらない気がする。(やっぱり必要っぽい定義はあるみたいだが・・・)
+	// I need more information.
 //	private Bit1 frameLengthFlag = new Bit1(); // 0:each packetcontains 1024 samples 1:960 samples
 //	private Bit1 dependsOnCoreCoder = new Bit1();
 //	private Bit1 extensionFlag = new Bit1();
@@ -47,7 +47,6 @@ public class DecoderSpecificInfo extends Data {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// 特に読み込むものなし。
 		super.update();
 	}
 	/**
@@ -110,7 +109,7 @@ public class DecoderSpecificInfo extends Data {
 				frequency, channelConfiguration, fillBit));
 	}
 	/**
-	 * objectType参照
+	 * ref objectType
 	 * @return
 	 */
 	public int getObjectType() {
@@ -120,7 +119,7 @@ public class DecoderSpecificInfo extends Data {
 		return objectType1.get();
 	}
 	/**
-	 * frequencyIndex参照
+	 * ref frequencyIndex
 	 * @return
 	 */
 	public int getFrequencyIndex() {
@@ -130,7 +129,7 @@ public class DecoderSpecificInfo extends Data {
 		return frequencyIndex.get();
 	}
 	/**
-	 * channel数参照
+	 * ref channel
 	 * @return
 	 */
 	public int getChannelConfiguration() {

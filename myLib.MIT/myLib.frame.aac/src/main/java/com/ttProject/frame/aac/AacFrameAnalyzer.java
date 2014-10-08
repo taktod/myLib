@@ -10,10 +10,13 @@ import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.CodecType;
 
 /**
- * adts形式のaacFrame解析動作
+ * analyzer for adts aacFrame
  * @author taktod
  */
 public class AacFrameAnalyzer extends AudioAnalyzer {
+	/**
+	 * constructor
+	 */
 	public AacFrameAnalyzer() {
 		super(new AacFrameSelector());
 	}

@@ -15,22 +15,24 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
- * 16bit 初期振幅
- * 8bit 初期index
- * 8bit reservedBit(0x00が普通はいっている)
- * 16bit 初期振幅(right)
- * 8bit 初期index(right)
- * 8bit reservedBit(0x00が普通はいっている)
- * その後は4byte left 4byte right 4byte left....という形になっている。
- * モノラルの場合はrightの部分が抜け落ちる
+ * frame
+ * 16bit first predictor
+ * 8bit first index
+ * 8bit reservedBit(0x00)
+ * 16bit first predictor(right)
+ * 8bit first index(right)
+ * 8bit reservedBit(0x00)
+ * 
+ * 4bit left 4bit right 4bit left ....
+ * for monoral only left, right data is missing.
  * 
  * @author taktod
  */
 public class Frame extends AdpcmImaWavFrame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Frame.class);
-	/** 内包バッファ */
+	/** data buffer */
 	private ByteBuffer buffer = null;
 	/**
 	 * {@inheritDoc}
@@ -45,30 +47,35 @@ public class Frame extends AdpcmImaWavFrame {
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.setSize(channel.size());
-		// timebaseは周波数にあわせておく。
+		// timebase will be the same as sampleRate
 		super.setTimebase(getSampleRate());
-		// sampleNumはbyteサイズから取得しておく。
+		// sampleNum will be calcurate by byte size.
 		switch(getChannel()) {
-		case 1: // モノラルの場合
-			// 始めの4byte以外のデータがサンプル数となります。 + 1は始めの振幅分
+		case 1: // monoral.
+			// first 4byte + sample data.
 			super.setSampleNum((channel.size() - 4) * 2 + 1);
 			break;
-		case 2: // ステレオの場合
-			// 始めの8byte以外のデータがサンプル数となります。 + 1は始めの振幅分
+		case 2: // stereo
+			// first 8byte + sample data.
 			super.setSampleNum((channel.size() - 8) + 1);
 			break;
 		default:
-			throw new RuntimeException("ステレオモノラル以外の音声データは不明です。");
+			throw new RuntimeException("only for stereo or monoral.");
 		}
-		super.setBit(16); // 16ビットを強制的にいれておきます。
-		// adpcmのbitは4になってしまうため(ずれ分の指定量が4bitで済んでいるので4bit扱いになる。これはmkvでもwavでも同じ)
+		super.setBit(16); // 16bit force.
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		buffer = BufferUtil.safeRead(channel, channel.size());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		setData(buffer);

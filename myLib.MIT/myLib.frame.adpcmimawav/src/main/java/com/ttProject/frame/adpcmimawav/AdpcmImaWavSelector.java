@@ -12,7 +12,7 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IUnit;
 
 /**
- * 
+ * selector for adpcmImaWavFrame
  * @author taktod
  */
 public class AdpcmImaWavSelector extends AudioSelector {

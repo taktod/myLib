@@ -14,12 +14,11 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IUnit;
 
 /**
- * adts形式のaacFrame選択動作
+ * selector for adts aacFrame.
  * @author taktod
- *
  */
 public class AacFrameSelector extends AudioSelector {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(AacFrameSelector.class);
 	/**
@@ -27,7 +26,6 @@ public class AacFrameSelector extends AudioSelector {
 	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
-		// adtsのヘッダデータを解析します。
 		if(channel.position() == channel.size()) {
 			return null;
 		}

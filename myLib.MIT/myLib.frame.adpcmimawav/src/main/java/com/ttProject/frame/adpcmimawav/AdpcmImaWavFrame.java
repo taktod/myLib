@@ -9,6 +9,10 @@ package com.ttProject.frame.adpcmimawav;
 import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.CodecType;
 
+/**
+ * adpcmImaWavFrame
+ * @author taktod
+ */
 public abstract class AdpcmImaWavFrame extends AudioFrame {
 	/**
 	 * {@inheritDoc}

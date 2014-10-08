@@ -9,6 +9,10 @@ package com.ttProject.frame.adpcmimawav;
 import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.CodecType;
 
+/**
+ * analyzer of adpcmImaWavFrame
+ * @author taktod
+ */
 public class AdpcmImaWavFrameAnalyzer extends AudioAnalyzer  {
 	public AdpcmImaWavFrameAnalyzer() {
 		super(new AdpcmImaWavSelector());

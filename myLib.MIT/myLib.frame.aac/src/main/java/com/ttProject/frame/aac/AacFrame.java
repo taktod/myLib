@@ -16,23 +16,23 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
 
 /**
- * aacFrameの共通動作
+ * base of aacFrame
  * @author taktod
  */
 public abstract class AacFrame extends AudioFrame {
 	/**
-	 * 無音frameのサンプルを応答します。
-	 * @param sampleRate サンプルレート
-	 * @param channels チャンネル数
-	 * @param bitSize aacには関係なし
+	 * get mutedFrame.
+	 * @param sampleRate
+	 * @param channels
+	 * @param bitSize aac doesn't consider this.
 	 * @return
 	 */
 	public static Frame getMutedFrame(int sampleRate, int channels, int bitSize) throws Exception {
 		String bufferString = null;
 		if(channels != 2 && channels != 1) {
-			throw new RuntimeException("チャンネル設定が想定外でした。");
+			throw new RuntimeException("channel setting is unexpected.:" + channels);
 		}
-		// bitrate指定によって内容がかわってくるっぽいですね。
+		// data is according bitrate.
 		switch(sampleRate) {
 		case 44100:
 			if(channels == 2) {
@@ -60,7 +60,7 @@ public abstract class AacFrame extends AudioFrame {
 			}
 			break;
 		default:
-			throw new RuntimeException("想定外の値でした。");
+			throw new RuntimeException("unexpected sampleRate");
 		}
 		IReadChannel channel = new ByteReadChannel(HexUtil.makeBuffer(bufferString));
 		Frame frame = new Frame();
@@ -76,13 +76,13 @@ public abstract class AacFrame extends AudioFrame {
 		return CodecType.AAC;
 	}
 	/**
-	 * decoderSpecificInfoを共通化している場合に取得する共有化外データ参照
-	 * @return bufferデータ
+	 * ref the body data, global data is missing.
+	 * @return buffer
 	 */
 	public abstract ByteBuffer getBuffer();
 	/**
-	 * decoderSpecificInfo情報を参照します。
-	 * @return decoderSpecificInfo情報
+	 * ref the decoderSpecificInfo
+	 * @return decoderSpecificInfo
 	 */
 	public abstract DecoderSpecificInfo getDecoderSpecificInfo();
 }

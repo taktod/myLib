@@ -24,16 +24,15 @@ import com.ttProject.unit.extra.bit.Bit6;
 import com.ttProject.util.BufferUtil;
 
 /**
- * ハフマン符号化について調べてみる。
- * adpcmのnibbleって0〜fまでしかありえないので、なんとかなるんちゃうん？
- * Canonical Huffman Codes
+ * search for canonical huffman codes(chc)
+ * adpcm is just from 0 to f. can I do something?
  * @author taktod
  */
 public class ChcTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(ChcTest.class);
 	/**
-	 * とりあえずどの文字が一番よくでてくるかというデータがほしいね
+	 * firstly, I wanna get the count data for each hex digit.
 	 * @throws Exception
 	 */
 //	@Test

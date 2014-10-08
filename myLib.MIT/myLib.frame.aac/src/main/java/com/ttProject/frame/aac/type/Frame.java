@@ -29,17 +29,16 @@ import com.ttProject.util.BufferUtil;
  * profile, the MPEG-4 Audio Object Type minus 1
  * 
  * @author taktod
- * TODO sampleRateとかいれておかないと処理できなくなる。
  */
 public class Frame extends AacFrame {
-	/** 動作ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Frame.class);
 	private Bit12 syncBit                      = new Bit12(0x0FFF);
 	private Bit1  id                           = new Bit1();
 	private Bit2  layer                        = new Bit2();
 	private Bit1  protectionAbsent             = new Bit1(1);
-	private Bit2  profile                      = new Bit2(); // -1した値がはいっているみたい。
+	private Bit2  profile                      = new Bit2(); // maybe profile num - 1
 	private Bit4  samplingFrequenceIndex       = new Bit4(4);
 	private Bit1  privateBit                   = new Bit1(1);
 	private Bit3  channelConfiguration         = new Bit3(2);
@@ -52,12 +51,12 @@ public class Frame extends AacFrame {
 	private Bit2  noRawDataBlocksInFrame       = new Bit2();
 	
 	private ByteBuffer buffer = null;
-	/** 周波数テーブル */
+	/** table for sampleRate */
 	private static int [] sampleRateTable = {
 		96000, 88200, 64000, 48000, 44100, 32000, 24000, 22050, 16000, 12000, 11025, 8000
 	};
 	/**
-	 * dsiの読み込み
+	 * load dsi
 	 * @param size
 	 * @param dsi
 	 * @param channel
@@ -88,7 +87,7 @@ public class Frame extends AacFrame {
 		updateFlagData();
 	}
 	/**
-	 * flagDataを更新する
+	 * update flag data.
 	 */
 	private void updateFlagData() {
 		super.setSampleNum(1024);
@@ -105,7 +104,7 @@ public class Frame extends AacFrame {
 		buffer = BufferUtil.safeRead(channel, getSize() - 7);
 	}
 	/**
-	 * bufferを設定します(使ってない？)
+	 * set the buffer(un used?)
 	 * @param buffer
 	 */
 	public void setBuffer(ByteBuffer buffer) {
@@ -117,7 +116,7 @@ public class Frame extends AacFrame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("データの実体が設定されていません。");
+			throw new Exception("data is undefined.");
 		}
 		BitConnector connector = new BitConnector();
 		super.setData(BufferUtil.connect(
@@ -136,7 +135,7 @@ public class Frame extends AacFrame {
 		return getData();
 	}
 	/**
-	 * dsiを抜いたbuffer部のみ参照
+	 * {@inheritDoc}
 	 */
 	@Override
 	public ByteBuffer getBuffer() {
@@ -150,13 +149,15 @@ public class Frame extends AacFrame {
 	 */
 	@Override
 	public DecoderSpecificInfo getDecoderSpecificInfo() {
-		// decoderSpecifcInfo情報を取得して応答します。
 		DecoderSpecificInfo dsi = new DecoderSpecificInfo();
 		dsi.setObjectType(profile.get() + 1);
 		dsi.setFrequencyIndex(samplingFrequenceIndex.get(), 0);
 		dsi.setChannelConfiguration(channelConfiguration.get());
 		return dsi;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPrivateData() throws Exception {
 		return getDecoderSpecificInfo().getData();

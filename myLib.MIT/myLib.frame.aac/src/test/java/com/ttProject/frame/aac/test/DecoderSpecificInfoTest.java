@@ -15,7 +15,7 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
 
 /**
- * dsiの読み込みテスト
+ * dsi loading test.
  * @author taktod
  */
 public class DecoderSpecificInfoTest {
