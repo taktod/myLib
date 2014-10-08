@@ -10,12 +10,12 @@ import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.CodecType;
 
 /**
- * pcm_mulawのframeを解析する動作
+ * analyzer of pcm_mulaw frame
  * @author taktod
  */
 public class PcmmulawFrameAnalyzer extends AudioAnalyzer {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public PcmmulawFrameAnalyzer() {
 		super(new PcmmulawFrameSelector());

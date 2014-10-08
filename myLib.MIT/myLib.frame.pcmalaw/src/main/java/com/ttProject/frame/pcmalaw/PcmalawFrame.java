@@ -15,12 +15,13 @@ import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * pcm_alaw flashでいうところのG711Aにあたります。
+ * pcm_alaw frame.
+ * G711A of flash
  * @author taktod
  */
 public abstract class PcmalawFrame extends AudioFrame {
 	/**
-	 * 無音frameを参照する
+	 * make muted frame.
 	 * @param sampleRate
 	 * @param channels
 	 * @param bitSize

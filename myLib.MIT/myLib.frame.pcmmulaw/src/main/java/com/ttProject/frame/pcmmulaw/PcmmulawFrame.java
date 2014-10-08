@@ -15,12 +15,13 @@ import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * pcm_mulaw flashでいうところのG711Aにあたります。
+ * pcm_mulaw frame
+ * G711U of flash
  * @author taktod
  */
 public abstract class PcmmulawFrame extends AudioFrame {
 	/**
-	 * 無音frameを参照する
+	 * ref the muted frame.
 	 * @param sampleRate
 	 * @param channels
 	 * @param bitSize

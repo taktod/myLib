@@ -12,7 +12,7 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IUnit;
 
 /**
- * pcm_alawのframe選択動作
+ * selector of pcm_alaw frame
  * @author taktod
  */
 public class PcmalawFrameSelector extends AudioSelector {

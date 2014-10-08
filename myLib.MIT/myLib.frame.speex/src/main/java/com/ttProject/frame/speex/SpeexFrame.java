@@ -15,14 +15,14 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
 
 /**
- * speexのframe
+ * speex frame
  * @author taktod
  */
 public abstract class SpeexFrame extends AudioFrame {
-	/** headerデータを保持しておくことにする */
+	/** header frame */
 	private HeaderFrame headerFrame = null;
 	/**
-	 * headerFrameを設定する
+	 * set the headerFrame
 	 * @param headerFrame
 	 */
 	public void setHeaderFrame(HeaderFrame headerFrame) {
@@ -33,7 +33,7 @@ public abstract class SpeexFrame extends AudioFrame {
 		super.setSampleRate(headerFrame.getSampleRate());
 	}
 	/**
-	 * headerFrameを参照する
+	 * ref the headerFrame
 	 * @return
 	 */
 	protected HeaderFrame getHeaderFrame() {
@@ -41,27 +41,27 @@ public abstract class SpeexFrame extends AudioFrame {
 	}
 	public abstract boolean isComplete();
 	/**
-	 * 無音frameのサンプルを応答します。
-	 * @param sampleRate サンプルレート
-	 * @param channels チャンネル数
-	 * @param bitSize mp3には関係なし
+	 * get the muted frame.
+	 * @param sampleRate
+	 * @param channels
+	 * @param bitSize
 	 * @return
 	 */
 	public static Frame getMutedFrame(int sampleRate, int channels, int bitSize) throws Exception {
 		String bufferString = null;
 		if(channels != 1) {
-			throw new RuntimeException("チャンネル設定が想定外でした。");
+			throw new RuntimeException("channels is 1 only.");
 		}
 		switch(sampleRate) {
 		case 16000:
 			bufferString = "3E9D1B9A2008017FFFFFFFFFFFDB6DB6DB6DB68400BFFFFFFFFFFFEDB6DB6DB6DB42005FFFFFFFFFFFF6DB6DB6DB6DA1002FFFFFFFFFFFFB6DB6DB6DB6DC3B60ABABABABABABABABABAB0ABABABABABABABABABAB0ABABABABABABABABABAB0ABABABABABABABABABAB7";
 			break;
 		default:
-			throw new RuntimeException("想定外でした。");
+			throw new RuntimeException("sampleRate is unexpeted.:" + sampleRate);
 		}
 		IReadChannel channel = new ByteReadChannel(HexUtil.makeBuffer(bufferString));
 		Frame frame = new Frame();
-		// あとでsetHeaderFrameしておいてほしいところ。
+		// how about header frame?
 		// frame.setHeaderFrame(headerFrame);
 		frame.minimumLoad(channel);
 		frame.load(channel);

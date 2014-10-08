@@ -14,16 +14,16 @@ import com.ttProject.frame.IFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * speexデータ解析
+ * analyzer for speex frame
  * @author taktod
  */
 public class SpeexFrameAnalyzer extends AudioAnalyzer {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(SpeexFrameAnalyzer.class);
 	private SpeexFrame tmpFrame = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public SpeexFrameAnalyzer() {
 		super(new SpeexFrameSelector());

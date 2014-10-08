@@ -27,10 +27,10 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Frame extends PcmalawFrame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Frame.class);
-	/** frameの内部データ */
+	/** frameBuffer */
 	private ByteBuffer frameBuffer = null;
 	/**
 	 * {@inheritDoc}
@@ -39,7 +39,7 @@ public class Frame extends PcmalawFrame {
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.setSize(channel.size());
 		super.setSampleRate(8000);
-		super.setSampleNum(getSize()); // これは固定ではないサイズから求めるべき
+		super.setSampleNum(getSize()); // sampleNum is not fixed. calcurate from size.
 		super.setChannel(1);
 		super.update();
 	}
@@ -48,7 +48,6 @@ public class Frame extends PcmalawFrame {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// そのままデータを保持しておいておわり。
 		frameBuffer = BufferUtil.safeRead(channel, channel.size());
 		super.update();
 	}
@@ -58,7 +57,7 @@ public class Frame extends PcmalawFrame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(frameBuffer == null) {
-			throw new Exception("frameBufferがnullでした。先に解析してください。");
+			throw new Exception("frameBuffer is null.");
 		}
 		super.setData(frameBuffer);
 	}
