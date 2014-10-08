@@ -10,12 +10,12 @@ import com.ttProject.frame.CodecType;
 import com.xuggle.xuggler.ICodec;
 
 /**
- * codecTypeがなにであるか判定する
+ * check the codecType.
  * @author taktod
  */
 public class CodecTypeChecker {
 	/**
-	 * codecTypeを調べる
+	 * get the codecType from ICodec.ID object.
 	 * @return
 	 */
 	public CodecType getCodecType(ICodec.ID id) throws Exception {

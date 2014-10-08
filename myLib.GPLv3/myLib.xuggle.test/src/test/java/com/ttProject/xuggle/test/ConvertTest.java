@@ -21,7 +21,7 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * xuggleによるデータのコンバート動作テスト
+ * frame convert by xuggle
  * @author taktod
  */
 public class ConvertTest {

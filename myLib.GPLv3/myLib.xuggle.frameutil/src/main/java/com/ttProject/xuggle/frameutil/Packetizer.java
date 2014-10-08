@@ -27,18 +27,19 @@ import com.xuggle.xuggler.IStreamCoder;
 import com.xuggle.xuggler.IStreamCoder.Direction;
 
 /**
- * frame -> packet変換
+ * frame -> packet
  * @author taktod
  */
 public class Packetizer {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Packetizer.class);
 	/**
-	 * packetをframeから取り出します(マルチフレームの場合に一気に応答したかったのですが、そうするとIPacketの使いまわしができないので１つのみの応答にします)
+	 * make packet from frame.
+	 * I want to support multiFrame. However, there is a trouble for reuse of IPacket.
 	 * @param frame
 	 * @param packet
-	 * @return データがとれない場合はnull データがとれる場合はIPacketオブジェクト
+	 * @return null: no data. IPacket object: pakcet
 	 */
 	public IPacket getPacket(IFrame frame, IPacket packet) throws Exception {
 		if(packet == null) {
@@ -59,7 +60,7 @@ public class Packetizer {
 		return null;
 	}
 	/**
-	 * 映像パケットを作成する
+	 * make video packet
 	 * @param frame
 	 * @param packet
 	 * @return
@@ -82,7 +83,7 @@ public class Packetizer {
 		return packet;
 	}
 	/**
-	 * 音声パケットを作成する
+	 * make audio packet
 	 * @param frame
 	 * @param packet
 	 * @return
@@ -102,9 +103,9 @@ public class Packetizer {
 		return packet;
 	}
 	/**
-	 * フレームに対応するデコーダーを応答する
+	 * get the decoder for targetFrame.
 	 * @param frame
-	 * @param decoder
+	 * @param decoder decoder on process, if changed, make new one.
 	 * @return
 	 */
 	public IStreamCoder getDecoder(IFrame frame, IStreamCoder decoder) throws Exception {
@@ -152,12 +153,12 @@ public class Packetizer {
 		case VORBIS:
 			if(decoder == null || decoder.getCodecID() != ICodec.ID.CODEC_ID_VORBIS) {
 				if(frame instanceof IdentificationHeaderFrame || frame instanceof CommentHeaderFrame || frame instanceof SetupHeaderFrame) {
-					// 初期化中のデータの場合は処理できない。
+					// before initialize, cannot do anything.
 					return null;
 				}
 				decoder = makeAudioDecoder((IAudioFrame) frame, ICodec.ID.CODEC_ID_VORBIS);
 				VorbisFrame vorbisFrame = (VorbisFrame)frame;
-				// このタイミングでextraDataをいれないとだめっぽい
+				// need to put private data for vorbis for decode.
 				ByteBuffer buffer = vorbisFrame.getPrivateData();
 				int size = buffer.remaining();
 				IBuffer extraData = IBuffer.make(decoder, buffer.array(), 0, size);
@@ -211,7 +212,7 @@ public class Packetizer {
 		return decoder;
 	}
 	/**
-	 * audioのデコーダーを作成する
+	 * make audioDecoder.
 	 * @param frame
 	 * @param id
 	 * @return
@@ -219,7 +220,7 @@ public class Packetizer {
 	private IStreamCoder makeAudioDecoder(IAudioFrame frame, ICodec.ID id) {
 		IStreamCoder decoder = null;
 		if(frame.getSampleRate() == 0 || frame.getTimebase() == 0 || frame.getChannel() == 0) {
-			// audioFrameの定義情報がかけている場合は、処理の参考にならないframeなので、処理を飛ばす(metaデータとか)
+			// if no actual audio data, skip.(like meta data.)
 			return null;
 		}
 		decoder = IStreamCoder.make(Direction.DECODING, id);

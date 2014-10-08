@@ -30,48 +30,49 @@ import com.xuggle.xuggler.ICodec.ID;
 import com.xuggle.xuggler.IStreamCoder.Direction;
 
 /**
- * データのデコード処理を実施してみるテスト
+ * try to decode
  * @author taktod
  */
 public class DecodeTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(DecodeTest.class);
-	/** エンコード情報 */
+	/** encode information */
 	private int channels = 1;
 	private int bitRate = 96000;
 	private int sampleRate = 22050;
 	private ICodec.ID codecId;
 
-	/** エンコーダー */
+	/** encoder */
 	private IStreamCoder encoder = null;
-	/** エンコード用処理パケット */
+	/** shared packet for encode. */
 	private IPacket packet = IPacket.make();
 
-	/** デコーダー */
+	/** decoder */
 	private IStreamCoder decoder = null;
-	/** デコード用処理パケット */
+	/** shared packet for decode. */
 	private IPacket decodedPacket = IPacket.make();
 
-	/** frame -> packet変換 */
+	/** frame -> packet */
 	private Packetizer packetizer = new Packetizer();
-	/** packet -> frame変換 */
+	/** packet -> frame */
 	private Depacketizer depacketizer = new Depacketizer();
-	/** リサンプラー */
+	/** resampler */
 	private IAudioResampler resampler = null;
 	private FlvTagWriter writer = null;
 	/**
-	 * 動作テスト
+	 * work test
 	 */
 //	@Test
 	public void test() {
 		try {
 			IReadChannel source = FileReadChannel.openFileReadChannel(
 					"xuggle_sound.error.flv" // timestampがおかしくてぷつぷついってうまく動作しなかった音声変換動作・・・原因はptsがおかしくなることだった
+//					"xuggle_sound.error.flv" // timestampがおかしくてぷつぷついってうまく動作しなかった音声変換動作・・・原因はptsがおかしくなることだった
 			);
 			FlvTagReader reader = new FlvTagReader();
 			writer = new FlvTagWriter("output4.flv");
 			writer.prepareHeader(CodecType.AAC);
-			codecId = ID.CODEC_ID_MP3; // とりあえずmp3でいってみよう。
+			codecId = ID.CODEC_ID_MP3; // try mp3
 			openEncoder();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
@@ -81,7 +82,6 @@ public class DecodeTest {
 				else if(container instanceof AudioTag) {
 //					logger.info(container);
 					AudioTag aTag = (AudioTag) container;
-					// そのまま入れ直しなら問題なし。
 					IAudioFrame aFrame = aTag.getFrame();
 					if(aFrame instanceof AudioMultiFrame) {
 						AudioMultiFrame multiFrame = (AudioMultiFrame)aFrame;
@@ -97,7 +97,7 @@ public class DecodeTest {
 		}
 	}
 	/**
-	 * 音声データをデコードします。
+	 * decode audioFrame
 	 * @param audioFrame
 	 */
 	private void decodeSound(IAudioFrame aFrame) throws Exception {
@@ -108,7 +108,7 @@ public class DecodeTest {
 			}
 			return;
 		}
-		// このフレームをデコードして、何サンプル取得できたか確認しておきたいところ。
+		// need to check how many samples after decode.
 		decoder = packetizer.getDecoder(aFrame, decoder);
 		if(decoder == null) {
 			logger.warn("decoder is null");
@@ -134,14 +134,14 @@ public class DecodeTest {
 			}
 			offset += bytesDecoded;
 			if(samples.isComplete()) {
-				// ここで必要だったらリサンプル処理が必要
+				// sometime need resample.
 				samples = getResampled(samples);
 				encodeSound(samples);
 			}
 		}
 	}
 	/**
-	 * リサンプルをかけて、周波数を変換しておきます。
+	 * do resample to fit encoder.
 	 * @param samples
 	 * @return
 	 */
@@ -153,8 +153,8 @@ public class DecodeTest {
 			||    (samples.getSampleRate() != resampler.getInputRate()
 				|| samples.getFormat()     != resampler.getInputFormat()
 				|| samples.getChannels()   != resampler.getInputChannels())) {
-				// リサンプラーがない、もしくは、リサンプラーの入力フォーマットと、現状の入力フォーマットが違う場合
-				// リサンプラーを作り直す
+				// in the case of no resampler, or format is not fit, make new resampler.(if we do this many times, miss the sample counter, a little.)
+				// (audio will delay from video a little.)
 				logger.info("open resampler");
 				logger.info(samples.getSampleRate());
 				logger.info(samples.getFormat());
@@ -178,10 +178,9 @@ public class DecodeTest {
 		}
 	}
 	/**
-	 * エンコード処理を実施します。
+	 * try encode
 	 */
 	private void encodeSound(IAudioSamples samples) throws Exception {
-		// ここで必要だったらencoderを開く必要あり
 		int sampleConsumed = 0;
 		while(sampleConsumed < samples.getNumSamples()) {
 			int retval = encoder.encodeAudio(packet, samples, sampleConsumed);
@@ -197,7 +196,7 @@ public class DecodeTest {
 		}
 	}
 	/**
-	 * エンコーダーを開きます。
+	 * open the encoder
 	 * @throws Exception
 	 */
 	private synchronized void openEncoder() throws Exception {
@@ -207,7 +206,6 @@ public class DecodeTest {
 			coder.setSampleRate(sampleRate);
 			coder.setBitRate(bitRate);
 			encoder = coder;
-			// ここでencoderの作成から実施する必要あり
 			ICodec codec = encoder.getCodec();
 			IAudioSamples.Format findFormat = null;
 			for(IAudioSamples.Format format : codec.getSupportedAudioSampleFormats()) {

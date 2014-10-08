@@ -31,25 +31,24 @@ import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStreamCoder;
 
 /**
- * packet -> frame変換
+ * packet -> frame
  * @author taktod
  */
 public class Depacketizer {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Depacketizer.class);
 	private IAnalyzer analyzer = null;
 	private AnalyzerChecker analyzerChecker = new AnalyzerChecker();
 	private CodecTypeChecker codecChecker = new CodecTypeChecker();
 	/**
-	 * packetからframeを取り出す動作
+	 * get the frame from packet.
 	 * @param encoder
 	 * @param packet
 	 * @return
 	 * @throws Exception
 	 */
 	public IFrame getFrame(IStreamCoder encoder, IPacket packet) throws Exception {
-		// analyzerを取得する必要がある。// 別のデータのanalyzerになってしまうことはないと願いたい。
 		CodecType type = codecChecker.getCodecType(encoder.getCodecID());
 		if(type.isAudio()) {
 			return getAudioFrame(encoder, packet, type);
@@ -62,7 +61,7 @@ public class Depacketizer {
 		}
 	}
 	/**
-	 * 映像の処理
+	 * video frame
 	 * @param encoder
 	 * @param packet
 	 * @param type
@@ -104,7 +103,7 @@ public class Depacketizer {
 		}
 	}
 	/**
-	 * 音声の処理
+	 * audio frame
 	 * @param encoder
 	 * @param packet
 	 * @param type
@@ -121,7 +120,7 @@ public class Depacketizer {
 			AudioSelector selector = aAnalyzer.getSelector();
 			selector.setChannel(encoder.getChannels());
 			selector.setSampleRate(encoder.getSampleRate());
-			// vorbisの場合は、privateDataを通しておく必要があると思う
+			// for vorbis need to set the private data.
 			IFrame extraFrame = null;
 			switch(type) {
 			case VORBIS:
@@ -132,7 +131,7 @@ public class Depacketizer {
 			case SPEEX:
 				{
 					IReadChannel privateData = new ByteReadChannel(encoder.getExtraData().getByteBuffer(0, encoder.getExtraDataSize()));
-					// どうやらheaderの部分の量のみっぽいです。commentはないのか？
+					// for speex, privateData has only header. no comment frame?
 					CommentFrame commentFrame = new CommentFrame();
 					while((extraFrame = analyzer.analyze(privateData)) != null) {
 						if(extraFrame instanceof HeaderFrame) {

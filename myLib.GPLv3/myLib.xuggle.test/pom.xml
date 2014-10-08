@@ -36,7 +36,7 @@
     </dependency>
   </dependencies>
   <name>myLib.xuggle.test</name>
-  <description>xuggleの変換の動作テスト用プロジェクト</description>
+  <description>test for xuggle convert.</description>
   <licenses>
     <license>
       <name>GNU GENERAL PUBLIC LICENSE</name>

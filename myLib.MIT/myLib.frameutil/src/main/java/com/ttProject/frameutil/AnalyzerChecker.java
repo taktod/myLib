@@ -27,12 +27,15 @@ import com.ttProject.frame.vp8.Vp8FrameAnalyzer;
 import com.ttProject.frame.vp9.Vp9FrameAnalyzer;
 
 /**
- * frameを復元するときのanalyzerを確認する
+ * get the analyzer with specific codecType
  * @author taktod
  */
 public class AnalyzerChecker {
 	/**
-	 * 解析用のanalyzerがどれであるか、調べる
+	 * get the analyzer with input codecType
+	 * @param codecType
+	 * @return
+	 * @throws Exception
 	 */
 	public IAnalyzer checkAnalyzer(CodecType codecType) throws Exception {
 		switch(codecType) {
