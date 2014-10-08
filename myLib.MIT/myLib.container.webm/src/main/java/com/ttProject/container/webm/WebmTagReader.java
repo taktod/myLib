@@ -9,7 +9,7 @@ package com.ttProject.container.webm;
 import com.ttProject.container.mkv.MkvTagReader;
 
 /**
- * webmのデータリーダー
+ * webm tag reader.
  * @author taktod
  */
 public class WebmTagReader extends MkvTagReader {

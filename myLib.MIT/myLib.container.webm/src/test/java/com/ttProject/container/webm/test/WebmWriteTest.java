@@ -21,14 +21,15 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * webmによるデータの書き出しテスト
+ * data write test for webm.
+ * TODO check is this work?
  * @author taktod
  */
 public class WebmWriteTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(WebmWriteTest.class);
 	/**
-	 * 動作テスト
+	 * test
 	 * @throws Exception
 	 */
 	@Test

@@ -16,14 +16,14 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * vp9のwebmを読み込む動作テスト
+ * vp9 webm load test
  * @author taktod
  */
 public class Vp9WebmTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(Vp9WebmTest.class);
 	/**
-	 * 読み込み動作テスト
+	 * analyze file test.
 	 */
 //	@Test
 	public void analyzerTest() {

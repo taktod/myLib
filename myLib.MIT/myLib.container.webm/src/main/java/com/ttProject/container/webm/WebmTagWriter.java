@@ -13,12 +13,12 @@ import com.ttProject.container.mkv.MkvTagWriter;
 import com.ttProject.container.mkv.type.EBML;
 
 /**
- * webmのtagの書き出し
+ * webmTagWriter
  * @author taktod
  */
 public class WebmTagWriter extends MkvTagWriter {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param fileName
 	 * @throws Exception
 	 */
@@ -26,19 +26,23 @@ public class WebmTagWriter extends MkvTagWriter {
 		super(fileName);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param fileOutputStream
 	 */
 	public WebmTagWriter(FileOutputStream fileOutputStream) {
 		super(fileOutputStream);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param outputChannel
 	 */
 	public WebmTagWriter(WritableByteChannel outputChannel) {
 		super(outputChannel);
 	}
+	/**
+	 * override setupEbml
+	 * to fit webm
+	 */
 	@Override
 	protected void setupEbml() throws Exception {
 		EBML ebml = new EBML();

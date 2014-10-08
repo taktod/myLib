@@ -17,14 +17,14 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * webmの動作テスト
+ * webm load test
  * @author taktod
  */
 public class WebmTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(WebmTest.class);
 	/**
-	 * analyerの動作テスト
+	 * analyze file.
 	 */
 	@Test
 	public void analyzerTest() {
