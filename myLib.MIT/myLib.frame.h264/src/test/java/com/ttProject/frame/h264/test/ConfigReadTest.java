@@ -16,16 +16,16 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
 
 /**
- * configDataの読み込み動作テスト
+ * configData reading test.
  * @author taktod
  */
 public class ConfigReadTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(ConfigReadTest.class);
 //	@Test
 	public void test_old() throws Exception {
 		IReadChannel channel = new ByteReadChannel(HexUtil.makeBuffer("014D401EFFE10019674D401E924201405FF2E02200000300C800002ED51E2C5C9001000468EE32C8"));
-		// channelのデータを読み込んでpspとppsが取得できれば御の字
+		// try to get sps and pps.
 		ConfigData cdata = new ConfigData();
 		IVideoFrame frame = cdata.getNalsFrame(channel);
 		logger.info(frame.getWidth());
@@ -35,7 +35,7 @@ public class ConfigReadTest {
 	public void test() throws Exception {
 //		IReadChannel channel = new ByteReadChannel(HexUtil.makeBuffer("014D401EFFE10019674D401E924201405FF2E02200000300C800002ED51E2C5C9001000468EE32C8"));
 		IReadChannel channel = new ByteReadChannel(HexUtil.makeBuffer("01420016FFE1002E6742801696540501ED80A84000000300400000053800007A10000F425FC638C00003D080007A12FE31C3B4244D4001000468CE3520"));
-		// channelのデータを読み込んでpspとppsが取得できれば御の字
+		// try to get sps and pps.
 		ConfigData cData = new ConfigData();
 		cData.analyzeData(channel);
 		logger.info(cData.getSpsList());

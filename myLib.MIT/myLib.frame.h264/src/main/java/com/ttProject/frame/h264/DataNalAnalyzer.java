@@ -13,18 +13,18 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
- * flvやh264の様なsize + dataのnalを解析する動作
- * 実体の読み込みまで実施します。
+ * analyzer for dataNal
+ * ex:flv mp4
  * @author taktod
  */
 public class DataNalAnalyzer extends H264FrameAnalyzer {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(DataNalAnalyzer.class);
-	/** configDataが決定しないと、nalSizeの取得方法が決定しないみたいです。 */
+	/** configData is required to get nalSizeBytes */
 	private ConfigData configData = null;
 	/**
-	 * configDataをセットしておきます
+	 * set the configData
 	 * @param configData
 	 */
 	public void setConfigData(ConfigData configData) {
@@ -35,15 +35,18 @@ public class DataNalAnalyzer extends H264FrameAnalyzer {
 	 */
 	@Override
 	public IFrame analyze(IReadChannel channel) throws Exception {
+		if(configData == null) {
+			throw new Exception("configData is undefined.");
+		}
 		if(channel.size() < configData.getNalSizeBytes()) {
-			throw new Exception("読み込みバッファ量がおかしいです。");
+			throw new Exception("channel data is too short for size read.");
 		}
 		int size = BufferUtil.safeRead(channel, configData.getNalSizeBytes()).getInt();
 		if(size <= 0) {
-			throw new Exception("データ指定がおかしいです。");
+			throw new Exception("load size is negative.");
 		}
 		if(channel.size() - channel.position() < size) {
-			throw new Exception("データが足りません");
+			throw new Exception("channel data is too short.");
 		}
 		return setupFrame(BufferUtil.safeRead(channel, size));
 	}

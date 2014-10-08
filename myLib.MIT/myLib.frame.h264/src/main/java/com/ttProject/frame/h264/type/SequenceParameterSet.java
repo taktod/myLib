@@ -28,7 +28,7 @@ import com.ttProject.util.BufferUtil;
 
 /**
  * SequenceParameterSet
- * profileとかlevelとか、その他の細かい設定とかがはいっているみたい。
+ * hold profile, level and so on... something detail.
  * 
  * 67 64 00 15 ac c8 60 20 09 6c 04 40 00 00 03 00 40 00 00 07 a3 c5 8b 67 80
  * 
@@ -40,20 +40,18 @@ import com.ttProject.util.BufferUtil;
  * 
  * 67 4D 40 1E  92 42 01 40 5F F2 E0 22 00 00 03 00 C8 00 00 2E D5 1E 2C 5C 90
  * 
- * あってますね。640x380とれました。
+ * ok 640x380 is correct.
  * 
  * 67 4D 40 1E  D9 01 41 FA 10 00 00 03 00 10 00 00 7D 00 F1 62 E4 80
- * 
  * 
  * @see http://stackoverflow.com/questions/6394874/fetching-the-dimensions-of-a-h264video-stream
  * 
  * @author taktod
  */
 public class SequenceParameterSet extends H264Frame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(SequenceParameterSet.class);
-	// 先頭の３バイトからこのデータが取得可能
 	private Bit8 profileIdc         = new Bit8();
 	private Bit1 constraintSet0Flag = new Bit1();
 	private Bit1 constraintSet1Flag = new Bit1();
@@ -143,12 +141,10 @@ public class SequenceParameterSet extends H264Frame {
 	private Ueg     maxNumReorderFrames                = null;
 	private Ueg     maxDecFrameBuffering               = null;
 	
-//	private Bit extraBit = null; // 超過bit
-	
 	private ByteBuffer buffer = null;
 	
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param forbiddenZeroBit
 	 * @param nalRefIdc
 	 * @param type
@@ -163,7 +159,7 @@ public class SequenceParameterSet extends H264Frame {
 	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		// 全データをコピーしておく。
+		// have the copy of buffer.
 		buffer = BufferUtil.safeRead(channel, channel.size() - channel.position());
 		BitLoader loader = new BitLoader(new ByteReadChannel(buffer.duplicate()));
 		loader.setEmulationPreventionFlg(true);
@@ -197,7 +193,7 @@ public class SequenceParameterSet extends H264Frame {
 					qpprimeYZeroTransformBypassFlag,
 					seqScalingMatrixPresentFlag);
 			if(seqScalingMatrixPresentFlag.get() == 1) {
-				throw new Exception("seqScalingMatrixの解析動作は未実装です。");
+				throw new Exception("seqScalingMatrix is unexpected");
 			}
 		}
 		loader.load(log2MaxFrameNumMinus4,
@@ -245,13 +241,10 @@ public class SequenceParameterSet extends H264Frame {
 		}
 		loader.load(vuiParametersPresentFlag);
 		if(vuiParametersPresentFlag.get() == 1) {
-			// parameterを読み込む
-			// この先のデータ読み込みを実施しないと、SupplementalEnhancementInformationで時間データを取得しないといけないかがわからない。
+			// load vuiParameters
 			loadVuiParameters(loader);
 		}
-		// 超過bitを保持しておく
-//		extraBit = loader.getExtraBit();
-		// このタイミングで縦横データが取得可能になります。
+		// now we can know the width x height
 		super.setReadPosition(channel.position());
 		super.setSize(channel.size());
 
@@ -266,7 +259,7 @@ public class SequenceParameterSet extends H264Frame {
 		super.update();
 	}
 	/**
-	 * vuiParameterを読み込む
+	 * load vuiParameter
 	 */
 	private void loadVuiParameters(BitLoader loader) throws Exception {
 		aspectRatioInfoPresentFlag = new Bit1();
@@ -345,9 +338,9 @@ public class SequenceParameterSet extends H264Frame {
 		}
 	}
 	/**
-	 * hrdParametersの内部の読み込みを実施
-	 * 2度読み込むことがあるっぽいが、同じデータがはいるみたいです。
-	 * とりあえず、1度読み込んだら2度目は違いがないか確認して、違いがある場合は例外なげる方がよさそうではある・・・あとで考えよう
+	 * load hrdParameters
+	 * can be loaded twice, however, both can have the same data.
+	 * if different, throw the exception.
 	 * @param loader
 	 */
 	private void loadHrdParameters(BitLoader loader) throws Exception {
@@ -362,19 +355,19 @@ public class SequenceParameterSet extends H264Frame {
 			cpbCntMinus1 = val1;
 		}
 		else if(cpbCntMinus1.get() != val1.get()) {
-			throw new RuntimeException("cpbCntMinus1の値が前回の値と一致しませんでした。");
+			throw new RuntimeException("cpbCntMinus1 is different from previous one");
 		}
 		if(bitRateScale == null) {
 			bitRateScale = val2;
 		}
 		else if(bitRateScale.get() != val2.get()) {
-			throw new RuntimeException("bitRateScaleの値が前回の値と一致しませんでした。");
+			throw new RuntimeException("bitRateScale is different from previous one");
 		}
 		if(cpbSizeScale == null) {
 			cpbSizeScale = val3;
 		}
 		else if(cpbSizeScale.get() != val3.get()) {
-			throw new RuntimeException("cpbSizeScaleの値が前回の値と一致しませんでした。");
+			throw new RuntimeException("cpbSizeScale is different from previous one");
 		}
 
 		int num = cpbCntMinus1.get() + 1;
@@ -396,19 +389,19 @@ public class SequenceParameterSet extends H264Frame {
 				bitRateValueMinus1[schedSelIdx] = val4;
 			}
 			else if(bitRateValueMinus1[schedSelIdx].get() != val4.get()) {
-				throw new RuntimeException("bitRateValueMinus1の値が前回の値と一致しませんでした。");
+				throw new RuntimeException("bitRateValueMinus1 is different from previous one");
 			}
 			if(cpbSizeValueMinus1[schedSelIdx] == null) {
 				cpbSizeValueMinus1[schedSelIdx] = val5;
 			}
 			else if(cpbSizeValueMinus1[schedSelIdx].get() != val5.get()) {
-				throw new RuntimeException("cpbSizeValueMinus1の値が前回の値と一致しませんでした。");
+				throw new RuntimeException("cpbSizeValueMinus1 is different from previous one");
 			}
 			if(cbrFlag[schedSelIdx] == null) {
 				cbrFlag[schedSelIdx] = val6;
 			}
 			else if(cbrFlag[schedSelIdx].get() != val6.get()) {
-				throw new RuntimeException("cbrFlagの値が前回の値と一致しませんでした。");
+				throw new RuntimeException("cbrFlag is different from previous one");
 			}
 			bitRateValueMinus1[schedSelIdx] = val4;
 			cpbSizeValueMinus1[schedSelIdx] = val5;
@@ -423,25 +416,25 @@ public class SequenceParameterSet extends H264Frame {
 			initialCpbRemovalDelayLengthMinus1 = val7;
 		}
 		else if(initialCpbRemovalDelayLengthMinus1.get() != val7.get()) {
-			throw new RuntimeException("initialCpbRemovalDelayLengthMinus1の値が前回の値と一致しませんでした。");
+			throw new RuntimeException("initialCpbRemovalDelayLengthMinus1 is different from previous one");
 		}
 		if(cpbRemovalDelayLengthMinus1 == null) {
 			cpbRemovalDelayLengthMinus1 = val8;
 		}
 		else if(cpbRemovalDelayLengthMinus1.get() != val8.get()) {
-			throw new RuntimeException("cpbRemovalDelayLengthMinus1の値が前回の値と一致しませんでした。");
+			throw new RuntimeException("cpbRemovalDelayLengthMinus1 is different from previous one");
 		}
 		if(dpbOutputDelayLengthMinus1 == null) {
 			dpbOutputDelayLengthMinus1 = val9;
 		}
 		else if(dpbOutputDelayLengthMinus1.get() != val9.get()) {
-			throw new RuntimeException("dpbOutputDelayLengthMinus1の値が前回の値と一致しませんでした。");
+			throw new RuntimeException("dpbOutputDelayLengthMinus1 is different from previous one");
 		}
 		if(timeOffsetLength == null) {
 			timeOffsetLength = val10;
 		}
 		else if(timeOffsetLength.get() != val10.get()) {
-			throw new RuntimeException("timeOffsetLengthの値が前回の値と一致しませんでした。");
+			throw new RuntimeException("timeOffsetLength is different from previous one");
 		}
 	}
 	/**
@@ -459,7 +452,7 @@ public class SequenceParameterSet extends H264Frame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("本体データが未設定です。");
+			throw new Exception("body data is undefined.");
 		}
 		// TODO この部分のこの方法は修正しないとだめ、自力でコネクトしてやるのではなく、大元のデータを保持しておいて、それを応答するようにする。
 		// でないと、00 00 03の扱いを自力で作る必要がでてくるので、非常にややこしいことになる。
@@ -536,25 +529,25 @@ public class SequenceParameterSet extends H264Frame {
 	 */
 	public int getCpbCntMinus1() {
 		if(cpbCntMinus1 == null) {
-			throw new RuntimeException("cpbCntMinus1の値が設定されていないのに、参照しようとしました。");
+			throw new RuntimeException("cpbCntMinus1 is undefined, however, try to ref.");
 		}
 		return cpbCntMinus1.get();
 	}
 	public int getInitialCpbRemovalDelayLengthMinus1() {
 		if(initialCpbRemovalDelayLengthMinus1 == null) {
-			throw new RuntimeException("initialCpbRemovalDelayLengthMinus1の値が設定されていないのに、参照しようとしました。");
+			throw new RuntimeException("initialCpbRemovalDelayLengthMinus1 is undefined, however, try to ref.");
 		}
 		return initialCpbRemovalDelayLengthMinus1.get();
 	}
 	public int getPicStructPresentFlag() {
 		if(picStructPresentFlag == null) {
-			throw new RuntimeException("picStructPresentFlagの値が設定されていないのに、参照しようとしました。");
+			throw new RuntimeException("picStructPresentFlag is undefined, however, try to ref.");
 		}
 		return picStructPresentFlag.get();
 	}
 	public int getTimeOffsetLength() {
 		if(timeOffsetLength == null) {
-			throw new RuntimeException("timeoffsetLengthの値が設定されていないのに、参照しようとしました。");
+			throw new RuntimeException("timeoffsetLength is undefined, however, try to ref.");
 		}
 		return timeOffsetLength.get();
 	}

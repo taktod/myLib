@@ -20,7 +20,7 @@ import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit5;
 
 /**
- * h264のframe
+ * base of h264 frame
  * @author taktod
  */
 public abstract class H264Frame extends VideoFrame {
@@ -28,14 +28,14 @@ public abstract class H264Frame extends VideoFrame {
 	private final Bit2 nalRefIdc;
 	private final Bit5 type;
 
-	/** 解析済みsps */
+	/** sps */
 	private SequenceParameterSet sps = null;
-	/** 解析済みpps */
+	/** pps */
 	private PictureParameterSet pps = null;
-	/** 複数フレームで同一データとする場合のフレームリスト */
+	/** frame list. */
 	private List<H264Frame> frameList = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param forbiddenZeroBit
 	 * @param nalRefIdc
 	 * @param type
@@ -46,7 +46,7 @@ public abstract class H264Frame extends VideoFrame {
 		this.type = type;
 	}
 	/**
-	 * 先頭のtypeBufferを参照する
+	 * ref the typeBuffer (header infromation)
 	 * @return
 	 */
 	protected ByteBuffer getTypeBuffer() {
@@ -55,14 +55,14 @@ public abstract class H264Frame extends VideoFrame {
 				nalRefIdc, type);
 	}
 	/**
-	 * pps設定
+	 * set the pps
 	 * @param pps
 	 */
 	public void setPps(PictureParameterSet pps) {
 		this.pps = pps;
 	}
 	/**
-	 * sps設定
+	 * set the sps
 	 * @param sps
 	 */
 	public void setSps(SequenceParameterSet sps) {
@@ -73,14 +73,14 @@ public abstract class H264Frame extends VideoFrame {
 		}
 	}
 	/**
-	 * sps参照
+	 * ref sps
 	 * @return
 	 */
 	public SequenceParameterSet getSps() {
 		return sps;
 	}
 	/**
-	 * pps参照
+	 * ref pps
 	 * @return
 	 */
 	public PictureParameterSet getPps() {
@@ -117,7 +117,7 @@ public abstract class H264Frame extends VideoFrame {
 	@Override
 	public ByteBuffer getPrivateData() throws Exception {
 		if(sps == null || pps == null) {
-			throw new Exception("情報が不足しています。");
+			throw new Exception("sps or pps is undefined.");
 		}
 		ConfigData configData = new ConfigData();
 		return configData.makeConfigData(sps, pps);

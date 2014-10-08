@@ -25,7 +25,7 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * h264のkeyFrameにあたるSliceIDR
+ * SliceIDR (keyFrame?)
  * sliceIDRはIFrame(keyFrame)ならかならずsliceIDRになっているわけではなさそうです。
  * KeyFrameでもその前のフレームを参照するBFrameがあると、randomAccessできないので、randomAccessしてOKの場合のみ
  * sliceIDRになっているらしい。
@@ -36,13 +36,13 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class SliceIDR extends SliceFrame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(SliceIDR.class);
-	/** データ */
+	/** data */
 	private ByteBuffer buffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param forbiddenZeroBit
 	 * @param nalRefIdc
 	 * @param type
@@ -76,7 +76,7 @@ public class SliceIDR extends SliceFrame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("データ実体が読み込まれていません");
+			throw new Exception("data body is undefined");
 		}
 		setData(BufferUtil.connect(getTypeBuffer(),
 				getSliceHeaderBuffer(),
@@ -87,7 +87,7 @@ public class SliceIDR extends SliceFrame {
 	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
-		// packデータとしては、00 00 00 01 sps 00 00 00 01 pps 00 00 00 01 sliceIdrをつくればいいはず。
+		// make 00 00 00 01 sps 00 00 00 01 pps 00 00 00 01 sliceIdr
 		BitConnector connector = new BitConnector();
 		List<ByteBuffer> bufferList = new ArrayList<ByteBuffer>();
 		// sps
@@ -104,7 +104,7 @@ public class SliceIDR extends SliceFrame {
 				bufferList.add(frame.getData());
 			}
 			else {
-				throw new Exception("想定外のframeが含まれていました。:" + getClass());
+				throw new Exception("unexpected frame is found.:" + getClass().getSimpleName());
 			}
 		}
 		return BufferUtil.connect(bufferList);

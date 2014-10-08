@@ -7,7 +7,7 @@
 package com.ttProject.frame.h264;
 
 /**
- * h264のframeのtype定義
+ * def of h264 frame type
  * @see http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-bad-libs/html/gst-plugins-bad-libs-h264parser.html
  * @see http://www.itu.int/rec/T-REC-H.264-201304-I/en
  * @author taktod
@@ -59,6 +59,6 @@ public enum Type {
 				return t;
 			}
 		}
-		throw new Exception("解析不能なデータでした。:" + Integer.toHexString(value));
+		throw new Exception("unexpected value:" + Integer.toHexString(value));
 	}
 }

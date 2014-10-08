@@ -17,14 +17,13 @@ import com.ttProject.util.BufferUtil;
 
 /**
  * PictureParameterSet
- * keyFrameに必要なデータその２
  * @author taktod
  */
 public class PictureParameterSet extends H264Frame {
-	/** データ */
+	/** data */
 	private ByteBuffer buffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param forbiddenZeroBit
 	 * @param nalRefIdc
 	 * @param type
@@ -57,7 +56,7 @@ public class PictureParameterSet extends H264Frame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("データ実体が読み込まれていません");
+			throw new Exception("data body is unedefined.");
 		}
 		setData(BufferUtil.connect(getTypeBuffer(),
 				buffer));

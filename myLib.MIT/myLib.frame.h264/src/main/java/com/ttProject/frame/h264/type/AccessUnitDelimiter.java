@@ -19,17 +19,16 @@ import com.ttProject.util.BufferUtil;
 
 /**
  * accessUnitDelimiter
- * mpegtsで各frameの頭にはいっている仕切りみたいなもの
  * @author taktod
  */
 public class AccessUnitDelimiter extends H264Frame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(AccessUnitDelimiter.class);
-	/** データ実体 */
+	/** data body */
 	private ByteBuffer buffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param forbiddenZeroBit
 	 * @param nalRefIdc
 	 * @param type
@@ -39,7 +38,7 @@ public class AccessUnitDelimiter extends H264Frame {
 		super.update();
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public AccessUnitDelimiter() {
 		super(new Bit1(), new Bit2(), new Bit5(0x09));
@@ -72,7 +71,7 @@ public class AccessUnitDelimiter extends H264Frame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("データ実体が読み込まれていません");
+			throw new Exception("body data is undefined.");
 		}
 		setData(BufferUtil.connect(getTypeBuffer(),
 				buffer));

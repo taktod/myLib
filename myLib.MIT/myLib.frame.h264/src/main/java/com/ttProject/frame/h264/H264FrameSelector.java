@@ -24,17 +24,17 @@ import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit5;
 
 /**
- * h264のframeを選択します
+ * selector for h264 frame
  * @author taktod
  */
 public class H264FrameSelector extends VideoSelector {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(H264FrameSelector.class);
-	// こちらのspsやppsは複数保持可能にならないと正しい動作にはならないっぽい。
-	/** 解析sps */
+	// TODO we need to handle with multiple sps and pps.(in some case, spsext.)
+	/** sps */
 	private SequenceParameterSet sps = null;
-	/** 解析pps */
+	/** pps */
 	private PictureParameterSet  pps = null;
 	/**
 	 * {@inheritDoc}
@@ -75,10 +75,9 @@ public class H264FrameSelector extends VideoSelector {
 			frame = new FilterData(forbiddenZeroBit, nalRefIdc, type);
 			break;
 		default:
-			throw new Exception("想定外のフレームを検知しました。:" + type.get() + " / " + Type.getType(type.get()));
+			throw new Exception("unexpected frame:" + type.get() + " / " + Type.getType(type.get()));
 		}
 		setup(frame);
-		// TODO この部分でどのspsやppsが対応しているのか、きちんと把握しておかないとこまったことになる。
 		if(!(frame instanceof SequenceParameterSet)) {
 			frame.setSps(sps);
 			if(!(frame instanceof PictureParameterSet)) {
@@ -87,7 +86,7 @@ public class H264FrameSelector extends VideoSelector {
 		}
 		frame.minimumLoad(channel);
 /*		if(frame instanceof SequenceParameterSet) {
-			// この部分で必要なデータを参照しておきたいね。
+			// ref for many data for sps.
 			SequenceParameterSet sps = (SequenceParameterSet)frame;
 			logger.info(sps.getNalHrdBpPresentFlag());
 			logger.info(sps.getVclHrdBpPresentFlag());

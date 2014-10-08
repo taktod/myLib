@@ -17,14 +17,14 @@ import com.ttProject.util.BufferUtil;
 
 /**
  * FilterData
- * どうやらh264でbitrateを一定にするために埋めるデータっぽいです。
+ * filled the data for cbr
  * @author taktod
  */
 public class FilterData extends H264Frame {
-	/** データ本体 */
+	/** data body */
 	private ByteBuffer buffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param forbiddenZeroBit
 	 * @param nalRefIdc
 	 * @param type
@@ -57,7 +57,7 @@ public class FilterData extends H264Frame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("データ実体が読み込まれていません");
+			throw new Exception("data body is undefined.");
 		}
 		setData(BufferUtil.connect(getTypeBuffer(),
 				buffer));

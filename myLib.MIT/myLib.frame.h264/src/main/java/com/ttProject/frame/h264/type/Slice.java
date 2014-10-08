@@ -22,15 +22,14 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * Slice
- * h264の基本となる中間フレーム
+ * Slice frame
  * @author taktod
  */
 public class Slice extends SliceFrame {
-	/** データ */
+	/** data */
 	private ByteBuffer buffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param forbiddenZeroBit
 	 * @param nalRefIdc
 	 * @param type
@@ -63,7 +62,7 @@ public class Slice extends SliceFrame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("データ実体が読み込まれていません");
+			throw new Exception("data body is undefined.");
 		}
 		setData(BufferUtil.connect(getTypeBuffer(),
 				getSliceHeaderBuffer(),
@@ -84,7 +83,7 @@ public class Slice extends SliceFrame {
 				bufferList.add(frame.getData());
 			}
 			else {
-				throw new Exception("想定外のframeが含まれていました。:" + getClass());
+				throw new Exception("unexpected frame is found.:" + getClass().getSimpleName());
 			}
 		}
 		return BufferUtil.connect(bufferList);

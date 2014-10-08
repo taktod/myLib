@@ -7,7 +7,7 @@
 package com.ttProject.frame.h264;
 
 /**
- * h264のsliceのtype定義
+ * def of h264 slice type.
  * @author taktod
  */
 public enum SliceType {
@@ -34,6 +34,6 @@ public enum SliceType {
 				return t;
 			}
 		}
-		throw new Exception("解析不能なデータでした。:" + value);
+		throw new Exception("unexpected value:" + value);
 	}
 }

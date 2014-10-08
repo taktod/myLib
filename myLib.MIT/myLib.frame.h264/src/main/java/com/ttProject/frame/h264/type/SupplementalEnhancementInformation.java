@@ -23,10 +23,10 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class SupplementalEnhancementInformation extends H264Frame {
-	/** データ実体 */
+	/** data body */
 	private ByteBuffer buffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param forbiddenZeroBit
 	 * @param nalRefIdc
 	 * @param type
@@ -58,7 +58,7 @@ public class SupplementalEnhancementInformation extends H264Frame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("データ実体が読み込まれていません");
+			throw new Exception("data body is undefined.");
 		}
 		setData(BufferUtil.connect(getTypeBuffer(),
 				buffer));

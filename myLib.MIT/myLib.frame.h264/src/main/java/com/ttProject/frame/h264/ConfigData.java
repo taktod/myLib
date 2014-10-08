@@ -27,7 +27,8 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * flvのmediaSequenceHeaderやmp4のdecodeBox(Avcc)の内容から、
+ * configData
+ * from flv mediaSequenceHeader or mp4 decodeBox(Avcc)
  * nalデータを取り出す動作
  * 01 4D 40 1E FF E1 00 19 67 4D 40 1E 92 42 01 40 5F F2 E0 22 00 00 03 00 C8 00 00 2E D5 1E 2C 5C 90 01 00 04 68 EE 32 C8
  * 01 42 00 16 FF E1 00 2E 67 42 80 16 96 54 05 01 ED 80 A84000000300400000053800007A10000F425FC638C00003D080007A12FE31C3B4244D4001000468CE3520
@@ -69,7 +70,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class ConfigData {
-	/** 動作セレクター(セレクターにsps ppsを保持させて、他のframeに持たせる必要があるので、ここで設置できるようにしてある) */
+	/** h264 data selector */
 	private H264FrameSelector selector = null;
 	private Bit8 avcCVersion = new Bit8();
 	private Bit8 profile         = new Bit8();
@@ -84,7 +85,7 @@ public class ConfigData {
 
 	private Bit8 numOfPps = new Bit8();
 	private List<PictureParameterSet> ppsList = new ArrayList<PictureParameterSet>();
-	// 以下SpsExt(profile = 100 110 122 144でのみ必須)
+	// sps ext(profile = 100? 110 122 144 required.)
 /*		private Bit6 reservedBit3;
 		private Bit2 chromaFormat;
 		private Bit5 reservedBit4;
@@ -94,40 +95,40 @@ public class ConfigData {
 		private Bit8 numOfSpse;
 		private List<SequenceParameterSetExt> spseList; */
 	/**
-	 * セレクターの設定
+	 * set the selector
 	 * @param selector
 	 */
 	public void setSelector(H264FrameSelector selector) {
 		this.selector = selector;
 	}
 	/**
-	 * nalSizeのデータを参照
+	 * ref the nal size for data nal.
+	 * usually 4byte.
 	 * @return
 	 */
 	public int getNalSizeBytes() {
 		return nalSizeMinusOne.get() + 1;
 	}
 	/**
-	 * spsのリストを応答する
+	 * ref the sps list.
 	 * @return
 	 */
 	public List<SequenceParameterSet> getSpsList() {
 		return new ArrayList<SequenceParameterSet>(spsList);
 	}
 	/**
-	 * ppsのリストを応答する
+	 * ref the pps list.
 	 * @return
 	 */
 	public List<PictureParameterSet> getPpsList() {
 		return new ArrayList<PictureParameterSet>(ppsList);
 	}
 	/**
-	 * configDataを解析します。
+	 * analyze configData.
 	 * @param channel
 	 * @throws Exception
 	 */
 	public void analyzeData(IReadChannel channel) throws Exception {
-		// データを解析します。
 		ISelector selector = null;
 		if(this.selector != null) {
 			selector = this.selector;
@@ -135,10 +136,10 @@ public class ConfigData {
 		else {
 			selector = new H264FrameSelector();
 		}
-		// まず先頭の5byteを読み込む
+		// check first 5 byte.
 		BitLoader loader = new BitLoader(channel);
 		loader.load(avcCVersion, profile, compatibility, level, reservedBit1, nalSizeMinusOne);
-		// 続いてspsの数を取得しておく。
+		// get sps
 		loader.load(reservedBit2, numOfSps);
 		for(int i = 0;i < numOfSps.get();i ++) {
 			Bit16 spsSize = new Bit16();
@@ -146,12 +147,12 @@ public class ConfigData {
 			IReadChannel byteChannel = new ByteReadChannel(BufferUtil.safeRead(channel, spsSize.get()));
 			IVideoFrame sps = (IVideoFrame)selector.select(byteChannel);
 			if(!(sps instanceof SequenceParameterSet)) {
-				throw new Exception("spsがくるべきところでspsが取得できませんでした。");
+				throw new Exception("sps is expected, however, found other frame.:" + sps.getClass().getSimpleName());
 			}
 			sps.load(byteChannel);
 			spsList.add((SequenceParameterSet)sps);
 		}
-		// 続いてppsの数を取得
+		// get pps
 		loader.load(numOfPps);
 		for(int i = 0;i < numOfPps.get();i ++) {
 			Bit16 ppsSize = new Bit16();
@@ -159,7 +160,7 @@ public class ConfigData {
 			IReadChannel byteChannel = new ByteReadChannel(BufferUtil.safeRead(channel, ppsSize.get()));
 			IVideoFrame pps = (IVideoFrame)selector.select(byteChannel);
 			if(!(pps instanceof PictureParameterSet)) {
-				throw new Exception("ppsがくるべきところでppsが取得できませんでした。");
+				throw new Exception("pps is expected, however, found other frame.:" + pps.getClass().getSimpleName());
 			}
 			pps.load(byteChannel);
 			ppsList.add((PictureParameterSet)pps);
@@ -170,13 +171,13 @@ public class ConfigData {
 		case 110:
 		case 122:
 		case 144:
-			throw new Exception("spsExtを読み込まないとだめなデータについては、未実装です。");
+			throw new Exception("profile required spsext, however, not code yet.");
 		default:
 			break;
 		}
 	}
 	/**
-	 * spsとppsを取り出す
+	 * get sps and pps.
 	 * @param channel
 	 * @return
 	 * @throws Exception
@@ -191,17 +192,17 @@ public class ConfigData {
 		}
 		VideoMultiFrame result = new VideoMultiFrame();
 		if(channel.size() - channel.position() < 8) {
-			throw new Exception("先頭データの読み込み部のサイズが小さすぎます。");
+			throw new Exception("data size is too small");
 		}
 		ByteBuffer buffer = BufferUtil.safeRead(channel, 6);
 		if(buffer.get() != 0x01) {
-			throw new Exception("avccVersionが1でないみたいです。");
+			throw new Exception("avccVersion is not 1, I need sample.");
 		}
 		short spsSize = BufferUtil.safeRead(channel, 2).getShort();
 		IReadChannel byteChannel = new ByteReadChannel(BufferUtil.safeRead(channel, spsSize));
 		IVideoFrame sps = (IVideoFrame)selector.select(byteChannel);
 		if(!(sps instanceof SequenceParameterSet)) {
-			throw new Exception("取得データがspsではありませんでした。");
+			throw new Exception("sps is expected, however, the frame is " + sps.getClass().getSimpleName());
 		}
 		sps.load(byteChannel);
 		result.addFrame(sps);
@@ -210,14 +211,14 @@ public class ConfigData {
 		byteChannel = new ByteReadChannel(BufferUtil.safeRead(channel, ppsSize));
 		IVideoFrame pps = (IVideoFrame)selector.select(byteChannel);
 		if(!(pps instanceof PictureParameterSet)) {
-			throw new Exception("取得データがppsではありませんでした。");
+			throw new Exception("pps is expected, however, the frame is " + pps.getClass().getSimpleName());
 		}
 		pps.load(byteChannel);
 		result.addFrame(pps);
 		return result;
 	}
 	/**
-	 * configDataをspsとppsから作成します。
+	 * make configData from sps and pps.
 	 * @param sps
 	 * @param pps
 	 * @return

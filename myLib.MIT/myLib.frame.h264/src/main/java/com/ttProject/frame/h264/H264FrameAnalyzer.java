@@ -16,22 +16,21 @@ import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * h264のデフォルトのAnalyzer
- * Nal解析と同じにしておきます
+ * analyzer for h264 frame.
  * @author taktod
  */
 public abstract class H264FrameAnalyzer extends VideoAnalyzer {
-	/** 現在処理中のフレーム */
+	/** current target */
 	private H264Frame h264Frame = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param selector
 	 */
 	public H264FrameAnalyzer() {
 		super(new H264FrameSelector());
 	}
 	/**
-	 * frameの内容をセットアップする
+	 * setup frame.
 	 * @param buffer
 	 * @return
 	 * @throws Exceptions
@@ -39,7 +38,6 @@ public abstract class H264FrameAnalyzer extends VideoAnalyzer {
 	protected IFrame setupFrame(ByteBuffer buffer) throws Exception {
 		IReadChannel channel = new ByteReadChannel(buffer);
 		H264Frame frame = (H264Frame) getSelector().select(channel);
-		// フレームを読み込んだらとりあえず、loadしておこうか
 		if(frame != null) {
 			frame.load(channel);
 		}

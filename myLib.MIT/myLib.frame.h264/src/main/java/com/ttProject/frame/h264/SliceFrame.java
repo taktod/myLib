@@ -22,7 +22,7 @@ import com.ttProject.unit.extra.bit.Ueg;
 import com.ttProject.util.BufferUtil;
 
 /**
- * slice系のデータのベースになるクラス
+ * base of slice frame
  * @author taktod
  */
 public abstract class SliceFrame extends H264Frame {
@@ -32,7 +32,7 @@ public abstract class SliceFrame extends H264Frame {
 	private Bit extraBit              = null;
 	
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param forbiddendZeroBit
 	 * @param nalRefIdc
 	 * @param type
@@ -47,7 +47,7 @@ public abstract class SliceFrame extends H264Frame {
 		extraBit = loader.getExtraBit();
 	}
 	/**
-	 * sliceFrameの先頭の部分のデータを応答します
+	 * ref the header data of slice frame.
 	 * @return
 	 */
 	protected ByteBuffer getSliceHeaderBuffer() {
@@ -58,7 +58,8 @@ public abstract class SliceFrame extends H264Frame {
 		return firstMbInSlice.get();
 	}
 	/**
-	 * flvやmp4のようなサイズベースのnal結合bufferを取得します。
+	 * get the size base nal buffer.
+	 * ex: flv or mp4.
 	 * @return
 	 * @throws Exception
 	 */

@@ -23,15 +23,15 @@ import com.ttProject.unit.extra.bit.Ueg;
 import com.ttProject.util.HexUtil;
 
 /**
- * h264のseiの読み込み動作テスト
- * これをいれて、ptsをきちんと調整するようにしておきたいねぇ・・・
+ * read test for sei.
+ * I wanna get pts exactly.
  * @author taktod
  */
 public class SupplementalEnhancementInformationTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(SupplementalEnhancementInformationTest.class);
 	/**
-	 * とりあえず読み込み動作テストを書いておきたい。
+	 * loading test.
 	 * @throws Exception
 	 */
 	@Test
@@ -48,7 +48,7 @@ public class SupplementalEnhancementInformationTest {
 		
 		// 0011 80001BF30000000000001BF30000000040
 		// 010D000100000090806D3DA9000000
-		// buffering_periodの読み込み動作
+		// buffering_period loading test
 		target = new ByteReadChannel(HexUtil.makeBuffer("80003E848000000000003E848000000040"));
 		target.close();
 		// delay:32009とdelayoffset:0
@@ -129,7 +129,7 @@ public class SupplementalEnhancementInformationTest {
 		logger.info(clockTimestampFlag.get());
 	}
 	/**
-	 * こっちもよみこみたいね。
+	 * load this also.
 	 * @throws Exception
 	 */
 //	@Test

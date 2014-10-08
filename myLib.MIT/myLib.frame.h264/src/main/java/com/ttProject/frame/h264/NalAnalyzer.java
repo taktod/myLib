@@ -15,12 +15,12 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
- * mpegtsのような00 00 01 + dataのnalを解析する動作
- * 実体の読み込みまで実施します。
+ * analyzer for h264 nal.
+ * ex:mpegts 00 00 01 64 ...... 
  * @author taktod
  */
 public class NalAnalyzer extends H264FrameAnalyzer {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(NalAnalyzer.class);
 	/**
@@ -30,11 +30,11 @@ public class NalAnalyzer extends H264FrameAnalyzer {
 	public IFrame analyze(IReadChannel channel) throws Exception {
 		Short lastData = null;
 		ByteBuffer buffer = ByteBuffer.allocate(channel.size() - channel.position());
-		// データを読み込んでいく
+		// load data.
 		while(channel.size() - channel.position() > 1) {
 			short data = BufferUtil.safeRead(channel, 2).getShort();
-			// 00 00 00 01もしくは 00 00 01がnalの分岐点
-			// よってshort = 0になった場合に注意して処理すればいい
+			// 00 00 00 01 or 00 00 01 is the sign for nal.
+			// so check deeply in the case of 00 00(short == 0)
 			if(data == 0) {
 				byte firstByte, secondByte;
 				firstByte = BufferUtil.safeRead(channel, 1).get();
@@ -76,7 +76,7 @@ public class NalAnalyzer extends H264FrameAnalyzer {
 				}
 				lastData = null;
 			}
-			else { // 0ではない
+			else { // not 0(cannot be sign of nal.)
 				if(lastData != null && data == 1 && (lastData & 0x00FF) == 0) {
 					checkLastData(buffer, lastData);
 					buffer.flip();
@@ -101,7 +101,7 @@ public class NalAnalyzer extends H264FrameAnalyzer {
 		return setupFrame(buffer);
 	}
 	/**
-	 * 最終読み込み途上データを設定
+	 * set the last data of nal.
 	 * @param buffer
 	 * @param lastData
 	 */
@@ -111,7 +111,7 @@ public class NalAnalyzer extends H264FrameAnalyzer {
 		}
 	}
 	/**
-	 * 最終読み込み途上データを確認
+	 * check the last data of nal.
 	 * @param buffer
 	 * @param lastData
 	 */
