@@ -20,14 +20,15 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * mpegtsを他のコンテナに変換する動作テスト
+ * convert test from mkv to ?
  * @author taktod
  */
 public class MkvToTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(MkvToTest.class);
 	/**
-	 * flvのh264とaacの動作に変換します。
+	 * to flv(h264 / aac)
+	 * this test for h264 Slice frame which consists of two slice nals.
 	 * @throws Exception
 	 */
 	@Test
@@ -48,12 +49,11 @@ public class MkvToTest {
 		);
 	}
 	/**
-	 * 内部処理
+	 * convert process body
 	 * @param source
 	 * @param writer
 	 */
 	private void convertTest(IFileReadChannel source, IWriter writer, int videoId, int audioId) {
-		// headerを書き込む
 		try {
 			writer.prepareHeader();
 			IReader reader = new MkvTagReader();
@@ -79,6 +79,5 @@ public class MkvToTest {
 				source = null;
 			}
 		}
-		// tailerを書き込む
 	}
 }

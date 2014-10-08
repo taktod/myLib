@@ -8,7 +8,7 @@
   </parent>
   <artifactId>myLib.container.test</artifactId>
   <name>myLib.container.test</name>
-  <description>コンテナ動作のテストを実施します。</description>
+  <description>container work test.</description>
   <licenses>
     <license>
       <name>The MIT License</name>

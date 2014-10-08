@@ -19,14 +19,14 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * mpegtsのデータを別のコンテナに変換する動作テスト
+ * convert from mpegts(multi tracks) to flv
  * @author taktod
  */
 public class MultiMpegtsToTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(MultiMpegtsToTest.class);
 	/**
-	 * マルチトラックのmpegtsからflvファイルを複数同時に作成する動作テスト
+	 * make 4 flv from 1 mpegts.
 	 * @throws Exception
 	 */
 	@Test

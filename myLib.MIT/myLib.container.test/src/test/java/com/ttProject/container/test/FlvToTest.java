@@ -34,14 +34,14 @@ import com.ttProject.nio.channels.IFileReadChannel;
 import com.ttProject.util.HexUtil;
 
 /**
- * flvを他のコンテナに変換する動作テスト
+ * convert container from flv to ?
  * @author taktod
  */
 public class FlvToTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(FlvToTest.class);
 	/**
-	 * mp3にコンバートする(mp3)
+	 * to mp3.
 	 * @throws Exception
 	 */
 //	@Test
@@ -56,7 +56,7 @@ public class FlvToTest {
 		);
 	}
 	/**
-	 * adtsにコンバートする(aac)
+	 * to adts.
 	 * @throws Exception
 	 */
 	@Test
@@ -71,7 +71,7 @@ public class FlvToTest {
 		);
 	}
 	/**
-	 * oggにコンバートする(speex)
+	 * to ogg
 	 * @throws Exception
 	 */
 	@Test
@@ -97,7 +97,7 @@ public class FlvToTest {
 		);
 	}
 	/**
-	 * mpegtsにコンバートする(h264 aac mp3)
+	 * to mpegts(mp3)
 	 * @throws Exception
 	 */
 	@Test
@@ -105,21 +105,17 @@ public class FlvToTest {
 		logger.info("from flv to mpegts test(mp3)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_mp3.ts");
 		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
-		// とりあえずsdt pat pmtを設定しなければいけない。
-		// sdtを追加
+		// need sdt pat pmt.
 		Sdt sdt = new Sdt();
 		sdt.writeDefaultProvider("test", "hogehoge");
 		writer.addContainer(sdt);
-		// patを追加
 		Pat pat = new Pat();
 		writer.addContainer(pat);
-		// pmtを追加
 		Pmt pmt = new Pmt(pat.getPmtPid());
 		PmtElementaryField elementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.AUDIO_MPEG1);
 		pmt.addNewField(elementaryField);
 		pmt.setPcrPid(elementaryField.getPid());
 		writer.addContainer(pmt);
-		// frame追記にあわせてpesを書き込んでいく
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("mp3.flv")
@@ -130,7 +126,7 @@ public class FlvToTest {
 		);
 	}
 	/**
-	 * mpegtsのaacの変換テスト
+	 * to mpegts(aac)
 	 * @throws Exception
 	 */
 	@Test
@@ -138,21 +134,17 @@ public class FlvToTest {
 		logger.info("from flv to mpegts test(aac)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_aac.ts");
 		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
-		// とりあえずsdt pat pmtを設定しなければいけない。
-		// sdtを追加
+		// firstly need sdt pat pmt.
 		Sdt sdt = new Sdt();
 		sdt.writeDefaultProvider("test", "hogehoge");
 		writer.addContainer(sdt);
-		// patを追加
 		Pat pat = new Pat();
 		writer.addContainer(pat);
-		// pmtを追加
 		Pmt pmt = new Pmt(pat.getPmtPid());
 		PmtElementaryField elementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.AUDIO_AAC);
 		pmt.setPcrPid(elementaryField.getPid());
 		pmt.addNewField(elementaryField);
 		writer.addContainer(pmt);
-		// frame追記にあわせてpesを書き込んでいく
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("aac.flv")
@@ -163,7 +155,7 @@ public class FlvToTest {
 		);
 	}
 	/**
-	 * mpegtsのh264の変換テスト
+	 * to mpegts(h264)
 	 * @throws Exception
 	 */
 	@Test
@@ -171,21 +163,17 @@ public class FlvToTest {
 		logger.info("from flv to mpegts test(h264)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_h264.ts");
 		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
-		// とりあえずsdt pat pmtを設定しなければいけない。
-		// sdtを追加
+		// firstly need sdt pat pmt
 		Sdt sdt = new Sdt();
 		sdt.writeDefaultProvider("test", "hogehoge");
 		writer.addContainer(sdt);
-		// patを追加
 		Pat pat = new Pat();
 		writer.addContainer(pat);
-		// pmtを追加
 		Pmt pmt = new Pmt(pat.getPmtPid());
 		PmtElementaryField elementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.VIDEO_H264);
 		pmt.setPcrPid(elementaryField.getPid());
 		pmt.addNewField(elementaryField);
 		writer.addContainer(pmt);
-		// frame追記にあわせてpesを書き込んでいく
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("h264.flv")
@@ -196,7 +184,7 @@ public class FlvToTest {
 		);
 	}
 	/**
-	 * mpegtsのh264の変換テスト
+	 * to mpegts(h264 / aac)
 	 * @throws Exception
 	 */
 	@Test
@@ -204,15 +192,12 @@ public class FlvToTest {
 		logger.info("from flv to mpegts test(h264 / aac)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_h264_aac.ts");
 		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
-		// とりあえずsdt pat pmtを設定しなければいけない。
-		// sdtを追加
+		// firstly need sdt pat pmt
 		Sdt sdt = new Sdt();
 		sdt.writeDefaultProvider("test", "hogehoge");
 		writer.addContainer(sdt);
-		// patを追加
 		Pat pat = new Pat();
 		writer.addContainer(pat);
-		// pmtを追加
 		Pmt pmt = new Pmt(pat.getPmtPid());
 		PmtElementaryField videoElementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.VIDEO_H264);
 		pmt.setPcrPid(videoElementaryField.getPid());
@@ -220,7 +205,6 @@ public class FlvToTest {
 		PmtElementaryField audioElementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.AUDIO_AAC);
 		pmt.addNewField(audioElementaryField);
 		writer.addContainer(pmt);
-		// frame追記にあわせてpesを書き込んでいく
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("h264_aac.flv")
@@ -231,8 +215,8 @@ public class FlvToTest {
 		);
 	}
 	/**
-	 * mpegtsのh264の変換テスト
-	 * iPhoneで取った複数sliceで成立するh264のデータ
+	 * to mpegts(h264 / aac) (this h264 slice frame is constisted with 2 slice nals)
+	 * from iphone 5S
 	 * @throws Exception
 	 */
 	@Test
@@ -240,15 +224,12 @@ public class FlvToTest {
 		logger.info("from flv to mpegts test(h264 / aac)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_h264_aac_ex.ts");
 		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
-		// とりあえずsdt pat pmtを設定しなければいけない。
-		// sdtを追加
+		// firstly need sdt pat pmt
 		Sdt sdt = new Sdt();
 		sdt.writeDefaultProvider("test", "hogehoge");
 		writer.addContainer(sdt);
-		// patを追加
 		Pat pat = new Pat();
 		writer.addContainer(pat);
-		// pmtを追加
 		Pmt pmt = new Pmt(pat.getPmtPid());
 		PmtElementaryField videoElementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.VIDEO_H264);
 		pmt.setPcrPid(videoElementaryField.getPid());
@@ -256,7 +237,6 @@ public class FlvToTest {
 		PmtElementaryField audioElementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.AUDIO_AAC);
 		pmt.addNewField(audioElementaryField);
 		writer.addContainer(pmt);
-		// frame追記にあわせてpesを書き込んでいく
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					"http://49.212.39.17/ahiru.flv"
@@ -267,8 +247,7 @@ public class FlvToTest {
 		);
 	}
 	/**
-	 * flvのmp3変換テスト
-	 * flvからflameを抜き出して再度flvにします。
+	 * to flv(mp3)
 	 * @throws Exception
 	 */
 	@Test
@@ -286,8 +265,7 @@ public class FlvToTest {
 		);
 	}
 	/**
-	 * flvのaac変換テスト
-	 * flvからflameを抜き出して再度flvにします。
+	 * to flv(aac)
 	 * @throws Exception
 	 */
 	@Test
@@ -305,8 +283,7 @@ public class FlvToTest {
 		);
 	}
 	/**
-	 * flvのaac変換テスト
-	 * flvからflameを抜き出して再度flvにします。
+	 * to flv(flv1)
 	 * @throws Exception
 	 */
 	@Test
@@ -324,8 +301,7 @@ public class FlvToTest {
 		);
 	}
 	/**
-	 * flvのaac変換テスト
-	 * flvからflameを抜き出して再度flvにします。
+	 * to flv(h264)
 	 * @throws Exception
 	 */
 	@Test
@@ -343,21 +319,19 @@ public class FlvToTest {
 		);
 	}
 	/**
-	 * 内部処理
+	 * convert process body.
 	 * @param source
 	 * @param writer
 	 */
 	private void convertTest(IFileReadChannel source, IWriter writer, int videoId, int audioId) {
-		// headerを書き込む
 		try {
+			// write header
 			writer.prepareHeader();
 			IReader reader = new FlvTagReader();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
 				if(container instanceof VideoTag) {
 					VideoTag vTag = (VideoTag)container;
-					// h264のmshの場合はspsとppsがあるので抜き出す必要あり。
-					// multiFrameの場合も分解しておくってやったほうがいいか？
 					writer.addFrame(videoId, vTag.getFrame());
 				}
 				else if(container instanceof AudioTag) {
@@ -365,6 +339,7 @@ public class FlvToTest {
 					writer.addFrame(audioId, aTag.getFrame());
 				}
 			}
+			// write tailer
 			writer.prepareTailer();
 		}
 		catch(Exception e) {
@@ -380,6 +355,5 @@ public class FlvToTest {
 				source = null;
 			}
 		}
-		// tailerを書き込む
 	}
 }

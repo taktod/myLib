@@ -27,14 +27,15 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * mpegtsを他のコンテナに変換する動作テスト
+ * convert from mpegts to ?
  * @author taktod
  */
 public class MpegtsToTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(MpegtsToTest.class);
 	/**
-	 * flvのh264とaacの動作に変換します。
+	 * to flv(h264 / aac)
+	 * h264 slice frame consists of two slice nals.
 	 * @throws Exception
 	 */
 	@Test
@@ -55,7 +56,8 @@ public class MpegtsToTest {
 		);
 	}
 	/**
-	 * mpegtsのh264とaacの動作に変換します。
+	 * to mpegts(h264 / aac)
+	 * h264 slice frame consists of two slice nals.
 	 * @throws Exception
 	 */
 	@Test
@@ -63,15 +65,12 @@ public class MpegtsToTest {
 		logger.info("from mpegts to mpegts test(h264 / aac)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_mpegts_h264_aac_ex.ts");
 		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
-		// とりあえずsdt pat pmtを設定しなければいけない。
-		// sdtを追加
+		// need sdt pat pmt
 		Sdt sdt = new Sdt();
 		sdt.writeDefaultProvider("test", "hogehoge");
 		writer.addContainer(sdt);
-		// patを追加
 		Pat pat = new Pat();
 		writer.addContainer(pat);
-		// pmtを追加
 		Pmt pmt = new Pmt(pat.getPmtPid());
 		PmtElementaryField videoElementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.VIDEO_H264);
 		pmt.setPcrPid(videoElementaryField.getPid());
@@ -79,7 +78,6 @@ public class MpegtsToTest {
 		PmtElementaryField audioElementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.AUDIO_AAC);
 		pmt.addNewField(audioElementaryField);
 		writer.addContainer(pmt);
-		// frame追記にあわせてpesを書き込んでいく
 		convertTest(
 			FileReadChannel.openFileReadChannel(
 					"http://49.212.39.17/ahiru.ts"
@@ -90,12 +88,11 @@ public class MpegtsToTest {
 		);
 	}
 	/**
-	 * 内部処理
+	 * convert process body
 	 * @param source
 	 * @param writer
 	 */
 	private void convertTest(IFileReadChannel source, IWriter writer, int videoId, int audioId) {
-		// headerを書き込む
 		try {
 			writer.prepareHeader();
 			IReader reader = new MpegtsPacketReader();
@@ -126,6 +123,5 @@ public class MpegtsToTest {
 				source = null;
 			}
 		}
-		// tailerを書き込む
 	}
 }
