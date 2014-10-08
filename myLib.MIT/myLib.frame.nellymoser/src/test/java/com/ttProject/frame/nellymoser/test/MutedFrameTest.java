@@ -14,11 +14,11 @@ import com.ttProject.frame.nellymoser.type.Frame;
 import com.ttProject.util.HexUtil;
 
 /**
- * 無音frameテスト
+ * muted frame test
  * @author taktod
  */
 public class MutedFrameTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(MutedFrameTest.class);
 	@Test
 	public void test() throws Exception {

@@ -20,7 +20,7 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * id3タグの内容解析
+ * id3 tag
  * @author taktod
  */
 public class ID3Frame extends Mp3Frame {
@@ -56,7 +56,6 @@ public class ID3Frame extends Mp3Frame {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// 残りのデータをコピーするだけ
 		channel.position(getReadPosition() + 10);
 		rawBuffer = BufferUtil.safeRead(channel, getSize() - 10);
 		super.update();
@@ -67,7 +66,7 @@ public class ID3Frame extends Mp3Frame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(rawBuffer == null) {
-			throw new Exception("rawBufferが読み込まれていません");
+			throw new Exception("rawBuffer is undefined.");
 		}
 		BitConnector connector = new BitConnector();
 		super.setData(BufferUtil.connect(

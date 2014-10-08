@@ -12,8 +12,7 @@ import com.ttProject.frame.mp3.Mp3Frame;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * ID3Tagは作成する必要あり。(とりあえずあとまわし)
- * 終端にあるので、無視しておく。
+ * tag frame
  * @author taktod
  */
 public class TagFrame extends Mp3Frame {
@@ -34,7 +33,6 @@ public class TagFrame extends Mp3Frame {
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		
 	}
 	/**
 	 * {@inheritDoc}

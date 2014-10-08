@@ -116,7 +116,7 @@ public class Frame extends Mp3Frame {
 	 * @return
 	 */
 	public int getBitrate() {
-		if(mpegVersion.get() == 0 || mpegVersion.get() == 2) { // 2.5と2の場合
+		if(mpegVersion.get() == 0 || mpegVersion.get() == 2) { // version 2 or 2.5
 			if(layer.get() == 3) { // layer1
 				return bitrateIndexV2L1[bitrateIndex.get()];
 			}
@@ -124,7 +124,7 @@ public class Frame extends Mp3Frame {
 				return bitrateIndexV2L23[bitrateIndex.get()];
 			}
 		}
-		if(mpegVersion.get() == 3) { // 1の場合
+		if(mpegVersion.get() == 3) { // version 1
 			if(layer.get() == 1) { // layer3
 				return bitrateIndexV1L3[bitrateIndex.get()];
 			}
@@ -138,7 +138,7 @@ public class Frame extends Mp3Frame {
 		return -1;
 	}
 	/**
-	 * データサイズ計算
+	 * calcurate size
 	 */
 	private void setSize() {
 		if(layer.get() == 3) { // layer1
@@ -148,7 +148,7 @@ public class Frame extends Mp3Frame {
 			super.setSize((int)Math.floor(144f * getBitrate() / getSampleRate() + paddingBit.get()));
 		}
 		else if(layer.get() == 1) { // layer3
-			if(mpegVersion.get() == 3) { // version1の場合
+			if(mpegVersion.get() == 3) { // version1
 				super.setSize((int)Math.floor(144f * getBitrate() / getSampleRate() + paddingBit.get()));
 			}
 			else {
@@ -161,7 +161,6 @@ public class Frame extends Mp3Frame {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// 本体データも読み込む
 		channel.position(getReadPosition() + 4);
 		rawBuffer = BufferUtil.safeRead(channel, getSize() - 4);
 		super.update();
@@ -172,7 +171,7 @@ public class Frame extends Mp3Frame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(rawBuffer == null) {
-			throw new Exception("rawBufferが読み込まれていません");
+			throw new Exception("rawBuffer is undefined");
 		}
 		BitConnector connector = new BitConnector();
 		super.setData(BufferUtil.connect(

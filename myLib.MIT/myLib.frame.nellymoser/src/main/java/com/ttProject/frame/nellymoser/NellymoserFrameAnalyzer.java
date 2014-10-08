@@ -10,12 +10,12 @@ import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.CodecType;
 
 /**
- * nellymoserFrameの解析を実行するプログラム
+ * analyzer for nellymoser frame.
  * @author taktod
  */
 public class NellymoserFrameAnalyzer extends AudioAnalyzer {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public NellymoserFrameAnalyzer() {
 		super(new NellymoserFrameSelector());

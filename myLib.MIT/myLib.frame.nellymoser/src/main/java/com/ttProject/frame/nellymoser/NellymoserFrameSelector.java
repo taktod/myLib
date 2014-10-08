@@ -12,7 +12,7 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IUnit;
 
 /**
- * nellymoserのframe選択
+ * selector for nellymoser frame.
  * @author taktod
  *
  */
@@ -22,12 +22,11 @@ public class NellymoserFrameSelector extends AudioSelector {
 	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
-		// frameをいくつ保持しているか確認する。
 		if(channel.size() == channel.position()) {
-			return null; // データがもうない。
+			return null;
 		}
 		if(channel.size() % 64 != 0) {
-			throw new Exception("保持チャンネル数がおかしいです。");
+			throw new Exception("data size is expected for multiple of 64 byte.");
 		}
 		NellymoserFrame frame = new Frame();
 		setup(frame);

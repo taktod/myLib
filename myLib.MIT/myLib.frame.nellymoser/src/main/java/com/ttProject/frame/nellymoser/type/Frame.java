@@ -20,7 +20,7 @@ import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit6;
 
 /**
- * nellyMoserのframe
+ * nellymoser frame
  * @see http://wiki.multimedia.cx/index.php?title=Nelly_Moser
  * nellymoserのframeは1つあたり
  * header + payload + payloadの組み合わせになっています。
@@ -38,7 +38,7 @@ import com.ttProject.unit.extra.bit.Bit6;
  * @author taktod
  */
 public class Frame extends NellymoserFrame {
-	/** 動作ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Frame.class);
 	private Bit6   initTableIndex = null;
@@ -79,9 +79,8 @@ public class Frame extends NellymoserFrame {
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		// ここでbitconnectorが繰り返して追記ができるようにしないとだめっぽい・・・
 		if(initTableIndex == null) {
-			throw new Exception("データがloadされていません");
+			throw new Exception("is not loaded.");
 		}
 		BitConnector connector = new BitConnector();
 		connector.feed(initTableIndex);
@@ -92,8 +91,8 @@ public class Frame extends NellymoserFrame {
 	}
 	/**
 	 * {@inheritDoc}
-	 * ここのpack用のbufferですが、複数のnellymoserframeがくっついているものにしても本当はよいが、扱い方が定まらないのでとりあえずこのままおいとく。
-	 * 64byte 128byte 256byteの塊にしても動作するということ
+	 * NOTE this packBuffer can be multiple frame.
+	 * 64byte 128byte 256byte
 	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
