@@ -16,24 +16,23 @@ import com.ttProject.frame.VideoFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * 映像のframeを同時に複数もつframe
- * flvのvideoTagのh264とかで利用します。
+ * multi frame for video.
  * @author taktod
  */
 public class VideoMultiFrame extends VideoFrame {
-	/** 保持フレーム */
+	/** framelist */
 	private List<IVideoFrame> frameList = new ArrayList<IVideoFrame>();
 	/**
-	 * フレームを追加します
+	 * add frame.
 	 * @param frame
 	 * @throws Exception
 	 */
 	public void addFrame(IVideoFrame frame) throws Exception {
-		// 縦横データは毎回一致すると思われるので上書きを繰り返す。
+		// width and height will be the same, just override with newer frame.
 		setWidth(frame.getWidth());
 		setHeight(frame.getHeight());
 		if(frameList.size() == 0) {
-			// 時間データを特定のデータにしたい場合は自分で追加しなおさなければならない
+			// for the timestamp, use the first frame.
 			setPts(frame.getPts());
 			setTimebase(frame.getTimebase());
 			if(frame.isKeyFrame()) {
@@ -42,10 +41,11 @@ public class VideoMultiFrame extends VideoFrame {
 			setSize(frame.getSize());
 		}
 		else {
-			// キーフレームを取得したら、キーフレームの内容でいったん初期化しておく。
+			// if keyframe is found, update.
 			if(frame.isKeyFrame()) {
 				setKeyFrame(true);
 			}
+			// datasize is updated by new frame size.
 			setSize(frame.getSize() + getSize());
 		}
 		frameList.add(frame);
@@ -88,7 +88,7 @@ public class VideoMultiFrame extends VideoFrame {
 		return null;
 	}
 	/**
-	 * frameリスト参照
+	 * ref the frame list.
 	 * @return
 	 */
 	public List<IVideoFrame> getFrameList() {

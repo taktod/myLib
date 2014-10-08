@@ -8,22 +8,22 @@ package com.ttProject.frame;
 import com.ttProject.unit.ISelector;
 
 /**
- * audio系のデータのselector動作
+ * base for audio selector
  * @author taktod
- * コンテナから渡された情報も保持しておいて、初期化時に、そのデータを渡しておく必要あり
+ * hold the data from container for the default. override with analyzed data.
  */
 public abstract class AudioSelector implements ISelector {
-	// 以下コンテナから読み取れるデフォルト、フレームのデータを構築するときに読み込むことにします。
-	/** チャンネル数 */
+	// default from container.
+	/** channel */
 	private int channel;
-	/** ビット数 */
+	/** bitdepth */
 	private int bit;
-	/** サンプルレート数 */
+	/** sampleRate */
 	private int sampleRate;
-	/** サンプル数 */
+	/** sampleNum */
 	private int sampleNum;
 	/**
-	 * デフォルト値をなるべくいれておく
+	 * put the default value as much as possible.
 	 * @param frame
 	 * @return
 	 */
@@ -34,28 +34,28 @@ public abstract class AudioSelector implements ISelector {
 		frame.setSampleNum(sampleNum);
 	}
 	/**
-	 * 音声チャンネル数設定
+	 * set the channel num.
 	 * @param channel
 	 */
 	public void setChannel(int channel) {
 		this.channel = channel;
 	}
 	/**
-	 * 音声buffer bit設定
+	 * set the bit depth
 	 * @param bit
 	 */
 	public void setBit(int bit) {
 		this.bit = bit;
 	}
 	/**
-	 * 音声サンプルレート設定
+	 * set the sampleRate
 	 * @param sampleRate
 	 */
 	public void setSampleRate(int sampleRate) {
 		this.sampleRate = sampleRate;
 	}
 	/**
-	 * 音声サンプル数設定
+	 * set the sampleNum
 	 * @param sampleNum
 	 */
 	public void setSampleNum(int sampleNum) {

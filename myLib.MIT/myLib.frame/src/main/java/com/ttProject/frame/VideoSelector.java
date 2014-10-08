@@ -9,31 +9,31 @@ package com.ttProject.frame;
 import com.ttProject.unit.ISelector;
 
 /**
- * 映像データのコンテナから取得したデータも取り扱うselector
+ * base selector for videoFrame.
  * @author taktod
  */
 public abstract class VideoSelector implements ISelector {
-	// 以下コンテナから読み取れるデフォルト、フレームのデータを構築するときに読み込むことにします。
-	/** 横幅(デフォルト設定用) */
+	// default value is settled by container.
+	/** width */
 	private int width;
-	/** 縦幅(デフォルト設定用) */
+	/** height */
 	private int height;
 	/**
-	 * コンテナから読み取った横幅設定
+	 * set the width
 	 * @param width
 	 */
 	public void setWidth(int width) {
 		this.width = width;
 	}
 	/**
-	 * コンテナから読み取った縦幅設定
+	 * set the height.
 	 * @param height
 	 */
 	public void setHeight(int height) {
 		this.height = height;
 	}
 	/**
-	 * コンテナデータの適応
+	 * setup container info on the frame.
 	 * @param frame
 	 */
 	public void setup(VideoFrame frame) {

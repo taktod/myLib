@@ -11,32 +11,33 @@ import java.nio.ByteBuffer;
 import com.ttProject.unit.IUnit;
 
 /**
- * メディアデータのフレームインターフェイス
+ * interface of frame
  * @author taktod
  */
 public interface IFrame extends IUnit {
 	/**
-	 * pcが１つのメディアデータと認識するのに過不足ない状態のbuffer参照
-	 * おもにxuggleで変換するときに渡すmedia情報をまとめるのが仕事
+	 * ref the minimum unit of complete data.
+	 * getData will return only frame needed.
+	 * ex: SliceIDRFrame for h264
+	 * getPackBuffer return sps pps and sliceIDR data.
+	 * getData return sliceIDR data only.
 	 * @return
 	 */
 	public ByteBuffer getPackBuffer() throws Exception;
 	/**
-	 * 各メディアが保持しているデータ長参照
-	 * コンテナから割り出す参考値
-	 * 規定は存在しない。
-	 * (音声の場合はsampleNum / sampleRateでだせる。)
-	 * (映像の場合は算出方法はないので、fpsから割り出す。)
+	 * duration of each frame.
+	 * (for audio, sampleNum / sampleRate)
+	 * (for video, get from fps value)
 	 */
 	public float getDuration();
 	/**
-	 * コーデック値を応答する
+	 * ref the codecType
 	 * @return
 	 */
 	public CodecType getCodecType();
 	/**
-	 * フレーム固有のprivateデータを参照する
-	 * (h264のconfigDataやaacのdecoderSpecificInfo、vorbis、opus、speexのcodecPrivateなど)
+	 * ref the private data.
+	 * (h264 configData, aac decoderSpecificInfo, vorbis opus speex codecPrivate...)
 	 * @return
 	 */
 	public ByteBuffer getPrivateData() throws Exception;

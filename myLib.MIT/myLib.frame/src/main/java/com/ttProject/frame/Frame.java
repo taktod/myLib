@@ -11,21 +11,21 @@ import java.nio.ByteBuffer;
 import com.ttProject.unit.Unit;
 
 /**
- * Frameの基本動作
+ * base for frame
  * @author taktod
  */
 public abstract class Frame extends Unit implements IFrame {
-	/** 読み込み位置 */
+	/** reading position(no necessary?) */
 	private int readPosition = 0;
 	/**
-	 * 読み込み位置設定
+	 * set read position
 	 * @param position
 	 */
 	protected void setReadPosition(int position) {
 		this.readPosition = position;
 	}
 	/**
-	 * 読み込み位置参照
+	 * ref read position
 	 * @return
 	 */
 	protected int getReadPosition() {

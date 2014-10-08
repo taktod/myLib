@@ -9,28 +9,28 @@ package com.ttProject.frame;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * 映像フレームを解析する動作
+ * base analyzer for videoFrame
  * @author taktod
  */
 public abstract class VideoAnalyzer implements IAnalyzer {
-	/** 映像解析のデータ選択オブジェクト */
+	/** select object for video */
 	private VideoSelector selector;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param selector
 	 */
 	public VideoAnalyzer(VideoSelector selector) {
 		setSelector(selector);
 	}
 	/**
-	 * 映像解析セレクター参照
+	 * ref the video Selector.
 	 * @return
 	 */
 	public VideoSelector getSelector() {
 		return selector;
 	}
 	/**
-	 * 映像セレクターを設定
+	 * set the video Selector.
 	 * @param selector
 	 */
 	public void setSelector(VideoSelector selector) {

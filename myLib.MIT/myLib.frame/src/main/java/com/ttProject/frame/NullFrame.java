@@ -11,20 +11,21 @@ import java.nio.ByteBuffer;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * 空のフレーム
+ * mock frame for dummy.
  * @author taktod
  */
 public class NullFrame extends Frame {
-	/** インスタンス */
+	/** shared instance */
 	private static final NullFrame instance = new NullFrame();
 	/**
-	 * 応答として代表のインスタンスを応答します
+	 * ref the shared instance.
 	 */
 	public static NullFrame getInstance() {
 		return instance;
 	}
 	/**
-	 * コンストラクタ(privateにして他で作成禁止)
+	 * constructor
+	 * (prohibit by private.)
 	 */
 	private NullFrame() {
 	}

@@ -9,33 +9,30 @@ package com.ttProject.frame;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * 内部データを解析して応答する動作
- * ByteBufferから取り出すもの。(追記される可能性があるデータ stdinとか)
- * IReadChannelから取り出すもの。(固定されているデータ)
- * あたりがほしい。
+ * interface of frameAnalyzer
  * @author taktod
  */
 public interface IAnalyzer {
 	/**
-	 * 解析動作(全byteデータの確認を実施します)
+	 * analyze from IReadChannel
 	 * @param channel
 	 * @return
 	 * @throws Exception
 	 */
 	public IFrame analyze(IReadChannel channel) throws Exception;
 	/**
-	 * 処理途上のデータを応答します
+	 * ref the frame on progress.
 	 * @return
 	 * @throws Exception
 	 */
 	public IFrame getRemainFrame() throws Exception;
 	/**
-	 * 動作コーデックtypeを応答する
+	 * ref the target codecType
 	 * @return
 	 */
 	public CodecType getCodecType();
 	/**
-	 * 該当コーデック用のprivateDataを設定する
+	 * set the privateData for targetCodec.
 	 * @param channel
 	 * @throws Exception
 	 */

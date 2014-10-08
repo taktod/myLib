@@ -7,17 +7,17 @@
 package com.ttProject.frame;
 
 /**
- * 音声フレーム
+ * base of audioFrame
  * @author taktod
  */
 public abstract class AudioFrame extends Frame implements IAudioFrame {
-	/** 対象フレームのサンプル数 */
+	/** sample num for target frame. */
 	private int sampleNum = 0;
-	/** 対象フレームのサンプルレート(秒間に何サンプルあるか？) */
+	/** sampleRatee */
 	private int sampleRate = 1;
-	/** チャンネル数 */
+	/** channelNum */
 	private int channel = 1;
-	/** ビット数 */
+	/** bit depth */
 	private int bit = 16;
 	/**
 	 * {@inheritDoc}
@@ -55,28 +55,28 @@ public abstract class AudioFrame extends Frame implements IAudioFrame {
 		return 1.0f * getSampleNum() / getSampleRate();
 	}
 	/**
-	 * 保持サンプル数設定
+	 * set the sampleNum
 	 * @param sampleNum
 	 */
 	protected void setSampleNum(int sampleNum) {
 		this.sampleNum = sampleNum;
 	}
 	/**
-	 * サンプルレート設定
+	 * set the sampleRate
 	 * @param sampleRate
 	 */
 	protected void setSampleRate(int sampleRate) {
 		this.sampleRate = sampleRate;
 	}
 	/**
-	 * 音声チャンネル数設定
+	 * set the channel
 	 * @param channel
 	 */
 	protected void setChannel(int channel) {
 		this.channel = channel;
 	}
 	/**
-	 * 音声buffer bit数設定
+	 * set the bit depth
 	 * @param bit
 	 */
 	protected void setBit(int bit) {

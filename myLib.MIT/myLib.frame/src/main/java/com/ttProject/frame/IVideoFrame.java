@@ -7,15 +7,15 @@
 package com.ttProject.frame;
 
 /**
- * 映像フレームのインターフェイス
+ * interface of videoFrame
  * @author taktod
  */
 public interface IVideoFrame extends IFrame {
 	/**
-	 * dts値
+	 * dts
 	 * @return
 	 */
-	public long getDts(); // dtsはdecodeするときの時間
+	public long getDts(); // dts is decode time?
 	/**
 	 * width
 	 * @return
@@ -27,7 +27,7 @@ public interface IVideoFrame extends IFrame {
 	 */
 	public int getHeight();
 	/**
-	 * keyFrameであるか
+	 * is keyFrame?
 	 * @return
 	 */
 	public boolean isKeyFrame();

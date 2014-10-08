@@ -7,19 +7,19 @@
 package com.ttProject.frame;
 
 /**
- * ビデオフレームデータ
+ * base of videoFrame.
  * @author taktod
  */
 public abstract class VideoFrame extends Frame implements IVideoFrame {
-	/** dts値 */
+	/** dts */
 	private long dts = 0;
-	/** 横幅 */
+	/** width */
 	private int width;
-	/** 縦幅 */
+	/** height */
 	private int height;
-	/** データ間隔(予想) */
+	/** duration */
 	private float duration;
-	/** キーフレームであるかどうか */
+	/** keyFrame flag */
 	private boolean isKeyFrame = false;
 	/**
 	 * {@inheritDoc}
@@ -57,35 +57,35 @@ public abstract class VideoFrame extends Frame implements IVideoFrame {
 		return isKeyFrame;
 	}
 	/**
-	 * dts値設定
+	 * set the dts.
 	 * @param dts
 	 */
 	public void setDts(long dts) {
 		this.dts = dts;
 	}
 	/**
-	 * 横幅設定
+	 * set the width
 	 * @param width
 	 */
 	protected void setWidth(int width) {
 		this.width = width;
 	}
 	/**
-	 * 縦幅設定
+	 * set the height
 	 * @param height
 	 */
 	protected void setHeight(int height) {
 		this.height = height;
 	}
 	/**
-	 * duration値設定
+	 * set the duration
 	 * @param duration
 	 */
 	public void setDuration(float duration) {
 		this.duration = duration;
 	}
 	/**
-	 * keyFrameであるか設定
+	 * set the keyFrame flg
 	 * @param keyFrame
 	 */
 	protected void setKeyFrame(boolean keyFrame) {

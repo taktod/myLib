@@ -18,18 +18,19 @@ import com.ttProject.frame.IAudioFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * audioFrameを複数同時に持つ場合のframe
- * flvのaudioTagのnellymoserとかで利用します。(nellymoserでは、1,2,4ユニットが混じった動作とかあるので)
+ * multiFrame for audioFrame.
+ * some kind of frame can be treat as one frame.
+ * ex: nellymoser on flv, 
  * @author taktod
  */
 public class AudioMultiFrame extends AudioFrame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(AudioMultiFrame.class);
-	/** 保持フレームリスト */
+	/** frameList */
 	private List<IAudioFrame> frameList = new ArrayList<IAudioFrame>();
 	/**
-	 * フレームを追加します
+	 * add frame
 	 * @param frame
 	 * @throws Exception
 	 */
@@ -44,8 +45,8 @@ public class AudioMultiFrame extends AudioFrame {
 			setSize(frame.getSize());
 		}
 		else {
-			// データの不一致はいまのところほっとく。
-			setSampleNum(frame.getSampleNum() + getSampleNum()); // サンプル数は足していく。
+			// just ignore if the format is different.
+			setSampleNum(frame.getSampleNum() + getSampleNum()); // samplenum is added.
 			setSize(frame.getSize() + getSize());
 		}
 		frameList.add(frame);
@@ -80,7 +81,7 @@ public class AudioMultiFrame extends AudioFrame {
 		throw new RuntimeException("multiFrame is not support packBuffer.");
 	}
 	/**
-	 * frameリスト参照
+	 * ref the framelist.
 	 * @return
 	 */
 	public List<IAudioFrame> getFrameList() {

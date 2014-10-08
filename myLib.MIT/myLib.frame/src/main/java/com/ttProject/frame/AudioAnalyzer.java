@@ -11,24 +11,24 @@ import org.apache.log4j.Logger;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * audioフレーム解析動作ベース
+ * base for audio frame analyze.
  * @author taktod
-*/
+ */
 public abstract class AudioAnalyzer implements IAnalyzer {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(AudioAnalyzer.class);
-	/** audioデータ選択オブジェクト */
+	/** audioFrame selector */
 	private AudioSelector selector;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param selector
 	 */
 	public AudioAnalyzer(AudioSelector selector) {
 		setSelector(selector);
 	}
 	/**
-	 * セレクター参照
+	 * ref the selector
 	 * @return
 	 */
 	public AudioSelector getSelector() {

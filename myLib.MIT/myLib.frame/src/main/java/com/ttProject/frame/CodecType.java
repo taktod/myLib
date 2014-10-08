@@ -7,9 +7,8 @@
 package com.ttProject.frame;
 
 /**
- * コーデック値参照
+ * codecType definition
  * @author taktod
- *
  */
 public enum CodecType {
 	AAC(0,           Type.AUDIO),
@@ -41,7 +40,7 @@ public enum CodecType {
 	private final int id;
 	private final Type type;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param value
 	 * @param audioFlg
 	 */
@@ -50,28 +49,28 @@ public enum CodecType {
 		this.type = type;
 	};
 	/**
-	 * 音声データであるか
+	 * is audio data?
 	 * @return
 	 */
 	public boolean isAudio() {
 		return type == Type.AUDIO;
 	}
 	/**
-	 * 映像データであるか
+	 * is video data?
 	 * @return
 	 */
 	public boolean isVideo() {
 		return type == Type.VIDEO;
 	}
 	/**
-	 * IDを応答
+	 * ref the id(id for myLib.)
 	 * @return
 	 */
 	public int getId() {
 		return id;
 	}
 	/**
-	 * 番号からコーデック値を応答する
+	 * get the codecType from id
 	 * @param num
 	 * @return
 	 * @throws Exception
@@ -83,14 +82,5 @@ public enum CodecType {
 			}
 		}
 		throw new Exception("invalid codecId is found.:" + num);
-	}
-	/**
-	 * frameからコーデックtypeを応答する
-	 * @param frame
-	 * @return
-	 * @throws Exception
-	 */
-	public static CodecType getCodecType(IFrame frame) throws Exception {
-		return frame.getCodecType();
 	}
 }

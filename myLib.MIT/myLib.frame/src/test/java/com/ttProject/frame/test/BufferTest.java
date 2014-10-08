@@ -12,15 +12,15 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 /**
- * bufferの参照状態について動作テストしておく。
+ * test for byteBuffer.
  * @author taktod
  *
  */
 public class BufferTest {
-	/** ロガー */
+	/** loger */
 	private Logger logger = Logger.getLogger(BufferTest.class);
 	/**
-	 * 動作テスト
+	 * test
 	 * @throws Exception
 	 */
 	@Test
