@@ -290,7 +290,7 @@ public class SetupForContainerTest extends SetupBase {
 			throw new Exception("failed to open container");
 		}
 		processConvert(container, null, Encoder.speex(container));
-		logger.info("ogg setup (speex)");
+		logger.info("ogg setup (speex8)");
 		init();
 		container = IContainer.make();
 		if(container.open(getTargetFile("myLib.MIT/myLib.container.ogg", "test.speex8.ogg"), IContainer.Type.WRITE, null) < 0) {
@@ -299,7 +299,7 @@ public class SetupForContainerTest extends SetupBase {
 		IStreamCoder encoder = Encoder.speex(container);
 		encoder.setSampleRate(8000);
 		processConvert(container, null, encoder);
-		logger.info("ogg setup (speex)");
+		logger.info("ogg setup (speex16)");
 		init();
 		container = IContainer.make();
 		if(container.open(getTargetFile("myLib.MIT/myLib.container.ogg", "test.speex16.ogg"), IContainer.Type.WRITE, null) < 0) {
@@ -308,7 +308,7 @@ public class SetupForContainerTest extends SetupBase {
 		encoder = Encoder.speex(container);
 		encoder.setSampleRate(16000);
 		processConvert(container, null, encoder);
-		logger.info("ogg setup (speex)");
+		logger.info("ogg setup (speex32)");
 		init();
 		container = IContainer.make();
 		if(container.open(getTargetFile("myLib.MIT/myLib.container.ogg", "test.speex32.ogg"), IContainer.Type.WRITE, null) < 0) {
