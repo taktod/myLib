@@ -16,12 +16,12 @@ import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * キーフレーム
+ * intraFrame(keyFrame)
  * @author taktod
  */
 public class IntraFrame extends Flv1Frame {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param pictureStartCode
 	 * @param version
 	 * @param temporalReference

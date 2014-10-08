@@ -16,12 +16,13 @@ import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * スルー可能な中間フレーム
+ * disposable inter frame.
+ * NOTE old red5 save this kind of frame. however, that's corrupted.(can be skip for record.)
  * @author taktod
  */
 public class DisposableInterFrame extends Flv1Frame {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param pictureStartCode
 	 * @param version
 	 * @param temporalReference

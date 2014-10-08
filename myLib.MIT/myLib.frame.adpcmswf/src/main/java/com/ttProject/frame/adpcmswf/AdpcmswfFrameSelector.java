@@ -12,7 +12,7 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IUnit;
 
 /**
- * adpcmのframe選択動作
+ * selector for adpcmswf.
  * @author taktod
  */
 public class AdpcmswfFrameSelector extends AudioSelector {

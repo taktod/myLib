@@ -22,4 +22,7 @@
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
+  <description>adpcm swf frame
+I want to have document for this format.
+</description>
 </project>

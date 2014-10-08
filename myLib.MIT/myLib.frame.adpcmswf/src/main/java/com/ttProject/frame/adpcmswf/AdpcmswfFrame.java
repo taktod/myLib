@@ -14,6 +14,7 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
 
 /**
+ * base of adpcmswf frame
  * adpcmswfの動作ですが、適当なデータがなかったので、いろんなフォーマットをつくってテストしてみました。
  * 1:44100 22050 11025の３つフォーマットしかつくれませんでした。5512はつくれなかった。
  * 2:monoral stereoともに作成可能でした。

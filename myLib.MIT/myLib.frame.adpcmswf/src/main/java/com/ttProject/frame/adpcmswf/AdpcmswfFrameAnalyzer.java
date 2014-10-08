@@ -10,12 +10,12 @@ import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.CodecType;
 
 /**
- * adpcmswfのframeを解析する動作
+ * analyzer of adpcmswf frame.
  * @author taktod
  */
 public class AdpcmswfFrameAnalyzer extends AudioAnalyzer {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public AdpcmswfFrameAnalyzer() {
 		super(new AdpcmswfFrameSelector());

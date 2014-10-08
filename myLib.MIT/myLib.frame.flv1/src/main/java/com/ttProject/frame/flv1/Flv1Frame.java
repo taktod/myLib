@@ -22,9 +22,9 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * flv1のframeのベース
+ * base for flv1 frame
  * @see http://hkpr.info/flash/swf/index.php?%E3%83%93%E3%83%87%E3%82%AA%2FSorenson%20H.263%20%E3%83%93%E3%83%83%E3%83%88%E3%82%B9%E3%83%88%E3%83%AA%E3%83%BC%E3%83%A0%E3%83%95%E3%82%A9%E3%83%BC%E3%83%9E%E3%83%83%E3%83%88
- * TODO temporalReferenceのカウンターを0からに直しておいた方がffmpegでエラーが出なくていい感じになるんだが・・・
+ * TODO temporalReference counter need to start from 0.(maybe suppress the warning on ffmpeg)
  * @author taktod
  */
 public abstract class Flv1Frame extends VideoFrame {
@@ -39,10 +39,27 @@ public abstract class Flv1Frame extends VideoFrame {
 	private final Bit5  quantizer;
 	private final Bit1  extraInformationFlag;
 	private final Bit8  extraInformation;
-	private final Bit   extra; // 帳尻あわせ用
-	private ByteBuffer buffer = null; // あとで読み込みさせたい場合にいれておく
+	private final Bit   extra;
+	private ByteBuffer buffer = null; // buffer to read layer.
 	private int width, height;
 
+	/**
+	 * constructor
+	 * @param pictureStartCode
+	 * @param version
+	 * @param temporalReference
+	 * @param pictureSize
+	 * @param customWidth
+	 * @param customHeight
+	 * @param width
+	 * @param height
+	 * @param pictureType
+	 * @param deblockingFlag
+	 * @param quantizer
+	 * @param extraInformationFlag
+	 * @param extraInformation
+	 * @param extra
+	 */
 	public Flv1Frame(Bit17 pictureStartCode,
 			Bit5 version, Bit8 temporalReference, Bit3 pictureSize,
 			Bit customWidth, Bit customHeight,
@@ -70,15 +87,17 @@ public abstract class Flv1Frame extends VideoFrame {
 	@Override
 	public ByteBuffer getData() throws Exception {
 		if(buffer == null) {
-			throw new Exception("本体データが設定されていません。");
+			throw new Exception("data body is undefined yet.");
 		}
-		// まず保持しているbitデータを結合します。
+		// TODO use BufferUtil.connect.
+		// connect the holding data.
 		BitConnector bitConnector = new BitConnector();
 		ByteBuffer bitData = bitConnector.connect(pictureStartCode, version, temporalReference,
 				pictureSize, customWidth, customHeight,
 				pictureType, deblockingFlag, quantizer,
 				extraInformationFlag, extraInformation, extra);
 		int size = bitData.remaining() + buffer.remaining();
+		// add buffer.
 		ByteBuffer data = ByteBuffer.allocate(size);
 		data.put(bitData);
 		data.put(buffer.duplicate());
@@ -90,7 +109,6 @@ public abstract class Flv1Frame extends VideoFrame {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// detail読み込みでは、必要なデータを読み込みます。
 		channel.position(super.getReadPosition());
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
 	}
@@ -99,7 +117,7 @@ public abstract class Flv1Frame extends VideoFrame {
 	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		// 小規模読み込みの動作は特にすることなし。
+		// for minimumload there is nothing to do.
 		super.setWidth(width);
 		super.setHeight(height);
 		super.setDts(0);
@@ -113,7 +131,7 @@ public abstract class Flv1Frame extends VideoFrame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("本体データが設定されていません。");
+			throw new Exception("body buffer is undefined yet.");
 		}
 		BitConnector connector = new BitConnector();
 		setData(BufferUtil.connect(connector.connect(pictureStartCode, version, temporalReference,
@@ -134,7 +152,7 @@ public abstract class Flv1Frame extends VideoFrame {
 	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
-		// flv1はgetDataの値と同じでOK
+		// for flv1 getPacketBuffer = getData.
 		return getData();
 	}
 	/**

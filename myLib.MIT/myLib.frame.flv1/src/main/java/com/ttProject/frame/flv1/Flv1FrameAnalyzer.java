@@ -10,12 +10,12 @@ import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoAnalyzer;
 
 /**
- * flv1のframeを解析する動作
+ * analyzer for flv1 frame.
  * @author taktod
  */
 public class Flv1FrameAnalyzer extends VideoAnalyzer {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Flv1FrameAnalyzer() {
 		super(new Flv1FrameSelector());

@@ -21,7 +21,7 @@ import com.ttProject.unit.extra.bit.Bit6;
 import com.ttProject.util.BufferUtil;
 
 /**
- * adpcmswfのframeデータ
+ * frame of adpcmswf
  * とりあえずsampleNumだけ取得したい。
  * adpcmCodeSizeを取得してから
  * (byte数 - 0埋めbits) / (adpcmCodeSize + 2) / (channel数) + 1でsampleNumを取得したい。
@@ -30,7 +30,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Frame extends AdpcmswfFrame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Frame.class);
 	
@@ -55,18 +55,17 @@ public class Frame extends AdpcmswfFrame {
 			initialIndex2 = new Bit6();
 			loader.load(initSample2, initialIndex2);
 		}
-		// 残りデータサイズ計算
+		// extra data size.
 		extraBit = loader.getExtraBit();
-		// データサイズからsampleRateを割出します。
 		setReadPosition(channel.position());
-		// 残りbit数を計算しておく。
+		// left bit count.(to calcurate sampleNum for frame.)
 		double leftBitCount = (channel.size() - channel.position()) * 8 + (extraBit != null ? extraBit.getBitCount() : 0);
 		if(getChannel() == 2) {
-			// ステレオの場合
+			// stereo
 			setSampleNum((int)Math.ceil(leftBitCount / (adpcmCodeSize.get() + 2) / 2));
 		}
 		else {
-			// モノラルの場合
+			// monoral
 			setSampleNum((int)Math.ceil(leftBitCount / (adpcmCodeSize.get() + 2)));
 		}
 		super.update();
@@ -86,7 +85,7 @@ public class Frame extends AdpcmswfFrame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("必要な情報が読み込まれていません");
+			throw new Exception("data body is unload yet.");
 		}
 		BitConnector connector = new BitConnector();
 		super.setData(BufferUtil.connect(

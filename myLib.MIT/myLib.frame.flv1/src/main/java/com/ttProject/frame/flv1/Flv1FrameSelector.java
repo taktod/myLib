@@ -23,19 +23,19 @@ import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * flv1のframeを選択する動作
+ * selector for flv1 frame.
  * @author taktod
  */
 public class Flv1FrameSelector extends VideoSelector {
 	/**
-	 * flv1のframeを決定します。
-	 * @param channel (1frame分のデータが渡されることを期待します)
+	 * select flv1 frame.
+	 * @param channel (expect the channel has only 1 frame.)
 	 * @return
 	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		if(channel.size() - channel.position() < 4) {
-			// 32bit以上ないと処理できないものとする。
+			// need more than 32 bit(4byte).
 			return null;
 		}
 		BitLoader bitLoader = new BitLoader(channel);
@@ -46,7 +46,7 @@ public class Flv1FrameSelector extends VideoSelector {
 		bitLoader.load(pictureStartCode,
 				version, temporalReference, pictureSize);
 		if(pictureStartCode.get() != 1) {
-			throw new Exception("開始タグが想定外です。");
+			throw new Exception("picture start code is unexpected. currept?");
 		}
 		int width = 0;
 		int height = 0;
@@ -88,7 +88,7 @@ public class Flv1FrameSelector extends VideoSelector {
 			height = 120;
 			break;
 		case 7: // reserved
-			throw new Exception("pictureSizeがreservedになっていました。");
+			throw new Exception("picture size is reserved.");
 		}
 		Bit2 pictureType = new Bit2();
 		Bit1 deblockingFlag = new Bit1();
@@ -122,7 +122,7 @@ public class Flv1FrameSelector extends VideoSelector {
 			break;
 		case 3: // reserved
 		default:
-			throw new Exception("flv1想定外のフレームです。");
+			throw new Exception("unexpected flv1 frame/");
 		}
 		setup(frame);
 		frame.minimumLoad(channel);
