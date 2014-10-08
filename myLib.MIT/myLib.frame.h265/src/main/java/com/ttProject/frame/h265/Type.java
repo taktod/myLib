@@ -7,7 +7,7 @@
 package com.ttProject.frame.h265;
 
 /**
- * h265のフレームのタイプ定義
+ * definition of h265 nal type
  * @author taktod
  */
 public enum Type {
@@ -88,6 +88,6 @@ public enum Type {
 				return t;
 			}
 		}
-		throw new Exception("解析不能なデータでした。:" + Integer.toHexString(value));
+		throw new Exception("unexpected type:" + Integer.toHexString(value));
 	}
 }

@@ -16,21 +16,20 @@ import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * h265のデフォルトのAnalyzer
- * Nal解析と同じにしておきます。
+ * base analyzer for h265 frame.
  * @author taktod
  */
 public abstract class H265FrameAnalyzer extends VideoAnalyzer {
-	/** 現在処理中のフレーム */
+	/** current target frame. */
 	private H265Frame h265Frame = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public H265FrameAnalyzer() {
 		super(new H265FrameSelector());
 	}
 	/**
-	 * frameの内容をセットアップする
+	 * set up the frame information.
 	 * @param buffer
 	 * @return
 	 * @throws Exception
@@ -39,7 +38,7 @@ public abstract class H265FrameAnalyzer extends VideoAnalyzer {
 		IReadChannel channel = new ByteReadChannel(buffer);
 		H265Frame frame = (H265Frame) getSelector().select(channel);
 		frame.load(channel);
-		if(h265Frame == null || h265Frame.getClass() != frame.getClass()) { // firstMbInSliceみて、連続するフレームであるか確認した方がいいかもしれない。
+		if(h265Frame == null || h265Frame.getClass() != frame.getClass()) { // it is better to check firstBmInSlice, for continuous frame.
 			IFrame oldFrame = h265Frame;
 			if(oldFrame == null) {
 				oldFrame = NullFrame.getInstance();
@@ -53,6 +52,9 @@ public abstract class H265FrameAnalyzer extends VideoAnalyzer {
 			return NullFrame.getInstance();
 		}
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public IFrame getRemainFrame() throws Exception {
 		IFrame frame = h265Frame;

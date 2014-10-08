@@ -15,14 +15,14 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
 
 /**
- * h265のconfigDataの解析動作テスト
+ * config loading test.
  * @author taktod
  */
 public class ConfigTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(ConfigTest.class);
 	/**
-	 * 動作テスト
+	 * test
 	 * @throws Exception
 	 */
 	@Test

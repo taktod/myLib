@@ -13,29 +13,32 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
- * mkvやmp4等のh265のsize + dataのnalを解析する動作
+ * analyzer for h265 dataNal.
  * @author taktod
  */
 public class H265DataNalAnalyzer extends H265FrameAnalyzer {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(H265DataNalAnalyzer.class);
-	/** 共通で利用するconfigData値 */
+	/** configData for share */
 	private ConfigData configData = null;
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public IFrame analyze(IReadChannel channel) throws Exception {
+		if(configData == null) {
+			throw new Exception("configData is undefined.");
+		}
 		if(channel.size() < configData.getNalSizeBytes()) {
-			throw new Exception("読み込みバッファ量がおかしいです。");
+			throw new Exception("reading buffer size is too short to get size.");
 		}
 		int size = BufferUtil.safeRead(channel, configData.getNalSizeBytes()).getInt();
 		if(size <= 0) {
-			throw new Exception("データ指定がおかしいです。");
+			throw new Exception("size information is negative.");
 		}
 		if(channel.size() - channel.position() < size) {
-			throw new Exception("データが足りません");
+			throw new Exception("data size is too short.");
 		}
 		return setupFrame(BufferUtil.safeRead(channel, size));
 	}

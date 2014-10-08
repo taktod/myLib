@@ -11,23 +11,23 @@ import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit6;
 
 /**
- * slice系のframeの共通項
- * Trail
- * Tsa
- * Stsa
- * Radl
- * Rasl
- * Bla
- * Idr
- * Cra
- * あたりのnalがこれにあたるっぽい。
- * h265では、firstMbInSliceを読ませることで、複数nalにまたがるデータを処理できるようにしていた。
- * 同じようなことをやる必要あるかもしれない。
+ * base of slice frame
+ *  Trail
+ *  Tsa
+ *  Stsa
+ *  Radl
+ *  Rasl
+ *  Bla
+ *  Idr
+ *  Cra
+ * 
+ * for h264 firstMbInSlice indicate the one frame with multi nals.
+ * TODO check firstMbInSlice.
  * @author taktod
  */
 public abstract class SliceFrame extends H265Frame {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param forbiddenZeroBit
 	 * @param nalUnitType
 	 * @param nuhLayerId

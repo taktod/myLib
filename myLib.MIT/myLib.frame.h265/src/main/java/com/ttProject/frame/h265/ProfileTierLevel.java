@@ -16,11 +16,12 @@ import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * vpsやspsの中にあるprofileTierLevelのデータ
+ * information on profileTierLevel.
+ * this is in vps or sps.
  * @author taktod
  */
 public class ProfileTierLevel {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(ProfileTierLevel.class);
 	private Bit2 generalProfileSpace = new Bit2();
 	private Bit1 generalTierFlag = new Bit1();
@@ -42,7 +43,7 @@ public class ProfileTierLevel {
 	public void minimumLoad(BitLoader loader, int maxSubLayersMinus1) throws Exception {
 		logger.info("profileTierLevel:" + maxSubLayersMinus1);
 		if(maxSubLayersMinus1 != 0) {
-			throw new RuntimeException("知らない形式のh265でした、開発者に問い合わせて実装してもらってください。");
+			throw new RuntimeException("unexpected information. I need the sample to improve.");
 		}
 		loader.load(generalProfileSpace, generalTierFlag, generalProfileIdc);
 		loader.load(generalProfileCompatibilityFlags);

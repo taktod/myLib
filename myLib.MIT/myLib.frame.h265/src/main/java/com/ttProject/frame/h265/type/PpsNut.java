@@ -14,11 +14,15 @@ import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit6;
 
+/**
+ * pps
+ * @author taktod
+ */
 public class PpsNut extends H265Frame {
-	/** データ */
+	/** data */
 	private ByteBuffer buffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public PpsNut(Bit1 forbiddenZeroBit,
 			Bit6 nalUnitType,
@@ -26,21 +30,29 @@ public class PpsNut extends H265Frame {
 			Bit3 nuhTemporalIdPlus1) {
 		super(forbiddenZeroBit, nalUnitType, nuhLayerId, nuhTemporalIdPlus1);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		// TODO Auto-generated method stub
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// TODO Auto-generated method stub
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		// TODO Auto-generated method stub
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

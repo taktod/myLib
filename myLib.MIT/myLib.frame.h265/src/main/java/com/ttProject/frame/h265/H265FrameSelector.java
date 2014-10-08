@@ -22,8 +22,12 @@ import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit6;
 
+/**
+ * selector for h265 frames.
+ * @author taktod
+ */
 public class H265FrameSelector extends VideoSelector {
-	/** ロガー */
+	/** logger */
 //	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(H265FrameSelector.class);
 	private VpsNut vps = null;
@@ -67,7 +71,7 @@ public class H265FrameSelector extends VideoSelector {
 			frame = new TrailN(forbiddenZeroBit, nalUnitType, nuhLayerId, nuhTemporalIdPlus1);
 			break;
 		default:
-			throw new Exception("想定外のframeを読み込みました。:" + Type.getType(nalUnitType.get()));
+			throw new Exception("unexpected frame.:" + Type.getType(nalUnitType.get()));
 		}
 		if(!(frame instanceof SpsNut)
 		&& !(frame instanceof VpsNut)

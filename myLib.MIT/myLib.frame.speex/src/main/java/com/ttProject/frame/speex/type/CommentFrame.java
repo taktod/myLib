@@ -20,30 +20,31 @@ import com.ttProject.util.BufferUtil;
 import com.ttProject.util.HexUtil;
 
 /**
- * speexのCommentFrame(metaデータみたいなものかな)
+ * comment Frame for speex.
+ * kind of metadata.
  * 
  * 4byte int venderLength
  * nbyte string venderName
  * 4byte int elementNum
  *  4byte elementLength
  *  nbyte elementString
- *  をelementNum分繰り返す
+ * repeat as much as element has.
  * @author taktod
  * TODO こちらの動作ですが、解析途上の場合は、フラグで確認できるようにして、再度loadし直したら続きから処理できるようにしたいところ。
  */
 public class CommentFrame extends SpeexFrame {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(CommentFrame.class);
 	/** venderName */
 	private String venderName = null;
-	/** データサイズ */
+	/** element size */
 	private Integer elementSize = null;
-	/** データ要素 */
+	/** element list */
 	private List<String> elementList = new ArrayList<String>();
-	/** 読み込み途上のデータバッファ */
+	/** working buffer */
 	private ByteBuffer tmpBuffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public CommentFrame() {
 		super.update();
@@ -60,8 +61,6 @@ public class CommentFrame extends SpeexFrame {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// この処理の仕方はここにくるchannelが一定量のデータであることを期待しています。
-		// tmpBufferにデータがある場合は結合しなければならない。
 		IReadChannel targetChannel = null;
 		if(tmpBuffer != null) {
 			tmpBuffer = BufferUtil.connect(
@@ -74,14 +73,12 @@ public class CommentFrame extends SpeexFrame {
 			targetChannel = channel;
 		}
 		if(venderName == null) {
-			// ここでデータを読み込んで処理する。
 			venderName = readString(targetChannel);
 			if(venderName == null) {
 				return;
 			}
 		}
 		if(elementSize == null) {
-			// 問題はこのあと。
 			Integer size = readInt(targetChannel);
 			if(size == null) {
 				return;
@@ -89,7 +86,6 @@ public class CommentFrame extends SpeexFrame {
 			elementSize = size;
 		}
 		for(int i = 0;i < elementSize;i ++) {
-			// 長さを読み込んで必要なデータを取り出す。
 			String element = readString(targetChannel);
 			if(element == null) {
 				return;
@@ -99,9 +95,9 @@ public class CommentFrame extends SpeexFrame {
 		super.update();
 	}
 	/**
-	 * データを読み込もうとしてデータサイズが足りなかったらnullを返す
+	 * try to read data.
 	 * @param channel
-	 * @return
+	 * @return if need more data, return null.
 	 */
 	private String readString(IReadChannel channel) throws Exception {
 		Integer length = readInt(channel);
@@ -119,9 +115,9 @@ public class CommentFrame extends SpeexFrame {
 		return new String(BufferUtil.safeRead(channel, length).array());
 	}
 	/**
-	 * データを読み込もうとしてデータサイズが足りなかったらnullを返す
+	 * try to read int.
 	 * @param channel
-	 * @return
+	 * @return if need more data, return null.
 	 */
 	private Integer readInt(IReadChannel channel) throws Exception {
 		if(channel.size() - channel.position() < 4) {
@@ -145,7 +141,7 @@ public class CommentFrame extends SpeexFrame {
 		// elementListSize
 		//  elementDataLength
 		//  elementData
-		// を繰り返す
+		// ...
 		int size = 4 + venderName.length() + 4;
 		for(String element : elementList) {
 			size += 4 + element.length();
@@ -183,6 +179,9 @@ public class CommentFrame extends SpeexFrame {
 		elementList.remove(data);
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isComplete() {
 		return venderName != null && elementSize != null && elementSize == elementList.size();

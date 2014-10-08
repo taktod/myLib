@@ -14,11 +14,19 @@ import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit6;
 
+/**
+ * vps
+ * @author taktod
+ */
 public class VpsNut extends H265Frame {
-	/** データ */
+	/** data */
 	private ByteBuffer buffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
+	 * @param forbiddenZeroBit
+	 * @param nalUnitType
+	 * @param nuhLayerId
+	 * @param nuhTemporalIdPlus1
 	 */
 	public VpsNut(Bit1 forbiddenZeroBit,
 			Bit6 nalUnitType,
@@ -26,15 +34,27 @@ public class VpsNut extends H265Frame {
 			Bit3 nuhTemporalIdPlus1) {
 		super(forbiddenZeroBit, nalUnitType, nuhLayerId, nuhTemporalIdPlus1);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		return null;

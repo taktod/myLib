@@ -29,7 +29,7 @@ public class SpeexFrameAnalyzer extends AudioAnalyzer {
 		super(new SpeexFrameSelector());
 	}
 	/**
-	 * フレームが読み込み途上だったらそっちの続き読み込みを実施しなければいけないので、analyzeを別途作成します。
+	 * analyze frame.
 	 */
 	@Override
 	public IFrame analyze(IReadChannel channel) throws Exception {
@@ -45,7 +45,7 @@ public class SpeexFrameAnalyzer extends AudioAnalyzer {
 			tmpFrame = null;
 			return null;
 		}
-		// データを評価する
+		// check the data.
 		if(!frame.isComplete()) {
 			tmpFrame = frame;
 		}

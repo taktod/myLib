@@ -15,15 +15,16 @@ import com.ttProject.frame.speex.type.HeaderFrame;
 import com.ttProject.util.HexUtil;
 
 /**
- * 無音frameの動作テスト
+ * test for muted frame.
  * @author taktod
  */
 public class MutedFrameTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(MutedFrameTest.class);
 	@Test
 	public void test() throws Exception {
 		Frame frame = SpeexFrame.getMutedFrame(16000, 1, 16);
+		// need to add headerFrame.
 		HeaderFrame headerFrame = new HeaderFrame();
 		headerFrame.fillWithFlvDefault();
 		frame.setHeaderFrame(headerFrame);

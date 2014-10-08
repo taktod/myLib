@@ -20,8 +20,12 @@ import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.unit.extra.bit.Bit6;
 import com.ttProject.unit.extra.bit.Ueg;
 
+/**
+ * sps
+ * @author taktod
+ */
 public class SpsNut extends H265Frame {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(SpsNut.class);
 	private Bit4 spsVideoParameterSetId = new Bit4();
 	private Bit3 spsMaxSubLayersMinus1 = new Bit3();
@@ -33,10 +37,14 @@ public class SpsNut extends H265Frame {
 	private Ueg picWidthInLumaSamples = new Ueg();
 	private Ueg picHeightInLumaSamples = new Ueg();
 	private Bit1 conformanceWindowFlag = new Bit1();
-	/** データ */
+	/** data */
 	private ByteBuffer buffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
+	 * @param forbiddenZeroBit
+	 * @param nalUnitType
+	 * @param nuhLayerId
+	 * @param nuhTemporalIdPlus1
 	 */
 	public SpsNut(Bit1 forbiddenZeroBit,
 			Bit6 nalUnitType,
@@ -44,19 +52,20 @@ public class SpsNut extends H265Frame {
 			Bit3 nuhTemporalIdPlus1) {
 		super(forbiddenZeroBit, nalUnitType, nuhLayerId, nuhTemporalIdPlus1);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		// TODO Auto-generated method stub
 		BitLoader loader = new BitLoader(channel);
 		loader.setEmulationPreventionFlg(true);
 		loader.load(spsVideoParameterSetId, spsMaxSubLayersMinus1,
 				spsTemporalIdNestingFlag);
 		// 96 / 8 = 12;
 		profileTierLevel.minimumLoad(loader, spsMaxSubLayersMinus1.get());
-		// ここでspsの続きを読み込みます。
+		// now load the sps.
 		loader.load(spsSeqParameterSetId, chromaFormatIdc);
 		if(chromaFormatIdc.get() == 3) {
-			// separateColurPlaneFlagを読み込む
 			separateColourPlaneFlag = new Bit1();
 			loader.load(separateColourPlaneFlag);
 		}
@@ -64,24 +73,35 @@ public class SpsNut extends H265Frame {
 				conformanceWindowFlag);
 		logger.info("width:" + picWidthInLumaSamples.get());
 		logger.info("height:" + picHeightInLumaSamples.get());
-		// 後のデータは適当にやっとく。
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// TODO Auto-generated method stub
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		// TODO Auto-generated method stub
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
-		// TODO Auto-generated method stub
 		return null;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public int getWidth() {
 		return picWidthInLumaSamples.get();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	public int getHeight() {
 		return picHeightInLumaSamples.get();
 	}

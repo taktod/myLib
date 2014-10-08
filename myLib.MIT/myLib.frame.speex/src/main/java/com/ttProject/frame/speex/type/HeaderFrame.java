@@ -16,7 +16,7 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
- * speexのheader情報
+ * speex header frame.
  * 
  * speexでは、headerの部分が欠如しているらしい。(ffmpegの出力より)
  * これは推測ですが、どうやらspeexのoggファイル化したときにでる、header部分が固定化されているために、削除状態になっている感じ。
@@ -51,10 +51,10 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class HeaderFrame extends SpeexFrame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(HeaderFrame.class);
-	// TODO こいつもoggと同じくbit表示にした法がいいのかな・・・ とりあえず面倒なので保留
+	// TODO should I use Bit object, not string.
 	private String speexString;
 	private String speexVersion;
 	private int speexVersionId;
@@ -71,7 +71,7 @@ public class HeaderFrame extends SpeexFrame {
 	private int reserved1;
 	private int reserved2;
 	/**
-	 * flvのデフォルトデータですべて初期化する
+	 * initialize with flv default value.
 	 */
 	public void fillWithFlvDefault() throws Exception {
 		speexString = "Speex   ";
@@ -83,7 +83,7 @@ public class HeaderFrame extends SpeexFrame {
 		modeBitstreamVersion = 4;
 		nbChannels = 1;
 		bitRate = 0xA4D8; // flvにあわせて変更すべき？(42200bpsにしておく。固定か？、vlcではこの値をみて、データの長さを計算しているみたいです。)
-		frameSize = 0x140; // 固定っぽい
+		frameSize = 0x140; // seems to be the fix value.
 		vbr = 0;
 		framesPerPacket = 1;
 		extraHeaders = 0;
@@ -114,12 +114,11 @@ public class HeaderFrame extends SpeexFrame {
 		bitRate = buffer.getInt();
 		frameSize = buffer.getInt(); // sampleNumのことっぽい 320固定だとおもってたけど・・・
 		vbr = buffer.getInt();
-		framesPerPacket = buffer.getInt(); // これが1以外になったことはないから、sampleNumに影響あるんだろうか？
+		framesPerPacket = buffer.getInt(); // I haven't seen other than 1. fixed value?
 		extraHeaders = buffer.getInt();
 		reserved1 = buffer.getInt();
 		reserved2 = buffer.getInt();
 //		logger.info(toString());
-		// ここでデータの読み込みを実行する。
 		super.setReadPosition(channel.position());
 		super.setSize(channel.size());
 		super.setSampleNum(frameSize);
@@ -132,7 +131,6 @@ public class HeaderFrame extends SpeexFrame {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// 読み込むデータは特になし。
 		super.update();
 	}
 	/**
@@ -140,7 +138,6 @@ public class HeaderFrame extends SpeexFrame {
 	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		// データを結合してByteBufferを登録しておきたい。
 		ByteBuffer buffer = ByteBuffer.allocate(80);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		buffer.put(speexString.getBytes());

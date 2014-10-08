@@ -31,13 +31,13 @@ import com.ttProject.util.BufferUtil;
 import com.ttProject.util.HexUtil;
 
 /**
- * h265のconfigData
- * mp4のhvcCのタグの中身がこれに相当します。
+ * configData for h264
+ * hvcC for mp4 is this data.
  * @author taktod
  * 01 01 60 00 00 00 80 00 00 00 00 00 5D F0 00 FC FD F8 F8 00 00 0F 03 20 00 01 00 18 40 01 0C 01 FF FF 01 60 00 00 03 00 80 00 00 03 00 00 03 00 5D 95 C0 90 21 00 01 00 29 42 01 01 01 60 00 00 03 00 80 00 00 03 00 00 03 00 5D A0 07 82 00 B4 59 65 79 24 DA F0 10 10 00 00 03 00 30 00 00 05 60 80 22 00 01 00 06 44 01 C1 73 D1 89
  */
 public class ConfigData {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(ConfigData.class);
 	private H265FrameSelector selector = null;
 	
@@ -77,14 +77,14 @@ public class ConfigData {
 		this.selector = selector;
 	}
 	/**
-	 * DataNalとして保存しているものの、Nalサイズ指定部のbyte数を参照します。
+	 * ref the byte size of data nal size information.
 	 * @return
 	 */
 	public int getNalSizeBytes() {
 		return lengthSizeMinusOne.get() + 1;
 	}
 	/**
-	 * h265ConfigDataを解析する
+	 * analyze h265 ConfigData
 	 * @param channel
 	 * @throws Exception
 	 */
@@ -122,7 +122,6 @@ public class ConfigData {
 				nalUnitLength = new Bit16();
 				loader.load(nalUnitLength);
 				logger.info(nalUnitLength.get());
-				// ここから読み込むべきnalのサイズ
 				ByteBuffer data = BufferUtil.safeRead(channel, nalUnitLength.get());
 				logger.info(HexUtil.toHex(data, true));
 				IReadChannel nalChannel = new ByteReadChannel(data);
@@ -131,18 +130,4 @@ public class ConfigData {
 			}
 		}
 	}
-	/*
-	aligned(8) class HEVCDecoderConfigurationRecord {
-		for (j=0; j < numOfArrays; j++) {
-		bit(1) array_completeness;
-		unsigned int(1) reserved = 0;
-		unsigned int(6) NAL_unit_type;
-		unsigned int(16) numNalus;
-		for (i=0; i< numNalus; i++) {
-		unsigned int(16) nalUnitLength;
-		bit(8*nalUnitLength) nalUnit;
-		}
-		}
-		}
-	*/
 }

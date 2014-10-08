@@ -15,7 +15,7 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
- * speexのframe
+ * speex frame
  * 
  * speexでは、headerの部分が欠如しているらしい。(ffmpegの出力より)
  * これは推測ですが、どうやらspeexのoggファイル化したときにでる、header部分が固定化されているために、削除状態になっている感じ。
@@ -25,6 +25,7 @@ import com.ttProject.util.BufferUtil;
  * 正解な気がします。
  * 
  * 以上とりあえず推測
+ * 
  * speexは1つのframeあたり320samplesで動作している模様です。
  * speexを含むoggFileは
  * OggPage[headerFrame]
@@ -36,10 +37,10 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Frame extends SpeexFrame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Frame.class);
-	/** frameの内部データ */
+	/** frameBuffer */
 	private ByteBuffer frameBuffer = null;
 	/**
 	 * {@inheritDoc}
@@ -53,7 +54,6 @@ public class Frame extends SpeexFrame {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		super.setSize(channel.size());
-		// そのままデータを保持しておいておわり。
 		frameBuffer = BufferUtil.safeRead(channel, channel.size());
 		super.update();
 	}
@@ -63,7 +63,7 @@ public class Frame extends SpeexFrame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(frameBuffer == null) {
-			throw new Exception("frameBufferがnullでした。先に解析してください。");
+			throw new Exception("frameBuffer is null.");
 		}
 		super.setData(frameBuffer);
 	}
@@ -74,6 +74,9 @@ public class Frame extends SpeexFrame {
 	public ByteBuffer getPackBuffer() throws Exception {
 		return getData();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isComplete() {
 		return true;

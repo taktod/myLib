@@ -7,10 +7,9 @@
 package com.ttProject.frame.h265;
 
 /**
- * h265用のNal定義の解析動作
- * TODO あとでつくっておく。
+ * analyze for h265 nal units.
+ * TODO do later.
  * @author taktod
- *
  */
 public class H265NalAnalyzer extends H265FrameAnalyzer {
 

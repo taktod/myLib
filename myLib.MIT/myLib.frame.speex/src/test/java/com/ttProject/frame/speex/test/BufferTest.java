@@ -14,11 +14,15 @@ import org.junit.Test;
 
 import com.ttProject.util.HexUtil;
 
+/**
+ * buffer test?
+ * @author taktod
+ */
 public class BufferTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(BufferTest.class);
 	/**
-	 * テスト
+	 * test
 	 * @throws Exception
 	 */
 	@Test
@@ -33,7 +37,7 @@ public class BufferTest {
 		logger.info(HexUtil.toHex(buffer));
 	}
 	/**
-	 * テスト２
+	 * test2
 	 * @throws Exception
 	 */
 	@Test
@@ -45,20 +49,20 @@ public class BufferTest {
 		logger.info(HexUtil.toHex(buffer));
 	}
 	/**
-	 * テスト３
+	 * test3
 	 * @throws Exception
 	 */
 	@Test
 	public void test3() throws Exception {
 		logger.info("test3");
 		ByteBuffer buffer = ByteBuffer.allocate(4);
-		buffer.order(ByteOrder.LITTLE_ENDIAN); // speexのデータを書き込む時にはlittle endianにすべきみたいですね。
+		buffer.order(ByteOrder.LITTLE_ENDIAN); // speex data is written in little endian.
 		buffer.putInt(0x01020304);
 		buffer.flip();
 		logger.info(HexUtil.toHex(buffer));
 	}
 	/**
-	 * テスト４
+	 * test4
 	 * @throws Exception
 	 */
 	@Test
@@ -69,10 +73,10 @@ public class BufferTest {
 		buffer.putInt(1);
 		buffer.flip();
 		buffer.order(ByteOrder.BIG_ENDIAN);
-		logger.info(buffer.getInt()); // bitEndianにすると、1677726が帰ってくる。
+		logger.info(buffer.getInt()); // with big engian, 1677726 is returned.
 	}
 	/**
-	 * テスト５
+	 * test4
 	 * @throws Exception
 	 */
 	@Test
@@ -85,6 +89,6 @@ public class BufferTest {
 		buffer.put((byte)0x00);
 		buffer.flip();
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
-		logger.info(buffer.getInt()); // little endianにすればきちんと取得できる。
+		logger.info(buffer.getInt()); // little endian I can get 1, as I expected.
 	}
 }

@@ -15,13 +15,13 @@ import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit6;
 
 /**
- * IDR_W_RADLのnal
- * h264でいうところのsliceIDRか？
+ * IDR_W_RADL
+ * sliceIDR on h264?
  * @author taktod
  */
 public class IdrWRadl extends SliceFrame {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param forbiddenZeroBit
 	 * @param nalUnitType
 	 * @param nuhLayerId
@@ -33,18 +33,30 @@ public class IdrWRadl extends SliceFrame {
 			Bit3 nuhTemporalIdPlus1) {
 		super(forbiddenZeroBit, nalUnitType, nuhLayerId, nuhTemporalIdPlus1);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		return null;

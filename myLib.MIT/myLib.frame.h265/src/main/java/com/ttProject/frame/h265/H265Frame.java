@@ -19,7 +19,7 @@ import com.ttProject.unit.extra.bit.Bit3;
 import com.ttProject.unit.extra.bit.Bit6;
 
 /**
- * h265のframe
+ * h265 frame
  * @author taktod
  */
 public abstract class H265Frame extends VideoFrame {
@@ -28,12 +28,17 @@ public abstract class H265Frame extends VideoFrame {
 	private final Bit6 nuhLayerId;
 	private final Bit3 nuhTemporalIdPlus1;
 	
-	// 3点セット
 	private VpsNut vps = null;
 	private SpsNut sps = null;
 	private PpsNut pps = null;
-	/** 複数フレームで同一データになる場合のフレームリスト */
 	private List<H265Frame> frameList = null;
+	/**
+	 * constructor
+	 * @param forbiddenZeroBit
+	 * @param nalUnitType
+	 * @param nuhLayerId
+	 * @param nuhTemporalIdPlus1
+	 */
 	public H265Frame(Bit1 forbiddenZeroBit,
 			Bit6 nalUnitType,
 			Bit6 nuhLayerId,

@@ -14,24 +14,29 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IUnit;
 
 /**
- * speexフレーム選択
- * speexでは、headerFrame -> commentFrame -> 実データという順にデータがはいるらしい
+ * selector for speex frame.
+ * expect to get in order.
+ * headerFrame -> commentFrame -> dataFrame.
  * @author taktod
  */
 public class SpeexFrameSelector extends AudioSelector {
-	/** header情報 */
+	/** headerFrame */
 	private HeaderFrame headerFrame = null;
-	/** コメント情報(メタデータなので、とりあえず捨てておく) */
+	/** commentFrame */
 	private CommentFrame commentFrame = null;
 	/**
-	 * headerフレーム設定(flvで使う)
+	 * set the header frame.
+	 * (set from out side)
+	 * ex: flv has only one kind of header.
+	 * flv doesn't have specific byte informaton on it.
 	 * @param frame
 	 */
 	public void setHeaderFrame(HeaderFrame frame) {
 		this.headerFrame = frame;
 	}
 	/**
-	 * commentフレーム設定(flvで設定する)
+	 * set the comment frame.
+	 * same as header frame.
 	 * @param frame
 	 */
 	public void setCommentFrame(CommentFrame frame) {
@@ -47,17 +52,17 @@ public class SpeexFrameSelector extends AudioSelector {
 		}
 		SpeexFrame frame = null;
 		if(headerFrame == null) {
-			// headerFrameであるとして処理する。
+			// try to get header frame.
 			frame = new HeaderFrame();
 			headerFrame = (HeaderFrame)frame;
 		}
 		else if(commentFrame == null) {
-			// commentFrameであるとして処理する。
+			// next try to get comment frame.
 			frame = new CommentFrame();
 			commentFrame = (CommentFrame)frame;
 		}
 		else {
-			// 通常のフレームとして処理する
+			// treat as frame.
 			frame = new Frame();
 			frame.setHeaderFrame(headerFrame);
 		}
