@@ -12,7 +12,6 @@ import io.humble.ferry.Buffer;
 import io.humble.video.Codec;
 import io.humble.video.Decoder;
 import io.humble.video.MediaPacket;
-import io.humble.video.PixelFormat.Type;
 import io.humble.video.Rational;
 
 import org.apache.log4j.Logger;
@@ -28,16 +27,15 @@ import com.ttProject.frame.vorbis.type.IdentificationHeaderFrame;
 import com.ttProject.frame.vorbis.type.SetupHeaderFrame;
 
 /**
- * frame -> packet変換
- * とりあえず、xuggleのときみたいに、Bufferを使い回して・・・というやり方が有効かわからないので、毎回つくる動作からやってみます。
+ * frame -> packet
+ * I cannot figure out the way to share packet like xuggle. make packet everytime.
  * @author taktod
  */
 public class Packetizer {
-	/** ロガー */
-	@SuppressWarnings("unused")
+	/** logger */
 	private Logger logger = Logger.getLogger(Packetizer.class);
 	/**
-	 * packetをframeから取り出します()
+	 * make packet from frame
 	 * @param frame
 	 * @param packet
 	 * @return
@@ -62,7 +60,7 @@ public class Packetizer {
 		return null;
 	}
 	/**
-	 * 映像パケットを作成する
+	 * make videoPacket
 	 * @param frame
 	 * @param packet
 	 * @return
@@ -81,11 +79,11 @@ public class Packetizer {
 		packet.setPts(frame.getPts());
 		packet.setTimeBase(Rational.make(1, (int)frame.getTimebase()));
 		packet.setKeyPacket(frame.isKeyFrame());
-		// completeの設定がないみたい・・・どうなるんだ？(勝手にcompleteはいるっぽいです。)
+		// complete setting is missing, (automatically put complete?)
 		return packet;
 	}
 	/**
-	 * 音声パケットを作成する
+	 * make audioPacket
 	 * @param frame
 	 * @param packet
 	 * @return
@@ -101,11 +99,11 @@ public class Packetizer {
 		packet = MediaPacket.make(bufData);
 		packet.setPts(frame.getPts());
 		packet.setTimeBase(Rational.make(1, (int)frame.getTimebase()));
-		// こっちもコンプリートフラグがない・・・(勝手にcompleteはいるみたいですね。)
+		// no complete setting. same as video Packet?
 		return packet;
 	}
 	/**
-	 * フレームに対応するデコーダーを応答する
+	 * get the decoder corresponds with frame.
 	 * @param frame
 	 * @param decoder
 	 * @return
@@ -144,7 +142,8 @@ public class Packetizer {
 			}
 			break;
 		case OPUS:
-			// opusは多分codecPrivateがあると思う。
+			// opus will have codecPrivate.
+			throw new RuntimeException("opus is not implements yet.");
 		case PCM_ALAW:
 			if(decoder == null || decoder.getCodecID() != Codec.ID.CODEC_ID_PCM_ALAW) {
 				decoder = makeAudioDecoder((IAudioFrame)frame, Codec.ID.CODEC_ID_PCM_ALAW);
@@ -166,16 +165,16 @@ public class Packetizer {
 		case VORBIS:
 			if(decoder == null || decoder.getCodecID() != Codec.ID.CODEC_ID_VORBIS) {
 				if(frame instanceof IdentificationHeaderFrame || frame instanceof CommentHeaderFrame || frame instanceof SetupHeaderFrame) {
-					// 初期化中のデータの場合は処理できない。
+					// need to initialize first.
 					return null;
 				}
 				decoder = makeAudioDecoder((IAudioFrame)frame, Codec.ID.CODEC_ID_VORBIS);
 				VorbisFrame vorbisFrame = (VorbisFrame)frame;
-				// ここでextraDataをつけておきます。
+				// need to tell extra data for decoder.... how can I do?
 				ByteBuffer buffer = vorbisFrame.getPrivateData();
 				int size = buffer.remaining();
+				@SuppressWarnings("unused")
 				Buffer extraData = Buffer.make(decoder, buffer.array(), 0, size);
-				// どうやってextraデータいれるんだ？これ・・・
 			}
 			break;
 		case FLV1:
@@ -208,10 +207,17 @@ public class Packetizer {
 		}
 		return decoder;
 	}
+	/**
+	 * make audioDecoder
+	 * @param frame
+	 * @param id
+	 * @return
+	 * @throws Exception
+	 */
 	private Decoder makeAudioDecoder(IAudioFrame frame, Codec.ID id) throws Exception {
 		Decoder decoder = null;
 		if(frame.getSampleRate() == 0 || frame.getTimebase() == 0 || frame.getChannel() == 0) {
-			// audioFrameなのに定義がない場合は、作成できないので、処理しない(metaデータとか)
+			// if frame doesn't have audio frame body, skip(like meta data.)
 			return null;
 		}
 		Codec codec = Codec.findDecodingCodec(id);
@@ -219,7 +225,7 @@ public class Packetizer {
 		decoder.setSampleRate(frame.getSampleRate());
 //		decoder.setTimeBase(Rational.make(1, (int)frame.getTimebase()));
 		decoder.setChannels(frame.getChannel());
-		// ここでopenしてしまうとvorbisはうまく動作しないみたい。
+		// if we put open here, maybe vorbis will complain.
 		return decoder;
 	}
 }

@@ -11,12 +11,12 @@ import io.humble.video.Codec;
 import com.ttProject.frame.CodecType;
 
 /**
- * codecTypeがなにであるか判定する
+ * check the codecType from Codec.ID object
  * @author taktod
  */
 public class CodecTypeChecker {
 	/**
-	 * codecTypeを調べる
+	 * Codec.ID -> codecType
 	 * @param id
 	 * @return
 	 * @throws Exception

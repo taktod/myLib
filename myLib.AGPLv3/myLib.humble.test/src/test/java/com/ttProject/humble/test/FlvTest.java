@@ -37,23 +37,23 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
 
 /**
- * flvの動作テスト
+ * flv convert test.
  * @author taktod
  */
 public class FlvTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(FlvTest.class);
 	private Packetizer packetizer = null;
-	// 音声
+	// audio
 	private Decoder audioDecoder = null;
 	private MediaAudioResampler audioResampler = null;
 	private Encoder audioEncoder = null;
-	// 映像
+	// video
 	private Decoder videoDecoder = null;
 	private MediaPictureResampler videoResampler = null;
 	private Encoder videoEncoder = null;
 	/**
-	 * 動作テスト
+	 * test
 	 * @throws Exception
 	 */
 //	@Test
@@ -62,8 +62,7 @@ public class FlvTest {
 		IReadChannel source = FileReadChannel.openFileReadChannel(
 				"http://49.212.39.17/mario.flv"
 		);
-		// S_16 -> S_16Pに変換するとうまく動作しないっぽいな・・・なんだろう。
-		// aacにエンコードしたい。
+		// S_16 -> S_16P is not work... why?
 		audioEncoder = Encoder.make(Codec.findEncodingCodec(ID.CODEC_ID_MP3));
 		audioEncoder.setSampleRate(44100);
 		audioEncoder.setChannels(2);
@@ -101,7 +100,7 @@ public class FlvTest {
 		}
 	}
 	/**
-	 * 映像をデコードします
+	 * decode video
 	 * @param frame
 	 */
 	private void decodeVideo(IVideoFrame frame) throws Exception {
@@ -125,7 +124,7 @@ public class FlvTest {
 		}
 	}
 	/**
-	 * 音声をデコードします
+	 * decode audio
 	 * @param frame
 	 */
 	private void decodeAudio(IAudioFrame frame) throws Exception {
@@ -149,7 +148,7 @@ public class FlvTest {
 		logger.info("end");
 	}
 	/**
-	 * リサンプル実行
+	 * audio resample.
 	 * @param samples
 	 * @return
 	 * @throws Exception
@@ -159,17 +158,15 @@ public class FlvTest {
 		|| samples.getFormat() != audioEncoder.getSampleFormat()
 		|| samples.getChannels() != audioEncoder.getChannels()
 		|| samples.getChannelLayout() != audioEncoder.getChannelLayout()) {
-			// リサンプルする必要あり。
 			if(audioResampler == null
 			||    (samples.getSampleRate() != audioResampler.getInputSampleRate()
 				|| samples.getFormat() != audioResampler.getInputFormat()
 				|| samples.getChannels() != audioResampler.getInputChannels()
 				|| samples.getChannelLayout() != audioResampler.getInputLayout())) {
-					// resamplerがない場合もしくは、入力データがリサンプル動作に一致しない場合
 				audioResampler = MediaAudioResampler.make(
 						audioEncoder.getChannelLayout(), audioEncoder.getSampleRate(), audioEncoder.getSampleFormat(),
 						samples.getChannelLayout(), samples.getSampleRate(), samples.getFormat());
-				logger.info("リサンプルする必要があるので、リサンプラーを作成します。");
+				logger.info("need to resample, make resampler.");
 				logger.info(audioResampler.getInputLayout());
 				logger.info(audioResampler.getInputFormat());
 				logger.info(audioResampler.getInputSampleRate());
@@ -190,19 +187,18 @@ public class FlvTest {
 			return spl;
 		}
 		else {
-			// リサンプルする必要なし
+			// no need for resample.
 			return samples;
 		}
 	}
 	/**
-	 * エンコード実行
+	 * try encode.
 	 * @param samples
 	 * @throws Exception
 	 */
 	private void encodeSound(MediaAudio samples) throws Exception {
 //		logger.info(samples.getNumSamples());
 //		while(sampleConsumed < samples.getNumSamples()) {
-			// 複数packetにしないとだめなデータの場合どうするんだろう・・・
 		while(true) {
 			MediaPacket output = MediaPacket.make();
 			audioEncoder.encodeAudio(output, samples);
@@ -211,7 +207,6 @@ public class FlvTest {
 				Buffer buf = output.getData();
 				ByteBuffer buffer = buf.getByteBuffer(0, buf.getBufferSize());
 				logger.info(HexUtil.toHex(buffer, true));
-				// ただしいかどうかはわからんけど、とりあえず、mp3にエンコードはできた。
 			}
 			else {
 				break;

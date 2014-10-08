@@ -7,7 +7,7 @@
 package com.ttProject.humble.frameutil;
 
 /**
- * packet -> frame変換
+ * packet -> frame
  * @author taktod
  */
 public class Depacketizer {
