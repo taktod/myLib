@@ -175,6 +175,7 @@ public class Encoder {
 		videoEncoder.setProperty("cqp", "0");
 		videoEncoder.setFlag(Flags.FLAG_LOOP_FILTER, true);
 		videoEncoder.setFlag(Flags.FLAG_CLOSED_GOP, true);
+		videoEncoder.setFlag(Flags.FLAG_LOW_DELAY, true);
 		return videoEncoder;
 	}
 	/**
