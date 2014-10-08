@@ -19,14 +19,14 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * wavファイルの読み込みテスト
+ * wav load test
  * @author taktod
  */
 public class WavTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(WavTest.class);
 	/**
-	 * 読み込みテスト
+	 * test
 	 */
 	@Test
 	public void test() {
@@ -40,7 +40,6 @@ public class WavTest {
 			while((container = reader.read(source)) != null) {
 				logger.info(container);
 				if(container instanceof Data) {
-					// データだった場合は処理はここでおわり。(とりあえず)
 					Data data = (Data)container;
 					data.analyzeFrame(source, new IFrameEventListener() {
 						@Override

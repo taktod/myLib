@@ -22,11 +22,11 @@ import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
 /**
- * adpcmの僕オリジナル圧縮形式テスト
+ * adpcm original format.
  * @author taktod
  */
 public class AdpcmTakTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(AdpcmTakTest.class);
 	private 			Integer[] order = {
 			0x0,
@@ -66,7 +66,7 @@ public class AdpcmTakTest {
 	};
 
 	/**
-	 * 読み込みテスト
+	 * read test
 	 */
 	@Test
 	public void test() {
