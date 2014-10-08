@@ -10,12 +10,12 @@ import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoAnalyzer;
 
 /**
- * mjpegのframe解析
+ * analyzer for mjpeg frame.
  * @author taktod
  */
 public class MjpegFrameAnalyzer extends VideoAnalyzer {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public MjpegFrameAnalyzer() {
 		super(new MjpegFrameSelector());

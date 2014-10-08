@@ -14,21 +14,21 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
 
 /**
- * mp3のフレームの基本
+ * base of mp3 frame.
  * @author taktod
  */
 public abstract class Mp3Frame extends AudioFrame {
 	/**
-	 * 無音frameのサンプルを応答します。
-	 * @param sampleRate サンプルレート
-	 * @param channels チャンネル数
-	 * @param bitSize mp3には関係なし
+	 * muted frame sample
+	 * @param sampleRate
+	 * @param channels
+	 * @param bitSize (nothing for mp3.)
 	 * @return
 	 */
 	public static Frame getMutedFrame(int sampleRate, int channels, int bitSize) throws Exception {
 		String bufferString = null;
 		if(channels != 2 && channels != 1) {
-			throw new RuntimeException("チャンネル設定が想定外でした。");
+			throw new RuntimeException("channel num is unexpected:" + channels);
 		}
 		switch(sampleRate) {
 		case 44100:
@@ -58,7 +58,7 @@ public abstract class Mp3Frame extends AudioFrame {
 			}
 			break;
 		default:
-			throw new RuntimeException("想定外の値でした。");
+			throw new RuntimeException("sampleRate is unexpected.:" + sampleRate);
 		}
 		IReadChannel channel = new ByteReadChannel(HexUtil.makeBuffer(bufferString));
 		channel.position(1);

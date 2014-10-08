@@ -10,12 +10,12 @@ import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.CodecType;
 
 /**
- * mp3のframeを解析する動作
+ * analyzer for mp3
  * @author taktod
  */
 public class Mp3FrameAnalyzer extends AudioAnalyzer {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Mp3FrameAnalyzer() {
 		super(new Mp3FrameSelector());

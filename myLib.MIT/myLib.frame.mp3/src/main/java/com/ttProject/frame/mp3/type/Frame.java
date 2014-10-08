@@ -22,11 +22,11 @@ import com.ttProject.unit.extra.bit.Bit4;
 import com.ttProject.util.BufferUtil;
 
 /**
- * mp3の音声を保持しているframe
+ * mp3 frame.
  * @author taktod
  */
 public class Frame extends Mp3Frame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Frame.class);
 	private Bit11 syncBit           = new Bit11();
@@ -45,7 +45,7 @@ public class Frame extends Mp3Frame {
 	
 	private ByteBuffer rawBuffer;
 	
-	/** 処理用のテーブル */
+	/** tables */
 	private final int bitrateIndexV1L1[] = {
 		-1, 32000, 64000, 96000, 128000, 160000, 192000, 224000, 256000, 288000, 320000, 352000, 384000, 416000, 448000, -1
 	};
@@ -86,7 +86,7 @@ public class Frame extends Mp3Frame {
 		super.update();
 	}
 	/**
-	 * サンプリング数設定補助
+	 * set sampleNum
 	 * @throws Exception
 	 */
 	private void setSampleNum() throws Exception {
@@ -108,11 +108,11 @@ public class Frame extends Mp3Frame {
 			}
 			break;
 		default:
-			throw new Exception("layerの値がおかしいです。");
+			throw new Exception("value of layse is corrupt:" + layer.get());
 		}
 	}
 	/**
-	 * bitrate計算
+	 * bitrate
 	 * @return
 	 */
 	public int getBitrate() {

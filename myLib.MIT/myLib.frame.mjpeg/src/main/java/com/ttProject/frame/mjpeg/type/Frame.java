@@ -15,28 +15,39 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
- * mjpegの内部フレーム
+ * mjpeg frame.
  * @author taktod
  */
 public class Frame extends MjpegFrame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Frame.class);
 	private ByteBuffer buffer = null;
+	/**
+	 * {@inheritDoc0}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		return null;
 	}
+	/**
+	 * {@inheritDoc0}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.update();
 	}
+	/**
+	 * {@inheritDoc0}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// ここでデータ実体を保持しておきたい。
 		buffer = BufferUtil.safeRead(channel, channel.size());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc0}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		setData(buffer);

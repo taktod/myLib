@@ -14,23 +14,23 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IUnit;
 
 /**
- * 
+ * selector for mjpeg frame 
  * @author taktod
  */
 public class MjpegFrameSelector extends VideoSelector {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(MjpegFrameSelector.class);
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		if(channel.size() == channel.position()) {
 			return null;
 		}
-		// とりあえずこのデータをそのままframeに保持させれば、frame用のbyteデータはできあがることになる。
 		Frame frame = new Frame();
 		setup(frame);
-		// channelから必要なデータを取り出したい。
-//		throw new Exception("データ作成が未実装");
 		frame.minimumLoad(channel);
 		return frame;
 	}

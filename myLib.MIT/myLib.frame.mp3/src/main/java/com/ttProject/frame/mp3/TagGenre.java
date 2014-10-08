@@ -7,7 +7,7 @@
 package com.ttProject.frame.mp3;
 
 /**
- * tagのジャンル一覧
+ * def of tag genre
  * @author taktod
  */
 public enum TagGenre {
@@ -151,6 +151,6 @@ public enum TagGenre {
 				return genre;
 			}
 		}
-		throw new Exception("解析不能な数値がきました。");
+		throw new Exception("unsupported value:" + value);
 	}
 }

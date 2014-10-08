@@ -17,11 +17,11 @@ import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit8;
 
 /**
- * mp3のframeを選択するプログラム
+ * selector for mp3 frame.
  * @author taktod
  */
 public class Mp3FrameSelector extends AudioSelector {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Mp3FrameSelector.class);
 	/**
@@ -30,7 +30,6 @@ public class Mp3FrameSelector extends AudioSelector {
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		if(channel.size() - channel.position() < 1) {
-			// 少なくとも1バイトは必要
 			return null;
 		}
 		Bit8 firstByte = new Bit8();
@@ -42,12 +41,12 @@ public class Mp3FrameSelector extends AudioSelector {
 			frame = new ID3Frame();
 			break;
 		case 'T': // TAG?
-			throw new Exception("Tag動作は未実装です。");
+			throw new Exception("Tag is undefined.");
 		case 0xFF: // Frame
 			frame = new Frame();
 			break;
 		default:
-			throw new Exception("解析不能なデータです");
+			throw new Exception("unknown frame:" + Integer.toHexString(firstByte.get()));
 		}
 		setup(frame);
 		frame.minimumLoad(channel);
