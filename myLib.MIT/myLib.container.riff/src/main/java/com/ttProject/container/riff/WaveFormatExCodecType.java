@@ -9,12 +9,12 @@ package com.ttProject.container.riff;
 import com.ttProject.frame.CodecType;
 
 /**
- * riffCodecType
+ * WaveFirnatExCodecType
  * it just a part.
- * only for FMT. rename?
+ * only for FMT or strf.
  * @author taktod
  */
-public enum RiffCodecType {
+public enum WaveFormatExCodecType {
 	Unknown(0x0000, CodecType.NONE),
 	PCM(0x0001, CodecType.UNKNOWN_AUDIO),
 	MS_ADPCM(0x0002, CodecType.UNKNOWN_AUDIO),
@@ -26,7 +26,7 @@ public enum RiffCodecType {
 	MP3(0x0055, CodecType.MP3);
 	private final int value;
 	private final CodecType codecType;
-	private RiffCodecType(int value, CodecType codecType) {
+	private WaveFormatExCodecType(int value, CodecType codecType) {
 		this.value = value;
 		this.codecType = codecType;
 	}
@@ -36,8 +36,8 @@ public enum RiffCodecType {
 	public CodecType getCodecType() {
 		return codecType;
 	}
-	public static RiffCodecType getCodec(int num) {
-		for(RiffCodecType type : values()) {
+	public static WaveFormatExCodecType getCodec(int num) {
+		for(WaveFormatExCodecType type : values()) {
 			if(type.intValue() == num) {
 				return type;
 			}

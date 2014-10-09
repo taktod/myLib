@@ -19,7 +19,8 @@ public enum Type {
 	hdrl(0x6864726C),
 	avih(0x61766968),
 	strl(0x7374726C),
-	strh(0x73747268);
+	strh(0x73747268),
+	strf(0x73747266);
 	
 	private final int value;
 	private Type(int value) {

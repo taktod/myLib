@@ -8,11 +8,15 @@ package com.ttProject.container.riff;
 
 import org.apache.log4j.Logger;
 
+import com.ttProject.container.riff.type.Avih;
 import com.ttProject.container.riff.type.Data;
 import com.ttProject.container.riff.type.Fact;
 import com.ttProject.container.riff.type.Fmt;
+import com.ttProject.container.riff.type.Hdrl;
 import com.ttProject.container.riff.type.List;
 import com.ttProject.container.riff.type.Riff;
+import com.ttProject.container.riff.type.Strh;
+import com.ttProject.container.riff.type.Strl;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
@@ -46,8 +50,6 @@ public class RiffUnitSelector implements ISelector {
 				throw new Exception("position of header is invalid.");
 			}
 			unit = new Riff();
-//			unit = new RiffHeaderUnit();
-//			headerUnit = (RiffHeaderUnit)unit;
 			break;
 		case FMT: // format information(must)
 			unit = new Fmt();
@@ -63,6 +65,16 @@ public class RiffUnitSelector implements ISelector {
 			unit = new List();
 			break;
 		case hdrl:
+			unit = new Hdrl();
+			break;
+		case avih:
+			unit = new Avih();
+			break;
+		case strl:
+			unit = new Strl();
+			break;
+		case strh:
+			unit = new Strh();
 			break;
 		default:
 			throw new RuntimeException("unexpected frame type.:" + type);

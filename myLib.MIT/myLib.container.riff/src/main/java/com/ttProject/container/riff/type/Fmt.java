@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 
 import org.apache.log4j.Logger;
 
-import com.ttProject.container.riff.RiffCodecType;
+import com.ttProject.container.riff.WaveFormatExCodecType;
 import com.ttProject.container.riff.RiffFormatUnit;
 import com.ttProject.container.riff.Type;
 import com.ttProject.frame.AudioAnalyzer;
@@ -75,8 +75,8 @@ public class Fmt extends RiffFormatUnit {
 	 * ref RiffCodecType
 	 * @return
 	 */
-	public RiffCodecType getRiffCodecType() {
-		return RiffCodecType.getCodec(wFormatTag.get());
+	public WaveFormatExCodecType getRiffCodecType() {
+		return WaveFormatExCodecType.getCodec(wFormatTag.get());
 	}
 	/**
 	 * ref codecType
@@ -84,7 +84,7 @@ public class Fmt extends RiffFormatUnit {
 	 */
 	@Override
 	public CodecType getCodecType() {
-		return RiffCodecType.getCodec(wFormatTag.get()).getCodecType();
+		return WaveFormatExCodecType.getCodec(wFormatTag.get()).getCodecType();
 	}
 	/**
 	 * ref analyzer
