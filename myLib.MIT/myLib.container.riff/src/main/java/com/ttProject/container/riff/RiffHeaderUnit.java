@@ -21,9 +21,15 @@ public class RiffHeaderUnit extends RiffUnit {
 	private Logger logger = Logger.getLogger(RiffHeaderUnit.class);
 	/** format string */
 	private String formatString;
+	/**
+	 * constructor
+	 */
+	public RiffHeaderUnit() {
+		super(Type.RIFF);
+	}
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		super.minimumLoad(channel);
+//		super.minimumLoad(channel);
 		// load tag type.
 		formatString = new String(BufferUtil.safeRead(channel, 4).array());
 	}

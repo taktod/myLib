@@ -8,7 +8,8 @@ package com.ttProject.container.riff.type;
 
 import org.apache.log4j.Logger;
 
-import com.ttProject.container.riff.RiffUnit;
+import com.ttProject.container.riff.RiffSizeUnit;
+import com.ttProject.container.riff.Type;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit32;
@@ -17,11 +18,14 @@ import com.ttProject.unit.extra.bit.Bit32;
  * fact info
  * @author taktod
  */
-public class Fact extends RiffUnit {
+public class Fact extends RiffSizeUnit {
 	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Fact.class);
 	private Bit32 totalSampleNum = new Bit32();
+	public Fact() {
+		super(Type.FACT);
+	}
 	/**
 	 * {@inheritDoc}
 	 */

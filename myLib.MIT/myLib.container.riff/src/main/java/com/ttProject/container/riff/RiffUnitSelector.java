@@ -11,6 +11,8 @@ import org.apache.log4j.Logger;
 import com.ttProject.container.riff.type.Data;
 import com.ttProject.container.riff.type.Fact;
 import com.ttProject.container.riff.type.Fmt;
+import com.ttProject.container.riff.type.List;
+import com.ttProject.container.riff.type.Riff;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
@@ -22,12 +24,9 @@ import com.ttProject.util.BufferUtil;
  */
 public class RiffUnitSelector implements ISelector {
 	/** logger */
-	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(RiffUnitSelector.class);
-	/** headerUnit */
-	private RiffHeaderUnit headerUnit = null;
 	/** format information */
-	private Fmt fmt = null;
+	private RiffFormatUnit formatUnit = null;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -39,17 +38,19 @@ public class RiffUnitSelector implements ISelector {
 		// check first 4byte
 		Type type = Type.getType(BufferUtil.safeRead(channel, 4).getInt());
 		RiffUnit unit = null;
+		logger.info(type);
 		switch(type) {
 		case RIFF: // header
 			if(channel.position() != 4) {
 				throw new Exception("position of header is invalid.");
 			}
-			unit = new RiffHeaderUnit();
-			headerUnit = (RiffHeaderUnit)unit;
+			unit = new Riff();
+//			unit = new RiffHeaderUnit();
+//			headerUnit = (RiffHeaderUnit)unit;
 			break;
 		case FMT: // format information(must)
 			unit = new Fmt();
-			fmt = (Fmt)unit;
+			formatUnit = (Fmt)unit;
 			break;
 		case FACT: // sampleNum and so on...
 			unit = new Fact();
@@ -58,6 +59,9 @@ public class RiffUnitSelector implements ISelector {
 			unit = new Data();
 			break;
 		case LIST: // ?
+			unit = new List();
+			break;
+		case hdrl:
 			break;
 		default:
 			throw new RuntimeException("unexpected frame type.:" + type);
@@ -65,11 +69,8 @@ public class RiffUnitSelector implements ISelector {
 		if(unit == null) {
 			throw new Exception("unit is undefined.maybe non-support type.:" + type);
 		}
-		if(!(unit instanceof RiffHeaderUnit)) {
-			unit.setHeaderUnit(headerUnit);
-			if(!(unit instanceof Fmt)) {
-				unit.setFmt(fmt);
-			}
+		if(!(unit instanceof RiffMasterUnit) || !(unit instanceof RiffFormatUnit)) {
+			unit.setFormatUnit(formatUnit);
 		}
 		unit.minimumLoad(channel);
 		return unit;

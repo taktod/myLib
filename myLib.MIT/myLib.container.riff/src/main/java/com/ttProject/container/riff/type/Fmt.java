@@ -11,7 +11,8 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.riff.RiffCodecType;
-import com.ttProject.container.riff.RiffUnit;
+import com.ttProject.container.riff.RiffFormatUnit;
+import com.ttProject.container.riff.Type;
 import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.CodecType;
@@ -29,21 +30,24 @@ import com.ttProject.util.BufferUtil;
  * fmt
  * @author taktod
  */
-public class Fmt extends RiffUnit {
+public class Fmt extends RiffFormatUnit {
 	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Fmt.class);
-	private Bit16 pcmType       = new Bit16();
-	private Bit16 channels      = new Bit16();
-	private Bit32 sampleRate    = new Bit32();
-	private Bit32 dataSpeed     = new Bit32(); // byteRate byte / sec
-	private Bit16 blockSize     = new Bit16();
-	private Bit16 bitNum        = new Bit16();
-	private Bit16 extraInfoSize = new Bit16();
+	private Bit16 wFormatTag      = new Bit16();
+	private Bit16 nChannels       = new Bit16();
+	private Bit32 nSamplePerSec   = new Bit32();
+	private Bit32 nAvgBytesPerSec = new Bit32(); // byteRate byte / sec
+	private Bit16 nBlockAlign     = new Bit16();
+	private Bit16 wBitsPerSample  = new Bit16();
+	private Bit16 cbSize          = new Bit16();
 	@SuppressWarnings("unused")
 	private ByteBuffer extraInfo = null;
 	/** frame Analyzer */
 	private IAnalyzer frameAnalyzer = null;
+	public Fmt() {
+		super(Type.FMT);
+	}
 	/**
 	 * {@inheritDoc}
 	 */
@@ -52,14 +56,14 @@ public class Fmt extends RiffUnit {
 		super.minimumLoad(channel);
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
-		loader.load(pcmType, channels, sampleRate, dataSpeed, blockSize, bitNum, extraInfoSize);
+		loader.load(wFormatTag, nChannels, nSamplePerSec, nAvgBytesPerSec, nBlockAlign, wBitsPerSample, cbSize);
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		extraInfo = BufferUtil.safeRead(channel, extraInfoSize.get());
+		extraInfo = BufferUtil.safeRead(channel, cbSize.get());
 	}
 	/**
 	 * {@inheritDoc}
@@ -72,19 +76,21 @@ public class Fmt extends RiffUnit {
 	 * @return
 	 */
 	public RiffCodecType getRiffCodecType() {
-		return RiffCodecType.getCodec(pcmType.get());
+		return RiffCodecType.getCodec(wFormatTag.get());
 	}
 	/**
 	 * ref codecType
 	 * @return
 	 */
+	@Override
 	public CodecType getCodecType() {
-		return RiffCodecType.getCodec(pcmType.get()).getCodecType();
+		return RiffCodecType.getCodec(wFormatTag.get()).getCodecType();
 	}
 	/**
 	 * ref analyzer
 	 * @return
 	 */
+	@Override
 	public IAnalyzer getFrameAnalyzer() {
 		if(frameAnalyzer != null) {
 			return frameAnalyzer;
@@ -104,13 +110,13 @@ public class Fmt extends RiffUnit {
 		}
 		if(frameAnalyzer instanceof AudioAnalyzer) {
 			AudioSelector selector = ((AudioAnalyzer)frameAnalyzer).getSelector();
-			selector.setBit(bitNum.get());
-			selector.setChannel(channels.get());
-			selector.setSampleRate(sampleRate.get());
+			selector.setBit(wBitsPerSample.get());
+			selector.setChannel(nChannels.get());
+			selector.setSampleRate(nSamplePerSec.get());
 		}
 		return frameAnalyzer;
 	}
 	public int getBlockSize() {
-		return blockSize.get();
+		return nBlockAlign.get();
 	}
 }

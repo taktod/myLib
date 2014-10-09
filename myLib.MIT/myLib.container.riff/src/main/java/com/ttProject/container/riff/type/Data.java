@@ -9,7 +9,9 @@ package com.ttProject.container.riff.type;
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.riff.IFrameEventListener;
-import com.ttProject.container.riff.RiffUnit;
+import com.ttProject.container.riff.RiffFormatUnit;
+import com.ttProject.container.riff.RiffSizeUnit;
+import com.ttProject.container.riff.Type;
 import com.ttProject.frame.AudioFrame;
 import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.IFrame;
@@ -22,12 +24,15 @@ import com.ttProject.util.BufferUtil;
  * ex: stereo L R L R L R...
  * @author taktod
  */
-public class Data extends RiffUnit {
+public class Data extends RiffSizeUnit {
 	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Data.class);
 	/** passedTic passedSampleNum */
 	private long passedTic = 0;
+	public Data() {
+		super(Type.DATA);
+	}
 	/**
 	 * {@inheritDoc}
 	 */
@@ -42,7 +47,35 @@ public class Data extends RiffUnit {
 	public void load(IReadChannel channel) throws Exception {
 	}
 	public void analyzeFrame(IReadChannel channel, IFrameEventListener listener) throws Exception {
-		Fmt fmt = getFmt();
+		RiffFormatUnit formatUnit = getFormatUnit();
+		while(channel.position() < channel.size()) {
+			int blockSize = 0;
+			// for pcm_alaw or pcm_mulaw, data size 1, is too small.
+			switch(formatUnit.getCodecType()) {
+			case PCM_ALAW:
+			case PCM_MULAW:
+				blockSize = 0x0100; // force 256 for 1chunk.
+				if(channel.size() - channel.position() < 0x0100) {
+					blockSize = channel.size() - channel.position();
+				}
+				break;
+			default:
+				blockSize = formatUnit.getBlockSize();
+				break;
+			}
+			IReadChannel frameChannel = new ByteReadChannel(BufferUtil.safeRead(channel, blockSize));
+			IAnalyzer analyzer = formatUnit.getFrameAnalyzer();
+			IFrame frame = analyzer.analyze(frameChannel);
+			if(frame instanceof AudioFrame) {
+				AudioFrame aFrame = (AudioFrame) frame;
+				passedTic += aFrame.getSampleNum();
+				aFrame.setPts(passedTic);
+			}
+			if(listener != null) {
+				listener.onNewFrame(frame);
+			}
+		}
+/*		Fmt fmt = getFmt();
 		while(channel.position() < channel.size()) {
 			// for pcm_alaw or pcm_mulaw, data size 1, one byte = 1 sample.
 			int blockSize = 0;
@@ -69,7 +102,7 @@ public class Data extends RiffUnit {
 			if(listener != null) {
 				listener.onNewFrame(frame);
 			}
-		}
+		}*/
 	}
 	/**
 	 * {@inheritDoc}

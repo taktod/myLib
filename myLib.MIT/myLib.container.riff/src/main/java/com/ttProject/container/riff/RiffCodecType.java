@@ -11,6 +11,7 @@ import com.ttProject.frame.CodecType;
 /**
  * riffCodecType
  * it just a part.
+ * only for FMT. rename?
  * @author taktod
  */
 public enum RiffCodecType {

@@ -7,21 +7,36 @@
 package com.ttProject.container.riff;
 
 import com.ttProject.container.Container;
-import com.ttProject.container.riff.type.Fmt;
-import com.ttProject.nio.channels.IReadChannel;
-import com.ttProject.unit.extra.BitLoader;
-import com.ttProject.unit.extra.bit.Bit32;
 
 /**
  * riff unit
  * @author taktod
  */
 public abstract class RiffUnit extends Container {
-	/** headerUnit object */
-	private RiffHeaderUnit headerUnit = null;
+	private final Type fcc; // fourcc
 	/** format information */
-	private Fmt fmt = null;
-	@Override
+	private RiffFormatUnit formatUnit = null;
+	/**
+	 * constructor
+	 * @param type
+	 */
+	public RiffUnit(Type type) {
+		fcc = type;
+	}
+	/**
+	 * ref the fourCC
+	 * @return
+	 */
+	public Type getFourCC() {
+		return fcc;
+	}
+	protected void setFormatUnit(RiffFormatUnit formatUnit) {
+		this.formatUnit = formatUnit;
+	}
+	protected RiffFormatUnit getFormatUnit() {
+		return formatUnit;
+	}
+/*	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
@@ -32,6 +47,7 @@ public abstract class RiffUnit extends Container {
 	protected void setHeaderUnit(RiffHeaderUnit headerUnit) {
 		this.headerUnit = headerUnit;
 	}
+	// TODO this riff unit is for wave only?
 	protected void setFmt(Fmt fmt) {
 		this.fmt = fmt;
 	}
@@ -47,5 +63,5 @@ public abstract class RiffUnit extends Container {
 		data.append(getClass().getSimpleName());
 		data.append(" size:").append(getSize());
 		return data.toString();
-	}
+	}*/
 }
