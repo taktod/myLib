@@ -12,12 +12,12 @@ import com.ttProject.frame.theora.TheoraFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * theoraのkeyFrame
+ * keyFrame for theora
  * @author taktod
  */
 public class IntraFrame extends TheoraFrame {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param packetType
 	 * @throws Exception
 	 */

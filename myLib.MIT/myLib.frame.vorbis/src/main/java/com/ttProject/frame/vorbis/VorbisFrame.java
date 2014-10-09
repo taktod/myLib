@@ -13,21 +13,19 @@ import com.ttProject.frame.CodecType;
 import com.ttProject.frame.vorbis.type.IdentificationHeaderFrame;
 
 /**
- * vorbisのframe
+ * vorbis frame
  * @author taktod
- * vorbisのframeもspeexと同様
- * header部
- * コメント部
- * 情報部
- * データ部にわかれるっぽい。
- * 
- * で、データ部だけ、xuggleのframeとしてほしいところ。
+ * vorbis frame is similar to speex
+ * header
+ * comment
+ * setup info
+ * data.
  */
 public abstract class VorbisFrame extends AudioFrame {
-	/** データ参照用のIdentificationHeaderFrame */
+	/** ref object of identificationHeaderFrame */
 	private IdentificationHeaderFrame identificationHeaderFrame = null;
 	/**
-	 * identificationHeaderFrame(情報を保持している)を設定
+	 * set identificationHeaderFrame
 	 * @param headerFrame
 	 */
 	public void setIdentificationHeaderFrame(IdentificationHeaderFrame headerFrame) {
@@ -38,7 +36,7 @@ public abstract class VorbisFrame extends AudioFrame {
 		super.setSampleNum(headerFrame.getSampleNum());
 	}
 	/**
-	 * identificationHeaderFrameを参照
+	 * ref identificationHeaderFrame
 	 * @return
 	 */
 	protected IdentificationHeaderFrame getHeaderFrame() {

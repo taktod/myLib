@@ -19,42 +19,41 @@ import com.ttProject.unit.IUnit;
 import com.ttProject.util.BufferUtil;
 
 /**
- * theoraのフレーム解析を実施します。
+ * selector for theora frame.
  * @author taktod
  */
 public class TheoraFrameSelector extends VideoSelector {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(TheoraFrameSelector.class);
-	// 先にこれらのデータを読み込む必要あり
 	private IdentificationHeaderDecodeFrame identificationHeaderDecodeFrame = null;
 	private CommentHeaderFrame commentHeaderFrame = null;
 	private SetupHeaderFrame setupHeaderFrame = null;
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
 		if(channel.position() == channel.size()) {
 			return null;
 		}
-		// 1byte目を参照してなにかするみたいな形にしておこう。
+		// check first byte. (first 1bit 1:header 0:frame)
 		byte firstByte = BufferUtil.safeRead(channel, 1).get();
 		if((firstByte & 0x80) != 0x00) {
 			if(identificationHeaderDecodeFrame != null
 			&& commentHeaderFrame != null
 			&& setupHeaderFrame != null) {
-				// 本当はここ、上書きした方がいいかもしれないね
-				throw new Exception("setupデータはすでに設定済みなのに設定項目をうけとりました。");
+				// should I overwrite setup data?
+				throw new Exception("setup data is already filled out, however, got new one.");
 			}
 		}
 		else {
 			if(identificationHeaderDecodeFrame == null
 			|| commentHeaderFrame == null
 			|| setupHeaderFrame == null) {
-				// 本当はここ、上書きした方がいいかもしれないね
-				throw new Exception("setupデータはすでに設定済みなのに設定項目をうけとりました。");
+				throw new Exception("setup data is empty, however, got frame data.");
 			}
 		}
-		// はじめの1bitが立っている→header
-		// はじめの1bitが立っていない→通常のframe
 		TheoraFrame frame = null;
 		if(identificationHeaderDecodeFrame == null) {
 			identificationHeaderDecodeFrame = new IdentificationHeaderDecodeFrame(firstByte);

@@ -15,8 +15,10 @@ import com.ttProject.util.BufferUtil;
 
 /**
  * vorbisのheaderBufferを分割して、ByteBufferのリストとして応答します。
+ * このクラスいるのか？
  * @author taktod
  */
+@Deprecated
 public class VorbisHeaderBufferSplitter {
 	public List<ByteBuffer> doSplit(IReadChannel channel) throws Exception {
 		List<ByteBuffer> result = new ArrayList<ByteBuffer>();

@@ -15,13 +15,11 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.IUnit;
 
 /**
- * vorbisのframeを読み込みます。
- * 
- * とりあえずspeexと同じ方法でやっていきます。
+ * selector for vorbis frame.
  * @author taktod
  */
 public class VorbisFrameSelector extends AudioSelector {
-	// 先にframe情報を順番に読み込む
+	// first need to read global information.
 	private IdentificationHeaderFrame identificationHeaderFrame = null;
 	private CommentHeaderFrame        commentHeaderFrame        = null;
 	private SetupHeaderFrame          setupHeaderFrame          = null;

@@ -13,14 +13,14 @@ import com.ttProject.frame.VideoFrame;
 import com.ttProject.frame.theora.type.IdentificationHeaderDecodeFrame;
 
 /**
- * theoraのデータのベース
+ * base of theora frame
  * @author taktod
  */
 public abstract class TheoraFrame extends VideoFrame {
-	/** データ参照用のidentificationHeaderDecodeFrame */
+	/** identificationHeaderDecodeFrame for ref */
 	private IdentificationHeaderDecodeFrame identificationHeaderDecodeFrame = null;
 	/**
-	 * ヘッダ情報をつけておきます。
+	 * add header information.
 	 * @param frame
 	 */
 	public void setIdentificationHeaderDecodeFrame(IdentificationHeaderDecodeFrame frame) {

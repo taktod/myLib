@@ -25,14 +25,14 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
+ * identificationHeaderDecodeFrame
  * packetType 0x80
  * theoraString "theora"
- * theoraのidentificationHeaderDecodeFrame
  * @see http://www.theora.org/doc/Theora.pdf
  * @author taktod
  */
 public class IdentificationHeaderDecodeFrame extends TheoraFrame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(IdentificationHeaderDecodeFrame.class);
 	private Bit8  packetType = new Bit8();
@@ -65,12 +65,12 @@ public class IdentificationHeaderDecodeFrame extends TheoraFrame {
 	
 	private ByteBuffer privateBuffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param buffer
 	 */
 	public IdentificationHeaderDecodeFrame(byte packetType) throws Exception {
 		if(packetType != (byte)0x80) {
-			throw new Exception("packetTypeの数値が一致しません");
+			throw new Exception("unexpected packet type value.");
 		}
 		this.packetType.set(0x80);
 	}
@@ -88,7 +88,7 @@ public class IdentificationHeaderDecodeFrame extends TheoraFrame {
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		String strBuffer = new String(BufferUtil.safeRead(channel, 6).array());
 		if(!strBuffer.equals(theoraString)) {
-			throw new Exception("theoraの文字列が一致しません。");
+			throw new Exception("theora string is different from expected.");
 		}
 		BitLoader loader = new BitLoader(channel);
 		loader.load(Vmaj, Vmin, Vrev, 
@@ -105,7 +105,6 @@ public class IdentificationHeaderDecodeFrame extends TheoraFrame {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		; // 特にすることなし
 		super.update();
 	}
 	/**
@@ -130,14 +129,14 @@ public class IdentificationHeaderDecodeFrame extends TheoraFrame {
 		setData(buffer);
 	}
 	/**
-	 * CommentHeaderFrame設定
+	 * set CommentHeaderFrame
 	 * @param frame
 	 */
 	public void setCommentHeaderFrame(CommentHeaderFrame frame) {
 		commentHeaderFrame = frame;
 	}
 	/**
-	 * SetupHeaderFrame設定
+	 * setSetupHeaderFrame
 	 * @param frame
 	 */
 	public void setSetupHeaderFrame(SetupHeaderFrame frame) {

@@ -15,12 +15,12 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * Vorbisのフレームを解析する
+ * analyze for vorbis frame.
  * @author taktod
  */
 public class VorbisFrameAnalyzer extends AudioAnalyzer {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public VorbisFrameAnalyzer() {
 		super(new VorbisFrameSelector());
@@ -30,23 +30,16 @@ public class VorbisFrameAnalyzer extends AudioAnalyzer {
 	 */
 	@Override
 	public void setPrivateData(IReadChannel channel) throws Exception {
-		// selectorをリセットする。
+		// reset the selector
 		setSelector(new VorbisFrameSelector());
-		// ここでcodecPrivateのデータを先行して解析する必要あり。
-		// 02 1E 56
-		// サイズ指定要素２つ
-		// １つ目は0x1E
-		// ２つ目は0x56
-		// 残りは３つ目の要素
-		// となります。
-		// なおxuggleで変換する場合はIStreamCoderにこのcodecPrivateと同じものを渡す必要があるみたいです。
+		// for xuggle, IStreamCoder need to have this information.
 		BitLoader loader = new BitLoader(channel);
 		Bit8 count = new Bit8();
 		Bit8 identificationHeaderSize = new Bit8();
 		Bit8 commentHeaderSize = new Bit8();
 		loader.load(count, identificationHeaderSize, commentHeaderSize);
 		if(count.get() != 2) {
-			throw new Exception("count数がvorbisに合致していません。");
+			throw new Exception("count num is unexpected.");
 		}
 		analyze(new ByteReadChannel(BufferUtil.safeRead(channel, identificationHeaderSize.get())));
 		analyze(new ByteReadChannel(BufferUtil.safeRead(channel, commentHeaderSize.get())));

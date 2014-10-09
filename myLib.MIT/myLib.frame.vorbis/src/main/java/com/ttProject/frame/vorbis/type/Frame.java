@@ -13,7 +13,7 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
- * vorbisの通常フレーム
+ * frame for vorbis
  * @author taktod
  */
 public class Frame extends VorbisFrame {
@@ -40,7 +40,7 @@ public class Frame extends VorbisFrame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("データがありません");
+			throw new Exception("buffer is undefined.");
 		}
 		setData(buffer);
 	}

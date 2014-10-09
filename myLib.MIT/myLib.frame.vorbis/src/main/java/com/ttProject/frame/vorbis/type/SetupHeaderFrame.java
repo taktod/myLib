@@ -19,22 +19,22 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * vorbisのheaderフレーム
+ * setup header frame for vorbis
  * packetType: 1byte 0x05 setup header
  * string: 6Byte "vorbis"
- * あとのデータはよくわからん。
- * どうやらデコードするときの変換情報が含まれているらしい。
+ * unknown for others.
+ * seems to have tables for decoding??
  * 
  * @see http://www.xiph.org/vorbis/doc/Vorbis_I_spec.html#x1-620004.2.2
  * @author taktod
  */
 public class SetupHeaderFrame extends VorbisFrame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(SetupHeaderFrame.class);
 	private Bit8  packetType  = new Bit8();
 	private Bit48 string      = new Bit48();
-	private ByteBuffer buffer = null; // データ本体
+	private ByteBuffer buffer = null; // body of data.
 	/**
 	 * {@inheritDoc}
 	 */
@@ -45,10 +45,10 @@ public class SetupHeaderFrame extends VorbisFrame {
 		loader.setLittleEndianFlg(true);
 		loader.load(packetType, string);
 		if(packetType.get() != 5) {
-			throw new Exception("packetTypeが不正です");
+			throw new Exception("packetType value is unexpected.");
 		}
 		if(string.getLong() != 0x736962726F76L) {
-			throw new Exception("string文字列が不正です。");
+			throw new Exception("string value is different from expected.");
 		}
 		super.setSize(channel.size());
 		buffer = BufferUtil.safeRead(channel, channel.size() - channel.position());

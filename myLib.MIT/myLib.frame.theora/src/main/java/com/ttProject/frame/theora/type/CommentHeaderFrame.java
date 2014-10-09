@@ -21,14 +21,14 @@ import com.ttProject.util.BufferUtil;
 /**
  * packetType 0x81
  * string: 6byte theora
- * どうやらsize(4byte) + data(string)
+ * size(4byte) + data(string)?
  * extraCount(4byte)?
- * extraSize + dataの繰り返しになっている模様
- * littleEndianっぽい
+ * extraSize + data repeat this...
+ * littleEndian?
  * @author taktod
  */
 public class CommentHeaderFrame extends TheoraFrame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(CommentHeaderFrame.class);
 	private Bit8 packetType = new Bit8();
@@ -37,13 +37,13 @@ public class CommentHeaderFrame extends TheoraFrame {
 	private String venderString = null;
 	private Bit32 iterateNum = new Bit32();
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param packetType
 	 * @throws Exception
 	 */
 	public CommentHeaderFrame(byte packetType) throws Exception {
 		if(packetType != (byte)0x81) {
-			throw new Exception("packetTypeの数値が一致しません");
+			throw new Exception("unexpected packet type value.");
 		}
 		this.packetType.set(0x81);
 	}
@@ -61,7 +61,7 @@ public class CommentHeaderFrame extends TheoraFrame {
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		String strBuffer = new String(BufferUtil.safeRead(channel, 6).array());
 		if(!strBuffer.equals(theoraString)) {
-			throw new Exception("theoraの文字列が一致しません。");
+			throw new Exception("theora header string is different.");
 		}
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
@@ -69,7 +69,7 @@ public class CommentHeaderFrame extends TheoraFrame {
 		venderString = new String(BufferUtil.safeRead(channel, venderLength.get()).array());
 		loader.load(iterateNum);
 		if(iterateNum.get() != 0) {
-			throw new Exception("データのあるtheoraはまだ入手していません。開発者に解析を依頼してください。");
+			throw new Exception("header frame with meta information is unknown, I need some sample.");
 		}
 		super.update();
 	}

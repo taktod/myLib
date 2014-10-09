@@ -17,21 +17,21 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * theoraのframeを解析します。
+ * analyzer for theora frame.
  * @author taktod
  */
 public class TheoraFrameAnalyzer extends VideoAnalyzer {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(TheoraFrameAnalyzer.class);
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public TheoraFrameAnalyzer() {
 		super(new TheoraFrameSelector());
 	}
 	/**
-	 * theoraのprivateデータを設定する
+	 * set the private data for theora.
 	 * @param channel
 	 * @throws Exception
 	 */
@@ -43,7 +43,7 @@ public class TheoraFrameAnalyzer extends VideoAnalyzer {
 		Bit8 commentHeaderSize = new Bit8();
 		loader.load(count, identificationHeaderSize, commentHeaderSize);
 		if(count.get() != 2) {
-			throw new Exception("count数がtheoraのprivateDataの数に合致していません。");
+			throw new Exception("count num is not much for theora privateData");
 		}
 		analyze(new ByteReadChannel(BufferUtil.safeRead(channel, identificationHeaderSize.get())));
 		analyze(new ByteReadChannel(BufferUtil.safeRead(channel, commentHeaderSize.get())));

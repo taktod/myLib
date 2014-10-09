@@ -23,7 +23,8 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * vorbisのheaderフレーム
+ * header frame for vorbis
+ * 
  * packetType: 1byte 0x01 identification header
  * string: 6Byte "vorbis"
  * vorbisVersion 32bit integer
@@ -32,23 +33,22 @@ import com.ttProject.util.BufferUtil;
  * bitrateMaximum 32bit integer
  * bitrateNominal 32bit integer
  * bitrateMinimum 32bit integer
- * blockSize0 2^x 4bit unsigned integer(samples per frameがとれるっぽい)
- * blockSize1 2^x 4bit unsigned integer(不明)
- * framing flag 1bit(実際は1byteになってるっぽい)
+ * blockSize0 2^x 4bit unsigned integer(samples per frame)
+ * blockSize1 2^x 4bit unsigned integer(?)
+ * framing flag 1bit(actual data is 1 byte.)
  * 
  * @see http://www.xiph.org/vorbis/doc/Vorbis_I_spec.html#x1-620004.2.2
  * @author taktod
  * 
- * サンプルデータ
+ * sample data.
  * 01 76 6F 72 62 69 73 00 00 00 00 02 44 AC 00 00 FF FF FF FF 00 77 01 00 FF FF FF FF B8 01
  * 
- * どうやらsampleNumもここの値で決定されるみたいです。
- * はじめのframeは(blockSize0 + blockSize1) / 4
- * それ以降のframeは(blockSize1 + blockSize1) / 4
- * になっている模様
+ * identificationHeaderFrame decide the sampleNum too.
+ * sampleNum of first frame(blockSize0 + blockSize1) / 4
+ * sampleNum of others(blockSize1 + blockSize1) / 4
  */
 public class IdentificationHeaderFrame extends VorbisFrame {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(IdentificationHeaderFrame.class);
 	private Bit8  packetType      = new Bit8();
 	private Bit48 string          = new Bit48();
@@ -83,12 +83,11 @@ public class IdentificationHeaderFrame extends VorbisFrame {
 				bitrateMaximum, bitrateNormal, bitrateMinimum,
 				blockSize0, blockSize1, framingFlag);
 		extraBit = loader.getExtraBit();
-		// データの確認
 		if(packetType.get() != 1) {
-			throw new Exception("packetTypeが不正です。");
+			throw new Exception("packetType value is unexpected.");
 		}
 		if(string.getLong() != 0x736962726F76L) {
-			throw new Exception("string文字列が不正です。");
+			throw new Exception("string value is different from expected.");
 		}
 		blockSize0Value = (1 << blockSize0.get());
 		blockSize1Value = (1 << blockSize1.get());
@@ -141,7 +140,7 @@ public class IdentificationHeaderFrame extends VorbisFrame {
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		if(privateBuffer == null) {
-			// ここで応答するデータはidentificationHeaderFrame + commentHeaderFrame + setupHeaderFrameのデータの組み合わせとなります。
+			// return data consists of identificationHeaderFrame + commentHeaderFrame + setupHeaderFrame.
 			ByteBuffer identificationData = getData();
 			ByteBuffer commentData = commentHeaderFrame.getMinimumBuffer();
 			ByteBuffer setupData = setupHeaderFrame.getPackBuffer();
@@ -161,14 +160,14 @@ public class IdentificationHeaderFrame extends VorbisFrame {
 		return getPackBuffer();
 	}
 	/**
-	 * CommentHeaderFrame設定
+	 * set the CommentHeaderFrame
 	 * @param frame
 	 */
 	public void setCommentHeaderFrame(CommentHeaderFrame frame) {
 		this.commentHeaderFrame = frame;
 	}
 	/**
-	 * SetupHeaderFrame設定
+	 * set the SetupHeaderFrame
 	 * @param frame
 	 */
 	public void setSetupHeaderFrame(SetupHeaderFrame frame) {

@@ -23,23 +23,23 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * vorbisのheaderフレーム
+ * header frame for vorbis
  * packetType: 1byte 0x03 comment header
  * string: 6Byte "vorbis"
  * venderLength: 4byte integer
  * venderString: nbyte
- * [繰り返す]
+ * [repeat]
  * iterateNum: 4byte integer
  * length: 4byte integer
- * string: nbyte (utfっぽい)
- * [繰り返すここまで]
- * framing flag 1bit(実際は1byteになってるっぽい)
+ * string: nbyte (utf8?)
+ * [repeat end]
+ * framing flag 1bit(actually 1byte.)
  * 
  * @see http://www.xiph.org/vorbis/doc/Vorbis_I_spec.html#x1-620004.2.2
  * @author taktod
  */
 public class CommentHeaderFrame extends VorbisFrame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(CommentHeaderFrame.class);
 	private Bit8   packetType = new Bit8();
@@ -57,10 +57,10 @@ public class CommentHeaderFrame extends VorbisFrame {
 		loader.setLittleEndianFlg(true);
 		loader.load(packetType, string);
 		if(packetType.get() != 3) {
-			throw new Exception("packetTypeが不正です。");
+			throw new Exception("unexpected packet type value.");
 		}
 		if(string.getLong() != 0x736962726F76L) {
-			throw new Exception("string文字列が不正です。");
+			throw new Exception("string value is unexpected.");
 		}
 		Bit32 size = new Bit32();
 		loader.load(size);
@@ -73,7 +73,7 @@ public class CommentHeaderFrame extends VorbisFrame {
 		}
 		loader.load(lastFlag);
 		if(lastFlag.get() != 1) {
-			throw new Exception("終端データがおかしい");
+			throw new Exception("end flag is unexpected.");
 		}
 	}
 	/**
@@ -119,7 +119,7 @@ public class CommentHeaderFrame extends VorbisFrame {
 		return getData();
 	}
 	/**
-	 * 最短のデータを応答しておく
+	 * ref the minimum size buffer.
 	 * @return
 	 */
 	public ByteBuffer getMinimumBuffer() {
