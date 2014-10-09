@@ -86,4 +86,11 @@ public class Strh extends RiffSizeUnit {
 		// TODO Auto-generated method stub
 		
 	};
+	/**
+	 * ref the fccType
+	 * @return
+	 */
+	public FccType getFccType() {
+		return fccType;
+	}
 }

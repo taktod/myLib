@@ -13,8 +13,10 @@ import com.ttProject.container.riff.type.Data;
 import com.ttProject.container.riff.type.Fact;
 import com.ttProject.container.riff.type.Fmt;
 import com.ttProject.container.riff.type.Hdrl;
+import com.ttProject.container.riff.type.Junk;
 import com.ttProject.container.riff.type.List;
 import com.ttProject.container.riff.type.Riff;
+import com.ttProject.container.riff.type.Strf;
 import com.ttProject.container.riff.type.Strh;
 import com.ttProject.container.riff.type.Strl;
 import com.ttProject.nio.channels.IReadChannel;
@@ -31,6 +33,7 @@ public class RiffUnitSelector implements ISelector {
 	private Logger logger = Logger.getLogger(RiffUnitSelector.class);
 	/** format information */
 	private RiffFormatUnit formatUnit = null;
+	private Strh prevStrhUnit = null;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -75,6 +78,26 @@ public class RiffUnitSelector implements ISelector {
 			break;
 		case strh:
 			unit = new Strh();
+			prevStrhUnit = (Strh)unit;
+			break;
+		case strf:
+			// check strh, if
+			switch(prevStrhUnit.getFccType()) {
+			case auds:
+				// use fmt
+				unit = new Fmt();
+				break;
+			case mids:
+			case tets:
+				throw new Exception("unknown for mids or tets.");
+			case vids:
+				unit = new Strf();
+				break;
+			}
+			formatUnit = (RiffFormatUnit) unit;
+			break;
+		case JUNK:
+			unit = new Junk();
 			break;
 		default:
 			throw new RuntimeException("unexpected frame type.:" + type);

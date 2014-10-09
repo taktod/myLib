@@ -20,7 +20,8 @@ public enum Type {
 	avih(0x61766968),
 	strl(0x7374726C),
 	strh(0x73747268),
-	strf(0x73747266);
+	strf(0x73747266),
+	JUNK(0x4A554E4B);
 	
 	private final int value;
 	private Type(int value) {
