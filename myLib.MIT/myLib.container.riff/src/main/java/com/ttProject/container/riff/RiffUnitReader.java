@@ -6,7 +6,9 @@
  */
 package com.ttProject.container.riff;
 
+import com.ttProject.container.IContainer;
 import com.ttProject.container.Reader;
+import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * riff unit reader
@@ -18,5 +20,16 @@ public class RiffUnitReader extends Reader {
 	 */
 	public RiffUnitReader() {
 		super(new RiffUnitSelector());
+	}
+	@Override
+	public IContainer read(IReadChannel channel) throws Exception {
+		IContainer container = (IContainer)getSelector().select(channel);
+		if(container != null) {
+			if(container instanceof RiffMasterUnit) {
+				((RiffMasterUnit) container).setRiffUnitReader(this);
+			}
+			container.load(channel);
+		}
+		return container;
 	}
 }

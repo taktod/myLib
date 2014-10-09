@@ -75,34 +75,6 @@ public class Data extends RiffSizeUnit {
 				listener.onNewFrame(frame);
 			}
 		}
-/*		Fmt fmt = getFmt();
-		while(channel.position() < channel.size()) {
-			// for pcm_alaw or pcm_mulaw, data size 1, one byte = 1 sample.
-			int blockSize = 0;
-			switch(fmt.getRiffCodecType()) {
-			case A_LAW:
-			case U_LAW:
-				blockSize = 0x0100; // force 256 for 1 chunk.
-				if(channel.size() - channel.position() < 0x0100) {
-					blockSize = channel.size() - channel.position();
-				}
-				break;
-			default:
-				blockSize = fmt.getBlockSize();
-				break;
-			}
-			ByteReadChannel frameChannel = new ByteReadChannel(BufferUtil.safeRead(channel, blockSize));
-			IAnalyzer analyzer = getFmt().getFrameAnalyzer();
-			IFrame frame = analyzer.analyze(frameChannel);
-			if(frame instanceof AudioFrame) {
-				AudioFrame aFrame = (AudioFrame) frame;
-				passedTic += aFrame.getSampleNum();
-				aFrame.setPts(passedTic);
-			}
-			if(listener != null) {
-				listener.onNewFrame(frame);
-			}
-		}*/
 	}
 	/**
 	 * {@inheritDoc}

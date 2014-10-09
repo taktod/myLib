@@ -22,6 +22,7 @@ public abstract class RiffUnit extends Container {
 	 */
 	public RiffUnit(Type type) {
 		fcc = type;
+		super.setSize(4);
 	}
 	/**
 	 * ref the fourCC

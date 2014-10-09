@@ -56,6 +56,7 @@ public class WavTest {
 			}
 		}
 		catch(Exception e) {
+			e.printStackTrace();
 			logger.warn(e);
 		}
 		finally {

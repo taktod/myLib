@@ -36,6 +36,7 @@ public class RiffUnitSelector implements ISelector {
 			return null;
 		}
 		// check first 4byte
+		logger.info(Integer.toHexString(channel.position()));
 		Type type = Type.getType(BufferUtil.safeRead(channel, 4).getInt());
 		RiffUnit unit = null;
 		logger.info(type);
