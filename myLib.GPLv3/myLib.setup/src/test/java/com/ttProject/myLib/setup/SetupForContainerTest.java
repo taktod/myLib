@@ -30,6 +30,30 @@ public class SetupForContainerTest extends SetupBase {
 		processConvert(container, null, Encoder.aac(container));
 	}
 	@Test
+	public void avi() throws Exception {
+		logger.info("avi setup (mjpeg)");
+		init();
+		IContainer container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.avi", "test.mjpeg.avi"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("failed to open container");
+		}
+		processConvert(container, Encoder.mjpeg(container), null);
+		logger.info("avi setup (adpcm)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.avi", "test.adpcm_ima_wav.avi"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("failed to open container");
+		}
+		processConvert(container, null, Encoder.adpcm_ima_wav(container));
+		logger.info("avi setup (mjpeg / adpcm)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.avi", "test.mjpegadpcm_ima_wav.avi"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("failed to open container");
+		}
+		processConvert(container, Encoder.mjpeg(container), Encoder.adpcm_ima_wav(container));
+	}
+	@Test
 	public void flv() throws Exception {
 		logger.info("flv setup (flv1)");
 		init();
