@@ -19,8 +19,8 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
 /**
- * コメントフレーム(oggにはあるっぽい。なくてもいいのかも？)
- * とりあえずoggにはあるけど、webmにはなかった。
+ * commentFrame
+ * (ogg do have.webm not.)
  * OpusTags
  * venderLength:
  * venderData
@@ -30,11 +30,11 @@ import com.ttProject.util.BufferUtil;
  * Data2Length
  * Data2Data
  * ....
- * webm(mkv) -> ogg変換したかったら適当にねつ造したほうがよさそう。
+ * for the convert from webm(mkv) -> ogg, need to make up.
  * @author taktod
  */
 public class CommentFrame extends OpusFrame {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(CommentFrame.class);
 	private String opusString = "OpusTags";
 	private String venderName;
@@ -42,7 +42,7 @@ public class CommentFrame extends OpusFrame {
 	private List<String> elementList = new ArrayList<String>();
 	private ByteBuffer tmpBuffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public CommentFrame() {
 		super.update();
@@ -92,9 +92,9 @@ public class CommentFrame extends OpusFrame {
 		super.update();
 	}
 	/**
-	 * データを読み込もうとしてデータサイズが足りなかったらnullを返す
+	 * readString
 	 * @param channel
-	 * @return
+	 * @return if need more data, return null.
 	 */
 	private String readString(IReadChannel channel) throws Exception {
 		Integer length = readInt(channel);
@@ -112,9 +112,9 @@ public class CommentFrame extends OpusFrame {
 		return new String(BufferUtil.safeRead(channel, length).array());
 	}
 	/**
-	 * データを読み込もうとしてデータサイズが足りなかったらnullを返す
+	 * read int
 	 * @param channel
-	 * @return
+	 * @return if need more data, return null
 	 */
 	private Integer readInt(IReadChannel channel) throws Exception {
 		if(channel.size() - channel.position() < 4) {
@@ -125,10 +125,16 @@ public class CommentFrame extends OpusFrame {
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		return buffer.getInt();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		return null;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(venderName == null) {
@@ -166,6 +172,9 @@ public class CommentFrame extends OpusFrame {
 		elementSize = elementList.size();
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isComplete() {
 		return venderName != null && elementSize != null && elementSize == elementList.size();

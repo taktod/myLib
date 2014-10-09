@@ -12,19 +12,19 @@ import com.ttProject.frame.IFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * opusデータ解析
+ * analyzer for opus frame.
  * @author taktod
  */
 public class OpusFrameAnalyzer extends AudioAnalyzer {
 	private OpusFrame tmpFrame = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public OpusFrameAnalyzer() {
 		super(new OpusFrameSelector());
 	}
 	/**
-	 * フレーム解析(途上だった場合は続きをよみこませる(speexの動作準拠))
+	 * {@inheritDoc}
 	 */
 	@Override
 	public IFrame analyze(IReadChannel channel) throws Exception {

@@ -22,15 +22,15 @@ import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.util.BufferUtil;
 
 /**
- * opusのフレーム
+ * opus frame
  * @author taktod
  * とりあえずサンプルの無音(48000Hz)がFC FF FEになったどういうことかな？
  */
 public class Frame extends OpusFrame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Frame.class);
-	/** frameの内部データ */
+	/** frameBuffer */
 	private ByteBuffer frameBuffer = null; // フレームの中身がさらに内部フレームで細かくわかれることがあるっぽい。
 //	private byte firstByte; // firstByteを取っている理由は、frameの切り分けで参照してしまうため。
 	private Bit5 TOCconfig = new Bit5();
@@ -48,7 +48,7 @@ public class Frame extends OpusFrame {
 	private Bit1 TOCs = new Bit1(); // 0:モノラル 1:ステレオ
 	private Bit2 TOCc = new Bit2(); // パケットのフレーム数指定 0:1frame 1:2frame 同じ圧縮サイズ 2:2frame 違う圧縮サイズ 3:適当
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param firstByte
 	 */
 	public Frame(byte firstByte) {
@@ -57,7 +57,7 @@ public class Frame extends OpusFrame {
 		TOCc.set(firstByte & 0x03);
 	}
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Frame() {
 	}
@@ -65,7 +65,6 @@ public class Frame extends OpusFrame {
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		
 	}
-
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		super.setSize(channel.size());
@@ -78,7 +77,7 @@ public class Frame extends OpusFrame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(frameBuffer == null) {
-			throw new Exception("frameBufferがnullでした、先に解析動作を実施してください。");
+			throw new Exception("frameBuffer is not loaded yet.");
 		}
 		BitConnector connector = new BitConnector();
 		super.setData(BufferUtil.connect(
@@ -89,10 +88,10 @@ public class Frame extends OpusFrame {
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 //		return getData();
-		throw new Exception("OpusのpackBufferは不明です。");
+		throw new Exception("packBuffer for opus is unknown.");
 	}
 	/**
-	 * MUFrameを取り出します
+	 * ref the MUframe list.
 	 * @return
 	 */
 	public List<CompresedFrame> getMUFrameList() {
@@ -107,7 +106,7 @@ public class Frame extends OpusFrame {
 //			break;
 		case 2:
 		case 3:
-			throw new RuntimeException("TOCcの分割定義をつくっていません。");
+			throw new RuntimeException("undefined TOCc div definition.");
 		}
 		return result;
 	}

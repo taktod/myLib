@@ -21,8 +21,8 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * opusのheaderFrame
- * matroskaだと、codecPrivateの中にはいっているデータ
+ * headerFrame for opus.
+ * for mkv this information is in codecPrivate.
  * 8byte opusString OpusHead
  * 1byte version
  * 1byte channels
@@ -33,14 +33,12 @@ import com.ttProject.util.BufferUtil;
  * nbyte mappingTable
  * @author taktod
  * @see http://tools.ietf.org/pdf/draft-ietf-codec-oggopus-03.pdf
- * 
- * とりあえずmappingなしでも成立するっぽいので、このまま攻めて見ようと思う。
  */
 public class HeaderFrame extends OpusFrame {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(HeaderFrame.class);
 	private String opusString = "OpusHead";
-	private Bit8  version              = new Bit8();  // 1固定らしい
+	private Bit8  version              = new Bit8();  // 1 fixed?
 	private Bit8  channels             = new Bit8();
 	private Bit16 preSkip              = new Bit16(); // デコードするときの遅延フレーム数か？サンプルだったら312になった
 	private Bit32 sampleRate           = new Bit32(); // どうやら入力サンプルレートで出力時のではないっぽい。(どういうことだ？)出力時のサンプルレートはデコードの仕方でいろいろにできるっぽい。(8,12,16,24,48kHzが動作可能なものっぽい)
@@ -79,17 +77,21 @@ public class HeaderFrame extends OpusFrame {
 		logger.info(channels.get());
 		logger.info(sampleRate.get());
 		if(channel.position() != channel.size()) {
-			throw new Exception("mappingTableがあるデータでした、解析する必要があるので、開発者に問い合わせてください。");
+			throw new Exception("has mappingTable, please tell me to analyze information.");
 		}
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// 特にやることなし
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
-		// 全データの結合をつくる必要あり。
 		BitConnector connector = new BitConnector();
 		connector.setLittleEndianFlg(true);
 		ByteBuffer buffer = ByteBuffer.wrap(opusString.getBytes());
@@ -97,13 +99,18 @@ public class HeaderFrame extends OpusFrame {
 				buffer,
 				connector.connect(version, channels, preSkip, sampleRate, outputGain, channelMappingFamily)));
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		return null;
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isComplete() {
 		return true;
 	}
 }
-
