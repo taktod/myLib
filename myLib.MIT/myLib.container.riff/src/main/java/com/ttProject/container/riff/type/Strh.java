@@ -13,6 +13,7 @@ import com.ttProject.util.BufferUtil;
 
 /**
  * strh
+ * @see http://msdn.microsoft.com/ja-jp/library/cc352263.aspx
  * @author taktod
  */
 public class Strh extends RiffSizeUnit {
@@ -53,7 +54,7 @@ public class Strh extends RiffSizeUnit {
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
-		fccType = fccType.valueOf(new String(BufferUtil.safeRead(channel, 4).array()).intern());
+		fccType = FccType.valueOf(new String(BufferUtil.safeRead(channel, 4).array()).intern());
 		logger.info(fccType);
 		fccHandler = StrhRiffCodecType.getValue(BufferUtil.safeRead(channel, 4).getInt());
 		logger.info(fccHandler);
