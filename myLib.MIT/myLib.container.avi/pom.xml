@@ -6,8 +6,8 @@
     <version>0.0.2-SNAPSHOT</version>
     <relativePath>../../</relativePath>
   </parent>
-  <artifactId>myLib.container.wav</artifactId>
-  <name>myLib.container.wav</name>
+  <artifactId>myLib.container.avi</artifactId>
+  <name>myLib.container.avi</name>
   <licenses>
     <license>
       <name>The MIT License</name>
@@ -15,7 +15,6 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  <description>analyze for wav file.</description>
   <dependencies>
   	<dependency>
   		<groupId>com.ttProject</groupId>
@@ -23,4 +22,5 @@
   		<version>0.0.2-SNAPSHOT</version>
   	</dependency>
   </dependencies>
+  <description>analyze for avi file.</description>
 </project>
