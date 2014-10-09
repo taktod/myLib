@@ -21,7 +21,7 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * vp6のkeyFrame
+ * keyFrame for vp6
  * @author taktod
  */
 public class IntraFrame extends Vp6Frame {
@@ -29,14 +29,14 @@ public class IntraFrame extends Vp6Frame {
 	private Bit2  version2  = new Bit2();
 	private Bit1  interlace = new Bit1();
 	private Bit16 offset    = null; // 16bit
-	private Bit8  dimY      = new Bit8(); // x16で縦幅
-	private Bit8  dimX      = new Bit8(); // x16で横幅
-	private Bit8  renderY   = new Bit8(); // x16で縦幅
-	private Bit8  renderX   = new Bit8(); // x16で横幅
+	private Bit8  dimY      = new Bit8(); // x16 height 
+	private Bit8  dimX      = new Bit8(); // x16 width
+	private Bit8  renderY   = new Bit8(); // x16 height
+	private Bit8  renderX   = new Bit8(); // x16 width
 
 	private ByteBuffer buffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public IntraFrame(Bit1 frameMode, Bit6 qp, Bit1 marker) {
 		super(frameMode, qp, marker);
@@ -74,7 +74,7 @@ public class IntraFrame extends Vp6Frame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("本体データが設定されていません。");
+			throw new Exception("buffer is not loaded yet.");
 		}
 		BitConnector connector = new BitConnector();
 		setData(BufferUtil.connect(getHeaderBuffer(),
@@ -84,7 +84,7 @@ public class IntraFrame extends Vp6Frame {
 				buffer));
 	}
 	/**
-	 * データタイプがversion2であるか参照(interFrameの分岐で利用)
+	 * ref the data type. version2?
 	 * @return
 	 */
 	public Bit2 getVersion2() {

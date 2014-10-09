@@ -18,22 +18,22 @@ import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit6;
 
 /**
- * vp6のframe選択
+ * selector for vp6 frame.
  * @author taktod
  */
 public class Vp6FrameSelector extends VideoSelector {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(Vp6FrameSelector.class);
-	/** 前回解析したkeyFrame情報は保持しておいて、interFrameに紐づける必要あり。 */
+	/** hold keyframe and share this. */
 	private IntraFrame keyFrame = null;
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
-		// はじめの1byteを読み込んでやりとりすることにします。
+		// read first byte for check.
 		if(channel.size() - channel.position() < 1) {
-			// データがたりません。
+			// data is too short.
 			return null;
 		}
 		Bit1 frameMode = new Bit1();
@@ -51,7 +51,7 @@ public class Vp6FrameSelector extends VideoSelector {
 			keyFrame = (IntraFrame)frame;
 			break;
 		default:
-			throw new Exception("解析不能なデータです。");
+			throw new Exception("unexpected frameMode.:" + frameMode.get());
 		}
 		if(keyFrame == null) {
 			logger.info("key frame is not loaded yet.");

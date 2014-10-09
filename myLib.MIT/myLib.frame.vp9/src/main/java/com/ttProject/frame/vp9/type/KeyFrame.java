@@ -23,11 +23,11 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * vp9のキーフレーム
+ * keyFrame for vp9
  * @author taktod
  */
 public class KeyFrame extends Vp9Frame {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(KeyFrame.class);
 	private byte[] startCode = {(byte)0x49, (byte)0x83, (byte)0x42};
 	private Bit3 colorSpace    = new Bit3();
@@ -37,7 +37,7 @@ public class KeyFrame extends Vp9Frame {
 	private Bit extraBit = null;
 	private ByteBuffer buffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param frameMarker
 	 * @param profile
 	 * @param reserved
@@ -50,9 +50,12 @@ public class KeyFrame extends Vp9Frame {
 			Bit1 keyFrameFlag, Bit1 invisibleFlag, Bit1 errorRes) {
 		super(frameMarker, profile, reserved, refFlag, keyFrameFlag, invisibleFlag, errorRes);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		// ここでframeのwidth x heightあたりはおさえておきたいところ。
+		// at least I want to know width, height information.
 		ByteBuffer buffer = BufferUtil.safeRead(channel, 3);
 		if(buffer.get() != startCode[0]
 		|| buffer.get() != startCode[1]
@@ -62,7 +65,7 @@ public class KeyFrame extends Vp9Frame {
 		BitLoader loader = new BitLoader(channel);
 		loader.load(colorSpace);
 		if(colorSpace.get() == 7) { // rgb = profile 1
-			throw new Exception("RGBはprofile0でサポートされていません。");
+			throw new Exception("RGB is not supported profile0.");
 		}
 		loader.load(fullrange, widthMinus1, heightMinus1);
 		setSize(channel.size());
@@ -73,23 +76,31 @@ public class KeyFrame extends Vp9Frame {
 		logger.info("height:" + (heightMinus1.get() + 1));
 		extraBit = loader.getExtraBit();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		// ここで残りフレームのデータの読み込み完了を実施しないとだめ。
 		channel.position(getReadPosition());
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("本体データが設定されていません。");
+			throw new Exception("data buffer is not loaded yet.");
 		}
 		BitConnector connector = new BitConnector();
 		setData(BufferUtil.connect(getHeaderBuffer(),
 				connector.connect(new Bit8(startCode[0]), new Bit8(startCode[1]), new Bit8(startCode[2]), colorSpace, fullrange, widthMinus1, heightMinus1, extraBit),
 				buffer));
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		return null;

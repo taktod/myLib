@@ -19,13 +19,13 @@ import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.unit.extra.bit.Bit3;
 
 /**
- * vp9のフレームのSelector
+ * selector for vp9 frame.
  * @author taktod
  */
 public class Vp9FrameSelector extends VideoSelector {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(Vp9FrameSelector.class);
-	/** 参照用のkeyFrameデータ */
+	/** keyFrame object for ref */
 	private KeyFrame keyFrame = null;
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
@@ -35,19 +35,19 @@ public class Vp9FrameSelector extends VideoSelector {
 		logger.info("try to analyze frame.");
 		Bit2 frameMarker = new Bit2();
 		Bit1 profile = new Bit1();
-		Bit1 reservedBit = new Bit1(); // 0のはず
-		Bit1 refFlag = new Bit1(); // referenceFrameであるかどうかか？ bitが立っている場合は次の3bitがref番号になっているはず？
-		Bit3 ref = null; // とりあえずこれがこないことを祈る
-		Bit1 keyFrameFlag = new Bit1(); // 反転
-		Bit1 invisibleFlag = new Bit1(); // 反転
+		Bit1 reservedBit = new Bit1(); // 0
+		Bit1 refFlag = new Bit1(); // flag for reference frame or not. if 1: next 3 bit is ref number.
+		Bit3 ref = null; // tell me how to use.
+		Bit1 keyFrameFlag = new Bit1(); // flip 0:keyFrame 1:intraFrame
+		Bit1 invisibleFlag = new Bit1(); // flip 0:invisible 1:visible
 		Bit1 errorRes = new Bit1();
-		// ここまで読み込めばどういうフレームかわかるはず。
+		// now we know what kind of frame.
 		BitLoader loader = new BitLoader(channel);
 		loader.load(frameMarker, profile, reservedBit, refFlag);
 		if(refFlag.get() == 1) {
 			ref = new Bit3();
 			loader.load(ref);
-			throw new Exception("refFlagの読み込みはどうなっているかわかりません");
+			throw new Exception("refFlag loading is unknown.");
 		}
 		loader.load(keyFrameFlag, invisibleFlag, errorRes);
 		Vp9Frame frame = null;

@@ -18,7 +18,7 @@ import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit4;
 
 /**
- * littleEndianのデータ読み込みテスト
+ * bot loader for little endian test.
  * @author taktod
  */
 public class LittleEndianBitloadTest {

@@ -16,11 +16,11 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
 
 /**
- * vp8のframeの読み込みテスト
+ * loading test for vp8 frame
  * @author taktod
  */
 public class FrameReadTest {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(FrameReadTest.class);
 	@Test
 	public void keyFrame() throws Exception {

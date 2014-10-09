@@ -41,6 +41,7 @@ import com.ttProject.util.BufferUtil;
 /**
  * videoTag
  * @author taktod
+ * TODO check the vp6 frame. how should I deal with first byte of frame data?
  */
 public class VideoTag extends FlvTag {
 	/** logger */

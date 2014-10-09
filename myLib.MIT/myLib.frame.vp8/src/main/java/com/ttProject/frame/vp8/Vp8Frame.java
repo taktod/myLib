@@ -19,21 +19,21 @@ import com.ttProject.unit.extra.bit.Bit19;
 import com.ttProject.unit.extra.bit.Bit3;
 
 /**
- * Vp8のフレームのベース
+ * base for vp8 frame
  * @author taktod
  */
 public abstract class Vp8Frame extends VideoFrame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Vp8Frame.class);
-	private final Bit1  frameType; // 0ならkyeFrame
+	private final Bit1  frameType; // 0:keyFrame
 	private final Bit3  version;
-	private final Bit1  showFrame; // ここでinvisible判定できるかも？
+	private final Bit1  showFrame; // flag for invisible?
 	private final Bit19 firstPartSize;
-	/** 参照用のキーフレーム */
+	/** keyFrame object for ref */
 	private KeyFrame keyFrame = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param frameType
 	 * @param version
 	 * @param showFrame
@@ -46,7 +46,7 @@ public abstract class Vp8Frame extends VideoFrame {
 		this.firstPartSize = firstPartSize;
 	}
 	/**
-	 * キーフレーム設定
+	 * set the keyFrame
 	 * @param keyFrame
 	 */
 	public void setKeyFrame(KeyFrame keyFrame) {
@@ -55,7 +55,7 @@ public abstract class Vp8Frame extends VideoFrame {
 		super.setHeight(keyFrame.getHeight());
 	}
 	/**
-	 * キーフレーム参照
+	 * ref the keyFrame.
 	 * @return
 	 */
 	protected KeyFrame getKeyFrame() {
@@ -67,7 +67,7 @@ public abstract class Vp8Frame extends VideoFrame {
 		return connector.connect(frameType, version, showFrame, firstPartSize);
 	}
 	/**
-	 * 非表示フレームであるかどうか？
+	 * ref the invisible?
 	 * @return
 	 */
 	public boolean isInvisible() {

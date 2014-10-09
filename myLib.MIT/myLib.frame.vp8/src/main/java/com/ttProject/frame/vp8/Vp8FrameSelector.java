@@ -18,11 +18,15 @@ import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit19;
 import com.ttProject.unit.extra.bit.Bit3;
 
+/**
+ * selector for vp8 frame.
+ * @author taktod
+ */
 public class Vp8FrameSelector extends VideoSelector {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Vp8FrameSelector.class);
-	/** 参照用のkeyFrameデータ */
+	/** key frame for ref. */
 	private KeyFrame keyFrame = null;
 	/**
 	 * {@inheritDoc}
@@ -32,7 +36,7 @@ public class Vp8FrameSelector extends VideoSelector {
 		if(channel.position() == channel.size()) {
 			return null;
 		}
-		// 先頭の3byteからframeType version showFrame, firstPartSizeを取り出す
+		// get frameType version showframe firstPartsSize from first 3 bytes.
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
 		Bit1 frameType = new Bit1();
@@ -54,7 +58,7 @@ public class Vp8FrameSelector extends VideoSelector {
 			frame.setKeyFrame(keyFrame);
 			break;
 		default:
-			throw new Exception("解析不能なデータです");
+			throw new Exception("unexpected frameType:" + frameType.get());
 		}
 		frame.minimumLoad(channel);
 		return frame;

@@ -18,22 +18,32 @@ import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit2;
 
 /**
- * vp9のフレームのベース
+ * base for vp9 frame.
  * @author taktod
  */
 public abstract class Vp9Frame extends VideoFrame {
-	/** ロガー */
+	/** logger */
 	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(Vp9Frame.class);
 	private final Bit2 frameMarker;
 	private final Bit1 profile;
 	private final Bit1 reserved;
 	private final Bit1 refFlag;
-	private final Bit1 keyFrameFlag; // 反転
-	private final Bit1 invisibleFlag; // 反転
+	private final Bit1 keyFrameFlag; // flip?
+	private final Bit1 invisibleFlag; // flip?
 	private final Bit1 errorRes;
-	/** 参照用のキーフレーム */
+	/** keyFrame object for ref */
 	private KeyFrame keyFrame = null;
+	/**
+	 * constructor
+	 * @param frameMarker
+	 * @param profile
+	 * @param reserved
+	 * @param refFlag
+	 * @param keyFrameFlag
+	 * @param invisibleFlag
+	 * @param errorRes
+	 */
 	public Vp9Frame(Bit2 frameMarker, Bit1 profile, Bit1 reserved, Bit1 refFlag,
 			Bit1 keyFrameFlag, Bit1 invisibleFlag, Bit1 errorRes) {
 		this.frameMarker = frameMarker;
@@ -57,7 +67,7 @@ public abstract class Vp9Frame extends VideoFrame {
 		);
 	}
 	/**
-	 * invisibleであるか判定
+	 * is invisible?
 	 * @return
 	 */
 	public boolean isInvisible() {

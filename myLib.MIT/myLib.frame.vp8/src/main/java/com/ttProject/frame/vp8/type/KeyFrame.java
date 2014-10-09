@@ -23,11 +23,11 @@ import com.ttProject.unit.extra.bit.Bit8;
 import com.ttProject.util.BufferUtil;
 
 /**
- * vp8のkeyFrame
+ * keyFrame for vp8
  * @author taktod
  */
 public class KeyFrame extends Vp8Frame {
-	/** ロガー */
+	/** logger */
 	private Logger logger = Logger.getLogger(KeyFrame.class);
 	public static byte[] startCode = {(byte)0x9D, (byte)0x01, (byte)0x2A};
 	private Bit14 width           = new Bit14();
@@ -35,13 +35,22 @@ public class KeyFrame extends Vp8Frame {
 	private Bit14 height          = new Bit14();
 	private Bit2  verticalScale   = new Bit2();
 	private ByteBuffer buffer;
+	/**
+	 * constructor
+	 * @param frameType
+	 * @param version
+	 * @param showFrame
+	 * @param firstPartSize
+	 */
 	public KeyFrame(Bit1 frameType, Bit3 version, Bit1 showFrame, Bit19 firstPartSize) {
 		super(frameType, version, showFrame, firstPartSize);
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		// ここでサイズのデータを読み込みたい
 		ByteBuffer buffer = BufferUtil.safeRead(channel, 3);
 		if(buffer.get() != startCode[0]
 		|| buffer.get() != startCode[1]
@@ -57,16 +66,22 @@ public class KeyFrame extends Vp8Frame {
 		setReadPosition(channel.position());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		channel.position(getReadPosition());
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("本体データが設定されていません");
+			throw new Exception("buffer is not loaded yet.");
 		}
 		BitConnector connector = new BitConnector();
 		connector.setLittleEndianFlg(true);
@@ -74,6 +89,9 @@ public class KeyFrame extends Vp8Frame {
 				connector.connect(new Bit8(startCode[0]), new Bit8(startCode[1]), new Bit8(startCode[2]), width, horizontalScale, height, verticalScale),
 				buffer));
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		return getData();

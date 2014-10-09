@@ -15,13 +15,13 @@ import com.ttProject.unit.extra.bit.Bit2;
 import com.ttProject.util.BufferUtil;
 
 /**
- * vp9の中間フレーム
+ * intraFrame for vp9
  * @author taktod
  */
 public class IntraFrame extends Vp9Frame {
 	private ByteBuffer buffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param frameMarker
 	 * @param profile
 	 * @param reserved
@@ -34,29 +34,41 @@ public class IntraFrame extends Vp9Frame {
 			Bit1 keyFrameFlag, Bit1 invisibleFlag, Bit1 errorRes) {
 		super(frameMarker, profile, reserved, refFlag, keyFrameFlag, invisibleFlag, errorRes);
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		setReadPosition(channel.position());
 		setSize(channel.size());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		channel.position();
 		buffer = BufferUtil.safeRead(channel, getSize() - getReadPosition());
 		super.update();
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("本体データが設定されていません");
+			throw new Exception("data body is not loaded yet.");
 		}
 		setData(BufferUtil.connect(getHeaderBuffer(), buffer));
 	}
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 //		return getData();
-		throw new Exception("xuggle等での扱いが不明なので、とりあえず例外飛ばしておきます。");
+		throw new Exception("I don't know how to use this. just throw exception.");
 	}
 }
 

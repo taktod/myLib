@@ -10,12 +10,12 @@ import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoAnalyzer;
 
 /**
- * vp6のframe解析
+ * analyzer for vp6 frame.
  * @author taktod
  */
 public class Vp6FrameAnalyzer extends VideoAnalyzer {
 	/**
-	 * コンストラクタ
+	 * constructor
 	 */
 	public Vp6FrameAnalyzer() {
 		super(new Vp6FrameSelector());

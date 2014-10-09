@@ -18,7 +18,7 @@ import com.ttProject.unit.extra.bit.Bit6;
 import com.ttProject.util.BufferUtil;
 
 /**
- * 中間フレーム
+ * interFrame
  * @author taktod
  */
 public class InterFrame extends Vp6Frame {
@@ -26,7 +26,7 @@ public class InterFrame extends Vp6Frame {
 
 	private ByteBuffer buffer = null;
 	/**
-	 * コンストラクタ
+	 * constructor
 	 * @param frameMode
 	 * @param qp
 	 * @param marker
@@ -39,7 +39,7 @@ public class InterFrame extends Vp6Frame {
 	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
-		// keyFrameのversion値が0もしくはmarker値が1の場合にoffsetを読み込む必要あり
+		// if the version is 0 or marker is 1, need load offset.
 		if(getKeyFrame().getVersion2().get() == 0 || getMarker().get() == 1) {
 			BitLoader loader = new BitLoader(channel);
 			offset = new Bit16();
@@ -63,7 +63,7 @@ public class InterFrame extends Vp6Frame {
 	@Override
 	protected void requestUpdate() throws Exception {
 		if(buffer == null) {
-			throw new Exception("本体データが設定されていません。");
+			throw new Exception("buffer data is unload yet.");
 		}
 		BitConnector connector = new BitConnector();
 		setData(BufferUtil.connect(getHeaderBuffer(),

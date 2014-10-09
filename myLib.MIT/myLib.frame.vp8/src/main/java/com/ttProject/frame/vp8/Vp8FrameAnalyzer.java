@@ -9,7 +9,14 @@ package com.ttProject.frame.vp8;
 import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoAnalyzer;
 
+/**
+ * analyzer for vp8 frame.
+ * @author taktod
+ */
 public class Vp8FrameAnalyzer extends VideoAnalyzer {
+	/**
+	 * constructor
+	 */
 	public Vp8FrameAnalyzer() {
 		super(new Vp8FrameSelector());
 	}

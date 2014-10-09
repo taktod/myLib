@@ -9,7 +9,14 @@ package com.ttProject.frame.vp9;
 import com.ttProject.frame.CodecType;
 import com.ttProject.frame.VideoAnalyzer;
 
+/**
+ * analyzer for vp9 frame.
+ * @author taktod
+ */
 public class Vp9FrameAnalyzer extends VideoAnalyzer {
+	/**
+	 * constructor
+	 */
 	public Vp9FrameAnalyzer() {
 		super(new Vp9FrameSelector());
 	}
