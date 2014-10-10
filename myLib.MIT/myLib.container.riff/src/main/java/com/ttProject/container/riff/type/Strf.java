@@ -11,6 +11,8 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class Strf extends RiffFormatUnit {
+	// need to inplements bmpInfo?
+	
 	/**
 	 * constructor
 	 */
@@ -27,17 +29,14 @@ public class Strf extends RiffFormatUnit {
 	}
 	@Override
 	public CodecType getCodecType() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
 	public IAnalyzer getFrameAnalyzer() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override
 	public int getBlockSize() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 }
