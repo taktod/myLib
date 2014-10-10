@@ -91,6 +91,7 @@ public class RiffUnitSelector implements ISelector {
 			case tets:
 				throw new Exception("unknown for mids or tets.");
 			case vids:
+				logger.info("strf is settled");
 				unit = new Strf();
 				break;
 			}

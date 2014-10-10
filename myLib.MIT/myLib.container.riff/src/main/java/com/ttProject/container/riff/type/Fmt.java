@@ -41,10 +41,21 @@ public class Fmt extends RiffFormatUnit {
 	private Bit16 nBlockAlign     = new Bit16();
 	private Bit16 wBitsPerSample  = new Bit16();
 	private Bit16 cbSize          = new Bit16();
-	@SuppressWarnings("unused")
 	private ByteBuffer extraInfo = null;
+	// for the case of vorbis.
+	// this extraInfo do have ogg's privateData information.
+	/*
+	 * 02 1E 54
+	 * 2 element
+	 * first is 0x1E header
+	 * second is 0x54 comment
+	 * third is else. setup
+	 */
 	/** frame Analyzer */
 	private IAnalyzer frameAnalyzer = null;
+	/**
+	 * constructor
+	 */
 	public Fmt() {
 		super(Type.FMT);
 	}
@@ -57,6 +68,7 @@ public class Fmt extends RiffFormatUnit {
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
 		loader.load(wFormatTag, nChannels, nSamplePerSec, nAvgBytesPerSec, nBlockAlign, wBitsPerSample, cbSize);
+		extraInfo = BufferUtil.safeRead(channel, channel.size() - channel.position());
 	}
 	/**
 	 * {@inheritDoc}
@@ -116,7 +128,12 @@ public class Fmt extends RiffFormatUnit {
 		}
 		return frameAnalyzer;
 	}
+	@Override
 	public int getBlockSize() {
 		return nBlockAlign.get();
+	}
+	@Override
+	public ByteBuffer getExtraInfo() {
+		return extraInfo;
 	}
 }

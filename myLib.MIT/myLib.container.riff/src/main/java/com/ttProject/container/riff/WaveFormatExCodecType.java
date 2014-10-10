@@ -23,7 +23,8 @@ public enum WaveFormatExCodecType {
 	U_LAW(0x0007, CodecType.PCM_MULAW),
 	OKI_ADPCM(0x0010, CodecType.UNKNOWN_AUDIO),
 	IMA_ADPCM(0x0011, CodecType.ADPCM_IMA_WAV), // target for wts.
-	MP3(0x0055, CodecType.MP3);
+	MP3(0x0055, CodecType.MP3),
+	VORBIS(0x566F, CodecType.VORBIS);
 	private final int value;
 	private final CodecType codecType;
 	private WaveFormatExCodecType(int value, CodecType codecType) {

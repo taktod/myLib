@@ -1,5 +1,7 @@
 package com.ttProject.container.riff;
 
+import java.nio.ByteBuffer;
+
 import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAnalyzer;
 
@@ -31,4 +33,9 @@ public abstract class RiffFormatUnit extends RiffSizeUnit {
 	 * @return
 	 */
 	public abstract int getBlockSize();
+	/**
+	 * ref the extra information.
+	 * @return
+	 */
+	public abstract ByteBuffer getExtraInfo();
 }
