@@ -43,6 +43,7 @@ public class List extends RiffMasterUnit {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
+		super.load(channel);
 	}
 	/**
 	 * {@inheritDoc}

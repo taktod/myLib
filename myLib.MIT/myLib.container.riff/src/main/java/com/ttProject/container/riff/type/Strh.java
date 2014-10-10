@@ -75,6 +75,9 @@ public class Strh extends RiffSizeUnit {
 		logger.info(top.get());
 		logger.info(right.get());
 		logger.info(bottom.get());
+		logger.info("rate" + dwRate.get());
+		logger.info("scale" + dwScale.get());
+		logger.info(dwRate.get() / dwScale.get());
 	}
 	/**
 	 * {@inheritDoc}

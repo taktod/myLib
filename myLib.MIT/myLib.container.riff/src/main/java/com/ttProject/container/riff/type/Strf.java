@@ -65,16 +65,18 @@ public class Strf extends RiffFormatUnit {
 		logger.info(biHeight.get());
 		logger.info(biPlanes.get());
 		logger.info(biBitCount.get());
-		if(channel.size() != channel.position()) {
-			extraInfo = BufferUtil.safeRead(channel, channel.size() - channel.position());
-		}
+		logger.info(channel.position());
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		
+		logger.info(getSize());
+		if(getSize() - 88 > 0) {
+			// TODO here try to read all of the file.
+			extraInfo = BufferUtil.safeRead(channel, getSize() - 88);
+		}
 	}
 	/**
 	 * {@inheritDoc}

@@ -9,9 +9,12 @@ package com.ttProject.container.riff;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
 import com.ttProject.nio.channels.IReadChannel;
+import com.ttProject.util.BufferUtil;
 
 /**
  * RiffMasterUnit
@@ -19,6 +22,7 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public abstract class RiffMasterUnit extends RiffSizeUnit {
+	private Logger logger = Logger.getLogger(RiffMasterUnit.class);
 	private List<RiffUnit> childUnits = new ArrayList<RiffUnit>();
 	private IReader reader = null;
 	/**
@@ -36,12 +40,17 @@ public abstract class RiffMasterUnit extends RiffSizeUnit {
 		// try to read the riffUnit.
 		int targetSize = getSize() - 8;
 		IContainer container = null;
-		while(targetSize > 0 && (container = reader.read(channel)) != null) {
+		while(targetSize > 4 && (container = reader.read(channel)) != null) {
 			targetSize -= container.getSize();
 			if(container instanceof RiffUnit) {
 				childUnits.add((RiffUnit)container);
 				// if get the data(chunk for data. need to fall back to original test and try to analyze frame.)
 			}
+		}
+		logger.info("left size" + targetSize);
+		if(targetSize > 0) {
+			BufferUtil.quickDispose(channel, targetSize);
+			targetSize = 0;
 		}
 	}
 	/**

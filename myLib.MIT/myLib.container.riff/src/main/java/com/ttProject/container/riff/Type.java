@@ -21,6 +21,9 @@ public enum Type {
 	strl(0x7374726C),
 	strh(0x73747268),
 	strf(0x73747266),
+	INFO(0x494E464F),
+	ISFT(0x49534654),
+	movi(0x6d6f7669),
 	JUNK(0x4A554E4B);
 	
 	private final int value;

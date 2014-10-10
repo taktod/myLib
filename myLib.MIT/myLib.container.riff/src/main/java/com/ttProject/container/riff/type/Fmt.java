@@ -68,14 +68,15 @@ public class Fmt extends RiffFormatUnit {
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
 		loader.load(wFormatTag, nChannels, nSamplePerSec, nAvgBytesPerSec, nBlockAlign, wBitsPerSample, cbSize);
-		extraInfo = BufferUtil.safeRead(channel, channel.size() - channel.position());
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		extraInfo = BufferUtil.safeRead(channel, cbSize.get());
+		if(cbSize.get() != 0) {
+			extraInfo = BufferUtil.safeRead(channel, cbSize.get());
+		}
 	}
 	/**
 	 * {@inheritDoc}

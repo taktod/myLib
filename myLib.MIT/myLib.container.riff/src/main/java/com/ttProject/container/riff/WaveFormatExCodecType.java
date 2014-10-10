@@ -13,6 +13,7 @@ import com.ttProject.frame.CodecType;
  * it just a part.
  * only for FMT or strf.
  * @author taktod
+ * @see http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/RIFF.html
  */
 public enum WaveFormatExCodecType {
 	Unknown(0x0000, CodecType.NONE),

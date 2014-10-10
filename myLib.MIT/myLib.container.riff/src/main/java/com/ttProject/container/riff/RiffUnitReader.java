@@ -6,6 +6,8 @@
  */
 package com.ttProject.container.riff;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.container.IContainer;
 import com.ttProject.container.Reader;
 import com.ttProject.nio.channels.IReadChannel;
@@ -15,6 +17,7 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class RiffUnitReader extends Reader {
+	private Logger logger = Logger.getLogger(RiffUnitReader.class);
 	/**
 	 * constructor
 	 */

@@ -13,8 +13,11 @@ import com.ttProject.container.riff.type.Data;
 import com.ttProject.container.riff.type.Fact;
 import com.ttProject.container.riff.type.Fmt;
 import com.ttProject.container.riff.type.Hdrl;
+import com.ttProject.container.riff.type.Info;
+import com.ttProject.container.riff.type.Isft;
 import com.ttProject.container.riff.type.Junk;
 import com.ttProject.container.riff.type.List;
+import com.ttProject.container.riff.type.Movi;
 import com.ttProject.container.riff.type.Riff;
 import com.ttProject.container.riff.type.Strf;
 import com.ttProject.container.riff.type.Strh;
@@ -96,6 +99,15 @@ public class RiffUnitSelector implements ISelector {
 				break;
 			}
 			formatUnit = (RiffFormatUnit) unit;
+			break;
+		case INFO:
+			unit = new Info();
+			break;
+		case ISFT:
+			unit = new Isft();
+			break;
+		case movi:
+			unit = new Movi();
 			break;
 		case JUNK:
 			unit = new Junk();
