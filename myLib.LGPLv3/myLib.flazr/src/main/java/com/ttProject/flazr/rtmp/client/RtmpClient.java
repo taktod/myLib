@@ -20,10 +20,10 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.flazr.rtmp.client.ClientHandler;
 import com.flazr.rtmp.client.ClientHandshakeHandler;
 import com.flazr.rtmp.client.ClientOptions;
 import com.flazr.util.Utils;
+import com.ttProject.flazr.client.ClientHandler;
 import com.ttProject.flazr.client.ClientOptionsEx;
 import com.ttProject.flazr.rtmp.RtmpDecoderEx;
 import com.ttProject.flazr.rtmp.RtmpEncoderEx;

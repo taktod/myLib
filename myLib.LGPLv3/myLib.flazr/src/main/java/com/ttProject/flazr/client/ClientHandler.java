@@ -16,6 +16,7 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.flazr.amf.Amf0Object;
 import com.flazr.io.flv.FlvWriter;
 import com.flazr.rtmp.LoopedReader;
 import com.flazr.rtmp.RtmpMessage;
@@ -26,6 +27,7 @@ import com.flazr.rtmp.client.ClientOptions;
 import com.flazr.rtmp.message.BytesRead;
 import com.flazr.rtmp.message.ChunkSize;
 import com.flazr.rtmp.message.Command;
+import com.flazr.rtmp.message.CommandAmf0;
 import com.flazr.rtmp.message.Control;
 import com.flazr.rtmp.message.Metadata;
 import com.flazr.rtmp.message.SetPeerBw;
@@ -83,7 +85,25 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
 	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e)
 			throws Exception {
 		logger.info("handshake complete, sending 'connect'");
-		writeCommandExpectingResult(e.getChannel(), Command.connect(options));
+		writeCommandExpectingResult(e.getChannel(), CommandConnect(options));
+	}
+	public Command CommandConnect(ClientOptions options) {
+		Amf0Object object = new Amf0Object();
+		object.put("app", options.getAppName());
+		object.put("flashVer", "MAC 15,0,0,152");
+		object.put("swfUrl", "http://202.29.13.250/publisher.swf");
+		object.put("tcUrl", options.getTcUrl());
+		object.put("fpad", false);
+		object.put("capabilities", 239.0);
+		object.put("audioCodecs", 3575.0);
+		object.put("videoCodecs", 252.0);
+		object.put("videoFunction", 1.0);
+		object.put("pageUrl", "http://202.29.13.250/publisher.html");
+		object.put("objectEncoding", 0.0);
+		if(options.getParams() != null) {
+			object.putAll(options.getParams());
+		}
+		return new CommandAmf0("connect", object, options.getArgs());
 	}
 	@Override
 	public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e)
@@ -214,7 +234,8 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
 				}
 			}
 			else if(name.equals("onStatus")) {
-				final Map<String, Object> temp = (Map) command.getArg(0);
+				@SuppressWarnings("unchecked")
+				final Map<String, Object> temp = (Map<String, Object>) command.getArg(0);
 				final String code = (String) temp.get("code");
 				logger.info("onStatus code: {}", code);
 				if(code.equals("NetStream.Failed") // TODO cleanup
