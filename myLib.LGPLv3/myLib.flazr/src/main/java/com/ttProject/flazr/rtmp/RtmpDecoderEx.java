@@ -19,6 +19,7 @@ import com.flazr.rtmp.RtmpMessage;
 import com.flazr.rtmp.RtmpDecoder.DecoderState;
 import com.flazr.rtmp.message.ChunkSize;
 import com.flazr.rtmp.message.MessageType;
+import com.ttProject.flazr.rtmp.message.CommandAmf0Ex;
 import com.ttProject.flazr.rtmp.message.CommandAmf3;
 import com.ttProject.flazr.rtmp.message.MetadataAmf3;
 import com.ttProject.util.HexUtil;
@@ -121,6 +122,8 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 			return command3.transform(); // force to use amf0 for clientHandler
 		case COMMAND_AMF0:
 			// need extra command amf0 here.
+			CommandAmf0Ex command0 = new CommandAmf0Ex(header, payload);
+			return command0.transform(); // force to use amf0 for clientHandler
 		default:
 			return MessageType.decode(header, payload);
 		}
