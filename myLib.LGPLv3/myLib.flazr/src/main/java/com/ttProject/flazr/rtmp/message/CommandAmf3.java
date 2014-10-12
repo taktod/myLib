@@ -6,11 +6,12 @@
  */
 package com.ttProject.flazr.rtmp.message;
 
+import java.nio.ByteBuffer;
 import java.util.List;
-
 import java.util.ArrayList;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,7 @@ import com.flazr.amf.Amf0Object;
 import com.flazr.rtmp.RtmpHeader;
 import com.flazr.rtmp.RtmpMessage;
 import com.flazr.rtmp.message.CommandAmf0;
+import com.flazr.rtmp.message.MessageType;
 import com.ttProject.container.flv.amf.Amf0Value;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -37,6 +39,7 @@ public class CommandAmf3 implements RtmpMessage {
 	private Integer transactionId;
 	private Object object;
 	private Object[] args;
+	private ChannelBuffer resBuffer = null;
 	/**
 	 * constructor
 	 * @param header
@@ -45,6 +48,19 @@ public class CommandAmf3 implements RtmpMessage {
 	public CommandAmf3(RtmpHeader header, ChannelBuffer in) {
 		this.header = header;
 		decode(in);
+	}
+	/**
+	 * constructor
+	 * @param amf0
+	 */
+	public CommandAmf3(CommandAmf0 amf0) {
+		this.header = amf0.getHeader();
+		header.setMessageType(MessageType.COMMAND_AMF3);
+		ByteBuffer data = amf0.encode().toByteBuffer();
+		ChannelBuffer buffer = ChannelBuffers.buffer(data.remaining() + 1);
+		buffer.writeByte((byte)0x00);
+		buffer.writeBytes(data);
+		resBuffer = buffer;
 	}
 	/**
 	 * {@inheritDoc}
@@ -78,7 +94,10 @@ public class CommandAmf3 implements RtmpMessage {
 	}
 	@Override
 	public ChannelBuffer encode() {
-		throw new RuntimeException("encode is not supported now.");
+		if(resBuffer == null) {
+			throw new RuntimeException("encode is not supported now.");
+		}
+		return resBuffer;
 	}
 	@Override
 	public RtmpHeader getHeader() {

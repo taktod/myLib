@@ -20,10 +20,11 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.flazr.rtmp.client.ClientHandler;
 import com.flazr.rtmp.client.ClientHandshakeHandler;
 import com.flazr.rtmp.client.ClientOptions;
 import com.flazr.util.Utils;
-import com.ttProject.flazr.client.ClientHandler;
+import com.ttProject.flazr.client.Amf3Handler;
 import com.ttProject.flazr.client.ClientOptionsEx;
 import com.ttProject.flazr.rtmp.RtmpDecoderEx;
 import com.ttProject.flazr.rtmp.RtmpEncoderEx;
@@ -103,9 +104,10 @@ public class RtmpClient {
 			public ChannelPipeline getPipeline() throws Exception {
 				final ChannelPipeline pipeline = Channels.pipeline();
 				pipeline.addLast("handshaker", new ClientHandshakeHandler(options));
-				pipeline.addLast("decoder", new RtmpDecoderEx());
-				pipeline.addLast("encoder", new RtmpEncoderEx());
-				pipeline.addLast("handler", new ClientHandler(options));
+				pipeline.addLast("decoder",    new RtmpDecoderEx());
+				pipeline.addLast("encoder",    new RtmpEncoderEx());
+				pipeline.addLast("hook",       new Amf3Handler());
+				pipeline.addLast("handler",    new ClientHandler(options));
 				return pipeline;
 			}
 		});

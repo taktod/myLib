@@ -6,8 +6,6 @@
  */
 package com.ttProject.flazr.rtmp;
 
-import java.nio.ByteBuffer;
-
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelHandlerContext;
@@ -22,7 +20,6 @@ import com.flazr.rtmp.RtmpHeader;
 import com.flazr.rtmp.RtmpMessage;
 import com.flazr.rtmp.message.ChunkSize;
 import com.flazr.rtmp.message.Control;
-import com.flazr.rtmp.message.MessageType;
 
 /**
  * fix the bug of rtmpEncoder on flazr.
@@ -40,11 +37,6 @@ import com.flazr.rtmp.message.MessageType;
 public class RtmpEncoderEx extends SimpleChannelDownstreamHandler {
 	/** logger */
 	private static final Logger logger = LoggerFactory.getLogger(RtmpEncoderEx.class);
-	public static Mode mode = Mode.AMF0;
-	public static enum Mode {
-		AMF3,
-		AMF0;
-	};
 	/** chunkSize */
 	private int chunkSize = 128;
 	private RtmpHeader[] channelPrevHeaders = new RtmpHeader[RtmpHeader.MAX_CHANNEL_ID];
@@ -58,7 +50,7 @@ public class RtmpEncoderEx extends SimpleChannelDownstreamHandler {
 		Channels.write(ctx, e.getFuture(), encode((RtmpMessage) e.getMessage()));
 	}
 	public ChannelBuffer encode(final RtmpMessage message) {
-		ChannelBuffer in = message.encode();
+		final ChannelBuffer in = message.encode();
 		final RtmpHeader header = message.getHeader();
 		if(header.isChunkSize()) {
 			final ChunkSize csMessage = (ChunkSize) message;
@@ -69,16 +61,6 @@ public class RtmpEncoderEx extends SimpleChannelDownstreamHandler {
 			final Control control = (Control)message;
 			if(control.getType() == Control.Type.STREAM_BEGIN) {
 				clearPrevHeaders();
-			}
-		}
-		if(mode == Mode.AMF3) {
-			if(header.getMessageType() == MessageType.COMMAND_AMF0) {
-				logger.info("AMF3lize.");
-				ByteBuffer data = in.toByteBuffer();
-				in = ChannelBuffers.buffer(data.remaining() + 1);
-				in.writeByte((byte)0x00);
-				in.writeBytes(data);
-				header.setMessageType(MessageType.COMMAND_AMF3);
 			}
 		}
 		final int channelId = header.getChannelId();
