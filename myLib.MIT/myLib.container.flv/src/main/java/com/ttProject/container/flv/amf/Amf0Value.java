@@ -38,6 +38,7 @@ import com.ttProject.util.BufferUtil;
  * RecordSet	0x0E ;reserved(unsupported.)
  * XmlDocument	0x0F
  * TypedObject	0x10
+ * AMF3Object	0x11
  */
 public class Amf0Value {
 	/**
@@ -60,7 +61,8 @@ public class Amf0Value {
 		Unsupported(0x0D),
 		RecordSet(0x0E),
 		XmlDocument(0x0F),
-		TypedObject(0x10);
+		TypedObject(0x10),
+		Amf3Object(0x11);
 		private final int value;
 		private Type(int value) {
 			this.value = value;
@@ -160,6 +162,11 @@ public class Amf0Value {
 				Date date = new Date((long)Double.longBitsToDouble(data.getLong()));
 				BufferUtil.safeRead(source, 2); // timezone?
 				return date;
+			}
+		case Amf3Object:
+			{
+				// treat as Amf3
+				return Amf3Value.getValueObject(source);
 			}
 		default:
 			throw new Exception("unknown data.:" + type);
