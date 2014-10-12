@@ -33,6 +33,9 @@ import com.flazr.rtmp.message.Metadata;
 import com.flazr.rtmp.message.SetPeerBw;
 import com.flazr.rtmp.message.WindowAckSize;
 import com.flazr.util.ChannelUtils;
+import com.ttProject.flazr.rtmp.RtmpDecoderEx;
+import com.ttProject.flazr.rtmp.RtmpEncoderEx;
+import com.ttProject.flazr.rtmp.RtmpEncoderEx.Mode;
 import com.ttProject.util.HexUtil;
 
 /**
@@ -125,6 +128,7 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
 		}
 		final Channel channel = me.getChannel();
 		final RtmpMessage message = (RtmpMessage) me.getMessage();
+		logger.info("messsage: {}", message);
 		switch(message.getHeader().getMessageType()) {
 		case CHUNK_SIZE: // handled by decoder
 			break;
@@ -195,6 +199,11 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
 				String resultFor = transactionToCommandMap.get(command.getTransactionId());
 				logger.info("result for method call: {}", resultFor);
 				if(resultFor.equals("connect")) {
+					final Map<String, Object> data = (Map<String, Object>)command.getArg(0);
+//					logger.info("" + (((Double)data.get("objectEncoding")) == 3.0));
+					if(data.get("objectEncoding") != null && ((Double)data.get("objectEncoding")) == 3.0) {
+						RtmpEncoderEx.mode = Mode.AMF3;
+					}
 					writeCommandExpectingResult(channel, Command.createStream());
 				}
 				else if(resultFor.equals("createStream")) {
@@ -286,6 +295,7 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
 			if(spb.getValue() != bytesWrittenWindow) {
 				channel.write(new WindowAckSize(bytesWrittenWindow));
 			}
+			break;
 		default:
 			logger.info("ignoring rtmp message: {}", message);
 		}
