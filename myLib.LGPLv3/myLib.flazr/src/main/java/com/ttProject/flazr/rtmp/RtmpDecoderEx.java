@@ -120,6 +120,8 @@ public class RtmpDecoderEx extends ReplayingDecoder<DecoderState> {
 			CommandAmf3 command3 = new CommandAmf3(header, payload);
 			return command3.transform(); // force to use amf0 for clientHandler
 		default:
+			logger.info("{}", header);
+			logger.info(HexUtil.toHex(payload.duplicate().toByteBuffer(), true));
 			return MessageType.decode(header, payload);
 		}
 	}

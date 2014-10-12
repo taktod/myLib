@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import com.flazr.rtmp.RtmpHeader;
 import com.flazr.rtmp.RtmpMessage;
-import com.flazr.rtmp.RtmpHeader.Type;
 import com.flazr.rtmp.message.ChunkSize;
 import com.flazr.rtmp.message.Control;
 import com.flazr.rtmp.message.MessageType;

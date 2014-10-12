@@ -33,7 +33,6 @@ import com.flazr.rtmp.message.Metadata;
 import com.flazr.rtmp.message.SetPeerBw;
 import com.flazr.rtmp.message.WindowAckSize;
 import com.flazr.util.ChannelUtils;
-import com.ttProject.flazr.rtmp.RtmpDecoderEx;
 import com.ttProject.flazr.rtmp.RtmpEncoderEx;
 import com.ttProject.flazr.rtmp.RtmpEncoderEx.Mode;
 import com.ttProject.util.HexUtil;
@@ -121,6 +120,7 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
 		super.channelClosed(ctx, e);
 	}
 	@Override
+	@SuppressWarnings({"unchecked"})
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent me)
 			throws Exception {
 		if(publisher != null && publisher.handle(me)) {
@@ -243,7 +243,6 @@ public class ClientHandler extends SimpleChannelUpstreamHandler {
 				}
 			}
 			else if(name.equals("onStatus")) {
-				@SuppressWarnings("unchecked")
 				final Map<String, Object> temp = (Map<String, Object>) command.getArg(0);
 				final String code = (String) temp.get("code");
 				logger.info("onStatus code: {}", code);
