@@ -17,6 +17,7 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class RiffUnitReader extends Reader {
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(RiffUnitReader.class);
 	/**
 	 * constructor

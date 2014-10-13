@@ -75,6 +75,7 @@ public class Strh extends RiffSizeUnit {
 		logger.info(top.get());
 		logger.info(right.get());
 		logger.info(bottom.get());
+		// scale / rate = deltatime for frame.
 		logger.info("rate" + dwRate.get());
 		logger.info("scale" + dwScale.get());
 		logger.info(dwRate.get() / dwScale.get());
@@ -101,5 +102,19 @@ public class Strh extends RiffSizeUnit {
 	 */
 	public FccType getFccType() {
 		return fccType;
+	}
+	/**
+	 * ref the rate.
+	 * @return
+	 */
+	public int getRate() {
+		return dwRate.get();
+	}
+	/**
+	 * ref the scale.
+	 * @return
+	 */
+	public int getScale() {
+		return dwScale.get();
 	}
 }

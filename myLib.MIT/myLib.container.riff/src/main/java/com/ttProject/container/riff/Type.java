@@ -24,6 +24,7 @@ public enum Type {
 	INFO(0x494E464F),
 	ISFT(0x49534654),
 	movi(0x6d6f7669),
+	dc(0x00006463),
 	JUNK(0x4A554E4B);
 	
 	private final int value;
@@ -35,8 +36,15 @@ public enum Type {
 	}
 	public static Type getType(int num) {
 		for(Type t : values()) {
-			if(t.intValue() == num) {
-				return t;
+			if(t == dc) {
+				if(t.intValue() == (num & 0x0000FFFF)) {
+					return t;
+				}
+			}
+			else {
+				if(t.intValue() == num) {
+					return t;
+				}
 			}
 		}
 		throw new RuntimeException("unknown tag is found.:" + Integer.toHexString(num));

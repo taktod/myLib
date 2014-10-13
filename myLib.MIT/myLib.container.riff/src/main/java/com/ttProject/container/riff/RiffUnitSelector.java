@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.riff.type.Avih;
 import com.ttProject.container.riff.type.Data;
+import com.ttProject.container.riff.type.Dc;
 import com.ttProject.container.riff.type.Fact;
 import com.ttProject.container.riff.type.Fmt;
 import com.ttProject.container.riff.type.Hdrl;
@@ -34,6 +35,12 @@ import com.ttProject.util.BufferUtil;
 public class RiffUnitSelector implements ISelector {
 	/** logger */
 	private Logger logger = Logger.getLogger(RiffUnitSelector.class);
+	/*
+	 * aviの場合はstrhにriffFormatUnitも含めて保持しておきたいところ。
+	 * 必要なanalyzerも決定してるし、時間データも決定できるし・・・
+	 * ただしtrackIdごとに保持しておかないとだめっぽいけど・・・
+	 * wavの場合はstrhはないので、生でformatUnitを保持しておきたいところ。
+	 */
 	/** format information */
 	private RiffFormatUnit formatUnit = null;
 	private Strh prevStrhUnit = null;
@@ -47,7 +54,9 @@ public class RiffUnitSelector implements ISelector {
 		}
 		// check first 4byte
 		logger.info(Integer.toHexString(channel.position()));
-		Type type = Type.getType(BufferUtil.safeRead(channel, 4).getInt());
+		// for dc db pc wb. need to check lower 2 byte
+		int typeValue = BufferUtil.safeRead(channel, 4).getInt();
+		Type type = Type.getType(typeValue);
 		RiffUnit unit = null;
 		logger.info(type);
 		switch(type) {
@@ -108,6 +117,10 @@ public class RiffUnitSelector implements ISelector {
 			break;
 		case movi:
 			unit = new Movi();
+			break;
+		case dc:
+			logger.info("this is dcData");
+			unit = new Dc(typeValue);
 			break;
 		case JUNK:
 			unit = new Junk();
