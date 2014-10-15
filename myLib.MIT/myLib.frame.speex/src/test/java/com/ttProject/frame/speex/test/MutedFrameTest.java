@@ -26,7 +26,7 @@ public class MutedFrameTest {
 		Frame frame = SpeexFrame.getMutedFrame(16000, 1, 16);
 		// need to add headerFrame.
 		HeaderFrame headerFrame = new HeaderFrame();
-		headerFrame.fillWithFlvDefault();
+		headerFrame.fillWithFlvDefault(1);
 		frame.setHeaderFrame(headerFrame);
 		logger.info(HexUtil.toHex(frame.getData()));
 	}

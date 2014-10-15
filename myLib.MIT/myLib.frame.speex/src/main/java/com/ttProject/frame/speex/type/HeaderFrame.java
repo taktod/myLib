@@ -73,7 +73,7 @@ public class HeaderFrame extends SpeexFrame {
 	/**
 	 * initialize with flv default value.
 	 */
-	public void fillWithFlvDefault() throws Exception {
+	public void fillWithFlvDefault(int framesPerPacket) throws Exception {
 		speexString = "Speex   ";
 		speexVersion = "1.2rc1";
 		speexVersionId = 1;
@@ -85,7 +85,7 @@ public class HeaderFrame extends SpeexFrame {
 		bitRate = 0xA4D8; // flvにあわせて変更すべき？(42200bpsにしておく。固定か？、vlcではこの値をみて、データの長さを計算しているみたいです。)
 		frameSize = 0x140; // seems to be the fix value.
 		vbr = 0;
-		framesPerPacket = 1;
+		this.framesPerPacket = framesPerPacket;
 		extraHeaders = 0;
 		reserved1 = 0;
 		reserved2 = 0;

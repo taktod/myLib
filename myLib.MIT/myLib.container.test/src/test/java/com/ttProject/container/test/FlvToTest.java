@@ -79,7 +79,7 @@ public class FlvToTest {
 		OggPageWriter writer = new OggPageWriter("output.ogg");
 		logger.info("from flv to ogg test");
 		HeaderFrame headerFrame = new HeaderFrame();
-		headerFrame.fillWithFlvDefault();
+		headerFrame.fillWithFlvDefault(1);
 		writer.addFrame(1, headerFrame);
 		writer.completePage(1);
 		logger.info(headerFrame);
