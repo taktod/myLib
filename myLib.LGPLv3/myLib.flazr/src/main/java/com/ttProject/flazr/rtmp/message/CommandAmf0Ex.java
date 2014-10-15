@@ -18,11 +18,14 @@ import com.flazr.rtmp.RtmpHeader;
 import com.flazr.rtmp.RtmpMessage;
 import com.flazr.rtmp.message.CommandAmf0;
 import com.ttProject.container.flv.amf.Amf0Value;
+import com.ttProject.flazr.unit.Amf0ObjectManager;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
- * 
+ * CommandAmf0Ex
+ * original flazr's CommandAmf0 cannot handle Amf3 extra message.
+ * in order to deal with such message, I make CommandAmf0Ex.
  * @author taktod
  */
 public class CommandAmf0Ex implements RtmpMessage {
@@ -32,6 +35,12 @@ public class CommandAmf0Ex implements RtmpMessage {
 	private Integer transactionId;
 	private Object object;
 	private Object[] args;
+	private final Amf0ObjectManager amf0ObjectManager = new Amf0ObjectManager();
+	/**
+	 * constructor
+	 * @param header
+	 * @param in
+	 */
 	public CommandAmf0Ex(RtmpHeader header, ChannelBuffer in) {
 		this.header = header;
 		decode(in);
@@ -90,7 +99,10 @@ public class CommandAmf0Ex implements RtmpMessage {
 		return args.length;
 	}
 	public CommandAmf0 transform() {
-		CommandAmf0 command0 = new CommandAmf0(transactionId, name, (Amf0Object)object, args);
-		return command0;
+		if(object == null || object instanceof com.ttProject.container.flv.amf.Amf0Object) {
+			CommandAmf0 command0 = new CommandAmf0(transactionId, name, (Amf0Object)amf0ObjectManager.toFlazrObject(object), args);
+			return command0;
+		}
+		throw new RuntimeException("base object is not amf0Object.");
 	}
 }
