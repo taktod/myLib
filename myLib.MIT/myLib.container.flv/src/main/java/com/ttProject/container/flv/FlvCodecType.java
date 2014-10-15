@@ -35,9 +35,28 @@ http://blog-imgs-18-origin.fc2.com/n/a/n/nanncyatte/aacfileheader.png
 public enum FlvCodecType {
 	NONE(CodecType.NONE),
 	// video codecs
-	JPEG(CodecType.UNKNOWN_VIDEO),FLV1(CodecType.FLV1),SCREEN(CodecType.UNKNOWN_VIDEO),ON2VP6(CodecType.VP6),ON2VP6_ALPHA(CodecType.UNKNOWN_VIDEO),SCREEN_V2(CodecType.UNKNOWN_VIDEO),H264(CodecType.H264),
+	JPEG(CodecType.UNKNOWN_VIDEO),
+	FLV1(CodecType.FLV1),
+	SCREEN(CodecType.UNKNOWN_VIDEO),
+	ON2VP6(CodecType.VP6),
+	ON2VP6_ALPHA(CodecType.UNKNOWN_VIDEO),
+	SCREEN_V2(CodecType.UNKNOWN_VIDEO),
+	H264(CodecType.H264),
 	// audio codecs
-	PCM(CodecType.UNKNOWN_AUDIO),ADPCM(CodecType.ADPCM_SWF),MP3(CodecType.MP3),LPCM(CodecType.UNKNOWN_AUDIO),NELLY_16(CodecType.NELLYMOSER),NELLY_8(CodecType.NELLYMOSER),NELLY(CodecType.NELLYMOSER),G711_A(CodecType.PCM_ALAW),G711_U(CodecType.PCM_MULAW),RESERVED(CodecType.UNKNOWN_AUDIO),AAC(CodecType.AAC),SPEEX(CodecType.SPEEX),MP3_8(CodecType.MP3),DEVICE_SPECIFIC(CodecType.UNKNOWN_AUDIO);
+	PCM(CodecType.UNKNOWN_AUDIO),
+	ADPCM(CodecType.ADPCM_SWF),
+	MP3(CodecType.MP3),
+	LPCM(CodecType.UNKNOWN_AUDIO),
+	NELLY_16(CodecType.NELLYMOSER),
+	NELLY_8(CodecType.NELLYMOSER),
+	NELLY(CodecType.NELLYMOSER),
+	G711_A(CodecType.PCM_ALAW),
+	G711_U(CodecType.PCM_MULAW),
+	RESERVED(CodecType.UNKNOWN_AUDIO),
+	AAC(CodecType.AAC),
+	SPEEX(CodecType.SPEEX),
+	MP3_8(CodecType.MP3),
+	DEVICE_SPECIFIC(CodecType.UNKNOWN_AUDIO);
 	private final CodecType codecType;
 	private FlvCodecType(CodecType codecType) {
 		this.codecType = codecType;
