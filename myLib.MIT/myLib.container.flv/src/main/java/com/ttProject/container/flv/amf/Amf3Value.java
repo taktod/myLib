@@ -7,8 +7,6 @@
 package com.ttProject.container.flv.amf;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
@@ -85,7 +83,9 @@ public class Amf3Value {
 				if(data.get() != 0x01) {
 					throw new Exception("start code of object is unexpect value.");
 				}
-				Map<String, Object> result = new HashMap<String, Object>();
+				// TODO should I use Amf3Object, instead of Map?
+				Amf0Object<String, Object> result = new Amf0Object<String, Object>();
+//				Map<String, Object> result = new HashMap<String, Object>();
 				// load data.
 				byte b;
 				while((b = BufferUtil.safeRead(source, 1).get()) != 0x01) {
