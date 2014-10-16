@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
+import com.ttProject.container.riff.type.Movi;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
 
@@ -42,6 +43,10 @@ public abstract class RiffMasterUnit extends RiffSizeUnit {
 		IContainer container = null;
 		while(targetSize > 4 && (container = reader.read(channel)) != null) {
 			targetSize -= container.getSize();
+			if(container instanceof Movi) {
+				// in the case of Movi is found. stop and leave from MasterUnit and back to original work.(let the original process to handle frame unit.)
+				return;
+			}
 			if(container instanceof RiffUnit) {
 				childUnits.add((RiffUnit)container);
 				// if get the data(chunk for data. need to fall back to original test and try to analyze frame.)

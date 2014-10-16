@@ -28,6 +28,7 @@ public enum Type {
 	dc(0x00006463),
 	pc(0x00007063),
 	wb(0x00007762),
+	idx1(0x69647831),
 	JUNK(0x4A554E4B);
 	
 	private final int value;
