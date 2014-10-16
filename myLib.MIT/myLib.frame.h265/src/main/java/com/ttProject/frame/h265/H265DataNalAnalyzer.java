@@ -27,6 +27,9 @@ public class H265DataNalAnalyzer extends H265FrameAnalyzer {
 	 */
 	@Override
 	public IFrame analyze(IReadChannel channel) throws Exception {
+		if(channel.position() == channel.size()) {
+			return null;
+		}
 		if(configData == null) {
 			throw new Exception("configData is undefined.");
 		}

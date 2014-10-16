@@ -28,6 +28,9 @@ public class NalAnalyzer extends H264FrameAnalyzer {
 	 */
 	@Override
 	public IFrame analyze(IReadChannel channel) throws Exception {
+		if(channel.position() == channel.size()) {
+			return null;
+		}
 		Short lastData = null;
 		ByteBuffer buffer = ByteBuffer.allocate(channel.size() - channel.position());
 		// load data.

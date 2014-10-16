@@ -35,6 +35,9 @@ public class AacDsiFrameSelector extends AudioSelector {
 	 */
 	@Override
 	public IUnit select(IReadChannel channel) throws Exception {
+		if(channel.position() == channel.size()) {
+			return null;
+		}
 		if(dsi == null) {
 			throw new Exception("dsi is undefined.");
 		}

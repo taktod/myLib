@@ -30,11 +30,20 @@ public class DataNalAnalyzer extends H264FrameAnalyzer {
 	public void setConfigData(ConfigData configData) {
 		this.configData = configData;
 	}
+	@Override
+	public void setPrivateData(IReadChannel channel) throws Exception {
+		ConfigData configData = new ConfigData();
+		configData.analyzeData(channel);
+		this.configData = configData;
+	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public IFrame analyze(IReadChannel channel) throws Exception {
+		if(channel.position() == channel.size()) {
+			return null;
+		}
 		if(configData == null) {
 			throw new Exception("configData is undefined.");
 		}
