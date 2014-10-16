@@ -8,7 +8,6 @@ package com.ttProject.container.riff.type;
 
 import com.ttProject.container.riff.RiffFrameUnit;
 import com.ttProject.container.riff.Type;
-import com.ttProject.nio.channels.IReadChannel;
 
 /**
  * **dc
@@ -23,10 +22,6 @@ public class Dc extends RiffFrameUnit {
 	 */
 	public Dc(int dataValue) {
 		super(dataValue, Type.dc);
-	}
-	@Override
-	public void load(IReadChannel channel) throws Exception {
-		
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
