@@ -6,27 +6,12 @@
  */
 package com.ttProject.container.wav.adpcm.test;
 
-import java.nio.ByteBuffer;
-
-import org.apache.log4j.Logger;
-import org.junit.Test;
-
-import com.ttProject.container.IContainer;
-import com.ttProject.container.IReader;
-import com.ttProject.container.riff.IFrameEventListener;
-import com.ttProject.container.riff.RiffUnitReader;
-import com.ttProject.container.riff.type.Data;
-import com.ttProject.frame.AudioFrame;
-import com.ttProject.frame.IFrame;
-import com.ttProject.nio.channels.FileReadChannel;
-import com.ttProject.nio.channels.IFileReadChannel;
-
 /**
  * adpcm original format.
  * @author taktod
  */
 public class AdpcmTakTest {
-	/** logger */
+	/** logger * /
 	private Logger logger = Logger.getLogger(AdpcmTakTest.class);
 	private 			Integer[] order = {
 			0x0,
@@ -67,7 +52,7 @@ public class AdpcmTakTest {
 
 	/**
 	 * read test
-	 */
+	 * /
 	@Test
 	public void test() {
 		IFileReadChannel source = null;
@@ -161,5 +146,5 @@ public class AdpcmTakTest {
 				source = null;
 			}
 		}
-	}
+	}// */
 }

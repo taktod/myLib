@@ -10,8 +10,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
-
 import com.ttProject.container.riff.type.Avih;
 import com.ttProject.container.riff.type.Data;
 import com.ttProject.container.riff.type.Dc;
@@ -39,8 +37,6 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class RiffUnitSelector implements ISelector {
-	/** logger */
-	private Logger logger = Logger.getLogger(RiffUnitSelector.class);
 	/*
 	 * aviの場合はstrhにriffFormatUnitも含めて保持しておきたいところ。
 	 * 必要なanalyzerも決定してるし、時間データも決定できるし・・・
@@ -88,7 +84,17 @@ public class RiffUnitSelector implements ISelector {
 			channel = new ByteReadChannel(BufferUtil.connect(buffer, BufferUtil.safeRead(channel, blockSize)));
 		}
 		// check first 4byte
-		int typeValue = BufferUtil.safeRead(channel, 4).getInt();
+		// sometimes old ffmpeg has a bug to put the extra 0x00 on the data.
+		// we need to ignore this.
+		int firstByte = -1;
+		while((firstByte = BufferUtil.safeRead(channel, 1).get()) == 0) {
+			// skip 0x00
+		}
+		ByteBuffer buffer = BufferUtil.safeRead(channel, 3);
+		int typeValue = (firstByte & 0xFF) << 24;
+		typeValue |= (buffer.get() & 0xFF) << 16;
+		typeValue |= (buffer.get() & 0xFF) << 8;
+		typeValue |= (buffer.get() & 0xFF);
 		Type type = Type.getType(typeValue);
 		switch(type) {
 		case RIFF: // header
