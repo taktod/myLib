@@ -5,7 +5,9 @@ import org.junit.Test;
 
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
+import com.ttProject.container.riff.RiffFrameUnit;
 import com.ttProject.container.riff.RiffUnitReader;
+import com.ttProject.frame.IFrame;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
@@ -31,7 +33,13 @@ public class AviTest {
 			IReader reader = new RiffUnitReader();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
-				logger.info(container);
+				if(container instanceof RiffFrameUnit) {
+					IFrame frame = ((RiffFrameUnit) container).getFrame();
+					if(frame != null) {
+						logger.info(frame);
+						logger.info(1f * frame.getPts() / frame.getTimebase());
+					}
+				}
 			}
 		}
 		catch(Exception e) {

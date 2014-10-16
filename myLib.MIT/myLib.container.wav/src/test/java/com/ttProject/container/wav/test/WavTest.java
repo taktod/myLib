@@ -37,11 +37,12 @@ public class WavTest {
 			IReader reader = new RiffUnitReader();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
-				logger.info(container);
 				if(container instanceof RiffFrameUnit) {
 					IFrame frame = ((RiffFrameUnit) container).getFrame();
-					logger.info(frame);
-					logger.info(1f * frame.getPts() / frame.getTimebase());
+					if(frame != null) {
+						logger.info(frame);
+						logger.info(1f * frame.getPts() / frame.getTimebase());
+					}
 				}
 			}
 		}
