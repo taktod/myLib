@@ -6,11 +6,22 @@
  */
 package com.ttProject.container.riff.type;
 
+import com.ttProject.container.riff.RiffFrameUnit;
+import com.ttProject.container.riff.Type;
+
 /**
  * **db
  * uncompressed video frame.
  * @author taktod
  */
-public class Db {
-	
+public class Db extends RiffFrameUnit {
+	/**
+	 * constructor
+	 */
+	public Db(int dataValue) {
+		super(dataValue, Type.db);
+	}
+	@Override
+	protected void requestUpdate() throws Exception {
+	}
 }

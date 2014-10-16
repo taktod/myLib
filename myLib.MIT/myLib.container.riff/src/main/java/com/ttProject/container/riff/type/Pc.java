@@ -6,11 +6,19 @@
  */
 package com.ttProject.container.riff.type;
 
+import com.ttProject.container.riff.RiffFrameUnit;
+import com.ttProject.container.riff.Type;
+
 /**
  * **pc
  * pallete change
  * @author taktod
  */
-public class Pc {
-
+public class Pc extends RiffFrameUnit {
+	public Pc(int dataValue) {
+		super(dataValue, Type.pc);
+	}
+	@Override
+	protected void requestUpdate() throws Exception {
+	}
 }

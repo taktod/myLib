@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import com.ttProject.container.riff.type.Avih;
 import com.ttProject.container.riff.type.Data;
+import com.ttProject.container.riff.type.Db;
 import com.ttProject.container.riff.type.Dc;
 import com.ttProject.container.riff.type.Fact;
 import com.ttProject.container.riff.type.Fmt;
@@ -22,6 +23,7 @@ import com.ttProject.container.riff.type.Isft;
 import com.ttProject.container.riff.type.Junk;
 import com.ttProject.container.riff.type.List;
 import com.ttProject.container.riff.type.Movi;
+import com.ttProject.container.riff.type.Pc;
 import com.ttProject.container.riff.type.Riff;
 import com.ttProject.container.riff.type.Strf;
 import com.ttProject.container.riff.type.Strh;
@@ -173,8 +175,14 @@ public class RiffUnitSelector implements ISelector {
 		case idx1:
 			unit = new Idx1();
 			break;
+		case db:
+			unit = new Db(typeValue);
+			break;
 		case dc:
 			unit = new Dc(typeValue);
+			break;
+		case pc:
+			unit = new Pc(typeValue);
 			break;
 		case wb:
 			unit = new Wb(typeValue);
