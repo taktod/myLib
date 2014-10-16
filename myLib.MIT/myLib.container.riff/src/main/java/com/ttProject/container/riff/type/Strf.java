@@ -8,8 +8,6 @@ package com.ttProject.container.riff.type;
 
 import java.nio.ByteBuffer;
 
-import org.apache.log4j.Logger;
-
 import com.ttProject.container.riff.RiffFormatUnit;
 import com.ttProject.container.riff.StrhRiffCodecType;
 import com.ttProject.container.riff.Type;
@@ -17,7 +15,10 @@ import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.frame.VideoSelector;
+import com.ttProject.frame.flv1.Flv1FrameAnalyzer;
+import com.ttProject.frame.h264.DataNalAnalyzer;
 import com.ttProject.frame.mjpeg.MjpegFrameAnalyzer;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit16;
@@ -29,7 +30,6 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Strf extends RiffFormatUnit {
-	private Logger logger = Logger.getLogger(Strf.class);
 	// need to inplements bmpInfo?
 	private Bit32 biSize          = new Bit32();
 	private Bit32 biWidth         = new Bit32();
@@ -110,6 +110,13 @@ public class Strf extends RiffFormatUnit {
 		switch(riffCodecType) {
 		case MJPG:
 			frameAnalyzer = new MjpegFrameAnalyzer();
+			break;
+		case H264:
+			frameAnalyzer = new DataNalAnalyzer();
+			frameAnalyzer.setPrivateData(new ByteReadChannel(extraInfo));
+			break;
+		case FLV1:
+			frameAnalyzer = new Flv1FrameAnalyzer();
 			break;
 		default:
 			throw new RuntimeException("analyzer is unknown");

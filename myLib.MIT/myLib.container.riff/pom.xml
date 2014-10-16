@@ -37,9 +37,29 @@
       <version>0.0.2-SNAPSHOT</version>
     </dependency>
     <dependency>
-    	<groupId>com.ttProject</groupId>
-    	<artifactId>myLib.frame.mjpeg</artifactId>
-    	<version>0.0.2-SNAPSHOT</version>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.frame.mjpeg</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.frame.aac</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.frame.h264</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.frame.flv1</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ttProject</groupId>
+      <artifactId>myLib.frame.mp3</artifactId>
+      <version>0.0.2-SNAPSHOT</version>
     </dependency>
   </dependencies>
   <description>riff container</description>
