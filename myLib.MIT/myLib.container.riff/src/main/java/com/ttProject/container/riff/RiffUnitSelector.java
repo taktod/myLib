@@ -25,6 +25,7 @@ import com.ttProject.container.riff.type.Riff;
 import com.ttProject.container.riff.type.Strf;
 import com.ttProject.container.riff.type.Strh;
 import com.ttProject.container.riff.type.Strl;
+import com.ttProject.container.riff.type.Vprp;
 import com.ttProject.container.riff.type.Wb;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -164,6 +165,9 @@ public class RiffUnitSelector implements ISelector {
 			break;
 		case movi:
 			unit = new Movi();
+			break;
+		case vprp:
+			unit = new Vprp();
 			break;
 		case dc:
 			unit = new Dc(typeValue);
