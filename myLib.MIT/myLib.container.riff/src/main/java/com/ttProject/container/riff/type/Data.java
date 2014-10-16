@@ -6,8 +6,6 @@
  */
 package com.ttProject.container.riff.type;
 
-import org.apache.log4j.Logger;
-
 import com.ttProject.container.riff.RiffSizeUnit;
 import com.ttProject.container.riff.Type;
 import com.ttProject.nio.channels.IReadChannel;
@@ -18,18 +16,11 @@ import com.ttProject.nio.channels.IReadChannel;
  * @author taktod
  */
 public class Data extends RiffSizeUnit {
-	/** logger */
-	@SuppressWarnings("unused")
-	private Logger logger = Logger.getLogger(Data.class);
+	/**
+	 * constructor
+	 */
 	public Data() {
 		super(Type.DATA);
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void minimumLoad(IReadChannel channel) throws Exception {
-		super.minimumLoad(channel);
 	}
 	/**
 	 * {@inheritDoc}
