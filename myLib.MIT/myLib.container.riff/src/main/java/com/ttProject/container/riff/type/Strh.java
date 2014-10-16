@@ -6,8 +6,6 @@
  */
 package com.ttProject.container.riff.type;
 
-import org.apache.log4j.Logger;
-
 import com.ttProject.container.riff.RiffSizeUnit;
 import com.ttProject.container.riff.StrhRiffCodecType;
 import com.ttProject.container.riff.Type;
@@ -23,8 +21,6 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class Strh extends RiffSizeUnit {
-	/** logger */
-	private Logger logger = Logger.getLogger(Strh.class);
 	private FccType fccType;
 	private StrhRiffCodecType fccHandler;
 	private Bit32 dwFlags = new Bit32();
@@ -61,24 +57,12 @@ public class Strh extends RiffSizeUnit {
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
 		fccType = FccType.valueOf(new String(BufferUtil.safeRead(channel, 4).array()).intern());
-		logger.info(fccType);
 		fccHandler = StrhRiffCodecType.getValue(BufferUtil.safeRead(channel, 4).getInt());
-		logger.info(fccHandler);
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
 		loader.load(dwFlags, wPriority, wLanguage, dwInitialFrames, dwScale,
 				dwRate, dwStart, dwLength, dwSuggestedBufferSize, dwQuality, dwSampleSize,
 				left, top, right, bottom);
-		logger.info(dwStart.get());
-		logger.info(dwLength.get());
-		logger.info(left.get());
-		logger.info(top.get());
-		logger.info(right.get());
-		logger.info(bottom.get());
-		// scale / rate = deltatime for frame.
-		logger.info("rate" + dwRate.get());
-		logger.info("scale" + dwScale.get());
-		logger.info(dwRate.get() / dwScale.get());
 	}
 	/**
 	 * {@inheritDoc}
@@ -116,5 +100,8 @@ public class Strh extends RiffSizeUnit {
 	 */
 	public int getScale() {
 		return dwScale.get();
+	}
+	public StrhRiffCodecType getRiffCodecType() {
+		return fccHandler;
 	}
 }

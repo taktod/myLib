@@ -103,6 +103,10 @@ public class RiffUnitSelector implements ISelector {
 			{
 				RiffFormatUnit formatUnit = new Fmt();
 				formatUnitList.add(formatUnit);
+				if(prevStrhUnit != null) {
+					formatUnit.setRate(prevStrhUnit.getRate());
+					formatUnit.setScale(prevStrhUnit.getScale());
+				}
 				unit = formatUnit;
 			}
 			break;
@@ -141,10 +145,14 @@ public class RiffUnitSelector implements ISelector {
 				case tets:
 					throw new Exception("unknown for mids or tets.");
 				case vids:
-					formatUnit = new Strf();
+					formatUnit = new Strf(prevStrhUnit.getRiffCodecType());
 					break;
 				}
 				formatUnitList.add(formatUnit);
+				if(prevStrhUnit != null) {
+					formatUnit.setRate(prevStrhUnit.getRate());
+					formatUnit.setScale(prevStrhUnit.getScale());
+				}
 				unit = formatUnit;
 			}
 			break;

@@ -1,3 +1,9 @@
+/*
+ * myLib - https://github.com/taktod/myLib
+ * Copyright (c) 2014 ttProject. All rights reserved.
+ * 
+ * Licensed under The MIT license.
+ */
 package com.ttProject.container.riff.type;
 
 import java.nio.ByteBuffer;
@@ -5,9 +11,13 @@ import java.nio.ByteBuffer;
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.riff.RiffFormatUnit;
+import com.ttProject.container.riff.StrhRiffCodecType;
 import com.ttProject.container.riff.Type;
 import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAnalyzer;
+import com.ttProject.frame.VideoAnalyzer;
+import com.ttProject.frame.VideoSelector;
+import com.ttProject.frame.mjpeg.MjpegFrameAnalyzer;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
 import com.ttProject.unit.extra.bit.Bit16;
@@ -33,6 +43,8 @@ public class Strf extends RiffFormatUnit {
 	private Bit32 biClrUsed = new Bit32();
 	private Bit32 biClrImportant = new Bit32();
 	
+	private StrhRiffCodecType riffCodecType = null;
+	private IAnalyzer frameAnalyzer = null;
 	private ByteBuffer extraInfo = null;
 	// for h264 after this, here is the codecPrivate(configData.)
 	// for theora, something wierd here...
@@ -48,8 +60,9 @@ public class Strf extends RiffFormatUnit {
 	/**
 	 * constructor
 	 */
-	public Strf() {
+	public Strf(StrhRiffCodecType codecType) {
 		super(Type.strf);
+		this.riffCodecType = codecType;
 	}
 	/**
 	 * {@inheritDoc}
@@ -61,11 +74,6 @@ public class Strf extends RiffFormatUnit {
 		loader.setLittleEndianFlg(true);
 		loader.load(biSize, biWidth, biHeight, biPlanes, biBitCount, biCompression,
 				biSizeImage, biXPelsPerMeter, biYPelsPerMeter, biClrUsed, biClrImportant);
-		logger.info(biWidth.get());
-		logger.info(biHeight.get());
-		logger.info(biPlanes.get());
-		logger.info(biBitCount.get());
-		logger.info(channel.position());
 	}
 	/**
 	 * {@inheritDoc}
@@ -73,9 +81,9 @@ public class Strf extends RiffFormatUnit {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		logger.info(getSize());
-		if(getSize() - 88 > 0) {
+		if(getSize() - 48 > 0) {
 			// TODO here try to read all of the file.
-			extraInfo = BufferUtil.safeRead(channel, getSize() - 88);
+			extraInfo = BufferUtil.safeRead(channel, getSize() - 48);
 		}
 	}
 	/**
@@ -90,14 +98,29 @@ public class Strf extends RiffFormatUnit {
 	 */
 	@Override
 	public CodecType getCodecType() {
-		return null;
+		return riffCodecType.getCodecType();
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public IAnalyzer getFrameAnalyzer() {
-		return null;
+		if(frameAnalyzer != null) {
+			return frameAnalyzer;
+		}
+		switch(riffCodecType) {
+		case MJPG:
+			frameAnalyzer = new MjpegFrameAnalyzer();
+			break;
+		default:
+			throw new RuntimeException("analyzer is unknown");
+		}
+		if(frameAnalyzer instanceof VideoAnalyzer) {
+			VideoSelector selector = ((VideoAnalyzer) frameAnalyzer).getSelector();
+			selector.setWidth(biWidth.get());
+			selector.setHeight(biHeight.get());
+		}
+		return frameAnalyzer;
 	}
 	/**
 	 * {@inheritDoc}
