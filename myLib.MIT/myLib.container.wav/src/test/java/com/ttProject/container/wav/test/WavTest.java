@@ -12,7 +12,6 @@ import org.junit.Test;
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
 import com.ttProject.container.riff.IFrameEventListener;
-import com.ttProject.container.riff.RiffHeaderUnit;
 import com.ttProject.container.riff.RiffUnitReader;
 import com.ttProject.container.riff.type.Data;
 import com.ttProject.frame.IFrame;
@@ -40,9 +39,6 @@ public class WavTest {
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
 				logger.info(container);
-				if(container instanceof RiffHeaderUnit) {
-					logger.info(((RiffHeaderUnit) container).getFormatString());
-				}
 				if(container instanceof Data) {
 					Data data = (Data)container;
 					data.analyzeFrame(source, new IFrameEventListener() {
