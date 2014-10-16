@@ -24,7 +24,10 @@ public enum Type {
 	INFO(0x494E464F),
 	ISFT(0x49534654),
 	movi(0x6d6f7669),
+	db(0x00006462),
 	dc(0x00006463),
+	pc(0x00007063),
+	wb(0x00007762),
 	JUNK(0x4A554E4B);
 	
 	private final int value;
@@ -36,12 +39,16 @@ public enum Type {
 	}
 	public static Type getType(int num) {
 		for(Type t : values()) {
-			if(t == dc) {
+			switch(t) {
+			case db:
+			case dc:
+			case pc:
+			case wb:
 				if(t.intValue() == (num & 0x0000FFFF)) {
 					return t;
 				}
-			}
-			else {
+				break;
+			default:
 				if(t.intValue() == num) {
 					return t;
 				}

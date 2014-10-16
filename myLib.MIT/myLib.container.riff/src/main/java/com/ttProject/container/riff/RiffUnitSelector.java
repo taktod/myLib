@@ -6,6 +6,10 @@
  */
 package com.ttProject.container.riff;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 
 import com.ttProject.container.riff.type.Avih;
@@ -23,6 +27,7 @@ import com.ttProject.container.riff.type.Riff;
 import com.ttProject.container.riff.type.Strf;
 import com.ttProject.container.riff.type.Strh;
 import com.ttProject.container.riff.type.Strl;
+import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
 import com.ttProject.unit.IUnit;
@@ -42,8 +47,10 @@ public class RiffUnitSelector implements ISelector {
 	 * wavの場合はstrhはないので、生でformatUnitを保持しておきたいところ。
 	 */
 	/** format information */
-	private RiffFormatUnit formatUnit = null;
+	private java.util.List<RiffFormatUnit> formatUnitList = new ArrayList<RiffFormatUnit>();
 	private Strh prevStrhUnit = null;
+	// remain data size in the data tag.
+	private long dataRemainLength = -1;
 	/**
 	 * {@inheritDoc}
 	 */
@@ -52,12 +59,38 @@ public class RiffUnitSelector implements ISelector {
 		if(channel.position() == channel.size()) {
 			return null;
 		}
+		RiffUnit unit = null;
+		if(dataRemainLength > 0) {
+			int blockSize = 0;
+			RiffFormatUnit formatUnit = formatUnitList.get(0);
+			switch (formatUnit.getCodecType()) {
+			case PCM_ALAW:
+			case PCM_MULAW:
+				blockSize = 0x0100;
+				if(dataRemainLength < 0x0100) {
+					blockSize = (int)dataRemainLength;
+				}
+				break;
+			default:
+				blockSize = formatUnit.getBlockSize();
+				break;
+			}
+			ByteBuffer buffer = ByteBuffer.allocate(8);
+			buffer.order(ByteOrder.LITTLE_ENDIAN);
+			buffer.put((byte)0x30);
+			buffer.put((byte)0x30);
+			buffer.put((byte)((Type.wb.intValue() &0x0000FF00) >> 8));
+			buffer.put((byte)(Type.wb.intValue() &0x000000FF));
+			buffer.putInt(blockSize);
+			buffer.flip();
+			buffer.order(ByteOrder.BIG_ENDIAN);
+			channel = new ByteReadChannel(BufferUtil.connect(buffer, BufferUtil.safeRead(channel, blockSize)));
+		}
 		// check first 4byte
 		logger.info(Integer.toHexString(channel.position()));
 		// for dc db pc wb. need to check lower 2 byte
 		int typeValue = BufferUtil.safeRead(channel, 4).getInt();
 		Type type = Type.getType(typeValue);
-		RiffUnit unit = null;
 		logger.info(type);
 		switch(type) {
 		case RIFF: // header
@@ -67,8 +100,11 @@ public class RiffUnitSelector implements ISelector {
 			unit = new Riff();
 			break;
 		case FMT: // format information(must)
-			unit = new Fmt();
-			formatUnit = (Fmt)unit;
+			{
+				RiffFormatUnit formatUnit = new Fmt();
+				formatUnitList.add(formatUnit);
+				unit = formatUnit;
+			}
 			break;
 		case FACT: // sampleNum and so on...
 			unit = new Fact();
@@ -93,21 +129,24 @@ public class RiffUnitSelector implements ISelector {
 			prevStrhUnit = (Strh)unit;
 			break;
 		case strf:
-			// check strh, if
-			switch(prevStrhUnit.getFccType()) {
-			case auds:
-				// use fmt
-				unit = new Fmt();
-				break;
-			case mids:
-			case tets:
-				throw new Exception("unknown for mids or tets.");
-			case vids:
-				logger.info("strf is settled");
-				unit = new Strf();
-				break;
+			{
+				// check strh, if
+				RiffFormatUnit formatUnit = null;
+				switch(prevStrhUnit.getFccType()) {
+				case auds:
+					// use fmt
+					formatUnit = new Fmt();
+					break;
+				case mids:
+				case tets:
+					throw new Exception("unknown for mids or tets.");
+				case vids:
+					formatUnit = new Strf();
+					break;
+				}
+				formatUnitList.add(formatUnit);
+				unit = formatUnit;
 			}
-			formatUnit = (RiffFormatUnit) unit;
 			break;
 		case INFO:
 			unit = new Info();
@@ -130,9 +169,6 @@ public class RiffUnitSelector implements ISelector {
 		}
 		if(unit == null) {
 			throw new Exception("unit is undefined.maybe non-support type.:" + type);
-		}
-		if(!(unit instanceof RiffMasterUnit) || !(unit instanceof RiffFormatUnit)) {
-			unit.setFormatUnit(formatUnit);
 		}
 		unit.minimumLoad(channel);
 		return unit;
