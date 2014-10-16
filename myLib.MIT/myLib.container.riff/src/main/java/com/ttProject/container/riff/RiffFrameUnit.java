@@ -26,6 +26,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public abstract class RiffFrameUnit extends RiffSizeUnit {
+	/** trackId */
 	private final int trackId;
 	/** format information */
 	private RiffFormatUnit formatUnit = null;

@@ -34,15 +34,10 @@ import com.ttProject.util.BufferUtil;
 
 /**
  * riff unit selector
+ * NOTE there are multi riff avi.... should I support?
  * @author taktod
  */
 public class RiffUnitSelector implements ISelector {
-	/*
-	 * aviの場合はstrhにriffFormatUnitも含めて保持しておきたいところ。
-	 * 必要なanalyzerも決定してるし、時間データも決定できるし・・・
-	 * ただしtrackIdごとに保持しておかないとだめっぽいけど・・・
-	 * wavの場合はstrhはないので、生でformatUnitを保持しておきたいところ。
-	 */
 	/** format information */
 	private java.util.List<RiffFormatUnit> formatUnitList = new ArrayList<RiffFormatUnit>();
 	private Strh prevStrhUnit = null;
@@ -108,6 +103,7 @@ public class RiffUnitSelector implements ISelector {
 				RiffFormatUnit formatUnit = new Fmt();
 				formatUnitList.add(formatUnit);
 				if(prevStrhUnit != null) {
+					// maybe no way to come here..
 					formatUnit.setRate(prevStrhUnit.getRate());
 					formatUnit.setScale(prevStrhUnit.getScale());
 				}
