@@ -23,6 +23,5 @@ public class Wb extends RiffFrameUnit {
 	}
 	@Override
 	protected void requestUpdate() throws Exception {
-		
 	}
 }

@@ -35,8 +35,9 @@ public abstract class RiffFormatUnit extends RiffSizeUnit {
 	/**
 	 * ref frame analyzer.
 	 * @return
+	 * @throws Exception 
 	 */
-	public abstract IAnalyzer getFrameAnalyzer();
+	public abstract IAnalyzer getFrameAnalyzer() throws Exception;
 	/**
 	 * ref frame size.
 	 * @return
@@ -51,7 +52,7 @@ public abstract class RiffFormatUnit extends RiffSizeUnit {
 	 * @param rate
 	 */
 	public void setRate(int rate) {
-		super.setTimebase(rate);
+		super.setTimebase(scale);
 		this.rate = rate;
 	}
 	public void setScale(int scale) {

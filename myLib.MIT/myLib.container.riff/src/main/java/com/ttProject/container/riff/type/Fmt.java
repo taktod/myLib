@@ -104,7 +104,7 @@ public class Fmt extends RiffFormatUnit {
 	 * @return
 	 */
 	@Override
-	public IAnalyzer getFrameAnalyzer() {
+	public IAnalyzer getFrameAnalyzer() throws Exception {
 		if(frameAnalyzer != null) {
 			return frameAnalyzer;
 		}

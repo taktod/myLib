@@ -6,8 +6,6 @@
  */
 package com.ttProject.container.riff.type;
 
-import org.apache.log4j.Logger;
-
 import com.ttProject.container.riff.RiffSizeUnit;
 import com.ttProject.container.riff.Type;
 import com.ttProject.nio.channels.IReadChannel;
@@ -20,8 +18,6 @@ import com.ttProject.unit.extra.bit.Bit32;
  * @author taktod
  */
 public class Avih extends RiffSizeUnit {
-	/** logger */
-	private Logger logger = Logger.getLogger(Avih.class);
 	private Bit32 dwMicroSecPerFrame    = new Bit32();
 	private Bit32 dwMaxBytesPerSec      = new Bit32();
 	private Bit32 dwPaddingGranularity  = new Bit32();
@@ -57,8 +53,6 @@ public class Avih extends RiffSizeUnit {
 				dwWidth, dwHeigth);
 		loader.load(dwReserved);
 		super.update();
-		logger.info(dwWidth.get());
-		logger.info(dwHeigth.get());
 	}
 	/**
 	 * {@inheritDoc}

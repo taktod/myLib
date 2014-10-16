@@ -31,17 +31,17 @@ import com.ttProject.util.BufferUtil;
 public class Strf extends RiffFormatUnit {
 	private Logger logger = Logger.getLogger(Strf.class);
 	// need to inplements bmpInfo?
-	private Bit32 biSize = new Bit32();
-	private Bit32 biWidth = new Bit32();
-	private Bit32 biHeight = new Bit32();
-	private Bit16 biPlanes = new Bit16();
-	private Bit16 biBitCount = new Bit16();
-	private Bit32 biCompression = new Bit32(); // is this fourCC?
-	private Bit32 biSizeImage = new Bit32();
+	private Bit32 biSize          = new Bit32();
+	private Bit32 biWidth         = new Bit32();
+	private Bit32 biHeight        = new Bit32();
+	private Bit16 biPlanes        = new Bit16();
+	private Bit16 biBitCount      = new Bit16();
+	private Bit32 biCompression   = new Bit32(); // is this fourCC?
+	private Bit32 biSizeImage     = new Bit32();
 	private Bit32 biXPelsPerMeter = new Bit32();
 	private Bit32 biYPelsPerMeter = new Bit32();
-	private Bit32 biClrUsed = new Bit32();
-	private Bit32 biClrImportant = new Bit32();
+	private Bit32 biClrUsed       = new Bit32();
+	private Bit32 biClrImportant  = new Bit32();
 	
 	private StrhRiffCodecType riffCodecType = null;
 	private IAnalyzer frameAnalyzer = null;
@@ -80,7 +80,6 @@ public class Strf extends RiffFormatUnit {
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		logger.info(getSize());
 		if(getSize() - 48 > 0) {
 			// TODO here try to read all of the file.
 			extraInfo = BufferUtil.safeRead(channel, getSize() - 48);
@@ -104,7 +103,7 @@ public class Strf extends RiffFormatUnit {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IAnalyzer getFrameAnalyzer() {
+	public IAnalyzer getFrameAnalyzer() throws Exception {
 		if(frameAnalyzer != null) {
 			return frameAnalyzer;
 		}
