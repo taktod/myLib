@@ -27,6 +27,7 @@ import com.ttProject.container.riff.type.Riff;
 import com.ttProject.container.riff.type.Strf;
 import com.ttProject.container.riff.type.Strh;
 import com.ttProject.container.riff.type.Strl;
+import com.ttProject.container.riff.type.Wb;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.ISelector;
@@ -87,11 +88,8 @@ public class RiffUnitSelector implements ISelector {
 			channel = new ByteReadChannel(BufferUtil.connect(buffer, BufferUtil.safeRead(channel, blockSize)));
 		}
 		// check first 4byte
-		logger.info(Integer.toHexString(channel.position()));
-		// for dc db pc wb. need to check lower 2 byte
 		int typeValue = BufferUtil.safeRead(channel, 4).getInt();
 		Type type = Type.getType(typeValue);
-		logger.info(type);
 		switch(type) {
 		case RIFF: // header
 			if(channel.position() != 4) {
@@ -166,8 +164,10 @@ public class RiffUnitSelector implements ISelector {
 			unit = new Movi();
 			break;
 		case dc:
-			logger.info("this is dcData");
 			unit = new Dc(typeValue);
+			break;
+		case wb:
+			unit = new Wb(typeValue);
 			break;
 		case JUNK:
 			unit = new Junk();
@@ -178,7 +178,14 @@ public class RiffUnitSelector implements ISelector {
 		if(unit == null) {
 			throw new Exception("unit is undefined.maybe non-support type.:" + type);
 		}
+		if(unit instanceof RiffFrameUnit) {
+			RiffFrameUnit frameUnit = (RiffFrameUnit)unit;
+			frameUnit.setFormatUnit(formatUnitList.get(frameUnit.getTrackId()));
+		}
 		unit.minimumLoad(channel);
+		if(unit instanceof Data) {
+			dataRemainLength = unit.getSize() - 8;
+		}
 		return unit;
 	}
 }
