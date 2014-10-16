@@ -16,6 +16,7 @@ import com.ttProject.container.riff.type.Dc;
 import com.ttProject.container.riff.type.Fact;
 import com.ttProject.container.riff.type.Fmt;
 import com.ttProject.container.riff.type.Hdrl;
+import com.ttProject.container.riff.type.Idx1;
 import com.ttProject.container.riff.type.Info;
 import com.ttProject.container.riff.type.Isft;
 import com.ttProject.container.riff.type.Junk;
@@ -168,6 +169,9 @@ public class RiffUnitSelector implements ISelector {
 			break;
 		case vprp:
 			unit = new Vprp();
+			break;
+		case idx1:
+			unit = new Idx1();
 			break;
 		case dc:
 			unit = new Dc(typeValue);
