@@ -52,7 +52,7 @@ public abstract class RiffFormatUnit extends RiffSizeUnit {
 	 * @param rate
 	 */
 	public void setRate(int rate) {
-		super.setTimebase(scale);
+		super.setTimebase(rate);
 		this.rate = rate;
 	}
 	public void setScale(int scale) {
