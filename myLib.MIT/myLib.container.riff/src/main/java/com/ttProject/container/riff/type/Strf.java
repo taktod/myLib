@@ -18,6 +18,7 @@ import com.ttProject.frame.VideoSelector;
 import com.ttProject.frame.flv1.Flv1FrameAnalyzer;
 import com.ttProject.frame.h264.DataNalAnalyzer;
 import com.ttProject.frame.mjpeg.MjpegFrameAnalyzer;
+import com.ttProject.frame.vp8.Vp8FrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
@@ -117,6 +118,9 @@ public class Strf extends RiffFormatUnit {
 			break;
 		case FLV1:
 			frameAnalyzer = new Flv1FrameAnalyzer();
+			break;
+		case VP80:
+			frameAnalyzer = new Vp8FrameAnalyzer();
 			break;
 		default:
 			throw new RuntimeException("analyzer is unknown");

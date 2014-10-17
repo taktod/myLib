@@ -22,6 +22,7 @@ import com.ttProject.frame.adpcmimawav.AdpcmImaWavFrameAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
 import com.ttProject.frame.pcmalaw.PcmalawFrameAnalyzer;
 import com.ttProject.frame.pcmmulaw.PcmmulawFrameAnalyzer;
+import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.unit.extra.BitLoader;
@@ -127,6 +128,10 @@ public class Fmt extends RiffFormatUnit {
 			break;
 		case MP3:
 			frameAnalyzer = new Mp3FrameAnalyzer();
+			break;
+		case VORBIS:
+			frameAnalyzer = new VorbisFrameAnalyzer();
+			frameAnalyzer.setPrivateData(new ByteReadChannel(extraInfo));
 			break;
 		default:
 			throw new RuntimeException("codec is unknown:.");
