@@ -52,6 +52,48 @@ public class SetupForContainerTest extends SetupBase {
 			throw new Exception("failed to open container");
 		}
 		processConvert(container, Encoder.mjpeg(container), Encoder.adpcm_ima_wav(container));
+		logger.info("avi setup (flv1 / mp3)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.avi", "test.flv1mp3.avi"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("failed to open container");
+		}
+		processConvert(container, Encoder.flv1(container), Encoder.mp3(container));
+		logger.info("avi setup (h264 / aac)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.avi", "test.h264aac.avi"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("failed to open container");
+		}
+		processConvert(container, Encoder.h264(container), Encoder.aac(container));
+		logger.info("avi setup (h264 / pcm_alaw)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.avi", "test.h264pcm_alaw.avi"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("failed to open container");
+		}
+		processConvert(container, Encoder.h264(container), Encoder.pcm_alaw(container));
+		logger.info("avi setup (h264 / pcm_mulaw)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.avi", "test.h264pcm_mulaw.avi"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("failed to open container");
+		}
+		processConvert(container, Encoder.h264(container), Encoder.pcm_mulaw(container));
+		logger.info("avi setup (flv1 / speex)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.avi", "test.flv1speex.avi"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("failed to open container");
+		}
+		processConvert(container, Encoder.flv1(container), Encoder.speex(container));
+		logger.info("avi setup (vp8 / vorbis)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.avi", "test.vp8vorbis.avi"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("failed to open container");
+		}
+		processConvert(container, Encoder.vp8(container), Encoder.vorbis(container));
 	}
 	@Test
 	public void flv() throws Exception {

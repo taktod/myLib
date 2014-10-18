@@ -115,13 +115,18 @@ public class Strf extends RiffFormatUnit {
 			frameAnalyzer = new MjpegFrameAnalyzer();
 			break;
 		case H264:
-			try {
-				frameAnalyzer = new DataNalAnalyzer();
-				// if here throw the exception, need to use
-				frameAnalyzer.setPrivateData(new ByteReadChannel(extraInfo));
-			}
-			catch(ConfigDataException cde) {
+			if(extraInfo == null) {
 				frameAnalyzer = new NalAnalyzer();
+			}
+			else {
+				try {
+					frameAnalyzer = new DataNalAnalyzer();
+					// if here throw the exception, need to use
+					frameAnalyzer.setPrivateData(new ByteReadChannel(extraInfo));
+				}
+				catch(ConfigDataException cde) {
+					frameAnalyzer = new NalAnalyzer();
+				}
 			}
 			break;
 		case FLV1:
