@@ -10,8 +10,11 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.IVideoFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
+import com.ttProject.frame.h264.exception.ConfigDataException;
 import com.ttProject.frame.h264.type.PictureParameterSet;
 import com.ttProject.frame.h264.type.SequenceParameterSet;
 import com.ttProject.nio.channels.ByteReadChannel;
@@ -70,6 +73,7 @@ import com.ttProject.util.BufferUtil;
  * @author taktod
  */
 public class ConfigData {
+	private Logger logger = Logger.getLogger(ConfigData.class);
 	/** h264 data selector */
 	private H264FrameSelector selector = null;
 	private Bit8 avcCVersion = new Bit8();
@@ -144,8 +148,12 @@ public class ConfigData {
 		for(int i = 0;i < numOfSps.get();i ++) {
 			Bit16 spsSize = new Bit16();
 			loader.load(spsSize);
+			logger.info("spsSize:" + spsSize.get());
 			IReadChannel byteChannel = new ByteReadChannel(BufferUtil.safeRead(channel, spsSize.get()));
 			IVideoFrame sps = (IVideoFrame)selector.select(byteChannel);
+			if(sps == null) {
+				throw new ConfigDataException("sps is missing, use nalAnalyzer.");
+			}
 			if(!(sps instanceof SequenceParameterSet)) {
 				throw new Exception("sps is expected, however, found other frame.:" + sps.getClass().getSimpleName());
 			}

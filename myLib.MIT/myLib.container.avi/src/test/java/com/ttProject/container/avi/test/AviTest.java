@@ -27,15 +27,18 @@ public class AviTest {
 		try {
 			source = FileReadChannel.openFileReadChannel(
 //					Thread.currentThread().getContextClassLoader().getResource("test.adpcm_ima_wav.avi")
-					Thread.currentThread().getContextClassLoader().getResource("test.mjpegadpcm_ima_wav.avi")
+//					Thread.currentThread().getContextClassLoader().getResource("test.mjpegadpcm_ima_wav.avi")
 //					Thread.currentThread().getContextClassLoader().getResource("test.mjpeg.avi")
+					"http://49.212.39.17/mario_3video_1audio.avi"
 			);
 			IReader reader = new RiffUnitReader();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
 				if(container instanceof RiffFrameUnit) {
-					IFrame frame = ((RiffFrameUnit) container).getFrame();
+					RiffFrameUnit frameUnit = (RiffFrameUnit)container;
+					IFrame frame = frameUnit.getFrame();
 					if(frame != null) {
+						logger.info("trackId:" + frameUnit.getTrackId());
 						logger.info(frame);
 						logger.info(1f * frame.getPts() / frame.getTimebase());
 					}

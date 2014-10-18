@@ -18,6 +18,7 @@ import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAnalyzer;
 import com.ttProject.frame.aac.AacDsiFrameAnalyzer;
+import com.ttProject.frame.aac.AacFrameAnalyzer;
 import com.ttProject.frame.adpcmimawav.AdpcmImaWavFrameAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
 import com.ttProject.frame.pcmalaw.PcmalawFrameAnalyzer;
@@ -123,8 +124,13 @@ public class Fmt extends RiffFormatUnit {
 			frameAnalyzer = new PcmmulawFrameAnalyzer();
 			break;
 		case AAC:
-			frameAnalyzer = new AacDsiFrameAnalyzer();
-			frameAnalyzer.setPrivateData(new ByteReadChannel(extraInfo));
+			if(extraInfo == null) {
+				frameAnalyzer = new AacFrameAnalyzer();
+			}
+			else {
+				frameAnalyzer = new AacDsiFrameAnalyzer();
+				frameAnalyzer.setPrivateData(new ByteReadChannel(extraInfo));
+			}
 			break;
 		case MP3:
 			frameAnalyzer = new Mp3FrameAnalyzer();

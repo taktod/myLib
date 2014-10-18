@@ -17,6 +17,8 @@ import com.ttProject.frame.VideoAnalyzer;
 import com.ttProject.frame.VideoSelector;
 import com.ttProject.frame.flv1.Flv1FrameAnalyzer;
 import com.ttProject.frame.h264.DataNalAnalyzer;
+import com.ttProject.frame.h264.NalAnalyzer;
+import com.ttProject.frame.h264.exception.ConfigDataException;
 import com.ttProject.frame.mjpeg.MjpegFrameAnalyzer;
 import com.ttProject.frame.vp8.Vp8FrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
@@ -113,8 +115,14 @@ public class Strf extends RiffFormatUnit {
 			frameAnalyzer = new MjpegFrameAnalyzer();
 			break;
 		case H264:
-			frameAnalyzer = new DataNalAnalyzer();
-			frameAnalyzer.setPrivateData(new ByteReadChannel(extraInfo));
+			try {
+				frameAnalyzer = new DataNalAnalyzer();
+				// if here throw the exception, need to use
+				frameAnalyzer.setPrivateData(new ByteReadChannel(extraInfo));
+			}
+			catch(ConfigDataException cde) {
+				frameAnalyzer = new NalAnalyzer();
+			}
 			break;
 		case FLV1:
 			frameAnalyzer = new Flv1FrameAnalyzer();
