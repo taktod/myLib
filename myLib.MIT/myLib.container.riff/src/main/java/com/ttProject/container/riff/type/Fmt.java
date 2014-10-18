@@ -23,6 +23,9 @@ import com.ttProject.frame.adpcmimawav.AdpcmImaWavFrameAnalyzer;
 import com.ttProject.frame.mp3.Mp3FrameAnalyzer;
 import com.ttProject.frame.pcmalaw.PcmalawFrameAnalyzer;
 import com.ttProject.frame.pcmmulaw.PcmmulawFrameAnalyzer;
+import com.ttProject.frame.speex.SpeexFrameAnalyzer;
+import com.ttProject.frame.speex.SpeexFrameSelector;
+import com.ttProject.frame.speex.type.CommentFrame;
 import com.ttProject.frame.vorbis.VorbisFrameAnalyzer;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
@@ -55,6 +58,10 @@ public class Fmt extends RiffFormatUnit {
 	 * first is 0x1E header
 	 * second is 0x54 comment
 	 * third is else. setup
+	 */
+	/*
+	 * for speex
+	 * headerFrame only. commentFrame is created by somehow.
 	 */
 	/** frame Analyzer */
 	private IAnalyzer frameAnalyzer = null;
@@ -138,6 +145,12 @@ public class Fmt extends RiffFormatUnit {
 		case VORBIS:
 			frameAnalyzer = new VorbisFrameAnalyzer();
 			frameAnalyzer.setPrivateData(new ByteReadChannel(extraInfo));
+			break;
+		case SPEEX:
+			frameAnalyzer = new SpeexFrameAnalyzer();
+			frameAnalyzer.analyze(new ByteReadChannel(extraInfo));
+			SpeexFrameSelector speexFrameSelector = (SpeexFrameSelector)((AudioAnalyzer)frameAnalyzer).getSelector();
+			speexFrameSelector.setCommentFrame(new CommentFrame());
 			break;
 		default:
 			throw new RuntimeException("codec is unknown:.");

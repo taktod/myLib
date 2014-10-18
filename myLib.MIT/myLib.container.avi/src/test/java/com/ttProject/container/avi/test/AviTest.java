@@ -29,7 +29,8 @@ public class AviTest {
 //					Thread.currentThread().getContextClassLoader().getResource("test.adpcm_ima_wav.avi")
 //					Thread.currentThread().getContextClassLoader().getResource("test.mjpegadpcm_ima_wav.avi")
 //					Thread.currentThread().getContextClassLoader().getResource("test.mjpeg.avi")
-					"http://49.212.39.17/mario_3video_1audio.avi"
+//					"http://49.212.39.17/mario_3video_1audio.avi"
+					"http://49.212.39.17/mario.flv1speex.avi"
 			);
 			IReader reader = new RiffUnitReader();
 			IContainer container = null;
