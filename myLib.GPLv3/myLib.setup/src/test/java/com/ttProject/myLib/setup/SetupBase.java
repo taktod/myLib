@@ -127,7 +127,6 @@ public class SetupBase {
 					}
 					if(packet.isComplete()) {
 						if(container.writePacket(packet) < 0) {
-							System.out.println(packet);
 							packet.setDts(packet.getPts());
 							throw new Exception("failed to write video track.");
 						}
