@@ -75,7 +75,7 @@ public abstract class RiffFrameUnit extends RiffSizeUnit {
 			formatUnit.setScale(aFrame.getSampleNum());
 			formatUnit.setRate(aFrame.getSampleRate());
 		}
-		setPts(formatUnit.getNextPts());
+		setPts(formatUnit.getNextPts(getSize() - 8));
 		setTimebase(formatUnit.getTimebase());
 	}
 	/**

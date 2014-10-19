@@ -108,8 +108,7 @@ public class RiffUnitSelector implements ISelector {
 				formatUnitList.add(formatUnit);
 				if(prevStrhUnit != null) {
 					// maybe no way to come here..
-					formatUnit.setRate(prevStrhUnit.getRate());
-					formatUnit.setScale(prevStrhUnit.getScale());
+					formatUnit.setupStrhInfo(prevStrhUnit);
 				}
 				unit = formatUnit;
 			}
@@ -154,8 +153,7 @@ public class RiffUnitSelector implements ISelector {
 				}
 				formatUnitList.add(formatUnit);
 				if(prevStrhUnit != null) {
-					formatUnit.setRate(prevStrhUnit.getRate());
-					formatUnit.setScale(prevStrhUnit.getScale());
+					formatUnit.setupStrhInfo(prevStrhUnit);
 				}
 				unit = formatUnit;
 			}

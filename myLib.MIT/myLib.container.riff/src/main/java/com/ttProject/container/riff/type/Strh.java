@@ -104,4 +104,7 @@ public class Strh extends RiffSizeUnit {
 	public StrhRiffCodecType getRiffCodecType() {
 		return fccHandler;
 	}
+	public int getSampleSize() {
+		return dwSampleSize.get();
+	}
 }
