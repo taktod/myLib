@@ -36,7 +36,7 @@ public abstract class SpeexFrame extends AudioFrame {
 	 * ref the headerFrame
 	 * @return
 	 */
-	protected HeaderFrame getHeaderFrame() {
+	public HeaderFrame getHeaderFrame() {
 		return headerFrame;
 	}
 	public abstract boolean isComplete();

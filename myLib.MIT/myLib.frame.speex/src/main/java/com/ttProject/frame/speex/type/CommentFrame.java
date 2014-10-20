@@ -17,7 +17,6 @@ import com.ttProject.frame.speex.SpeexFrame;
 import com.ttProject.nio.channels.ByteReadChannel;
 import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.BufferUtil;
-import com.ttProject.util.HexUtil;
 
 /**
  * comment Frame for speex.
@@ -34,6 +33,7 @@ import com.ttProject.util.HexUtil;
  */
 public class CommentFrame extends SpeexFrame {
 	/** logger */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(CommentFrame.class);
 	/** venderName */
 	private String venderName = null;
@@ -128,6 +128,15 @@ public class CommentFrame extends SpeexFrame {
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 		return buffer.getInt();
 	}
+	@Override
+	public int getSize() {
+		try {
+			getData();
+		}
+		catch(Exception e) {
+		}
+		return super.getSize();
+	}
 	/**
 	 * {@inheritDoc}
 	 */
@@ -156,7 +165,6 @@ public class CommentFrame extends SpeexFrame {
 			buffer.put(element.getBytes());
 		}
 		buffer.flip();
-		logger.info(HexUtil.toHex(buffer, true));
 		setSize(buffer.remaining());
 		setData(buffer);
 	}

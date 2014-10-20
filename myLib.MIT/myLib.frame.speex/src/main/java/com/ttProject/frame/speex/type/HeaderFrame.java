@@ -91,7 +91,7 @@ public class HeaderFrame extends SpeexFrame {
 		reserved2 = 0;
 //		super.setReadPosition(channel.position());
 		super.setSize(headerSize);
-		super.setSampleNum(frameSize);
+		super.setSampleNum(frameSize * framesPerPacket);
 		super.setSampleRate(rate);
 		super.setChannel(nbChannels);
 		super.update();
@@ -121,7 +121,7 @@ public class HeaderFrame extends SpeexFrame {
 //		logger.info(toString());
 		super.setReadPosition(channel.position());
 		super.setSize(channel.size());
-		super.setSampleNum(frameSize);
+		super.setSampleNum(frameSize * framesPerPacket); // fix with framesPerPacket.
 		super.setSampleRate(rate);
 		super.setChannel(nbChannels);
 		super.update();

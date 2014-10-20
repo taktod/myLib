@@ -108,6 +108,7 @@ public class AudioTag extends FlvTag {
 	 * @return
 	 */
 	public int getSpeexFramesPerPacket() throws Exception {
+		// TODO fix this.
 		FlvCodecType codec = getCodec();
 		if(codec != FlvCodecType.SPEEX) {
 			throw new Exception("try to get the speex extra data for the codec " + codec);
