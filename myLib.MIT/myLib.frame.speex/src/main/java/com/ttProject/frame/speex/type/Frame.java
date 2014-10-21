@@ -34,6 +34,27 @@ import com.ttProject.util.BufferUtil;
  * OggPage[frame,frame,frame,frame....]
  * OggPage[frame,frame,frame,frame....]
  * という構成になっているみたい。
+ * 
+ * narrowBandの場合
+ * ----
+ * 1bit WidebandBit
+ * 4bit modeId
+ * その他データ
+ * ----
+ * 
+ * wideBandの場合
+ * ----
+ * narrowBandのデータ
+ * 1bit widebandBit
+ * 3bit modeId
+ * その他データ
+ * ----
+ * となっているらしい。
+ * とりあえずflvのspeexだけ、最少単位に変更して扱っておきたいところ・・・
+ * 
+ * wideBand固定っぽい
+ * @see http://www.speex.org/docs/manual/speex-manual.pdf
+ * 
  * @author taktod
  */
 public class Frame extends SpeexFrame {

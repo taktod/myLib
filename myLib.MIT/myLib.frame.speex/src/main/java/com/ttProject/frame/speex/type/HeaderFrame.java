@@ -60,7 +60,7 @@ public class HeaderFrame extends SpeexFrame {
 	private int speexVersionId;
 	private int headerSize;
 	private int rate; // samplingRate
-	private int mode;
+	private int mode; // determine the band(narrow band:0 wide band:1 ulta wide band:2)
 	private int modeBitstreamVersion;
 	private int nbChannels;
 	private int bitRate;
