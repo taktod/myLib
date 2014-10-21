@@ -8,7 +8,9 @@ package com.ttProject.container.ogg;
 
 import java.io.FileOutputStream;
 import java.nio.channels.WritableByteChannel;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -40,6 +42,8 @@ public class OggPageWriter implements IWriter {
 	private FileOutputStream outputStream = null;
 	/** speexのsample数を足していく(この動作はvorbisやtheoraの場合にかわってくるので、本来はここにあるべきではない。またマルチチャンネルの場合もこまったことになります。) */
 	private long addedSampleNum = 0;
+	private List<CodecType> targetCodecTypeList = new ArrayList<CodecType>();
+	private Map<Integer, CodecType> processTrackMap = new HashMap<Integer, CodecType>();
 	/**
 	 * constructor
 	 * @param fileName
@@ -66,6 +70,23 @@ public class OggPageWriter implements IWriter {
 	 */
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
+		if(!processTrackMap.containsKey(trackId)) {
+			// first frame for this track.
+			// need to be setup.
+			if(!targetCodecTypeList.remove(frame.getCodecType())) {
+				logger.warn("non target frame is detected.:" + frame.getCodecType());
+				return;
+			}
+			switch(frame.getCodecType()) {
+			case SPEEX:
+				break;
+			case VORBIS:
+				break;
+			default:
+				throw new Exception(frame.getCodecType() + " ogg writer is not supported now.");
+			}
+		}
+		// TODO for the first frame, need to setup something. (headerFrame, commentFrame, setupFrame for vorbis like this.)
 		if(frame instanceof IAudioFrame) {
 			IAudioFrame aFrame = (IAudioFrame)frame;
 			addedSampleNum += aFrame.getSampleNum();
@@ -93,7 +114,10 @@ public class OggPageWriter implements IWriter {
 	 */
 	@Override
 	public void prepareHeader(CodecType ...codecs) throws Exception {
-		
+		// hold the target codecType.
+		for(CodecType codec : codecs) {
+			targetCodecTypeList.add(codec);
+		}
 	}
 	/**
 	 * {@inheritDoc}

@@ -29,7 +29,7 @@ public class SpeexFlvTest {
 	/**
 	 * make 1Frame per packet data from 2frame per packet.
 	 */
-	@Test
+//	@Test
 	public void make1FramePerPacket() throws Exception {
 		IReadChannel source = FileReadChannel.openFileReadChannel(
 				"http://streams.videolan.org/issues/2973/audio-only-speex.flv" // 2frames
