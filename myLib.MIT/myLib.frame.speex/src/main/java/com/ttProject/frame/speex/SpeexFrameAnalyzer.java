@@ -10,7 +10,10 @@ import org.apache.log4j.Logger;
 
 import com.ttProject.frame.AudioAnalyzer;
 import com.ttProject.frame.CodecType;
+import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
+import com.ttProject.frame.NullFrame;
+import com.ttProject.frame.speex.type.CommentFrame;
 import com.ttProject.nio.channels.IReadChannel;
 
 /**
@@ -33,24 +36,28 @@ public class SpeexFrameAnalyzer extends AudioAnalyzer {
 	 */
 	@Override
 	public IFrame analyze(IReadChannel channel) throws Exception {
-		SpeexFrame frame = null;
+		IAudioFrame frame = null;
 		if(tmpFrame != null) {
 			frame = tmpFrame;
 			frame.load(channel);
 		}
 		else {
-			frame = (SpeexFrame)super.analyze(channel);
+			frame = (IAudioFrame)super.analyze(channel);
 		}
 		if(frame == null) {
 			tmpFrame = null;
 			return null;
 		}
-		// check the data.
-		if(!frame.isComplete()) {
-			tmpFrame = frame;
-		}
-		else {
-			tmpFrame = null;
+		if(frame instanceof CommentFrame) {
+			CommentFrame cFrame = (CommentFrame)frame;
+			if(!cFrame.isComplete()) {
+				tmpFrame = cFrame;
+				return NullFrame.getInstance();
+			}
+			else {
+				tmpFrame = null;
+				return cFrame;
+			}
 		}
 		return frame;
 	}

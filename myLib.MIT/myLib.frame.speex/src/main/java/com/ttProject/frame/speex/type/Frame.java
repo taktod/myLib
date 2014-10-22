@@ -35,26 +35,42 @@ import com.ttProject.util.BufferUtil;
  * OggPage[frame,frame,frame,frame....]
  * という構成になっているみたい。
  * 
- * narrowBandの場合
- * ----
- * 1bit WidebandBit
- * 4bit modeId
- * その他データ
- * ----
- * 
- * wideBandの場合
- * ----
- * narrowBandのデータ
+ * speex frame structure.
  * 1bit widebandBit
- * 3bit modeId
- * その他データ
- * ----
- * となっているらしい。
- * とりあえずflvのspeexだけ、最少単位に変更して扱っておきたいところ・・・
+ * if widebandBit = 0 4bit modeId
+ * else widebandBit = 1 3bit modeId
+ * data...
  * 
- * wideBand固定っぽい
+ * data size is depend on modeId.
+ * for narrowband.
+ * |id|bitsize|
+ * | 0|      5|
+ * | 1|     43|
+ * | 2|    119|
+ * | 3|    160|
+ * | 4|    220|
+ * | 5|    300|
+ * | 6|    364|
+ * | 7|    492|
+ * | 8|     79|
+ * 
+ * for wideband
+ * |id|bitsize|
+ * | 0|      4|
+ * | 1|     36|
+ * | 2|    112|
+ * | 3|    192|
+ * | 4|    352|
+ * these bitsize contain widebandBit and modeId.
+ * 
+ * for the frame unit. we can figure out with widebandBit.
+ * 
+ * 011011011011 -> 011 011 011 011
+ * 010101010101 -> 01 01 01 01 01 01
+ * 000000 -> 0 0 0 0 0 0
+ * each unit contains 320 samples.
+ * 
  * @see http://www.speex.org/docs/manual/speex-manual.pdf
- * 
  * @author taktod
  */
 public class Frame extends SpeexFrame {
@@ -94,12 +110,5 @@ public class Frame extends SpeexFrame {
 	@Override
 	public ByteBuffer getPackBuffer() throws Exception {
 		return getData();
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public boolean isComplete() {
-		return true;
 	}
 }

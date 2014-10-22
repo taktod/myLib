@@ -39,7 +39,6 @@ public abstract class SpeexFrame extends AudioFrame {
 	public HeaderFrame getHeaderFrame() {
 		return headerFrame;
 	}
-	public abstract boolean isComplete();
 	/**
 	 * get the muted frame.
 	 * @param sampleRate

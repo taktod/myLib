@@ -159,7 +159,7 @@ public class FlvTagSelector implements ISelector {
 						SpeexFrameSelector speexFrameSelector = (SpeexFrameSelector)audioFrameAnalyzer.getSelector();
 						// headerFrameとcommentFrameを設定しておく。
 						HeaderFrame headerFrame = new HeaderFrame();
-						headerFrame.fillWithFlvDefault(audioTag.getSpeexFramesPerPacket());
+						headerFrame.fillWithFlvDefault();
 						speexFrameSelector.setHeaderFrame(headerFrame);
 						speexFrameSelector.setCommentFrame(new CommentFrame());
 					}

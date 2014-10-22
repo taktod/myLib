@@ -188,9 +188,8 @@ public class CommentFrame extends SpeexFrame {
 		super.update();
 	}
 	/**
-	 * {@inheritDoc}
+	 * check the data is complete.
 	 */
-	@Override
 	public boolean isComplete() {
 		return venderName != null && elementSize != null && elementSize == elementList.size();
 	}

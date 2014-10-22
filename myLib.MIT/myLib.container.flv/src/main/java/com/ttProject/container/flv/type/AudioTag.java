@@ -104,25 +104,6 @@ public class AudioTag extends FlvTag {
 		return frame.getSampleRate();
 	}
 	/**
-	 * the data for speex.(I cannot find any information about this. however, flv file works.)
-	 * @return
-	 */
-	public int getSpeexFramesPerPacket() throws Exception {
-		// TODO fix this.
-		FlvCodecType codec = getCodec();
-		if(codec != FlvCodecType.SPEEX) {
-			throw new Exception("try to get the speex extra data for the codec " + codec);
-		}
-		switch(sampleRate.get()) {
-		case 0:
-			return 2;
-		case 1:
-			return sampleRate.get();
-		default:
-			throw new RuntimeException("unknown value for speex frames per packet information on audioTag.:" + sampleRate.get());
-		}
-	}
-	/**
 	 * ref sampleNum(depends on frame.)
 	 * @return
 	 * @throws Exception
