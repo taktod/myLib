@@ -113,7 +113,6 @@ public class OggPageWriter implements IWriter {
 		if(frame instanceof IAudioFrame) {
 			IAudioFrame aFrame = (IAudioFrame)frame;
 			addedSampleNum += aFrame.getSampleNum();
-			logger.info("add Frame:" + frame);
 			OggPage targetPage = null;
 			if(pageMap.get(trackId) == null) {
 				targetPage = new StartPage(new Bit8(), new Bit1(), new Bit1(1), new Bit1(), new Bit5());
@@ -123,7 +122,6 @@ public class OggPageWriter implements IWriter {
 			else {
 				targetPage = pageMap.get(trackId);
 			}
-			logger.info("targetPage:" + targetPage);
 			// set the data on page.
 			targetPage.getFrameList().add(frame); // after add frame, need to update size.
 			if(targetPage.getFrameList().size() >= 255) {
