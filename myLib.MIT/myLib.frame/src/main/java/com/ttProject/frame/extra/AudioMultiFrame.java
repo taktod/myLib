@@ -35,6 +35,9 @@ public class AudioMultiFrame extends AudioFrame {
 	 * @throws Exception
 	 */
 	public void addFrame(IAudioFrame frame) throws Exception {
+		if(frame == null) {
+			return;
+		}
 		if(frameList.size() == 0) {
 			setBit(frame.getBit());
 			setChannel(frame.getChannel());

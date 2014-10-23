@@ -28,6 +28,9 @@ public class VideoMultiFrame extends VideoFrame {
 	 * @throws Exception
 	 */
 	public void addFrame(IVideoFrame frame) throws Exception {
+		if(frame == null) {
+			return;
+		}
 		// width and height will be the same, just override with newer frame.
 		setWidth(frame.getWidth());
 		setHeight(frame.getHeight());
