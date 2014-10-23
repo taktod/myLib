@@ -27,11 +27,8 @@ import com.ttProject.container.mpegts.type.Pmt;
 import com.ttProject.container.mpegts.type.Sdt;
 import com.ttProject.container.ogg.OggPageWriter;
 import com.ttProject.frame.CodecType;
-import com.ttProject.frame.speex.type.CommentFrame;
-import com.ttProject.frame.speex.type.HeaderFrame;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
-import com.ttProject.util.HexUtil;
 
 /**
  * convert container from flv to ?
@@ -74,23 +71,25 @@ public class FlvToTest {
 	 * to ogg
 	 * @throws Exception
 	 */
-//	@Test
+	@Test
 	public void ogg() throws Exception {
 		OggPageWriter writer = new OggPageWriter("output.ogg");
 		logger.info("from flv to ogg test");
-		HeaderFrame headerFrame = new HeaderFrame();
-		headerFrame.fillWithFlvDefault();
-		writer.addFrame(1, headerFrame);
-		writer.completePage(1);
-		logger.info(headerFrame);
-		logger.info(HexUtil.toHex(headerFrame.getData(), true));
-		CommentFrame commentFrame = new CommentFrame();
-		logger.info(HexUtil.toHex(commentFrame.getData(), true));
-		writer.addFrame(1, commentFrame);
-		writer.completePage(1);
+//		HeaderFrame headerFrame = new HeaderFrame();
+//		headerFrame.fillWithFlvDefault();
+//		writer.addFrame(1, headerFrame);
+//		writer.completePage(1);
+//		logger.info(headerFrame);
+//		logger.info(HexUtil.toHex(headerFrame.getData(), true));
+//		CommentFrame commentFrame = new CommentFrame();
+//		logger.info(HexUtil.toHex(commentFrame.getData(), true));
+//		writer.addFrame(1, commentFrame);
+//		writer.completePage(1);
+		writer.prepareHeader(CodecType.SPEEX);
 		convertTest(
 			FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
+//					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
+					"http://streams.videolan.org/issues/2973/audio-only-speex.flv"
 			),
 			writer,
 			0, 1

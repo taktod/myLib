@@ -22,6 +22,11 @@ import com.ttProject.container.ogg.type.StartPage;
 import com.ttProject.frame.CodecType;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.IFrame;
+import com.ttProject.frame.IVideoFrame;
+import com.ttProject.frame.extra.AudioMultiFrame;
+import com.ttProject.frame.extra.VideoMultiFrame;
+import com.ttProject.frame.speex.SpeexFrame;
+import com.ttProject.frame.speex.type.CommentFrame;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
@@ -70,6 +75,18 @@ public class OggPageWriter implements IWriter {
 	 */
 	@Override
 	public void addFrame(int trackId, IFrame frame) throws Exception {
+		if(frame instanceof AudioMultiFrame) {
+			for(IAudioFrame af : ((AudioMultiFrame) frame).getFrameList()) {
+				addFrame(trackId, af);
+			}
+			return;
+		}
+		if(frame instanceof VideoMultiFrame) {
+			for(IVideoFrame vf : ((VideoMultiFrame) frame).getFrameList()) {
+				addFrame(trackId, vf);
+			}
+			return;
+		}
 		if(!processTrackMap.containsKey(trackId)) {
 			// first frame for this track.
 			// need to be setup.
@@ -77,8 +94,14 @@ public class OggPageWriter implements IWriter {
 				logger.warn("non target frame is detected.:" + frame.getCodecType());
 				return;
 			}
+			processTrackMap.put(trackId, frame.getCodecType());
 			switch(frame.getCodecType()) {
 			case SPEEX:
+				SpeexFrame sFrame = (SpeexFrame)frame;
+				addFrame(trackId, sFrame.getHeaderFrame());
+				completePage(trackId);
+				addFrame(trackId, new CommentFrame());
+				completePage(trackId);
 				break;
 			case VORBIS:
 				break;
