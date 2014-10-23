@@ -107,4 +107,20 @@ public class VideoMultiFrame extends VideoFrame {
 		}
 		return CodecType.NONE;
 	}
+	@Override
+	public void setPts(long pts) {
+		super.setPts(pts);
+		for(IVideoFrame vFrame : frameList) {
+			VideoFrame vf = (VideoFrame)vFrame;
+			vf.setPts(pts);
+		}
+	}
+	@Override
+	public void setTimebase(long timebase) {
+		super.setTimebase(timebase);
+		for(IVideoFrame vFrame : frameList) {
+			VideoFrame vf = (VideoFrame)vFrame;
+			vf.setTimebase(timebase);
+		}
+	}
 }
