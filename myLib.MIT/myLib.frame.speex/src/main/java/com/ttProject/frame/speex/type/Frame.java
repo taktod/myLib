@@ -84,15 +84,15 @@ public class Frame extends SpeexFrame {
 	 */
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
+		super.setSize(channel.size());
+		frameBuffer = BufferUtil.safeRead(channel, channel.size());
+		super.update();
 	}
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public void load(IReadChannel channel) throws Exception {
-		super.setSize(channel.size());
-		frameBuffer = BufferUtil.safeRead(channel, channel.size());
-		super.update();
 	}
 	/**
 	 * {@inheritDoc}

@@ -9,6 +9,8 @@ package com.ttProject.frame.speex;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.ttProject.frame.AudioSelector;
 import com.ttProject.frame.IAudioFrame;
 import com.ttProject.frame.extra.AudioMultiFrame;
@@ -38,6 +40,7 @@ import com.ttProject.unit.extra.bit.Bit7;
  * @author taktod
  */
 public class SpeexFrameSelector extends AudioSelector {
+	private Logger logger = Logger.getLogger(SpeexFrameSelector.class);
 	/** headerFrame */
 	private HeaderFrame headerFrame = null;
 	/** commentFrame */
@@ -107,10 +110,8 @@ public class SpeexFrameSelector extends AudioSelector {
 				SubUnit unit = null;
 				switch(firstBit.get()) {
 				case 0:
-					if(unitList.size() != 0) {
-						// data for frame is ready.
-						multiFrame.addFrame(makeFrame(unitList));
-					}
+					// data for frame is ready.
+					multiFrame.addFrame(makeFrame(unitList));
 					unit = new NarrowUnit();
 					break;
 				case 1:
@@ -137,6 +138,9 @@ public class SpeexFrameSelector extends AudioSelector {
 	 * @throws Exception
 	 */
 	private Frame makeFrame(List<SubUnit> unitList) throws Exception {
+		if(unitList.size() == 0) {
+			return null;
+		}
 		int size = 0;
 		BitConnector connector = new BitConnector();
 		for(SubUnit su : unitList) {
@@ -160,6 +164,8 @@ public class SpeexFrameSelector extends AudioSelector {
 		setup(frame);
 		frame.minimumLoad(new ByteReadChannel(connector.connect()));
 		// あとはPTSをどうしておくか・・・だな・・・
+		unitList.clear();
+		logger.info("find frame.");
 		return frame;
 	}
 }
