@@ -479,5 +479,19 @@ public class SetupForContainerTest extends SetupBase {
 			throw new Exception("failed to open container");
 		}
 		processConvert(container, Encoder.flv1(container), null);
+		logger.info("test vp8 vorbis(avi) setup");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.test", "vp8vorbis.avi"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("failed to open container");
+		}
+		processConvert(container, Encoder.vp8(container), Encoder.vorbis(container));
+		logger.info("test vp8 vorbis(webm) setup");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.test", "vp8vorbis.webm"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("failed to open container");
+		}
+		processConvert(container, Encoder.vp8(container), Encoder.vorbis(container));
 	}
 }
