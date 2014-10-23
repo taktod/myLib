@@ -100,4 +100,29 @@ public class AudioMultiFrame extends AudioFrame {
 		}
 		return CodecType.NONE;
 	}
+	@Override
+	public void setPts(long pts) {
+		super.setPts(pts);
+		if(getTimebase() == 0) {
+			return;
+		}
+		calcurateFramePts();
+	}
+	@Override
+	public void setTimebase(long timebase) {
+		super.setTimebase(timebase);
+		calcurateFramePts();
+	}
+	private void calcurateFramePts() {
+		long passedTic = 0;
+		int sampleRate = 0;
+		long timebase = getTimebase();
+		for(IAudioFrame aFrame : frameList) {
+			AudioFrame af = (AudioFrame)aFrame;
+			af.setTimebase(timebase);
+			sampleRate = af.getSampleRate();
+			af.setPts(getPts() + passedTic * timebase / sampleRate);
+			passedTic += af.getSampleNum();
+		}
+	}
 }

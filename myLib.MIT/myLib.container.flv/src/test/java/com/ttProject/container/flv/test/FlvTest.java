@@ -12,6 +12,9 @@ import org.junit.Test;
 import com.ttProject.container.IContainer;
 import com.ttProject.container.IReader;
 import com.ttProject.container.flv.FlvTagReader;
+import com.ttProject.container.flv.type.AudioTag;
+import com.ttProject.frame.IAudioFrame;
+import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.nio.channels.FileReadChannel;
 import com.ttProject.nio.channels.IFileReadChannel;
 
@@ -30,12 +33,23 @@ public class FlvTest {
 		IFileReadChannel source = null;
 		try {
 			source = FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("test.flv1.flv")
+//					Thread.currentThread().getContextClassLoader().getResource("test.h264speex.flv")
+					"http://streams.videolan.org/issues/2973/audio-only-speex.flv"
 			);
 			IReader reader = new FlvTagReader();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
-				logger.info(container);
+				if(container instanceof AudioTag) {
+					IAudioFrame aFrame = ((AudioTag) container).getFrame();
+					if(aFrame instanceof AudioMultiFrame) {
+						for(IAudioFrame af : ((AudioMultiFrame) aFrame).getFrameList()) {
+							logger.info(af.getClass() + " " + (1f * af.getPts() / af.getTimebase()));
+						}
+					}
+					else {
+						logger.info(aFrame.getClass() + " " + (1f * aFrame.getPts() / aFrame.getTimebase()));
+					}
+				}
 			}
 		}
 		catch(Exception e) {

@@ -110,7 +110,7 @@ public class AudioTag extends FlvTag {
 	 */
 	public int getSampleNum() throws Exception {
 		if(frame == null) {
-			analyzeFrame(); // analyze
+			analyzeFrame(); // analyze0
 		}
 		return frame.getSampleNum();
 	}

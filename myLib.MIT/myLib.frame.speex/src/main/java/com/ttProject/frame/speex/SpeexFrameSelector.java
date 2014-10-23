@@ -40,6 +40,7 @@ import com.ttProject.unit.extra.bit.Bit7;
  * @author taktod
  */
 public class SpeexFrameSelector extends AudioSelector {
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(SpeexFrameSelector.class);
 	/** headerFrame */
 	private HeaderFrame headerFrame = null;
@@ -160,12 +161,10 @@ public class SpeexFrameSelector extends AudioSelector {
 			break;
 		}
 		Frame frame = new Frame();
-		frame.setHeaderFrame(headerFrame);
 		setup(frame);
+		frame.setHeaderFrame(headerFrame);
 		frame.minimumLoad(new ByteReadChannel(connector.connect()));
-		// あとはPTSをどうしておくか・・・だな・・・
 		unitList.clear();
-		logger.info("find frame.");
 		return frame;
 	}
 }
