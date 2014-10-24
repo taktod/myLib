@@ -117,11 +117,16 @@ public class Page extends OggPage {
 	@Override
 	protected void requestUpdate() throws Exception {
 		ByteBuffer headerBuffer = getHeaderBuffer();
+		logger.info("request size:" + getSize());
 		ByteBuffer buffer = ByteBuffer.allocate(getSize());
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
+		logger.info(headerBuffer.remaining());
 		buffer.put(headerBuffer);
 		for(IFrame frame : getFrameList()) {
-			buffer.put(frame.getData());
+			logger.info(frame);
+			ByteBuffer data = frame.getData();
+			logger.info(data.remaining());
+			buffer.put(data);
 		}
 		ByteBuffer tmpBuffer = buffer.duplicate();
 		tmpBuffer.flip();

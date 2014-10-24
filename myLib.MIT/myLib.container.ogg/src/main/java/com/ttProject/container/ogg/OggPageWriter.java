@@ -25,11 +25,15 @@ import com.ttProject.frame.IFrame;
 import com.ttProject.frame.IVideoFrame;
 import com.ttProject.frame.extra.AudioMultiFrame;
 import com.ttProject.frame.extra.VideoMultiFrame;
+import com.ttProject.frame.opus.type.HeaderFrame;
 import com.ttProject.frame.speex.SpeexFrame;
 import com.ttProject.frame.speex.type.CommentFrame;
+import com.ttProject.frame.vorbis.VorbisFrame;
+import com.ttProject.frame.vorbis.type.IdentificationHeaderFrame;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
+import com.ttProject.util.HexUtil;
 
 /**
  * ogg page writer.
@@ -104,7 +108,26 @@ public class OggPageWriter implements IWriter {
 				completePage(trackId);
 				break;
 			case VORBIS:
-				break;
+				/*
+				 * for vorbis
+				 * firstPage header unit(0x01 vorbis)
+				 * secondPage comment unit & setup unit
+				 * else normal vorbis data.
+				 */
+				VorbisFrame vFrame = (VorbisFrame)frame;
+				IdentificationHeaderFrame headerFrame = vFrame.getHeaderFrame();
+				logger.info(HexUtil.toHex(headerFrame.getData(), true));
+				addFrame(trackId, headerFrame);
+				completePage(trackId);
+				// next for vorbis comment & setup Frame.
+				addFrame(trackId, headerFrame.getCommentHeaderFrame());
+				addFrame(trackId, headerFrame.getSetupHeaderFrame());
+				completePage(trackId);
+				/*
+				 * vorbis & theoraの場合はtheoraのpageとvorbisのページがごちゃ混ぜになっている感じ
+				 */
+				throw new Exception("vorbis is found.");
+//				break;
 			default:
 				throw new Exception(frame.getCodecType() + " ogg writer is not supported now.");
 			}

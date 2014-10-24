@@ -99,12 +99,29 @@ public abstract class OggPage extends Container {
 	 */
 	protected ByteBuffer getHeaderBuffer() {
 //		logger.info(frameList);
-		segmentCount.set(frameList.size());
 		logger.info("defList:" + segmentSizeList.size());
 		logger.info(frameList.size());
 		for(IFrame frame : frameList) {
-			segmentSizeList.add(new Bit8(frame.getSize()));
+			// TODO is there is the frame over 255, there is a trouble.
+			int size = frame.getSize();
+			logger.info(size);
+			do {
+				if(size > 0xFF) {
+					segmentSizeList.add(new Bit8(0xFF));
+					size -= 0xFF;
+				}
+				else if(size == 0xFF) {
+					segmentSizeList.add(new Bit8(0xFF));
+					segmentSizeList.add(new Bit8(0x00));
+					break;
+				}
+				else {
+					segmentSizeList.add(new Bit8(size));
+					break;
+				}
+			} while(size > 0);
 		}
+		segmentCount.set(segmentSizeList.size());
 		logger.info("headerSize:" + (27 + segmentCount.get()));
 		BitConnector connector = new BitConnector();
 		connector.setLittleEndianFlg(true);

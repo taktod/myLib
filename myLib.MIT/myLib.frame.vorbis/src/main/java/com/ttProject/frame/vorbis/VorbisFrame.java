@@ -39,7 +39,7 @@ public abstract class VorbisFrame extends AudioFrame {
 	 * ref identificationHeaderFrame
 	 * @return
 	 */
-	protected IdentificationHeaderFrame getHeaderFrame() {
+	public IdentificationHeaderFrame getHeaderFrame() {
 		return identificationHeaderFrame;
 	}
 	/**

@@ -316,7 +316,7 @@ public class FlvToTest {
 	private void convertTest(IFileReadChannel source, IWriter writer, int videoId, int audioId) {
 		try {
 			// write header
-			writer.prepareHeader();
+//			writer.prepareHeader(); // TODO invalid. writer need to be prepared on the original function.
 			IReader reader = new FlvTagReader();
 			IContainer container = null;
 			while((container = reader.read(source)) != null) {
@@ -330,7 +330,7 @@ public class FlvToTest {
 				}
 			}
 			// write tailer
-			writer.prepareTailer();
+			writer.prepareTailer(); // tailer is ok
 		}
 		catch(Exception e) {
 			logger.error(e);

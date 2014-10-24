@@ -118,6 +118,15 @@ public class CommentHeaderFrame extends VorbisFrame {
 	public ByteBuffer getPackBuffer() throws Exception {
 		return getData();
 	}
+	@Override
+	public int getSize() {
+		try {
+			getData();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return super.getSize();
+	}
 	/**
 	 * ref the minimum size buffer.
 	 * @return

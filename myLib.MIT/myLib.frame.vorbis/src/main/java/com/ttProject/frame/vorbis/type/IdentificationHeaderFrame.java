@@ -173,4 +173,15 @@ public class IdentificationHeaderFrame extends VorbisFrame {
 	public void setSetupHeaderFrame(SetupHeaderFrame frame) {
 		this.setupHeaderFrame = frame;
 	}
+	// 1つにまとめることができるかとおもったけど、だめっぽい。
+	/**
+	 * 
+	 * @return
+	 */
+	public CommentHeaderFrame getCommentHeaderFrame() {
+		return commentHeaderFrame;
+	}
+	public SetupHeaderFrame getSetupHeaderFrame() {
+		return setupHeaderFrame;
+	}
 }
