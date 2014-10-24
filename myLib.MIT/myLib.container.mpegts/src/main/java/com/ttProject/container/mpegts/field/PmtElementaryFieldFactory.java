@@ -7,6 +7,7 @@
 package com.ttProject.container.mpegts.field;
 
 import com.ttProject.container.mpegts.MpegtsCodecType;
+import com.ttProject.frame.CodecType;
 import com.ttProject.unit.extra.bit.Bit12;
 import com.ttProject.unit.extra.bit.Bit13;
 import com.ttProject.unit.extra.bit.Bit3;
@@ -24,6 +25,15 @@ public class PmtElementaryFieldFactory {
 	private short nextAudioStreamId = 0xC0;
 	/** next video streamId */
 	private short nextVideoStreamId = 0xE0;
+	/**
+	 * make new field with CodecType object.
+	 * @param codec
+	 * @return
+	 * @throws Exception
+	 */
+	public PmtElementaryField makeNewField(CodecType codec) throws Exception {
+		return makeNewField(MpegtsCodecType.getType(codec));
+	}
 	/**
 	 * make new field.
 	 * @param codec

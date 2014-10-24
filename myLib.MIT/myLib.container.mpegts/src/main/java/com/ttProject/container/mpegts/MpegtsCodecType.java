@@ -40,6 +40,14 @@ public enum MpegtsCodecType {
 	public CodecType getCodecType() {
 		return codecType;
 	}
+	public static MpegtsCodecType getType(CodecType codecType) throws Exception {
+		for(MpegtsCodecType t : values()) {
+			if(t.getCodecType() == codecType) {
+				return t;
+			}
+		}
+		throw new Exception("unkwown codec type is detected.:" + codecType);
+	}
 	public static MpegtsCodecType getType(int value) throws Exception {
 		for(MpegtsCodecType t : values()) {
 			if(t.intValue() == value) {

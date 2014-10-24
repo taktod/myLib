@@ -102,7 +102,7 @@ public class FlvToTest {
 		Pat pat = new Pat();
 		writer.addContainer(pat);
 		Pmt pmt = new Pmt(pat.getPmtPid());
-		PmtElementaryField elementaryField = pmtFieldFactory.makeNewField(MpegtsCodecType.AUDIO_MPEG1);
+		PmtElementaryField elementaryField = pmtFieldFactory.makeNewField(CodecType.MP3);
 		pmt.addNewField(elementaryField);
 		pmt.setPcrPid(elementaryField.getPid());
 		writer.addContainer(pmt);
