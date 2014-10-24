@@ -53,7 +53,7 @@ public class AviToTest {
 					RiffFrameUnit frameUnit = (RiffFrameUnit)container;
 					IFrame frame = frameUnit.getFrame();
 					if(frame != null) {
-						logger.info(frame.getClass() + " " + (1D * frame.getPts() / frame.getTimebase()));
+//						logger.info(frame.getClass() + " " + (1D * frame.getPts() / frame.getTimebase()));
 						writer.addFrame(frameUnit.getTrackId(), frame);
 					}
 				}
