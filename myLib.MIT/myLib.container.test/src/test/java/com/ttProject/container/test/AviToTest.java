@@ -39,12 +39,10 @@ public class AviToTest {
 			FileReadChannel.openFileReadChannel(
 					Thread.currentThread().getContextClassLoader().getResource("vp8vorbis.avi")
 			),
-			writer,
-			-1,
-			1
+			writer
 		);
 	}
-	private void convertTest(IFileReadChannel source, IWriter writer, int videoId, int audioId) {
+	private void convertTest(IFileReadChannel source, IWriter writer) {
 		try {
 			IReader reader = new RiffUnitReader();
 			IContainer container = null;
