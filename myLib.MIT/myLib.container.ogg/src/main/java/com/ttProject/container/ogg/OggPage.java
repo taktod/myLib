@@ -78,9 +78,6 @@ public abstract class OggPage extends Container {
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.setPosition(channel.position() - 6);
-		logger.info(logicEndFlag);
-		logger.info(logicStartFlag);
-		logger.info(packetContinurousFlag);
 		BitLoader loader = new BitLoader(channel);
 		loader.setLittleEndianFlg(true);
 		loader.load(absoluteGranulePosition, streamSerialNumber, pageSequenceNo, pageChecksum, segmentCount);

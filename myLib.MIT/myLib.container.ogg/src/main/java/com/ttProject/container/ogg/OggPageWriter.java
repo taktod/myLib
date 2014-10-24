@@ -32,7 +32,6 @@ import com.ttProject.frame.vorbis.type.IdentificationHeaderFrame;
 import com.ttProject.unit.extra.bit.Bit1;
 import com.ttProject.unit.extra.bit.Bit5;
 import com.ttProject.unit.extra.bit.Bit8;
-import com.ttProject.util.HexUtil;
 
 /**
  * ogg page writer.
@@ -94,7 +93,7 @@ public class OggPageWriter implements IWriter {
 			// first frame for this track.
 			// need to be setup.
 			if(!targetCodecTypeList.remove(frame.getCodecType())) {
-				logger.warn("non target frame is detected.:" + frame.getCodecType());
+//				logger.warn("non target frame is detected.:" + frame.getCodecType());
 				return;
 			}
 			processTrackMap.put(trackId, frame.getCodecType());
@@ -191,9 +190,7 @@ public class OggPageWriter implements IWriter {
 	 * set the current page complete.
 	 */
 	public void completePage(int trackId) throws Exception {
-		logger.info("force pageComplete");
 		OggPage page = pageMap.get(trackId);
-		logger.info(page.getClass());
 		// update granulePosition(time position)
 		page.setAbsoluteGranulePosition(addedSampleNum);
 		// update output channel.

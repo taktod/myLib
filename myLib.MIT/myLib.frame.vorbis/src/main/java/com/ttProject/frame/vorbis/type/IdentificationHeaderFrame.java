@@ -48,7 +48,7 @@ import com.ttProject.util.BufferUtil;
  * sampleNum of others(blockSize1 + blockSize1) / 4
  */
 public class IdentificationHeaderFrame extends VorbisFrame {
-	/** logger */
+	@SuppressWarnings("unused")
 	private Logger logger = Logger.getLogger(IdentificationHeaderFrame.class);
 	private Bit8  packetType      = new Bit8();
 	private Bit48 string          = new Bit48();
@@ -95,11 +95,6 @@ public class IdentificationHeaderFrame extends VorbisFrame {
 		super.setBit(64);
 		super.setChannel(audioChannels.get());
 		super.setSampleRate(audioSampleRate.get());
-		logger.info(getSize());
-		logger.info(getChannel());
-		logger.info(getSampleRate());
-		logger.info(blockSize0Value);
-		logger.info(blockSize1Value);
 		super.update();
 	}
 	/**
