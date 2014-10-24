@@ -58,6 +58,8 @@ public class AviToTest {
 					}
 				}
 			}
+			// write tailer
+			writer.prepareTailer(); // tailer is ok
 		}
 		catch(Exception e) {
 			logger.error(e.getMessage(), e);

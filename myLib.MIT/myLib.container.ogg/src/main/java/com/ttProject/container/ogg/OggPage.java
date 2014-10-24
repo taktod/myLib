@@ -98,13 +98,9 @@ public abstract class OggPage extends Container {
 	 * @return
 	 */
 	protected ByteBuffer getHeaderBuffer() {
-//		logger.info(frameList);
-		logger.info("defList:" + segmentSizeList.size());
-		logger.info(frameList.size());
 		for(IFrame frame : frameList) {
 			// TODO is there is the frame over 255, there is a trouble.
 			int size = frame.getSize();
-			logger.info(size);
 			do {
 				if(size > 0xFF) {
 					segmentSizeList.add(new Bit8(0xFF));
@@ -122,7 +118,6 @@ public abstract class OggPage extends Container {
 			} while(size > 0);
 		}
 		segmentCount.set(segmentSizeList.size());
-		logger.info("headerSize:" + (27 + segmentCount.get()));
 		BitConnector connector = new BitConnector();
 		connector.setLittleEndianFlg(true);
 		connector.feed(new Bit8('O'), new Bit8('g'), new Bit8('g'), new Bit8('S'), version, packetContinurousFlag, logicStartFlag, logicEndFlag, zeroFill, 
@@ -133,34 +128,7 @@ public abstract class OggPage extends Container {
 			size += bit.get();
 		}
 		super.setSize(27 + segmentCount.get() + size);
-		logger.info("dataSize:" + getSize());
-		return connector.connect();// */
-/*
-		ByteBuffer result = ByteBuffer.allocate(27 + segmentCount.get());
-		result.order(ByteOrder.LITTLE_ENDIAN);
-		BitConnector connector = new BitConnector();
-		result.put(connector.connect(
-				syncString, version, zeroFill, logicEndFlag, logicStartFlag, packetContinurousFlag
-		));
-		result.putLong(absoluteGranulePosition.getLong());
-		result.putInt(streamSerialNumber.get());
-		result.putInt(pageSequenceNo.get());
-		result.putInt(pageChecksum.get());
-		connector.feed(segmentCount);
-		logger.info("segmentCount:" + segmentCount.get());
-		logger.info(segmentSizeList.size());
-		int size = 0;
-		for(Bit8 bit : segmentSizeList) {
-//			logger.info(bit.get());
-			connector.feed(bit);
-			size += bit.get();
-		}
-		result.put(connector.connect());
-		result.flip();
-		super.setSize(result.remaining() + size);
-		logger.info("dataSize:" + (result.remaining() + size));
-		
-		return result;// */
+		return connector.connect();
 	}
 	/**
 	 * ref of segment size list.
