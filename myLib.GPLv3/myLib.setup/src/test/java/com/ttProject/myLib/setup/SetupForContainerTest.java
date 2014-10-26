@@ -410,6 +410,15 @@ public class SetupForContainerTest extends SetupBase {
 			throw new Exception("failed to open container");
 		}
 		processConvert(container, null, Encoder.adpcm_ima_wav(container));
+		logger.info("wav setup (adpcm_ima_wav5k)");
+		init();
+		container = IContainer.make();
+		if(container.open(getTargetFile("myLib.MIT/myLib.container.wav", "test.adpcm_ima_wav5k.wav"), IContainer.Type.WRITE, null) < 0) {
+			throw new Exception("failed to open container");
+		}
+		IStreamCoder encoder = Encoder.adpcm_ima_wav(container);
+		encoder.setSampleRate(5512);
+		processConvert(container, null, encoder);
 		logger.info("wav setup (pcm_alaw)");
 		init();
 		container = IContainer.make();
