@@ -129,7 +129,24 @@ public class MpegtsPacketWriter implements IWriter {
 	}
 	@Override
 	public void prepareHeader(CodecType ...codecs) throws Exception {
-
+		/*
+		 * try to make the tracks and keep the trackId -> codecType maps
+		 * after, cause of the trackId from previous container.
+		 * pre trackId -> trackId
+		 * if no information for pre trackId, find the same codec track.
+		 * and assign the id.
+		 * ここでcodecType -> pidリストをつくっておく
+		 * フレームアクセスがあったら
+		 * すでにtrackId -> pidのマップがあるならそれを利用
+		 * trackIdに対応したpidがわからないなら
+		 * pidを調べる
+		 * 入力フレームと同じcodecTypeのデータを探して一致するものが・・・
+		 * この方法だと同じコーデックのトラックが複数ある場合は動作できないか・・・
+		 * 
+		 * 逆にpid -> codecTypeをいれておいて、
+		 * あたらしいフレームをみつけたら、前からpidを確認していって
+		 * 該当のpidをみつける形にしておこう。
+		 */
 	}
 	@Override
 	public void prepareTailer() throws Exception {

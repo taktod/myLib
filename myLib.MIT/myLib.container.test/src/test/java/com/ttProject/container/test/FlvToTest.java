@@ -78,8 +78,9 @@ public class FlvToTest {
 		writer.prepareHeader(CodecType.SPEEX);
 		convertTest(
 			FileReadChannel.openFileReadChannel(
-					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
+//					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
 //					"http://streams.videolan.org/issues/2973/audio-only-speex.flv"
+					"C:\\Users\\taktod\\Downloads\\audio-only-speex.flv"
 //					"http://streams.videolan.org/issues/2973/test_speex.flv"
 			),
 			writer,
@@ -94,6 +95,10 @@ public class FlvToTest {
 	public void mpegts_mp3() throws Exception {
 		logger.info("from flv to mpegts test(mp3)");
 		MpegtsPacketWriter writer = new MpegtsPacketWriter("output_mp3.ts");
+		/*
+		 * in order to move these task into prepareHeader
+		 * we need to detect the trackId(pid) for each codec works.
+		 */
 		PmtElementaryFieldFactory pmtFieldFactory = new PmtElementaryFieldFactory();
 		// need sdt pat pmt.
 		Sdt sdt = new Sdt();
