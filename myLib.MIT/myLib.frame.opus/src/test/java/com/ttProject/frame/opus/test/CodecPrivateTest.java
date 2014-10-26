@@ -14,14 +14,10 @@ import com.ttProject.nio.channels.IReadChannel;
 import com.ttProject.util.HexUtil;
 
 /**
- * codecPrivateデータの読み込みテスト
+ * codecPrivate loading test.
  * @author taktod
  */
 public class CodecPrivateTest {
-	/**
-	 * テスト
-	 * @throws Exception
-	 */
 	@Test
 	public void test() throws Exception {
 		IReadChannel channel = new ByteReadChannel(HexUtil.makeBuffer("4F7075734865616401023400401F0000000000"));
