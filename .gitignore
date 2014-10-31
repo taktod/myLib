@@ -3,6 +3,7 @@
 !**/*/src/test/java
 !**/*/src/test/resources/log4j.properties
 !pom.xml
+!*.md
 /target
 /*/target
 /*/*/target
