@@ -9,8 +9,6 @@ package com.ttProject.container.ogg;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
-
 import com.ttProject.container.ogg.type.Page;
 import com.ttProject.container.ogg.type.StartPage;
 import com.ttProject.nio.channels.IReadChannel;
@@ -28,7 +26,7 @@ import com.ttProject.util.BufferUtil;
  */
 public class OggPageSelector implements ISelector {
 	/** logger */
-	private Logger logger = Logger.getLogger(OggPageSelector.class);
+//	private Logger logger = Logger.getLogger(OggPageSelector.class);
 	/** startPageMap */
 	private Map<Integer, StartPage> startPageMap = new HashMap<Integer, StartPage>();
 	/**
@@ -40,7 +38,6 @@ public class OggPageSelector implements ISelector {
 			// no more data.
 			return null;
 		}
-		logger.info("position:" + Integer.toHexString(channel.position()));
 		// read first 4 byte check string(OggS)
 		String pattern = new String(BufferUtil.safeRead(channel, 4).array());
 		if(!OggPage.capturePattern.equals(pattern)) {

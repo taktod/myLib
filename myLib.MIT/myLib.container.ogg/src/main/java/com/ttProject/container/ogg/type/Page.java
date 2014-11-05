@@ -10,8 +10,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import com.ttProject.container.ogg.Crc32;
 import com.ttProject.container.ogg.OggPage;
 import com.ttProject.frame.AudioFrame;
@@ -52,7 +50,7 @@ import com.ttProject.util.BufferUtil;
  */
 public class Page extends OggPage {
 	/** logger */
-	private Logger logger = Logger.getLogger(Page.class);
+//	private Logger logger = Logger.getLogger(Page.class);
 	/**
 	 * constructor
 	 * @param version
@@ -74,7 +72,6 @@ public class Page extends OggPage {
 	@Override
 	public void minimumLoad(IReadChannel channel) throws Exception {
 		super.minimumLoad(channel);
-		logger.info("minimumload");
 		super.update();
 	}
 	/**

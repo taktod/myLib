@@ -10,8 +10,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import com.ttProject.container.Container;
 import com.ttProject.container.ogg.type.StartPage;
 import com.ttProject.frame.IFrame;
@@ -31,7 +29,7 @@ import com.ttProject.unit.extra.bit.Bit8;
  */
 public abstract class OggPage extends Container {
 	/** logger */
-	private Logger logger = Logger.getLogger(OggPage.class);
+//	private Logger logger = Logger.getLogger(OggPage.class);
 	public static final String capturePattern = "OggS"; // fixed?
 
 //	private final Bit32 syncString;
@@ -160,7 +158,6 @@ public abstract class OggPage extends Container {
 	 * @param startPage
 	 */
 	public void setStartPage(StartPage startPage) {
-		logger.info("setStartPage:" + startPage);
 		this.startPage = startPage;
 	}
 	/**
