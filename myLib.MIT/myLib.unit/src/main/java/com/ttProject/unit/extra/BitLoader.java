@@ -175,7 +175,9 @@ public class BitLoader {
 	 */
 	public void load(Bit... bits) throws Exception {
 		for(Bit bit : bits) {
-			load(bit);
+			if(bit != null) {
+				load(bit);
+			}
 		}
 	}
 	/**
