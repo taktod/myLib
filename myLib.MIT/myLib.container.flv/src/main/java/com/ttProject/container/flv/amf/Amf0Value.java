@@ -201,7 +201,17 @@ public class Amf0Value {
 		if(data instanceof Date) {
 			return getDateBuffer((Date) data);
 		}
+		if(data == null) {
+			return getNullBuffer();
+		}
 		throw new Exception("unknown amf0Data");
+	}
+	/**
+	 * null
+	 * @return
+	 */
+	private static ByteBuffer getNullBuffer() {
+		return ByteBuffer.wrap(new byte[]{(byte)Type.Null.intValue()});
 	}
 	/**
 	 * string
