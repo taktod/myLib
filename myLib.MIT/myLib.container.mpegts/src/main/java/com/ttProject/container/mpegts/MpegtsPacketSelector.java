@@ -132,7 +132,11 @@ public class MpegtsPacketSelector implements ISelector {
 			packet = pes;
 		}
 		else {
+			// in the case of unknown data (include pes before pmt analysis.)
 			logger.info("other data." + Integer.toHexString(pid.get()));
+//			channel.position(channel.position() + 184); // I wanna send NullContainer to keep analyzing, however, this cause missing of unitStartPes for some pes data.
+			// cause, pat or pmt on mpegts can be insert in pes frame.
+//			return NullContainer.getInstance();
 			return null;
 		}
 		packet.minimumLoad(channel);
