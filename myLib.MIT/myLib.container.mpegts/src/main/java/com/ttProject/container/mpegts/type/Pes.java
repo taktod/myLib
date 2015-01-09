@@ -225,6 +225,8 @@ public class Pes extends MpegtsPacket {
 	@Override
 	public void load(IReadChannel channel) throws Exception {
 		// load frame data fill be store in unitStartPes.
+		// TODO in the case of segmented mpegts file, unitStartPes can be missing.
+		// then got NullPointerException.
 		unitStartPes.pesBufferList.add(BufferUtil.safeRead(channel, pesDeltaSize));
 	}
 	/**
