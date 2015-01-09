@@ -46,7 +46,7 @@ import com.ttProject.util.BufferUtil;
 public class VideoTag extends FlvTag {
 	/** logger */
 	private Logger logger = Logger.getLogger(VideoTag.class);
-	private Bit4 frameType = new Bit4();
+	private Bit4 frameType = new Bit4(); // 1 keyFrame 2 inner frame 3 disposable inner frame(h263 only) 4 generated key frame? 5 video info(found on rtmp streaming.)
 	private Bit4 codecId   = new Bit4();
 	
 	private Bit4  horizontalAdjustment = null; // vp6 only
