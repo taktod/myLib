@@ -43,7 +43,7 @@ public class MpegtsPacketReader extends Reader {
 	@Override
 	public IContainer read(IReadChannel channel) throws Exception {
 		IUnit unit = getSelector().select(channel);
-		if(unit != null) {
+		if(unit != null && !(unit instanceof NullContainer)) {
 			unit.load(channel);
 		}
 		/*
