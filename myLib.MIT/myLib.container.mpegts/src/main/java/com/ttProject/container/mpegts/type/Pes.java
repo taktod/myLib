@@ -346,9 +346,14 @@ public class Pes extends MpegtsPacket {
 		if(headerLength + frameBuffer.remaining() < 184) {
 			// fit to 1 packet.
 			// fill zero with adaptation field.
-			setAdaptationFieldExist(1); // adaptationField will be active.
 			AdaptationField aField = getAdaptationField();
-			aField.setLength(aField.getLength() + 183 - (headerLength + frameBuffer.remaining()));
+			if(isAdaptationFieldExist()) {
+				aField.setLength(aField.getLength() + 184 - (headerLength + frameBuffer.remaining()));
+			}
+			else {
+				setAdaptationFieldExist(1); // adaptationField will be active.
+				aField.setLength(aField.getLength() + 183 - (headerLength + frameBuffer.remaining()));
+			}
 			pesChunk.put(getHeaderBuffer());
 			BitConnector connector = new BitConnector();
 			connector.feed(prefix, streamId, pesPacketLength, markerBits,
