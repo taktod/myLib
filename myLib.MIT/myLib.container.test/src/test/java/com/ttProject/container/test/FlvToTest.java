@@ -78,9 +78,8 @@ public class FlvToTest {
 		writer.prepareHeader(CodecType.SPEEX);
 		convertTest(
 			FileReadChannel.openFileReadChannel(
-//					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
+					Thread.currentThread().getContextClassLoader().getResource("speex.flv")
 //					"http://streams.videolan.org/issues/2973/audio-only-speex.flv"
-					"C:\\Users\\taktod\\Downloads\\audio-only-speex.flv"
 //					"http://streams.videolan.org/issues/2973/test_speex.flv"
 			),
 			writer,
