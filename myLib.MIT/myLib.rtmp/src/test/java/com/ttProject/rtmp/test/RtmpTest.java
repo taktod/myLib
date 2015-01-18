@@ -7,7 +7,6 @@
 package com.ttProject.rtmp.test;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 
 import com.ttProject.container.flv.amf.Amf0Object;
 import com.ttProject.rtmp.IDataListener;
@@ -22,7 +21,7 @@ import com.ttProject.rtmp.message.IRtmpMessage;
  */
 public class RtmpTest {
 	private Logger logger = Logger.getLogger(RtmpTest.class);
-	@Test
+//	@Test
 	public void test() throws Exception {
 		logger.info("start test.");
 		final NetConnection nc = new NetConnection();
@@ -52,7 +51,7 @@ public class RtmpTest {
 				}
 			}
 		});
-		nc.connect("rtmp://49.212.39.17/live");
+		nc.connect("rtmp://localhost/live");
 		nc.closeForWait();
 	}
 }
