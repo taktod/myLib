@@ -85,7 +85,9 @@ public class ReadableByteReadChannel implements IReadChannel {
 	@Override
 	public int read(ByteBuffer dst) throws IOException {
 		int startPos = dst.position();
-		channel.read(dst);
+		if(channel.read(dst) == -1) {
+			throw new IOException("eof");
+		}
 		this.pos += dst.position() - startPos;
 		return dst.position() - startPos;
 	}
