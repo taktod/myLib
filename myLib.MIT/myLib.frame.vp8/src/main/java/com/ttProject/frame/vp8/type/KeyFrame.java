@@ -44,6 +44,7 @@ public class KeyFrame extends Vp8Frame {
 	 */
 	public KeyFrame(Bit1 frameType, Bit3 version, Bit1 showFrame, Bit19 firstPartSize) {
 		super(frameType, version, showFrame, firstPartSize);
+		super.setKeyFrame(true);
 		super.update();
 	}
 	/**

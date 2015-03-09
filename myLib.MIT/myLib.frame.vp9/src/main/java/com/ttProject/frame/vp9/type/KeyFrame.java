@@ -49,6 +49,7 @@ public class KeyFrame extends Vp9Frame {
 	public KeyFrame(Bit2 frameMarker, Bit1 profile, Bit1 reserved, Bit1 refFlag,
 			Bit1 keyFrameFlag, Bit1 invisibleFlag, Bit1 errorRes) {
 		super(frameMarker, profile, reserved, refFlag, keyFrameFlag, invisibleFlag, errorRes);
+		super.setKeyFrame(true);
 	}
 	/**
 	 * {@inheritDoc}
